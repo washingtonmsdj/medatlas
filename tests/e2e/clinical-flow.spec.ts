@@ -62,6 +62,10 @@ async function expectRealContextual3D(
     preview.getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 45_000 })
 }
+  await expect(
+    preview.getByText(/clique numa peça para identificar/i),
+  ).toBeVisible()
+
 
 async function inspectVisibleAnatomyPart(
   page: Page,

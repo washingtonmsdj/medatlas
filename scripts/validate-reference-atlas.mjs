@@ -205,6 +205,9 @@ const requiredFocusPreviewFragments = [
   'chunks necessários',
   'Reconfirmação anatômica necessária',
   'anatomy-focus-preview-review-banner',
+  'anatomy-focus-preview-interaction-hint',
+  'INTERATIVO',
+  'clique numa peça para identificar',
 ]
 
 for (const fragment of requiredFocusPreviewFragments) {

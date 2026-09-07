@@ -195,6 +195,7 @@ Regras permanentes:
 - [x] status mostra quando a geometria real terminou de carregar;
 - [x] seleção clínica confirmada e inspeção visual temporária são estados diferentes; clicar numa peça não muda o relatório;
 - [x] a peça inspecionada recebe destaque visual distinto e o inspector pode ser fechado sem alterar o foco clínico;
+- [x] toda prévia contextual explicita que o 3D é interativo e orienta arrastar/clicar, sem duplicar lógica por módulo;
 - [x] troca de superfície desmonta o renderer anterior;
 - [x] cleanup canônico cancela animation frame, listeners/observer e descarta controls, geometrias, materiais, textures e renderer WebGL;
 - [x] source gate falha se Dashboard voltar ao placeholder fake ou se Pacientes/Consultas/Exames perderem o preview canônico;
@@ -365,7 +366,7 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [x] validar Browser E2E completo contra deploy — Pages run `34107729098` PASS; smoke de assets + Playwright 3D remoto PASS em 2026-09-07;
+2. [x] validar Browser E2E completo contra deploy — baseline 3D-first `92c2044…`: CI `34112639281` PASS, Browser E2E `34112639286` PASS e Pages/Playwright remoto `34112639293` PASS em 2026-09-07;
 3. [ ] executar piloto manual sintético no preview;
 4. [ ] corrigir UX encontrada no piloto;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;

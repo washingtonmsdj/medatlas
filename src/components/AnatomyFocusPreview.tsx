@@ -231,10 +231,18 @@ export function AnatomyFocusPreview({
       </div>
 
       <footer className="anatomy-focus-preview-footer">
-        <p>
-          {description ||
-            'Geometria real do Human Atlas/BodyParts3D. Toque ou clique numa peça para identificá-la. É anatomia humana de referência, não reconstrução específica do paciente.'}
-        </p>
+        <div className="anatomy-focus-preview-footer-copy">
+          <p>
+            {description ||
+              'Geometria real do Human Atlas/BodyParts3D. É anatomia humana de referência, não reconstrução específica do paciente.'}
+          </p>
+          {conceptId && status === 'ready' && (
+            <span className="anatomy-focus-preview-interaction-hint">
+              <b>INTERATIVO</b>
+              Arraste para girar · clique numa peça para identificar
+            </span>
+          )}
+        </div>
         {onOpenAtlas && (
           <button type="button" onClick={onOpenAtlas}>
             Abrir Atlas completo

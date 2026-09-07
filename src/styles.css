@@ -8363,6 +8363,44 @@ button:not(:disabled):active {
   line-height: 1.5;
 }
 
+.anatomy-focus-preview-footer-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.anatomy-focus-preview-interaction-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #79b9d4;
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.anatomy-focus-preview-interaction-hint b {
+  flex: 0 0 auto;
+  padding: 3px 5px;
+  border: 1px solid rgba(92, 183, 220, .28);
+  border-radius: 999px;
+  color: #9fe2fa;
+  background: rgba(31, 123, 160, .16);
+  font-size: 6px;
+  letter-spacing: .08em;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-interaction-hint {
+  color: #4c7f8e;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-interaction-hint b {
+  color: #24788c;
+  border-color: #c3dde5;
+  background: #eaf6f8;
+}
+
+
 .anatomy-focus-preview-footer button {
   flex: 0 0 auto;
   display: inline-flex;
