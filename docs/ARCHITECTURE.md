@@ -100,6 +100,9 @@ O renderer usa Three.js e a geometria BodyParts3D empacotada pelo Human Atlas.
 Propriedades atuais:
 
 - upstream fixado por SHA;
+- assets comprimidos vendorizados em `public/atlas-assets/`;
+- SHA-256 + provenance da closure anatômica;
+- nenhum fetch normal de geometria depende do repositório upstream;
 - conceitos com uma ou várias meshes;
 - download agrupado por chunk;
 - cache de chunks imutáveis;
@@ -256,6 +259,14 @@ O campo `concept_id` precisa ser resolvido contra o atlas fixado antes de a resp
 - logs/auditoria;
 - secrets separados;
 - dados anatômicos em origem controlada pelo MedAtlas.
+
+### Assets anatômicos
+
+A closure comprimida do Human Atlas está sob origem controlada pelo MedAtlas em `public/atlas-assets/`.
+
+O workflow `vendor-atlas-assets.yml` baixa somente do commit upstream fixado, gera hashes SHA-256 e provenance. O CI recalcula os hashes e aplica um orçamento de payload antes do build. Atualizar o upstream exige uma mudança explícita de source/provenance; não existe atualização silenciosa em runtime.
+
+Os cenários sintéticos atuais exigem de 1 a 2 chunks e permanecem abaixo de 7,5 MB de payload inicial de atlas (catálogo + geometria comprimida).
 
 ## Proibições arquiteturais
 

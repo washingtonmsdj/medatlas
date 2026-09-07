@@ -75,7 +75,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Add patient discussion-question section without diagnostic/treatment claims.
 - [x] Add browser print / save-as-PDF patient report mode.
 - [ ] Accessibility pass.
-- [ ] Performance budget for anatomy payload.
+- [x] Performance budget for anatomy payload.
+- [x] Browser E2E proved the renderer against MedAtlas-vendored anatomy assets.
 - [ ] Privacy/security review before real PHI.
 - [ ] Pilot with synthetic data, then controlled clinical pilot.
 

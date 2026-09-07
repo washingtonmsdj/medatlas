@@ -37,6 +37,9 @@ O MVP já possui:
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
+- 34,3 MB de assets anatômicos comprimidos vendorizados no próprio MedAtlas;
+- provenance + SHA-256 verificados no CI;
+- Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
 - explicação editável para o paciente;
 - re-review obrigatório quando anatomia/texto muda;
 - página separada do paciente usando o mesmo conceito 3D aprovado;
@@ -68,6 +71,10 @@ Validação completa:
 
 ```bash
 npm run validate:db-contract
+npm run validate:anatomy-contract
+npm run validate:demo-scenarios
+npm run validate:vendored-assets
+npm run validate:performance-budget
 npm run check
 npm run build
 npm audit --omit=dev --audit-level=high
@@ -82,6 +89,10 @@ O MedAtlas fixa sua integração inicial ao Human Atlas no commit:
 ```
 
 O renderer não usa iframe. O catálogo e as geometrias BodyParts3D são resolvidos semanticamente e renderizados dentro da aplicação.
+
+Os arquivos necessários ao runtime estão em `public/atlas-assets/`. Eles foram copiados do commit upstream fixado por um workflow reproduzível e possuem `SHA256SUMS` + `PROVENANCE.json`. O navegador não precisa buscar geometrias no repositório upstream durante o uso normal.
+
+Nos cenários sintéticos atuais, o payload inicial de atlas fica aproximadamente entre **3,4 MB e 6,0 MB**, apesar da closure total vendorizada ter 34,3 MB, porque o renderer carrega somente os chunks necessários ao conceito selecionado.
 
 Exemplo atual:
 
@@ -191,10 +202,9 @@ O plano executável e continuamente atualizado está em:
 
 As próximas frentes são:
 
-1. projeto Supabase exclusivo do MedAtlas;
-2. provas de isolamento multi-tenant;
-3. autenticação/onboarding;
-4. adapter Supabase do `ClinicalRepository`;
-5. IA estruturada sobre o resolvedor anatômico determinístico;
-6. storage/CDN próprio para os assets anatômicos;
-7. E2E e validação visual do deploy.
+1. acessibilidade e refinamento mobile;
+2. IA estruturada sobre o resolvedor anatômico determinístico;
+3. habilitar/publicar a preview e validar visualmente o deploy;
+4. somente depois, projeto Supabase exclusivo do MedAtlas;
+5. provas de isolamento multi-tenant + autenticação;
+6. adapter Supabase do `ClinicalRepository`.
