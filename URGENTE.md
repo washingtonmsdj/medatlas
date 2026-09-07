@@ -138,6 +138,7 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
+- Preview externo 3D-first: **Pages run `34107729098` — PASS**, incluindo shell/assets e Playwright real contra `https://washingtonmsdj.github.io/medatlas/`.
 - Browser E2E do lote Equipe/convites: **run `34104398629` — PASS**.
 - CI do contrato de convites + membership: **PASS até `abbc3d20b5cb1f421b894c9e69a3548f9620d8c3`**.
 - Artifact visual anterior revisado: `visual-qa-34100520733`.
@@ -190,6 +191,7 @@ Regras permanentes:
 - [x] source gate falha se Dashboard voltar ao placeholder fake ou se Pacientes/Consultas/Exames perderem o preview canônico;
 - [x] Browser E2E exige canvas real nas superfícies 3D-first;
 - [x] Pages executa Playwright contra o site publicado e exige canvas Human Atlas também no portal do paciente.
+- [x] asset base do Human Atlas herda `import.meta.env.BASE_URL`; deploys em subpath como `/medatlas/` não quebram `atlas.json` nem chunks.
 
 O 3D continua sendo **anatomia humana de referência**. Não chamar esse modelo de “corpo do paciente”, “reconstrução do exame” ou equivalente.
 
@@ -354,7 +356,7 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [ ] validar Browser E2E completo contra deploy — shell/assets já validados; Playwright 3D remoto adicionado e aguardando checkpoint verde;
+2. [x] validar Browser E2E completo contra deploy — Pages run `34107729098` PASS; smoke de assets + Playwright 3D remoto PASS em 2026-09-07;
 3. [ ] executar piloto manual sintético no preview;
 4. [ ] corrigir UX encontrada no piloto;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;
@@ -370,7 +372,7 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 Se continuar **sem Supabase ativo**:
 
 1. verificar CI do HEAD;
-2. validar o Playwright 3D contra o GitHub Pages publicado;
+2. manter o Playwright 3D do GitHub Pages verde;
 3. executar piloto manual sintético completo;
 4. corrigir somente bugs/UX reais encontrados;
 5. não iniciar billing nem IA remota.
