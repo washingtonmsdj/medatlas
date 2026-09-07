@@ -872,12 +872,12 @@
    * Mobile Explorer gets a dedicated 3D viewport below the search/layers/
    * inspector stack. Those controls must never mask the anatomy itself.
    */
-  .reference-atlas-scene {
+  .reference-atlas-stage > .reference-atlas-scene {
     top: 646px;
     bottom: 145px;
   }
 
-  .reference-renderer-loading {
+  .reference-atlas-stage > .reference-renderer-loading {
     inset: 646px 0 145px;
   }
 

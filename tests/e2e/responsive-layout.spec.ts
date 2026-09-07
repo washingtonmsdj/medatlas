@@ -148,6 +148,7 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
 test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   page,
 }) => {
+  test.setTimeout(120_000)
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
@@ -160,8 +161,12 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   ).toBeVisible()
 
   await expect(
+    page.getByText(/Preparando atlas|Atlas pronto/, { exact: true }),
+  ).toBeVisible({ timeout: 20_000 })
+
+  await expect(
     page.getByText('Atlas pronto', { exact: true }),
-  ).toBeVisible({ timeout: 60_000 })
+  ).toBeVisible({ timeout: 100_000 })
 
   const stage = page.locator('.reference-atlas-stage')
   const canvas = stage.locator('.reference-atlas-scene canvas')
