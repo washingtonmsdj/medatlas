@@ -190,6 +190,12 @@ export function HumanAtlasExplorerScene({
           new THREE.Vector3().fromArray(part.bounds[1]),
         ),
     )
+    const atlasBounds = bounds.reduce(
+      (combined, box) => combined.union(box),
+      new THREE.Box3(),
+    )
+    const atlasCenter = atlasBounds.getCenter(new THREE.Vector3())
+    const atlasSize = atlasBounds.getSize(new THREE.Vector3())
     const offsets: THREE.Vector3[] = []
 
     const materialFor = (systemId: string) => {
@@ -374,6 +380,48 @@ export function HumanAtlasExplorerScene({
 
     const fit = (view: AtlasExplorerSceneState['view'], extent = 0) => {
       const mobile = element.clientWidth < 768
+      const direction =
+        view === 'front'
+          ? new THREE.Vector3(0, 0.02, 1)
+          : view === 'back'
+            ? new THREE.Vector3(0, 0.02, -1)
+            : view === 'side'
+              ? new THREE.Vector3(1, 0.02, 0)
+              : new THREE.Vector3(0.35, 0.06, 1).normalize()
+
+      if (appearance !== 'explorer' && extent < 0.05 && !atlasBounds.isEmpty()) {
+        const verticalFov = THREE.MathUtils.degToRad(camera.fov)
+        const horizontalFov =
+          2 * Math.atan(Math.tan(verticalFov / 2) * Math.max(camera.aspect, 0.35))
+        const fitHeight =
+          atlasSize.y /
+          Math.max(0.001, 2 * Math.tan(verticalFov / 2))
+        const fitWidth =
+          atlasSize.x /
+          Math.max(0.001, 2 * Math.tan(horizontalFov / 2))
+        const fitDepth = atlasSize.z * 0.65
+        const surfacePadding =
+          appearance === 'patient'
+            ? mobile
+              ? 1.38
+              : 1.28
+            : mobile
+              ? 1.52
+              : 1.42
+        const distance = Math.max(
+          0.16,
+          (Math.max(fitHeight, fitWidth) + fitDepth) * surfacePadding,
+        )
+
+        controls.target.copy(atlasCenter)
+        camera.position
+          .copy(atlasCenter)
+          .addScaledVector(direction, distance)
+        controls.update()
+        dirty = true
+        return
+      }
+
       const normalDistance = mobile ? 4.8 : 4
       const reservedHeight = mobile ? 300 : 220
       const availableAspect = Math.max(
@@ -390,15 +438,6 @@ export function HumanAtlasExplorerScene({
         Math.max(0.2, atlasDistance),
         extent,
       )
-
-      const direction =
-        view === 'front'
-          ? new THREE.Vector3(0, 0.02, 1)
-          : view === 'back'
-            ? new THREE.Vector3(0, 0.02, -1)
-            : view === 'side'
-              ? new THREE.Vector3(1, 0.02, 0)
-              : new THREE.Vector3(0.35, 0.06, 1).normalize()
 
       controls.target.set(
         extent > 0.1 && !mobile ? -packingWidth * 0.12 : 0,
@@ -700,7 +739,9 @@ export function HumanAtlasExplorerScene({
       if (controls.autoRotate) dirty = true
 
       ground.visible = platform.visible =
-        amount < 0.5 && !current.isolate
+        appearance === 'explorer' &&
+        amount < 0.5 &&
+        !current.isolate
 
       if (dirty) {
         renderer.render(scene, camera)
