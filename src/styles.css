@@ -3915,3 +3915,24 @@ button:not(:disabled):active {
     bottom: 10px;
   }
 }
+/* MEDATLAS_PATIENT_VISUAL_QA_V1 */
+.patient-header .brand {
+  color: #102542;
+}
+
+.patient-header .brand-mark {
+  color: white;
+}
+
+.patient-card-heading .label {
+  color: #93adc5;
+}
+
+.patient-card-heading h2 {
+  color: #eef7ff;
+}
+
+.patient-card-heading .atlas-badge {
+  color: #77cfff;
+  background: #142d49;
+}
