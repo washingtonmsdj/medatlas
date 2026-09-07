@@ -147,6 +147,9 @@ const requiredFocusedFragments = [
   'createFocusedAtlas',
   'focusedAtlas',
   "contextMode === 'none'",
+  'onSelect={inspectPart}',
+  'focused-reference-inspector',
+  'A anatomia confirmada do relatório não foi',
 ]
 
 for (const fragment of requiredFocusedFragments) {

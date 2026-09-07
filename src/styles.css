@@ -8603,3 +8603,108 @@ button:not(:disabled):active {
     display: none;
   }
 }
+
+
+/* MEDATLAS_FOCUSED_3D_INSPECTION_V1 */
+.focused-reference-inspector {
+  position: absolute;
+  z-index: 7;
+  right: 14px;
+  bottom: 76px;
+  width: min(260px, calc(100% - 28px));
+  display: grid;
+  gap: 3px;
+  padding: 10px 34px 10px 11px;
+  border: 1px solid rgba(96, 178, 214, .34);
+  border-radius: 12px;
+  color: #dcecf5;
+  background: rgba(5, 22, 35, .9);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, .25);
+  backdrop-filter: blur(14px);
+}
+
+.focused-reference-inspector > button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  color: #9db7c7;
+  background: rgba(126, 178, 205, .1);
+  cursor: pointer;
+}
+
+.focused-reference-inspector > span {
+  color: #66cce9;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.focused-reference-inspector > strong {
+  overflow: hidden;
+  color: #f2fbff;
+  font-size: 10px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.focused-reference-inspector > small {
+  color: #8fa9ba;
+  font-size: 7px;
+}
+
+.focused-reference-inspector > em {
+  margin-top: 3px;
+  color: #7793a3;
+  font-size: 6px;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.patient-atlas-stage .focused-reference-inspector,
+.anatomy-focus-preview-patient .focused-reference-inspector {
+  color: #284b5a;
+  border-color: rgba(67, 128, 148, .23);
+  background: rgba(250, 254, 255, .94);
+  box-shadow: 0 14px 30px rgba(37, 78, 92, .14);
+}
+
+.patient-atlas-stage .focused-reference-inspector > span,
+.anatomy-focus-preview-patient .focused-reference-inspector > span {
+  color: #23758b;
+}
+
+.patient-atlas-stage .focused-reference-inspector > strong,
+.anatomy-focus-preview-patient .focused-reference-inspector > strong {
+  color: #173f50;
+}
+
+.patient-atlas-stage .focused-reference-inspector > small,
+.anatomy-focus-preview-patient .focused-reference-inspector > small {
+  color: #617f8c;
+}
+
+.patient-atlas-stage .focused-reference-inspector > em,
+.anatomy-focus-preview-patient .focused-reference-inspector > em {
+  color: #708995;
+}
+
+.patient-atlas-stage .focused-reference-inspector > button,
+.anatomy-focus-preview-patient .focused-reference-inspector > button {
+  color: #527580;
+  background: #edf5f7;
+}
+
+@media (max-width: 620px) {
+  .focused-reference-inspector {
+    right: 10px;
+    bottom: 68px;
+    width: calc(100% - 20px);
+  }
+}

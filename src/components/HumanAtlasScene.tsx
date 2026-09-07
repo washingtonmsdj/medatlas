@@ -4,6 +4,7 @@ import {
   type AtlasContextMode,
 } from '../atlas/model'
 import {
+  conceptDisplayName,
   findAtlasConcept,
   loadHumanAtlas,
 } from '../atlas/source'
@@ -43,6 +44,13 @@ interface PreparedFocus {
   selectedPartCount: number
   contextPartCount: number
   visibleSystems: AtlasSystemId[]
+  partLabels: Record<string, string>
+}
+
+interface InspectedPart {
+  partId: string
+  conceptId: string
+  label: string
 }
 
 export function HumanAtlasScene({
@@ -56,10 +64,12 @@ export function HumanAtlasScene({
   onError,
 }: Props) {
   const [prepared, setPrepared] = useState<PreparedFocus | null>(null)
+  const [inspectedPart, setInspectedPart] = useState<InspectedPart | null>(null)
 
   useEffect(() => {
     let active = true
     setPrepared(null)
+    setInspectedPart(null)
 
     void loadHumanAtlas()
       .then((atlas) => {
@@ -85,6 +95,18 @@ export function HumanAtlasScene({
               .filter(isAtlasSystemId),
           ),
         ]
+        const conceptsById = new Map(
+          atlas.concepts.map((candidate) => [candidate.id, candidate]),
+        )
+        const partLabels = Object.fromEntries(
+          focusedAtlas.parts.map((part) => {
+            const partConcept = conceptsById.get(part.conceptId)
+            return [
+              part.id,
+              partConcept ? conceptDisplayName(partConcept) : part.name,
+            ]
+          }),
+        )
 
         setPrepared({
           atlas: focusedAtlas,
@@ -92,6 +114,7 @@ export function HumanAtlasScene({
           selectedPartCount,
           contextPartCount,
           visibleSystems,
+          partLabels,
         })
       })
       .catch((reason) => {
@@ -159,6 +182,22 @@ export function HumanAtlasScene({
     [onError],
   )
 
+  const inspectPart = useCallback(
+    (partId: string) => {
+      if (!prepared) return
+
+      const part = prepared.atlas.parts.find((candidate) => candidate.id === partId)
+      if (!part) return
+
+      setInspectedPart({
+        partId: part.id,
+        conceptId: part.conceptId,
+        label: prepared.partLabels[part.id] ?? part.name,
+      })
+    },
+    [prepared],
+  )
+
   if (!prepared) {
     return (
       <div
@@ -183,11 +222,36 @@ export function HumanAtlasScene({
       <HumanAtlasExplorerScene
         atlas={prepared.atlas}
         state={sceneState}
-        onSelect={() => {}}
+        onSelect={inspectPart}
         onProgress={handleProgress}
         onError={handleError}
         appearance={appearance}
       />
+
+      {inspectedPart && (
+        <aside
+          className="focused-reference-inspector"
+          aria-label="Estrutura anatômica inspecionada"
+          aria-live="polite"
+        >
+          <button
+            type="button"
+            aria-label="Fechar identificação anatômica"
+            onClick={() => setInspectedPart(null)}
+          >
+            ×
+          </button>
+          <span>ESTRUTURA INSPECIONADA</span>
+          <strong>{inspectedPart.label}</strong>
+          <small>
+            {inspectedPart.conceptId} · peça {inspectedPart.partId}
+          </small>
+          <em>
+            Inspeção visual apenas. A anatomia confirmada do relatório não foi
+            alterada.
+          </em>
+        </aside>
+      )}
     </div>
   )
 }
