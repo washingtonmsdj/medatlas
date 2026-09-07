@@ -590,7 +590,7 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
   ).toBeVisible()
 
   await expect(
-    page.getByText('INSPETOR ANATÔMICO'),
+    page.locator('.reference-inspector-card'),
   ).toBeVisible()
 
   await expect(
