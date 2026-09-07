@@ -166,7 +166,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     }),
   ).toBeVisible()
   await expect(
-    patientPage.getByText('CONTEÚDO REVISADO'),
+    patientPage.getByText('CONTEÚDO REVISADO', { exact: true }),
   ).toBeVisible()
   await expect(
     patientPage.getByRole('heading', {
