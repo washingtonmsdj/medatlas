@@ -31,6 +31,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 ## P1 — SaaS core
 
+> **Infraestrutura deliberadamente adiada:** o Supabase será conectado depois que o MVP visual, o fluxo clínico sintético e os testes de produto estiverem mais maduros. O contrato source-first permanece preservado para evitar retrabalho.
+
 - [x] Define canonical Supabase schema + RLS contract in source.
 - [x] Define organization membership and professional roles.
 - [x] Define patient, consultation, report and document persistence model.
@@ -39,11 +41,11 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Define immutable-style audit event model and audited share operations.
 - [x] Decouple UI from demo persistence through an async ClinicalRepository.
 - [x] Use cryptographically random opaque tokens in demo sharing.
-- [ ] Create a dedicated MedAtlas Supabase project.
-- [ ] Apply migrations and prove tenant isolation with database tests.
-- [ ] Connect authentication/onboarding UI.
-- [ ] Implement and activate the Supabase ClinicalRepository adapter.
-- [ ] Replace local demo share resolver with the token RPC.
+- [ ] **Deferred:** create a dedicated MedAtlas Supabase project.
+- [ ] **Deferred:** apply migrations and prove tenant isolation with database tests.
+- [ ] **Deferred:** connect authentication/onboarding UI.
+- [ ] **Deferred:** implement and activate the Supabase ClinicalRepository adapter.
+- [ ] **Deferred:** replace local demo share resolver with the token RPC.
 
 ## P2 — AI workflow
 
@@ -51,7 +53,10 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Keep text analysis advisory-only until explicit clinician confirmation.
 - [ ] Add structured AI extraction on top of the deterministic resolver.
 - [ ] Resolve AI output only to known atlas concepts.
-- [ ] Generate patient-language draft.
+- [x] Add deterministic patient-language educational draft generator.
+- [x] Track draft provenance and clinician edits in the frontend model.
+- [x] Clear stale explanation when source text or confirmed anatomy changes.
+- [ ] Add structured AI-generated patient-language draft.
 - [ ] Require clinician confirmation before publish.
 - [ ] Version prompts/model/output and preserve provenance.
 

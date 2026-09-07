@@ -5,17 +5,39 @@ import type { VisualReport } from '../domain/types'
 interface Props {
   report: VisualReport
   publishing: boolean
+  generatingDraft: boolean
   publishError: string
   onPublish: () => void | Promise<void>
+  onGenerateDraft: () => void | Promise<void>
   onUpdateExplanation: (value: string) => void
   onApproveExplanation: () => void
+}
+
+function provenanceLabel(report: VisualReport) {
+  const provenance = report.finding.explanationProvenance
+
+  if (provenance.origin === 'deterministic') {
+    return provenance.clinicianEdited
+      ? 'Rascunho MedAtlas editado pelo profissional'
+      : 'Rascunho educacional MedAtlas'
+  }
+
+  if (provenance.origin === 'ai') {
+    return provenance.clinicianEdited
+      ? 'Rascunho de IA editado pelo profissional'
+      : 'Rascunho de IA · revisão obrigatória'
+  }
+
+  return 'Texto manual do profissional'
 }
 
 export function ReportComposer({
   report,
   publishing,
+  generatingDraft,
   publishError,
   onPublish,
+  onGenerateDraft,
   onUpdateExplanation,
   onApproveExplanation,
 }: Props) {
@@ -51,24 +73,56 @@ export function ReportComposer({
       </div>
 
       <div className="report-section">
-        <span className="label">Explicação para o paciente</span>
+        <div className="explanation-heading">
+          <div>
+            <span className="label">Explicação para o paciente</span>
+            <small>{provenanceLabel(report)}</small>
+          </div>
+
+          <button
+            className="generate-draft-button"
+            type="button"
+            onClick={() => void onGenerateDraft()}
+            disabled={
+              generatingDraft ||
+              !report.finding.atlasConceptId ||
+              !report.finding.sourceText.trim()
+            }
+          >
+            {generatingDraft ? 'Gerando…' : 'Gerar rascunho educacional'}
+          </button>
+        </div>
+
         <textarea
           className="explanation-editor"
           aria-label="Explicação para o paciente"
           value={report.finding.patientExplanation}
           onChange={(event) => onUpdateExplanation(event.target.value)}
           rows={8}
+          placeholder="Gere um rascunho educacional ou escreva a explicação manualmente."
         />
+
+        {report.finding.explanationProvenance.origin === 'deterministic' && (
+          <p className="provenance-note">
+            Gerador: {report.finding.explanationProvenance.generatorId} · v
+            {report.finding.explanationProvenance.generatorVersion}. O texto
+            continua bloqueado para publicação até revisão explícita.
+          </p>
+        )}
       </div>
 
       {report.finding.explanationReviewRequired ? (
         <div className="review-required-box">
           <strong>Revisão necessária</strong>
           <span>
-            A anatomia ou a explicação mudou. O link do paciente só pode ser
-            publicado após confirmação explícita do profissional.
+            A anatomia, o laudo ou a explicação mudou. O link do paciente só
+            pode ser publicado após confirmação explícita do profissional.
           </span>
-          <button type="button" onClick={onApproveExplanation}>
+          <button
+            type="button"
+            onClick={onApproveExplanation}
+            disabled={!report.finding.patientExplanation.trim()}
+          >
             Confirmar explicação revisada
           </button>
         </div>
@@ -103,9 +157,9 @@ export function ReportComposer({
             </button>
           </div>
           <small>
-            MVP: token opaco aleatório + armazenamento demo local. Expiração,
-            revogação e hash no banco já estão definidos no contrato Supabase
-            e entram quando o backend dedicado for ativado.
+            MVP sem backend: token opaco aleatório + armazenamento local
+            sintético. O contrato de produção com expiração, revogação e hash
+            permanece pronto para a fase de backend.
           </small>
         </div>
       ) : (
@@ -114,7 +168,9 @@ export function ReportComposer({
           type="button"
           onClick={() => void onPublish()}
           disabled={
-            report.finding.explanationReviewRequired || publishing
+            report.finding.explanationReviewRequired ||
+            publishing ||
+            !report.finding.patientExplanation.trim()
           }
         >
           {publishing

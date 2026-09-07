@@ -19,6 +19,10 @@ export const demoReport: VisualReport = {
     patientExplanation:
       'O laudo descreve uma alteração no disco localizado entre as vértebras L4 e L5. O disco funciona como uma estrutura de amortecimento entre as vértebras. Neste exame, parte dele se projeta para trás e toca levemente estruturas próximas.',
     explanationReviewRequired: false,
+    explanationProvenance: {
+      origin: 'manual',
+      clinicianEdited: true,
+    },
     clinicianNote:
       'Explicação educacional. A interpretação final do exame e a decisão de tratamento pertencem ao profissional responsável.',
   },

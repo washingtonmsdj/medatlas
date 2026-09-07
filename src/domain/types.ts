@@ -1,5 +1,15 @@
 export type ClinicalReportStatus = 'draft' | 'clinician_review' | 'published'
 
+export type ExplanationOrigin = 'manual' | 'deterministic' | 'ai'
+
+export interface ExplanationProvenance {
+  origin: ExplanationOrigin
+  generatorId?: string
+  generatorVersion?: string
+  generatedAt?: string
+  clinicianEdited: boolean
+}
+
 export interface PatientSummary {
   id: string
   displayName: string
@@ -14,6 +24,7 @@ export interface ClinicalFinding {
   atlasConceptId: string
   patientExplanation: string
   explanationReviewRequired: boolean
+  explanationProvenance: ExplanationProvenance
   clinicianNote: string
 }
 

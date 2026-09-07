@@ -959,3 +959,59 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
     padding:22px;
   }
 }
+
+
+.explanation-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.explanation-heading > div {
+  display:grid;
+  gap:3px;
+}
+.explanation-heading small {
+  color:#70859b;
+  font-size:8px;
+}
+.generate-draft-button {
+  border:1px solid #315b79;
+  border-radius:9px;
+  background:#0d2335;
+  color:#9bd7f2;
+  padding:8px 9px;
+  cursor:pointer;
+  font-size:8px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.generate-draft-button:hover:not(:disabled) {
+  border-color:#48ade4;
+  color:white;
+  background:#12324a;
+}
+.generate-draft-button:disabled {
+  opacity:.45;
+  cursor:not-allowed;
+}
+.provenance-note {
+  margin:7px 1px 0;
+  color:#5f748a;
+  font-size:8px;
+  line-height:1.45;
+}
+.review-required-box button:disabled {
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+@media (max-width:620px) {
+  .explanation-heading {
+    flex-direction:column;
+  }
+  .generate-draft-button {
+    width:100%;
+  }
+}

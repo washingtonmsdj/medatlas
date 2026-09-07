@@ -8,6 +8,7 @@ import {
   suggestAnatomyFromText,
   type AnatomySuggestion,
 } from './clinical/anatomy-suggestions'
+import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
 import { ModulePlaceholder } from './components/ModulePlaceholder'
 import { Overview } from './components/Overview'
@@ -122,6 +123,7 @@ function ClinicianApp() {
   const [report, setReport] = useState<VisualReport>(demoReport)
   const [active, setActive] = useState<ModuleName>('Visão geral')
   const [publishing, setPublishing] = useState(false)
+  const [generatingDraft, setGeneratingDraft] = useState(false)
   const [publishError, setPublishError] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [intakeError, setIntakeError] = useState('')
@@ -135,8 +137,23 @@ function ClinicianApp() {
     shareSlug: undefined,
   })
 
+  const emptyExplanation = () => ({
+    patientExplanation: '',
+    explanationReviewRequired: true,
+    explanationProvenance: {
+      origin: 'manual' as const,
+      clinicianEdited: false,
+    },
+  })
+
   const publish = async () => {
-    if (report.finding.explanationReviewRequired || publishing) return
+    if (
+      report.finding.explanationReviewRequired ||
+      publishing ||
+      !report.finding.patientExplanation.trim()
+    ) {
+      return
+    }
 
     setPublishing(true)
     setPublishError('')
@@ -168,9 +185,7 @@ function ClinicianApp() {
           ...draft.finding,
           anatomicalStructure: displayName,
           atlasConceptId: concept.id,
-          patientExplanation:
-            `A estrutura anatômica confirmada é ${displayName}. Revise esta explicação para relacioná-la corretamente ao laudo antes de compartilhar com o paciente.`,
-          explanationReviewRequired: true,
+          ...emptyExplanation(),
         },
       }
     })
@@ -188,7 +203,7 @@ function ClinicianApp() {
         finding: {
           ...draft.finding,
           sourceText: value,
-          explanationReviewRequired: true,
+          ...emptyExplanation(),
         },
       }
     })
@@ -231,6 +246,40 @@ function ClinicianApp() {
     }
   }
 
+  const generateExplanationDraft = async () => {
+    if (generatingDraft) return
+
+    setGeneratingDraft(true)
+    setPublishError('')
+
+    try {
+      const generated =
+        await patientExplanationGenerator.generate(report)
+
+      setReport((current) => {
+        const draft = invalidatePublishedState(current)
+
+        return {
+          ...draft,
+          finding: {
+            ...draft.finding,
+            patientExplanation: generated.text,
+            explanationProvenance: generated.provenance,
+            explanationReviewRequired: true,
+          },
+        }
+      })
+    } catch (error) {
+      setPublishError(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível gerar o rascunho educacional.',
+      )
+    } finally {
+      setGeneratingDraft(false)
+    }
+  }
+
   const updateExplanation = (value: string) => {
     setReport((current) => {
       const draft = invalidatePublishedState(current)
@@ -241,6 +290,10 @@ function ClinicianApp() {
           ...draft.finding,
           patientExplanation: value,
           explanationReviewRequired: true,
+          explanationProvenance: {
+            ...draft.finding.explanationProvenance,
+            clinicianEdited: true,
+          },
         },
       }
     })
@@ -248,6 +301,8 @@ function ClinicianApp() {
   }
 
   const approveExplanation = () => {
+    if (!report.finding.patientExplanation.trim()) return
+
     setReport((current) => ({
       ...current,
       status: 'clinician_review',
@@ -326,8 +381,10 @@ function ClinicianApp() {
         <ReportComposer
           report={report}
           publishing={publishing}
+          generatingDraft={generatingDraft}
           publishError={publishError}
           onPublish={publish}
+          onGenerateDraft={generateExplanationDraft}
           onUpdateExplanation={updateExplanation}
           onApproveExplanation={approveExplanation}
         />
@@ -373,8 +430,8 @@ function ClinicianApp() {
         return (
           <ModulePlaceholder
             title="Pacientes"
-            description="O domínio e as políticas multi-tenant já existem no contrato Supabase. A interface real será conectada somente depois dos testes de isolamento."
-            status="Aguardando backend dedicado"
+            description="O domínio multi-tenant já está definido, mas o backend foi adiado intencionalmente. Seguimos com dados sintéticos até o MVP visual e os testes ficarem maduros."
+            status="Backend adiado · MVP local ativo"
             items={[
               'Cadastro mínimo e organização por tenant',
               'Histórico de consultas e relatórios',
@@ -389,7 +446,7 @@ function ClinicianApp() {
           <ModulePlaceholder
             title="Consultas"
             description="Cada consulta será o contexto clínico para documentos, anatomia confirmada e relatórios visuais."
-            status="Data model pronto"
+            status="Data model pronto · persistência adiada"
             items={[
               'Vínculo profissional + paciente',
               'Linha do tempo de relatórios',
@@ -403,13 +460,13 @@ function ClinicianApp() {
         return (
           <ModulePlaceholder
             title="Exames e documentos"
-            description="O bucket privado e o contrato de integridade já estão definidos; uploads reais permanecem bloqueados até a prova de RLS do Storage."
-            status="Storage definido · ainda não ativado"
+            description="No MVP sem backend trabalhamos com texto sintético/local. Upload clínico real continuará bloqueado até Storage privado e autorização existirem."
+            status="Entrada local/sintética"
             items={[
-              'PDF, JPEG, PNG e WebP privados',
-              'SHA-256 e tamanho do arquivo',
-              'Path prefixado pelo tenant',
-              'Triagem anatômica sobre conteúdo autorizado',
+              'Texto colado pelo profissional',
+              'Triagem anatômica determinística',
+              'PDF privado na futura fase de backend',
+              'Integridade e provenance do documento',
             ]}
           />
         )
@@ -419,7 +476,7 @@ function ClinicianApp() {
           <ModulePlaceholder
             title="Configurações da organização"
             description="A área futura reunirá equipe, papéis, branding da clínica, política de compartilhamento e integrações."
-            status="Contrato de papéis pronto"
+            status="Contrato pronto · backend adiado"
             items={[
               'Admin, clinician e staff',
               'Identidade visual / white-label',
