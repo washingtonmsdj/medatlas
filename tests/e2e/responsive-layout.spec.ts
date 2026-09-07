@@ -27,6 +27,10 @@ const MODULES = [
     heading: 'Equipe e permissões da organização',
   },
   {
+    button: 'Analytics',
+    heading: 'Visualizações dos relatórios compartilhados',
+  },
+  {
     button: 'Configurações',
     heading: 'Ambiente sintético e controles locais',
   },
