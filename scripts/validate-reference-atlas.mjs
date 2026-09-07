@@ -11,6 +11,14 @@ const explorer = await readFile(
 const systems = await readFile('src/atlas/systems.ts', 'utf8')
 const app = await readFile('src/App.tsx', 'utf8')
 const focused = await readFile('src/components/HumanAtlasScene.tsx', 'utf8')
+const focusedViewport = await readFile(
+  'src/components/AtlasViewport.tsx',
+  'utf8',
+)
+const patient = await readFile(
+  'src/components/PatientReportPage.tsx',
+  'utf8',
+)
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
@@ -27,6 +35,8 @@ const requiredEngineFragments = [
   'controls.autoRotate',
   'loadChunkBuffer',
   'Array.from({ length: 3 }',
+  'AtlasSceneAppearance',
+  "'clinical' | 'explorer' | 'patient'",
 ]
 
 for (const fragment of requiredEngineFragments) {
@@ -45,6 +55,10 @@ const requiredExplorerFragments = [
   'Isolar estrutura',
   'searchAtlasConcepts',
   'Atlas humano',
+  'Camadas anatômicas',
+  'INSPETOR ANATÔMICO',
+  'Redefinir workspace',
+  'appearance="explorer"',
 ]
 
 for (const fragment of requiredExplorerFragments) {
@@ -98,6 +112,36 @@ for (const fragment of requiredFocusedFragments) {
   }
 }
 
+const requiredClinicalWorkbenchFragments = [
+  'Controles da visualização clínica 3D',
+  'Abrir 3D em tela cheia',
+  'Contexto anatômico',
+  'HUMAN ATLAS · FOCO CLÍNICO',
+  'appearance="clinical"',
+]
+
+for (const fragment of requiredClinicalWorkbenchFragments) {
+  if (!focusedViewport.includes(fragment)) {
+    failures.push(
+      'clinical 3D workbench missing durable interaction: ' + fragment,
+    )
+  }
+}
+
+const requiredPatient3dFragments = [
+  'Controles do modelo 3D do paciente',
+  'Girar modelo 3D automaticamente',
+  'appearance="patient"',
+]
+
+for (const fragment of requiredPatient3dFragments) {
+  if (!patient.includes(fragment)) {
+    failures.push(
+      'patient 3D surface missing simplified interaction: ' + fragment,
+    )
+  }
+}
+
 if (!model.includes('export function createFocusedAtlas')) {
   failures.push('atlas model does not expose focused reference-atlas slicing')
 }
@@ -118,5 +162,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas Human Atlas reference-engine contract PASS: full-system and focused clinical modes share the reference engine, with merged geometry, GPU state textures, picking, explode layout, camera controls and chunk-bounded focused slicing.',
+  'MedAtlas Human Atlas reference-engine contract PASS: full-system, clinical and patient surfaces share one engine while preserving MedAtlas-specific presentation modes, picking, explode layout, camera controls and chunk-bounded focused slicing.',
 )
