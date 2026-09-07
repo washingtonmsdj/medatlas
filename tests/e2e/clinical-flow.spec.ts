@@ -816,6 +816,45 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
 })
 
 
+test('focused Human Atlas picking identifies a real part without changing the report', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  await page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  const canvas = page.locator(
+    '.clinical-atlas-stage .human-atlas-scene canvas',
+  )
+  await expect(canvas).toBeVisible({ timeout: 45_000 })
+
+  const box = await canvas.boundingBox()
+  expect(box).not.toBeNull()
+
+  await page.mouse.click(
+    box!.x + box!.width * 0.5,
+    box!.y + box!.height * 0.58,
+  )
+
+  const inspector = page.getByLabel('Estrutura anatômica inspecionada')
+  await expect(inspector).toBeVisible()
+  await expect(inspector).toContainText('ESTRUTURA INSPECIONADA')
+  await expect(inspector).toContainText(
+    'A anatomia confirmada do relatório não foi alterada.',
+  )
+
+  await expect(
+    page.locator('.finding-card-studio.anatomy-confirmed'),
+  ).toContainText('FMA7088')
+})
+
 test('clinical report uses the same Human Atlas reference engine in focused mode', async ({
   page,
 }) => {

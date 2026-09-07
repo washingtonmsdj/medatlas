@@ -232,7 +232,7 @@ export function PatientReportPage({ report }: Props) {
           </div>
 
           <p className="patient-interaction-hint">
-            Arraste para girar · role ou pince para aproximar · geometria BodyParts3D de referência
+            Arraste para girar · role ou pince para aproximar · toque/clique numa estrutura para identificar · geometria BodyParts3D de referência
           </p>
         </section>
 

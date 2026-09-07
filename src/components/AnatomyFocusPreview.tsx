@@ -233,7 +233,7 @@ export function AnatomyFocusPreview({
       <footer className="anatomy-focus-preview-footer">
         <p>
           {description ||
-            'Geometria real do Human Atlas/BodyParts3D. É anatomia humana de referência, não reconstrução específica do paciente.'}
+            'Geometria real do Human Atlas/BodyParts3D. Toque ou clique numa peça para identificá-la. É anatomia humana de referência, não reconstrução específica do paciente.'}
         </p>
         {onOpenAtlas && (
           <button type="button" onClick={onOpenAtlas}>

@@ -440,9 +440,9 @@ export function AtlasViewport({
         <div>
           <strong>Modelo anatômico de referência</strong>
           <span>
-            Arraste para girar · role para aproximar · use os modos de contexto
-            para explicar a região sem transformar o modelo em reconstrução do
-            paciente.
+            Arraste para girar · role para aproximar · toque/clique para
+            identificar uma peça · use os modos de contexto para explicar a
+            região sem transformar o modelo em reconstrução do paciente.
           </span>
         </div>
 
