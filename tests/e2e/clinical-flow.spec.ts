@@ -176,6 +176,28 @@ test('clinician review gate leads to a patient-facing visual report', async ({
       name: 'Perguntas úteis para levar ao profissional',
     }),
   ).toBeVisible()
+
+  await patientPage.close()
+
+  await page.getByRole('button', { name: 'Analytics' }).click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'Visualizações dos relatórios compartilhados',
+    }),
+  ).toBeVisible()
+
+  const viewsMetric = page
+    .locator('.analytics-metrics article')
+    .filter({ hasText: 'VISUALIZAÇÕES REAIS' })
+  await expect(viewsMetric.locator('strong')).not.toHaveText('0')
+
+  const analyticsRow = page
+    .locator('.analytics-report-row')
+    .filter({ hasText: 'Entenda seu exame — coração' })
+  await expect(analyticsRow).toBeVisible()
+  await expect(analyticsRow.locator('.analytics-view-count')).not.toHaveText(
+    '0',
+  )
 })
 
 test('mobile workspace keeps the main clinical flow usable', async ({
