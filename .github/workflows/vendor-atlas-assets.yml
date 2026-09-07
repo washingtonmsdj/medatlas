@@ -1,10 +1,6 @@
 name: Vendor pinned Human Atlas assets
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/vendor-atlas-assets.yml'
   workflow_dispatch:
 
 permissions:

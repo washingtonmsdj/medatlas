@@ -26,7 +26,9 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Freeze reproducible Node dependency installs with a canonical lockfile + `npm ci`.
 - [x] Move Vite past the high-severity Windows dev-server advisory.
 - [ ] Enable repository GitHub Pages source once, then re-run the ready preview workflow.
-- [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
+- [x] Move compressed anatomy assets to MedAtlas-controlled immutable storage.
+- [x] Generate SHA-256 manifest + upstream provenance for all vendored anatomy assets.
+- [x] Add CI integrity verification for the vendored anatomy closure.
 - [ ] Validate browser interaction against a deployed preview.
 
 ## P1 — SaaS core

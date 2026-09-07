@@ -10,7 +10,8 @@
     "validate:db-contract": "node scripts/validate-db-contract.mjs",
     "validate:anatomy-contract": "node scripts/validate-anatomy-contract.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 3016",
-    "validate:demo-scenarios": "node scripts/validate-demo-scenarios.mjs"
+    "validate:demo-scenarios": "node scripts/validate-demo-scenarios.mjs",
+    "validate:vendored-assets": "node scripts/validate-vendored-assets.mjs"
   },
   "dependencies": {
     "react": "19.2.6",

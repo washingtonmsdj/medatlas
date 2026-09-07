@@ -31,7 +31,6 @@ jobs:
         run: npm run build
         env:
           VITE_APP_BASE: /medatlas/
-          VITE_ATLAS_ASSET_BASE: https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public/models
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:

@@ -37,6 +37,12 @@ async function decodeModelResponse(
   const isGzip =
     compressed && signature[0] === 0x1f && signature[1] === 0x8b
 
+  if (isGzip && typeof DecompressionStream === 'undefined') {
+    throw new Error(
+      'Este navegador não oferece descompressão nativa necessária para a anatomia 3D.',
+    )
+  }
+
   const buffer = isGzip
     ? await new Response(
         new Blob([payload])
@@ -53,16 +59,15 @@ async function decodeModelResponse(
 }
 
 async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
-  const canDecompress =
-    Boolean(chunk.gzip) && typeof DecompressionStream !== 'undefined'
-  const url = assetUrl(canDecompress ? chunk.gzip! : chunk.url)
+  const compressed = Boolean(chunk.gzip)
+  const url = assetUrl(chunk.gzip ?? chunk.url)
   const cached = chunkBufferCache.get(url)
 
   if (cached) return cached
 
   const request = fetch(url)
     .then((response) =>
-      decodeModelResponse(response, chunk.bytes, canDecompress),
+      decodeModelResponse(response, chunk.bytes, compressed),
     )
     .catch((error) => {
       chunkBufferCache.delete(url)

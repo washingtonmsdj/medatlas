@@ -23,5 +23,6 @@ jobs:
       - run: npm run validate:db-contract
       - run: npm run validate:anatomy-contract
       - run: npm run validate:demo-scenarios
+      - run: npm run validate:vendored-assets
       - run: npm run check
       - run: npm run build

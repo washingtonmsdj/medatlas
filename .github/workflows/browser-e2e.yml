@@ -10,6 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.ts'
+      - 'public/atlas-assets/**'
       - '.github/workflows/browser-e2e.yml'
   pull_request:
     paths:
@@ -19,6 +20,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.ts'
+      - 'public/atlas-assets/**'
   workflow_dispatch:
 
 permissions:
@@ -47,8 +49,6 @@ jobs:
 
       - name: Build test target
         run: npm run build
-        env:
-          VITE_ATLAS_ASSET_BASE: https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public/models
 
       - name: Run browser E2E
         run: npx playwright test --project=chromium
