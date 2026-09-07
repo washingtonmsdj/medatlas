@@ -211,6 +211,30 @@ Não voltar ao layout antigo em que laudo + anatomia ficavam empilhados numa ún
 - [x] Clinical Report Studio reorganizado em 3 colunas.
 - [x] sistema visual responsivo inicial para desktop/tablet/mobile.
 
+### Concluído — Clinical Studio + portal + módulos AAA, lote 3
+
+- [x] Reduzir o painel de laudo para o fluxo **texto → triagem → confirmação humana**.
+- [x] Transformar sugestões anatômicas em cards compactos, mantendo `.suggestion-item` e confirmação explícita.
+- [x] Exibir **Alta confiança / Confiança moderada** como semântica textual acessível; confiança representa correspondência com o atlas, não certeza clínica.
+- [x] Adicionar estado do intake, contagem de caracteres, importação local e boundary sintético sem aumentar permissões.
+- [x] Transformar o composer em fluxo visível **Anatomia → Explicação → Revisão**.
+- [x] Tornar provenance/origem do rascunho explícita.
+- [x] Manter review gate humano fail-closed e reforçar visualmente a revisão obrigatória.
+- [x] Adicionar **preview do paciente antes da publicação** sem gerar share nem contornar review gate.
+- [x] Melhorar CTA final e estado de compartilhamento.
+- [x] Adicionar feedback visual seguro para anatomia confirmada/reconfirmação, respeitando reduced-motion.
+- [x] Redesenhar o portal do paciente como jornada **Ver anatomia → Entender explicação → Preparar perguntas**.
+- [x] Aplicar portal claro/premium com resumo da região, FMA, status revisado e identidade da clínica/profissional.
+- [x] Preservar 3D interativo, impressão/PDF, perguntas e aviso de anatomia de referência.
+- [x] Corrigir contraste WCAG introduzido pelo portal e pelo Clinical Studio.
+- [x] Redesenhar **Pacientes** sem fingir prontuário: contexto atual, progresso e fronteira de produção.
+- [x] Redesenhar **Consultas** como workflow visual sem simular agenda/prontuário persistente.
+- [x] Redesenhar **Exames** com pipeline local e PDF/imagem explicitamente bloqueados.
+- [x] Redesenhar **Configurações** com estados reais do ambiente demo, governança e recursos bloqueados.
+- [x] Unificar esses quatro módulos sob o mesmo design system SaaS do restante do MedAtlas.
+- [x] CI completo PASS no HEAD `b6c24babc64afa342a4789f8d2969241733cef22`.
+- [x] Browser E2E principal PASS no mesmo HEAD; nenhum artifact de falha foi gerado.
+
 ### Concluído — redesign 3D AAA, lote 2
 
 - [x] Preservar **um único engine Human Atlas canônico** para todas as superfícies.
@@ -244,8 +268,8 @@ Esta é a prioridade imediata. Não iniciar features grandes de backend antes de
 
 ### P0.1 Validar o lote atual
 
-- [x] Rodar CI/build/typecheck no novo HEAD — PASS completo até `f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`.
-- [x] Rodar Browser E2E do fluxo clínico — PASS completo **16/16** em `2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`, incluindo as novas superfícies 3D.
+- [x] Rodar CI/build/typecheck no novo HEAD — PASS completo em `b6c24babc64afa342a4789f8d2969241733cef22`.
+- [x] Rodar Browser E2E do fluxo clínico — PASS no HEAD `b6c24babc64afa342a4789f8d2969241733cef22`, incluindo axe/WCAG, portal, Clinical Studio e superfícies 3D.
 - [ ] Fazer captura visual desktop 1440/1600px.
 - [ ] Fazer captura mobile.
 - [x] Corrigir regressões de acessibilidade introduzidas pelo redesign: ARIA do progresso + contraste do dashboard + contraste do Clinical Report Studio.
@@ -257,12 +281,12 @@ Esta é a prioridade imediata. Não iniciar features grandes de backend antes de
 
 Aplicar o mesmo design system premium, sem criar telas fake:
 
-- [ ] Pacientes.
-- [ ] Consultas.
-- [ ] Exames.
+- [x] Pacientes — contexto sintético premium, progresso e production boundary.
+- [x] Consultas — workflow visual premium, sem agenda/prontuário fake.
+- [x] Exames — pipeline local, formatos ativos e bloqueios explícitos.
 - [x] Atlas 3D — MedAtlas Atlas Lab/Workbench aplicado e validado.
-- [ ] Configurações.
-- [ ] experiência do paciente.
+- [x] Configurações — estado real do demo, governança e controles locais.
+- [x] experiência do paciente — jornada guiada clara/premium com 3D.
 - [ ] empty states.
 - [ ] loading states.
 - [ ] errors/fail-closed states.
@@ -271,31 +295,31 @@ Regra: módulo que ainda não tiver backend real pode operar em modo sintético,
 
 ### P0.3 Melhorar o Clinical Report Studio
 
-- [ ] Reduzir ruído textual no painel de laudo.
-- [ ] Transformar sugestões anatômicas em seleção visual mais compacta.
-- [ ] Adicionar status/confiança com semântica acessível.
+- [x] Reduzir ruído textual no painel de laudo.
+- [x] Transformar sugestões anatômicas em seleção visual mais compacta.
+- [x] Adicionar status/confiança com semântica acessível e aviso de que confiança é textual, não clínica.
 - [x] Melhorar toolbar do 3D focado — vistas, rotação, reset e tela cheia.
 - [x] Mostrar modos Isolado / Sistema / Região com UI consistente dentro do palco 3D.
 - [x] Enquadrar automaticamente anatomia focada pelos bounds reais da geometria.
 - [x] Diferenciar visualmente as superfícies clinical / explorer / patient sem duplicar o engine.
-- [ ] Criar transição visual ao confirmar anatomia.
-- [ ] Melhorar editor de explicação.
-- [ ] Destacar claramente "rascunho assistido" versus "conteúdo aprovado".
-- [ ] Melhorar CTA final de aprovação/compartilhamento.
-- [ ] Criar preview rápido da experiência do paciente antes da publicação.
+- [x] Criar transição visual ao confirmar anatomia, com reduced-motion seguro.
+- [x] Melhorar editor de explicação com estado, contagem e provenance.
+- [x] Destacar claramente "rascunho assistido" versus "conteúdo aprovado".
+- [x] Melhorar CTA final de aprovação/compartilhamento.
+- [x] Criar preview rápido da experiência do paciente antes da publicação.
 - [ ] Manter todas as regras fail-closed.
 
 ### P0.4 Portal do paciente AAA
 
-- [ ] Hero mais humano e menos técnico.
+- [x] Hero mais humano e menos técnico.
 - [x] 3D central e responsivo, com controles simplificados para o paciente e geometry-aware framing.
-- [ ] abas ou narrativa: "o que foi encontrado / onde fica / explicação".
-- [ ] identidade/branding da clínica.
-- [ ] selo claro de conteúdo revisado.
-- [ ] perguntas para próxima conversa.
-- [ ] impressão/PDF.
-- [ ] acessibilidade mobile.
-- [ ] nunca representar o BodyParts3D como reconstrução do paciente.
+- [x] narrativa guiada: "ver anatomia / entender explicação / preparar perguntas".
+- [x] identidade/branding demonstrativo da clínica e profissional.
+- [x] selo claro de conteúdo revisado.
+- [x] perguntas para próxima conversa.
+- [x] impressão/PDF preservados.
+- [x] acessibilidade mobile + axe/WCAG no portal.
+- [x] nunca representar o BodyParts3D como reconstrução do paciente.
 
 ---
 
