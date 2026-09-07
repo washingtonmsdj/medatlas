@@ -50,7 +50,26 @@ Responsabilidades:
 
 A UI não deve conhecer diretamente Storage, SQL ou `localStorage`.
 
-### 2. ClinicalRepository
+### 2. Máquina de estado do relatório
+
+`src/domain/report-workflow.ts` é a autoridade de transição do relatório no frontend.
+
+Ela centraliza:
+
+- troca do texto clínico;
+- invalidação de publicação/share após edição;
+- carregamento de cenários sintéticos;
+- confirmação anatômica;
+- entrada de rascunho educacional;
+- edição da explicação;
+- aprovação humana;
+- aceitação do resultado publicado pelo repositório.
+
+Transições inválidas falham fechadas. Por exemplo, um rascunho não é aceito sem anatomia confirmada; publicação não é aceita enquanto houver revisão pendente; editar uma explicação publicada remove o share anterior e reabre revisão.
+
+O CI executa `scripts/validate-report-workflow.mjs`, que compila o reducer TypeScript em memória e testa essas propriedades sem depender do browser.
+
+### 3. ClinicalRepository
 
 `src/data/clinical-repository.ts` define a fronteira de persistência.
 
@@ -70,7 +89,7 @@ Isso permite trocar persistência sem reescrever o fluxo clínico.
 
 O seletor do repositório é fail-closed: variáveis Supabase sozinhas não ativam automaticamente backend incompleto.
 
-### 3. Resolver anatômico
+### 4. Resolver anatômico
 
 Existem duas entradas complementares:
 
@@ -93,7 +112,7 @@ known IDs only
 clinician confirmation
 ```
 
-### 4. Renderer
+### 5. Renderer
 
 O renderer usa Three.js e a geometria BodyParts3D empacotada pelo Human Atlas.
 
@@ -131,7 +150,7 @@ interface AtlasSelection {
 }
 ```
 
-### 5. Data plane Supabase
+### 6. Data plane Supabase
 
 Contrato source-first:
 

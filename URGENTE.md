@@ -48,6 +48,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Define hashed, expiring, revocable patient share tokens.
 - [x] Define immutable-style audit event model and audited share operations.
 - [x] Decouple UI from demo persistence through an async ClinicalRepository.
+- [x] Centralize report lifecycle in a fail-closed reducer instead of ad-hoc UI mutations.
+- [x] Add executable CI tests for report workflow state transitions.
 - [x] Use cryptographically random opaque tokens in demo sharing.
 - [ ] **Deferred:** create a dedicated MedAtlas Supabase project.
 - [ ] **Deferred:** apply migrations and prove tenant isolation with database tests.

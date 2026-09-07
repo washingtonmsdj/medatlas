@@ -52,6 +52,7 @@ O MVP já possui:
 - página separada do paciente usando o mesmo conceito 3D aprovado;
 - tokens demo criptograficamente aleatórios;
 - abstração assíncrona `ClinicalRepository`;
+- máquina de estado fail-closed para o ciclo completo do relatório;
 - contrato Supabase multi-tenant com RLS fail-closed em source;
 - bucket clínico privado e modelo de auditoria;
 - tokens de compartilhamento de produção definidos por hash, expiração e revogação;
@@ -83,6 +84,9 @@ npm run validate:demo-scenarios
 npm run validate:vendored-assets
 npm run validate:performance-budget
 npm run validate:security-contract
+npm run validate:ai-contract
+npm run validate:review-gate
+npm run validate:report-workflow
 npm run check
 npm run build
 npm audit --omit=dev --audit-level=high
@@ -214,9 +218,9 @@ O plano executável e continuamente atualizado está em:
 
 As próximas frentes são:
 
-1. acessibilidade e refinamento mobile;
-2. IA estruturada sobre o resolvedor anatômico determinístico;
-3. habilitar/publicar a preview e validar visualmente o deploy;
-4. somente depois, projeto Supabase exclusivo do MedAtlas;
-5. provas de isolamento multi-tenant + autenticação;
-6. adapter Supabase do `ClinicalRepository`.
+1. habilitar/publicar uma preview externa e validar o deploy real;
+2. concluir o piloto sintético/manual e preparar critérios do piloto clínico controlado;
+3. somente depois, projeto Supabase exclusivo do MedAtlas;
+4. provas de isolamento multi-tenant + autenticação;
+5. adapter Supabase do `ClinicalRepository`;
+6. ativar provedor de IA somente atrás do backend e dos gates já definidos.

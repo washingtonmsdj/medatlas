@@ -28,5 +28,6 @@ jobs:
       - run: npm run validate:security-contract
       - run: npm run validate:ai-contract
       - run: npm run validate:review-gate
+      - run: npm run validate:report-workflow
       - run: npm run check
       - run: npm run build

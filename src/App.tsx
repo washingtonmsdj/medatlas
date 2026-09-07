@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import type { AtlasConcept } from './atlas/types'
 import {
   conceptDisplayName,
@@ -25,6 +25,7 @@ import type { ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
+import { reportWorkflowReducer } from './domain/report-workflow'
 import type { VisualReport } from './domain/types'
 
 const nav = [
@@ -125,7 +126,10 @@ function PatientRoute({ slug }: { slug: string }) {
 }
 
 function ClinicianApp() {
-  const [report, setReport] = useState<VisualReport>(demoReport)
+  const [report, dispatchReport] = useReducer(
+    reportWorkflowReducer,
+    demoReport,
+  )
   const [active, setActive] = useState<ModuleName>('Visão geral')
   const [publishing, setPublishing] = useState(false)
   const [generatingDraft, setGeneratingDraft] = useState(false)
@@ -134,25 +138,11 @@ function ClinicianApp() {
   const [intakeError, setIntakeError] = useState('')
   const [suggestions, setSuggestions] = useState<AnatomySuggestion[]>([])
 
-  const invalidatePublishedState = (
-    current: VisualReport,
-  ): VisualReport => ({
-    ...current,
-    status: 'draft',
-    shareSlug: undefined,
-  })
-
-  const emptyExplanation = () => ({
-    patientExplanation: '',
-    explanationReviewRequired: true,
-    explanationProvenance: {
-      origin: 'manual' as const,
-      clinicianEdited: false,
-    },
-  })
-
   const startNewReport = () => {
-    setReport(createEmptyDemoReport())
+    dispatchReport({
+      type: 'replace',
+      report: createEmptyDemoReport(),
+    })
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
@@ -177,7 +167,10 @@ function ClinicianApp() {
     try {
       const published =
         await clinicalData.repository.publishReport(report)
-      setReport(published)
+      dispatchReport({
+        type: 'published',
+        report: published,
+      })
     } catch (error) {
       setPublishError(
         error instanceof Error
@@ -192,19 +185,10 @@ function ClinicianApp() {
   const confirmConcept = (concept: AtlasConcept) => {
     const displayName = conceptDisplayName(concept)
 
-    setReport((current) => {
-      const draft = invalidatePublishedState(current)
-
-      return {
-        ...draft,
-        finding: {
-          ...draft.finding,
-          anatomicalStructure: displayName,
-          atlasConceptId: concept.id,
-          anatomyReviewRequired: false,
-          ...emptyExplanation(),
-        },
-      }
+    dispatchReport({
+      type: 'anatomy-confirmed',
+      conceptId: concept.id,
+      displayName,
     })
     setSuggestions([])
     setPublishError('')
@@ -212,18 +196,9 @@ function ClinicianApp() {
   }
 
   const updateSourceText = (value: string) => {
-    setReport((current) => {
-      const draft = invalidatePublishedState(current)
-
-      return {
-        ...draft,
-        finding: {
-          ...draft.finding,
-          sourceText: value,
-          anatomyReviewRequired: true,
-          ...emptyExplanation(),
-        },
-      }
+    dispatchReport({
+      type: 'source-text-changed',
+      value,
     })
 
     setSuggestions([])
@@ -232,19 +207,9 @@ function ClinicianApp() {
   }
 
   const loadExample = (example: ReportExample) => {
-    setReport((current) => {
-      const draft = invalidatePublishedState(current)
-
-      return {
-        ...draft,
-        title: example.title,
-        finding: {
-          ...draft.finding,
-          sourceText: example.sourceText,
-          anatomyReviewRequired: true,
-          ...emptyExplanation(),
-        },
-      }
+    dispatchReport({
+      type: 'example-loaded',
+      example,
     })
 
     setSuggestions([])
@@ -296,18 +261,9 @@ function ClinicianApp() {
       const generated =
         await patientExplanationGenerator.generate(report)
 
-      setReport((current) => {
-        const draft = invalidatePublishedState(current)
-
-        return {
-          ...draft,
-          finding: {
-            ...draft.finding,
-            patientExplanation: generated.text,
-            explanationProvenance: generated.provenance,
-            explanationReviewRequired: true,
-          },
-        }
+      dispatchReport({
+        type: 'draft-generated',
+        draft: generated,
       })
     } catch (error) {
       setPublishError(
@@ -323,21 +279,9 @@ function ClinicianApp() {
   const updateExplanation = (value: string) => {
     if (report.finding.anatomyReviewRequired) return
 
-    setReport((current) => {
-      const draft = invalidatePublishedState(current)
-
-      return {
-        ...draft,
-        finding: {
-          ...draft.finding,
-          patientExplanation: value,
-          explanationReviewRequired: true,
-          explanationProvenance: {
-            ...draft.finding.explanationProvenance,
-            clinicianEdited: true,
-          },
-        },
-      }
+    dispatchReport({
+      type: 'explanation-edited',
+      value,
     })
     setPublishError('')
   }
@@ -350,14 +294,7 @@ function ClinicianApp() {
       return
     }
 
-    setReport((current) => ({
-      ...current,
-      status: 'clinician_review',
-      finding: {
-        ...current.finding,
-        explanationReviewRequired: false,
-      },
-    }))
+    dispatchReport({ type: 'explanation-approved' })
     setPublishError('')
   }
 
