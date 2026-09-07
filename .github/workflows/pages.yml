@@ -1,6 +1,8 @@
 name: GitHub Pages Preview
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -25,8 +27,10 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Configure Pages
+      - name: Configure and enable Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Build
         run: npm run build
         env:
