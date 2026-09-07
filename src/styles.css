@@ -5285,3 +5285,7 @@ button:not(:disabled):active {
     text-align: left;
   }
 }
+/* MEDATLAS_PATIENT_A11Y_HARDENING_V2 */
+.patient-report-chips .reviewed small {
+  color: #3f6d63;
+}
