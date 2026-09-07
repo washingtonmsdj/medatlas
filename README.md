@@ -40,6 +40,9 @@ O MVP já possui:
 - 34,3 MB de assets anatômicos comprimidos vendorizados no próprio MedAtlas;
 - provenance + SHA-256 verificados no CI;
 - Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
+- gate axe/WCAG para violações serious/critical;
+- modo demo synthetic-only com shares locais expirando em 30 minutos;
+- CSP e headers de segurança no deploy Vercel;
 - explicação editável para o paciente;
 - re-review obrigatório quando anatomia/texto muda;
 - página separada do paciente usando o mesmo conceito 3D aprovado;
@@ -75,6 +78,7 @@ npm run validate:anatomy-contract
 npm run validate:demo-scenarios
 npm run validate:vendored-assets
 npm run validate:performance-budget
+npm run validate:security-contract
 npm run check
 npm run build
 npm audit --omit=dev --audit-level=high
@@ -151,6 +155,8 @@ Ele define:
 - token de paciente armazenado somente como SHA-256.
 
 O backend Supabase **não é ativado silenciosamente** só porque variáveis de ambiente existem. A troca do adaptador demo pelo adaptador Supabase ocorrerá somente depois de migration + testes de isolamento.
+
+Enquanto isso, o modo atual é explicitamente **synthetic-only**. Não deve receber dados reais de pacientes. Os links de demonstração expiram automaticamente em 30 minutos e a persistência local é limitada.
 
 ## Segurança
 

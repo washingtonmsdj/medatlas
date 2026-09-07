@@ -172,3 +172,53 @@ test('mobile workspace keeps the main clinical flow usable', async ({
 
   expect(hasHorizontalOverflow).toBe(false)
 })
+
+
+test('expired demo patient links fail closed', async ({ page }) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Rim', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  const kidneySuggestion = page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7203' })
+
+  await kidneySuggestion
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  await page
+    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Aprovar e gerar link do paciente' })
+    .click()
+
+  const shareUrl = await page.locator('.share-box code').innerText()
+  const token = new URL(shareUrl).searchParams.get('patient')
+
+  expect(token).toMatch(/^[0-9a-f]{64}$/)
+
+  await page.evaluate((shareToken) => {
+    const key = `medatlas:demo:published:${shareToken}`
+    const raw = window.localStorage.getItem(key)
+
+    if (!raw) throw new Error('Expected demo share in localStorage')
+
+    const stored = JSON.parse(raw)
+    stored.expiresAt = new Date(Date.now() - 1_000).toISOString()
+    window.localStorage.setItem(key, JSON.stringify(stored))
+  }, token)
+
+  await page.goto(shareUrl)
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Este link de demonstração não está disponível.',
+    }),
+  ).toBeVisible()
+})

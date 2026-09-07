@@ -10,6 +10,7 @@ import {
 } from './clinical/anatomy-suggestions'
 import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
+import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { ModulePlaceholder } from './components/ModulePlaceholder'
 import { Overview } from './components/Overview'
 import {
@@ -595,6 +596,8 @@ function ClinicianApp() {
             </div>
           </div>
         </header>
+
+        <DemoPrivacyBanner />
 
         {renderModule()}
       </main>

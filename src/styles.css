@@ -1204,3 +1204,32 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
     transition-duration:0.01ms !important;
   }
 }
+
+
+.demo-privacy-banner {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:0 0 18px;
+  padding:10px 12px;
+  border:1px solid #654f2f;
+  border-radius:11px;
+  background:#1d170e;
+  color:#d7c39a;
+  font-size:9px;
+  line-height:1.45;
+}
+.demo-privacy-banner strong {
+  flex:0 0 auto;
+  color:#f0d39a;
+  font-size:9px;
+}
+.demo-privacy-banner span {
+  color:#c5b28f;
+}
+@media (max-width:760px) {
+  .demo-privacy-banner {
+    flex-direction:column;
+    gap:4px;
+  }
+}

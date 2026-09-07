@@ -41,7 +41,7 @@ export function PatientReportPage({ report }: Props) {
         <div className="patient-header-right">
           <div className="patient-clinic">
             <span>Clínica Horizonte</span>
-            <small>Demonstração · relatório visual</small>
+            <small>Demonstração · dados fictícios · link temporário</small>
           </div>
           <button
             className="patient-print-button"
@@ -156,7 +156,7 @@ export function PatientReportPage({ report }: Props) {
       </section>
 
       <footer className="patient-footer">
-        <span>MedAtlas · experiência demonstrativa com dados fictícios</span>
+        <span>MedAtlas · demonstração com dados fictícios · link local temporário</span>
         <button type="button" onClick={() => (window.location.href = appHomeUrl())}>
           Voltar ao ambiente clínico
         </button>

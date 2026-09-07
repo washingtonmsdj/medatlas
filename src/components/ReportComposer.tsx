@@ -173,8 +173,9 @@ export function ReportComposer({
           </div>
           <small>
             MVP sem backend: token opaco aleatório + armazenamento local
-            sintético. O contrato de produção com expiração, revogação e hash
-            permanece pronto para a fase de backend.
+            exclusivamente sintético, com expiração automática em 30 minutos.
+            O contrato de produção com revogação e hash permanece pronto para a
+            fase de backend.
           </small>
         </div>
       ) : (

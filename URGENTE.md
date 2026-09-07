@@ -74,10 +74,14 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Validate all synthetic scenarios end-to-end in a browser.
 - [x] Add patient discussion-question section without diagnostic/treatment claims.
 - [x] Add browser print / save-as-PDF patient report mode.
-- [ ] Accessibility pass.
+- [x] Accessibility pass.
+- [x] Axe browser gate covers overview, clinical report workspace and patient handoff for serious/critical WCAG violations.
 - [x] Performance budget for anatomy payload.
 - [x] Browser E2E proved the renderer against MedAtlas-vendored anatomy assets.
-- [ ] Privacy/security review before real PHI.
+- [x] Privacy/security review for the synthetic MVP; real PHI remains explicitly blocked.
+- [x] Demo shares expire after 30 minutes and local retention is capped.
+- [x] Add CSP/security headers and CI security-contract validation.
+- [x] Browser E2E proves expired demo patient links fail closed.
 - [ ] Pilot with synthetic data, then controlled clinical pilot.
 
 ## Do not do yet
