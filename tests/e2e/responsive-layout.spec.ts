@@ -1,3 +1,4 @@
+import { mkdir } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 
 const MODULES = [
@@ -39,6 +40,14 @@ async function expectNoHorizontalOverflow(page: Page) {
   ).toBeLessThanOrEqual(dimensions.clientWidth + 1)
 }
 
+async function capture(page: Page, name: string) {
+  await mkdir('test-results/visual-qa', { recursive: true })
+  await page.screenshot({
+    path: `test-results/visual-qa/${name}.png`,
+    fullPage: true,
+  })
+}
+
 async function openModule(
   page: Page,
   module: (typeof MODULES)[number],
@@ -58,10 +67,20 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
 }) => {
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
+  await expect(
+    page.getByRole('heading', {
+      name: 'Visão geral do fluxo clínico visual.',
+    }),
+  ).toBeVisible()
+  await capture(page, 'dashboard-1600')
 
   for (const module of MODULES) {
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
+
+    if (module.button === 'Relatórios') {
+      await capture(page, 'clinical-studio-1600')
+    }
   }
 
   await page.setViewportSize({ width: 1440, height: 960 })
@@ -69,15 +88,29 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
   for (const module of MODULES) {
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
+
+    if (module.button === 'Relatórios') {
+      await capture(page, 'clinical-studio-1440')
+    }
   }
 })
 
 test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
+  await expect(
+    page.getByRole('heading', {
+      name: 'Visão geral do fluxo clínico visual.',
+    }),
+  ).toBeVisible()
+  await capture(page, 'dashboard-mobile-390')
 
   for (const module of MODULES) {
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
+
+    if (module.button === 'Relatórios') {
+      await capture(page, 'clinical-studio-mobile-390')
+    }
   }
 })
