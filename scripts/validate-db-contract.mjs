@@ -26,6 +26,7 @@ const requiredTables = [
   'professionals',
   'organization_units',
   'clinical_workspaces',
+  'organization_branding',
   'patients',
   'consultations',
   'visual_reports',
@@ -77,6 +78,59 @@ const invariants = [
   [
     'unit admin write policy',
     'create policy organization_units_admin_write',
+  ],
+  [
+    'organization branding',
+    'create table if not exists public.organization_branding',
+  ],
+  [
+    'branding admin write policy',
+    'create policy organization_branding_admin_write',
+  ],
+  [
+    'branding color format',
+    "primary_color_hex ~ '^#[0-9A-Fa-f]{6}
+
+for (const [label, marker] of invariants) {
+  if (!sql.includes(marker)) {
+    failures.push(`Missing invariant: ${label}`)
+  }
+}
+
+const tableDefinitions = [
+  ...sql.matchAll(
+    /create table if not exists\s+public\.[a-z0-9_]+\s*\([\s\S]*?\n\);/gi,
+  ),
+].map((match) => match[0])
+
+if (
+  tableDefinitions.some((definition) =>
+    /\braw_token\s+(text|varchar)\b/i.test(definition),
+  )
+) {
+  failures.push('A raw share token appears to be persisted as a table column')
+}
+
+if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
+  failures.push('Anonymous table-wide grant detected')
+}
+
+if (!sql.includes("grant execute on function public.medatlas_resolve_report_share(text)\n  to anon, authenticated;")) {
+  failures.push('Anonymous access must be limited to the token resolver RPC')
+}
+
+if (failures.length > 0) {
+  console.error('MedAtlas database contract FAILED')
+  for (const failure of failures) {
+    console.error(`- ${failure}`)
+  }
+  process.exit(1)
+}
+
+console.log(
+  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/share/storage invariants.`,
+)
+",
   ],
 ]
 
