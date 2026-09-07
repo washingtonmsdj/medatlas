@@ -1,13 +1,16 @@
 import type { VisualReport } from '../domain/types'
+import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
   report: VisualReport
   onStartImport: () => void
+  onOpenAtlas: () => void
 }
 
 export function DocumentsModule({
   report,
   onStartImport,
+  onOpenAtlas,
 }: Props) {
   const sourceLength = report.finding.sourceText.trim().length
   const anatomyStatus = !report.finding.atlasConceptId
@@ -67,6 +70,28 @@ export function DocumentsModule({
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="documents-anatomy-live">
+        <div className="documents-anatomy-live-copy">
+          <span className="section-kicker">DOCUMENTO → ANATOMIA 3D</span>
+          <h2>A referência encontrada no texto já aparece em geometria real.</h2>
+          <p>
+            O documento continua sendo a fonte. O 3D mostra apenas o conceito
+            FMA/BodyParts3D atualmente associado e deixa explícito quando uma
+            reconfirmação é necessária.
+          </p>
+        </div>
+
+        <AnatomyFocusPreview
+          conceptId={report.finding.atlasConceptId || undefined}
+          label={report.finding.anatomicalStructure}
+          atlasRef={report.finding.atlasRef}
+          eyebrow="REFERÊNCIA EXTRAÍDA · HUMAN ATLAS"
+          contextMode="system"
+          reviewRequired={report.finding.anatomyReviewRequired}
+          onOpenAtlas={onOpenAtlas}
+        />
       </section>
 
       <div className="documents-grid documents-grid-v2">
