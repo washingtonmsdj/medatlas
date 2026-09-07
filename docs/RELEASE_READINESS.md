@@ -1,16 +1,45 @@
 # MedAtlas — MVP release readiness
 
-Checkpoint: **2026-09-07**
+Checkpoint: **2026-09-07 — atualizado após paridade Human Atlas**
 Canonical branch: `main`
-Verified product HEAD: `f275696e828df5ad1ef2c9b2ddf51ca4720eebb4`
+Verified product HEAD: `947f1e85caf407277021fe306eab97257f476bef`
 
 ## Current verdict
 
-The browser-only MedAtlas MVP is **ready for an external synthetic preview**. The canonical 3D engine now derives directly from Human Atlas in both full explorer and focused clinical modes.
+The browser-only MedAtlas MVP is **published and verified in an external synthetic preview**. The canonical 3D engine now derives directly from Human Atlas in both full explorer and focused clinical modes.
 
 It is **not ready for real patient data** and is **not yet a production clinical
 system**. Supabase, authentication, tenant isolation proofs, private clinical
 Storage and the controlled clinical pilot remain deliberately blocked.
+
+## Current 3D baseline
+
+The current canonical Human Atlas baseline is:
+
+- HEAD: `947f1e85caf407277021fe306eab97257f476bef`;
+- CI: `34155102125` — PASS;
+- Browser E2E: `34155102100` — PASS;
+- GitHub Pages Preview: `34155102051` — PASS, including remote Chromium 3D flow;
+- visual QA artifact: `visual-qa-34155102100`;
+- artifact ID: `10030771560`.
+
+The Atlas 3D explorer and all focused clinical/patient surfaces share the same
+canonical renderer derived from the pinned Human Atlas engine. The full explorer
+also preserves/extends reference behaviors: merged system geometry, GPU state
+textures, per-piece picking, isolate/explode, camera views, auto-rotation,
+platform/rings, inventory markers, exploded-piece hover, and viewport framing
+that reserves space for MedAtlas panels.
+
+Current build budget at this checkpoint:
+
+- initial JavaScript entry: **324,796 bytes**;
+- lazy Human Atlas renderer chunk: **502.36 kB** minified / **128.53 kB gzip**;
+- total JavaScript: **827,160 bytes**;
+- bundle budget gate: PASS.
+
+Public preview:
+
+`https://washingtonmsdj.github.io/medatlas/`
 
 ## Verified gates
 
