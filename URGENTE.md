@@ -4,7 +4,7 @@
 > Atualize este checkpoint sempre que uma etapa relevante for concluída.
 >
 > Última revisão: **2026-09-07**
-> Código do redesign consolidado até: **`dde0cd32df1691cb01203e93d377e267c8d83a0b`**
+> Código do redesign consolidado e validado até: **`4cd02467477f060b93bc3337fff4b0200c5e350e`**
 
 ## 0. Missão do produto
 
@@ -219,13 +219,14 @@ Esta é a prioridade imediata. Não iniciar features grandes de backend antes de
 
 ### P0.1 Validar o lote atual
 
-- [ ] Rodar CI/build/typecheck no novo HEAD.
-- [ ] Rodar Browser E2E do fluxo clínico.
+- [x] Rodar CI/build/typecheck no novo HEAD — PASS em `4cd02467477f060b93bc3337fff4b0200c5e350e`.
+- [x] Rodar Browser E2E do fluxo clínico — PASS completo; 16/16 testes após correções de acessibilidade.
 - [ ] Fazer captura visual desktop 1440/1600px.
 - [ ] Fazer captura mobile.
-- [ ] Corrigir overflow, clipping, contraste e densidade.
-- [ ] Confirmar que o Human Atlas continua interativo dentro do Clinical Report Studio.
-- [ ] Confirmar que review gate e publicação continuam funcionais.
+- [x] Corrigir regressões de acessibilidade introduzidas pelo redesign: ARIA do progresso + contraste do dashboard + contraste do Clinical Report Studio.
+- [ ] Continuar visual QA de overflow, clipping e densidade em 1440/1600px.
+- [x] Confirmar que o Human Atlas e o fluxo clínico continuam funcionais após o redesign via Browser E2E.
+- [x] Confirmar que review gate, publicação e handoff ao paciente continuam funcionais via Browser E2E.
 
 ### P0.2 Uniformizar todos os módulos
 
@@ -401,15 +402,13 @@ As próximas IAs **não devem**:
 
 ## 11. Próxima ação exata
 
-1. Confirmar CI/build/typecheck do HEAD com o redesign.
-2. Corrigir qualquer regressão de TypeScript/JSX/CSS.
-3. Rodar Browser E2E no fluxo:
-   `Visão geral → Relatórios visuais → analisar → confirmar anatomia → gerar explicação → revisar → publicar → paciente`.
-4. Fazer visual QA do dashboard e do Clinical Report Studio.
-5. Ajustar layout/spacing/responsividade até ficar sólido.
-6. Em seguida, aplicar o mesmo design system à página do paciente.
-7. Depois uniformizar Pacientes/Consultas/Exames/Atlas/Configurações.
-8. Só depois iniciar o Supabase dedicado.
+1. Fazer visual QA em 1440/1600px do dashboard e do Clinical Report Studio.
+2. Ajustar spacing, densidade e responsividade sem reabrir a arquitetura.
+3. Aplicar o mesmo design system AAA à página do paciente.
+4. Rodar novamente Browser E2E + axe após o portal do paciente.
+5. Uniformizar Pacientes/Consultas/Exames/Atlas/Configurações.
+6. Criar o módulo Equipe apenas quando for funcional, sem placeholder.
+7. Só depois iniciar o Supabase dedicado.
 
 ---
 
