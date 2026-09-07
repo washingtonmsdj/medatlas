@@ -19,6 +19,20 @@ const patient = await readFile(
   'src/components/PatientReportPage.tsx',
   'utf8',
 )
+const anatomyFocus = await readFile(
+  'src/components/AnatomyFocusPreview.tsx',
+  'utf8',
+)
+const overview = await readFile('src/components/Overview.tsx', 'utf8')
+const patients = await readFile('src/components/PatientsModule.tsx', 'utf8')
+const consultations = await readFile(
+  'src/components/ConsultationsModule.tsx',
+  'utf8',
+)
+const documents = await readFile(
+  'src/components/DocumentsModule.tsx',
+  'utf8',
+)
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
@@ -144,6 +158,43 @@ for (const fragment of requiredPatient3dFragments) {
       'patient 3D surface missing simplified interaction: ' + fragment,
     )
   }
+}
+
+
+const requiredFocusPreviewFragments = [
+  'HumanAtlasScene',
+  'contextMode={contextMode}',
+  'appearance={appearance}',
+  '3D carregado',
+  'chunks necessários',
+]
+
+for (const fragment of requiredFocusPreviewFragments) {
+  if (!anatomyFocus.includes(fragment)) {
+    failures.push(
+      'canonical contextual 3D preview missing mechanism: ' + fragment,
+    )
+  }
+}
+
+const contextual3dSurfaces = [
+  ['dashboard', overview, '3D DO ATENDIMENTO · HUMAN ATLAS'],
+  ['patients', patients, 'PRÉVIA VISUAL DO PACIENTE · HUMAN ATLAS'],
+  ['consultations', consultations, 'FOCO DA CONSULTA · HUMAN ATLAS'],
+  ['documents', documents, 'REFERÊNCIA EXTRAÍDA · HUMAN ATLAS'],
+]
+
+for (const [surface, source, marker] of contextual3dSurfaces) {
+  if (!source.includes('<AnatomyFocusPreview')) {
+    failures.push(surface + ' surface is not using canonical AnatomyFocusPreview')
+  }
+  if (!source.includes(marker)) {
+    failures.push(surface + ' surface missing durable 3D-first marker: ' + marker)
+  }
+}
+
+if (overview.includes('anatomy-preview-orbit')) {
+  failures.push('dashboard still contains the legacy fake 3D orbit placeholder')
 }
 
 if (!model.includes('export function createFocusedAtlas')) {

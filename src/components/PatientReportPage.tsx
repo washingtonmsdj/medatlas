@@ -147,7 +147,7 @@ export function PatientReportPage({ report }: Props) {
         <section className="patient-atlas-card" id="patient-anatomy">
           <div className="patient-card-heading">
             <div>
-              <span className="label">REGIÃO DESTACADA</span>
+              <span className="label">HUMAN ATLAS 3D · REGIÃO DESTACADA</span>
               <h2>{report.finding.anatomicalStructure}</h2>
             </div>
             <span className="atlas-badge">
@@ -232,7 +232,7 @@ export function PatientReportPage({ report }: Props) {
           </div>
 
           <p className="patient-interaction-hint">
-            Arraste para girar · role ou pince para aproximar
+            Arraste para girar · role ou pince para aproximar · geometria BodyParts3D de referência
           </p>
         </section>
 

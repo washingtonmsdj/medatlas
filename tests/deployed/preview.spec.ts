@@ -13,6 +13,40 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   await expect(page).toHaveTitle(/Comunicação clínica visual em 3D/)
 
+  const contextualSurfaces = [
+    {
+      button: null,
+      selector: '.continue-care-card .anatomy-focus-preview',
+    },
+    {
+      button: 'Pacientes',
+      selector: '.patient-anatomy-live .anatomy-focus-preview',
+    },
+    {
+      button: 'Consultas',
+      selector: '.consultation-anatomy-live .anatomy-focus-preview',
+    },
+    {
+      button: 'Exames',
+      selector: '.documents-anatomy-live .anatomy-focus-preview',
+    },
+  ]
+
+  for (const surface of contextualSurfaces) {
+    if (surface.button) {
+      await page.getByRole('button', { name: surface.button, exact: true }).click()
+    }
+
+    const preview = page.locator(surface.selector)
+    await expect(preview).toBeVisible()
+    await expect(preview.locator('.human-atlas-scene canvas')).toBeVisible({
+      timeout: 45_000,
+    })
+    await expect(
+      preview.getByText('3D carregado', { exact: true }),
+    ).toBeVisible({ timeout: 45_000 })
+  }
+
   await page.getByRole('button', { name: 'Relatórios' }).click()
   await expect(
     page.getByRole('heading', { name: 'Localizar anatomia mencionada' }),

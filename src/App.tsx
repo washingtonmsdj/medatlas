@@ -68,15 +68,15 @@ const moduleMeta: Record<
   },
   Pacientes: {
     eyebrow: 'PACIENTES',
-    title: 'Paciente e relatório em contexto demonstrativo.',
+    title: 'Paciente, relatório e anatomia 3D no mesmo contexto.',
   },
   Consultas: {
     eyebrow: 'CONSULTAS',
-    title: 'Acompanhe o workflow visual da sessão atual.',
+    title: 'Acompanhe a sessão com a anatomia 3D sempre em contexto.',
   },
   Exames: {
     eyebrow: 'DOCUMENTOS CLÍNICOS',
-    title: 'Entrada local e controlada de documentos sintéticos.',
+    title: 'Do documento sintético à referência anatômica 3D.',
   },
   'Relatórios visuais': {
     eyebrow: 'CONSULTA VISUAL',

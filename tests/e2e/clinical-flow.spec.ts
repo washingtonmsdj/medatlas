@@ -40,6 +40,23 @@ async function openReports(page: import('@playwright/test').Page) {
   ).toBeVisible()
 }
 
+async function expectRealContextual3D(
+  page: import('@playwright/test').Page,
+  selector: string,
+) {
+  const preview = page.locator(selector)
+  await expect(preview).toBeVisible()
+  await expect(preview.locator('.human-atlas-scene')).toBeVisible({
+    timeout: 45_000,
+  })
+  await expect(preview.locator('canvas')).toBeVisible({
+    timeout: 45_000,
+  })
+  await expect(
+    preview.getByText('3D carregado', { exact: true }),
+  ).toBeVisible({ timeout: 45_000 })
+}
+
 test('all synthetic scenarios surface the expected anatomy first', async ({
   page,
 }) => {
@@ -164,6 +181,9 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     }),
   ).toBeVisible()
   await expect(
+    patientPage.locator('#patient-anatomy .human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(
     patientPage.getByRole('navigation', {
       name: 'Navegar pelas partes do relatório',
     }),
@@ -198,6 +218,38 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(analyticsRow.locator('.analytics-view-count')).not.toHaveText(
     '0',
   )
+})
+
+
+test('real Human Atlas stays visible across core MVP context surfaces', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await expectRealContextual3D(
+    page,
+    '.continue-care-card .anatomy-focus-preview',
+  )
+
+  const surfaces = [
+    {
+      button: 'Pacientes',
+      selector: '.patient-anatomy-live .anatomy-focus-preview',
+    },
+    {
+      button: 'Consultas',
+      selector: '.consultation-anatomy-live .anatomy-focus-preview',
+    },
+    {
+      button: 'Exames',
+      selector: '.documents-anatomy-live .anatomy-focus-preview',
+    },
+  ]
+
+  for (const surface of surfaces) {
+    await page.getByRole('button', { name: surface.button, exact: true }).click()
+    await expectRealContextual3D(page, surface.selector)
+  }
 })
 
 test('mobile workspace keeps the main clinical flow usable', async ({
