@@ -320,24 +320,44 @@ export function PatientReportPage({ report }: Props) {
 
 export function InvalidPatientLink() {
   return (
-    <main className="invalid-share">
-      <div className="brand">
-        <span className="brand-mark">M</span>
-        <span>MedAtlas</span>
+    <main className="patient-route-state patient-route-error">
+      <div className="patient-route-state-card">
+        <div className="brand">
+          <span className="brand-mark">M</span>
+          <span>MedAtlas</span>
+        </div>
+
+        <div className="patient-route-state-visual error" aria-hidden="true">
+          <span>×</span>
+        </div>
+
+        <span className="section-kicker">LINK PROTEGIDO · ACESSO ENCERRADO</span>
+        <h1>Este link de demonstração não está disponível.</h1>
+        <p>
+          Ele pode ter expirado, sido removido ou não existir neste navegador.
+          O MedAtlas não tenta reconstruir nem exibir conteúdo quando a
+          validação do link falha.
+        </p>
+
+        <div className="patient-route-safety-note">
+          <span aria-hidden="true">✓</span>
+          <div>
+            <strong>Falha segura preservada</strong>
+            <small>
+              Nenhum relatório, explicação ou anatomia clínica é exibido sem
+              uma referência de compartilhamento válida.
+            </small>
+          </div>
+        </div>
+
+        <button
+          className="primary"
+          type="button"
+          onClick={() => (window.location.href = appHomeUrl())}
+        >
+          Ir para o ambiente clínico
+        </button>
       </div>
-      <h1>Este link de demonstração não está disponível.</h1>
-      <p>
-        No produto final, links de paciente serão opacos, expiráveis e
-        revogáveis. Este MVP armazena somente o relatório sintético no
-        navegador que o publicou.
-      </p>
-      <button
-        className="primary"
-        type="button"
-        onClick={() => (window.location.href = appHomeUrl())}
-      >
-        Ir para o ambiente clínico
-      </button>
     </main>
   )
 }
