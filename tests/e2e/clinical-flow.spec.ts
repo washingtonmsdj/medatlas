@@ -1,3 +1,4 @@
+import { mkdir } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 
 const scenarios = [
@@ -134,6 +135,11 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(
     patientPreview.getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 45_000 })
+  await mkdir('test-results/visual-qa', { recursive: true })
+  await page.screenshot({
+    path: 'test-results/visual-qa/patient-preview-real-3d.png',
+    fullPage: true,
+  })
 
   const publishBeforeReview = page.getByRole('button', {
     name: 'Revise a explicação antes de publicar',
@@ -202,6 +208,10 @@ test('clinician review gate leads to a patient-facing visual report', async ({
       name: 'Perguntas úteis para levar ao profissional',
     }),
   ).toBeVisible()
+  await patientPage.screenshot({
+    path: 'test-results/visual-qa/patient-portal-real-3d.png',
+    fullPage: true,
+  })
 
   await patientPage.close()
 

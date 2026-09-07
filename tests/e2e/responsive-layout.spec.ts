@@ -86,8 +86,16 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
 
-    if (module.button === 'Relatórios') {
-      await capture(page, 'clinical-studio-1600')
+    const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
+      Relatórios: 'clinical-studio-1600',
+      Pacientes: 'patients-3d-1600',
+      Consultas: 'consultations-3d-1600',
+      Exames: 'documents-3d-1600',
+    }
+
+    const captureName = captureNames[module.button]
+    if (captureName) {
+      await capture(page, captureName)
     }
   }
 
@@ -97,8 +105,16 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
 
-    if (module.button === 'Relatórios') {
-      await capture(page, 'clinical-studio-1440')
+    const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
+      Relatórios: 'clinical-studio-1440',
+      Pacientes: 'patients-3d-1440',
+      Consultas: 'consultations-3d-1440',
+      Exames: 'documents-3d-1440',
+    }
+
+    const captureName = captureNames[module.button]
+    if (captureName) {
+      await capture(page, captureName)
     }
   }
 })
@@ -117,8 +133,14 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
     await openModule(page, module)
     await expectNoHorizontalOverflow(page)
 
-    if (module.button === 'Relatórios') {
-      await capture(page, 'clinical-studio-mobile-390')
+    const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
+      Relatórios: 'clinical-studio-mobile-390',
+      Pacientes: 'patients-3d-mobile-390',
+    }
+
+    const captureName = captureNames[module.button]
+    if (captureName) {
+      await capture(page, captureName)
     }
   }
 })
