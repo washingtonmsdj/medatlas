@@ -2,8 +2,16 @@ import { useState } from 'react'
 import type { AtlasConcept } from './atlas/types'
 import { conceptDisplayName } from './atlas/source'
 import { AtlasViewport } from './components/AtlasViewport'
+import {
+  InvalidPatientLink,
+  PatientReportPage,
+} from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
 import { demoReport } from './domain/demo'
+import {
+  persistPublishedDemoReport,
+  readPublishedDemoReport,
+} from './domain/demo-storage'
 import type { VisualReport } from './domain/types'
 
 const nav = [
@@ -16,27 +24,73 @@ const nav = [
   'Configurações',
 ]
 
-function App() {
+function PatientRoute({ slug }: { slug: string }) {
+  const report = readPublishedDemoReport(slug)
+
+  return report ? (
+    <PatientReportPage report={report} />
+  ) : (
+    <InvalidPatientLink />
+  )
+}
+
+function ClinicianApp() {
   const [report, setReport] = useState<VisualReport>(demoReport)
   const [active, setActive] = useState('Relatórios')
 
   const publish = () => {
-    setReport((current) => ({
-      ...current,
-      status: 'published',
-      shareSlug: 'demo-L4L5-7F3K2',
-    }))
+    setReport((current) => {
+      if (current.finding.explanationReviewRequired) return current
+
+      const published: VisualReport = {
+        ...current,
+        status: 'published',
+        shareSlug: 'demo-7F3K2',
+      }
+
+      persistPublishedDemoReport(published)
+      return published
+    })
   }
 
   const confirmConcept = (concept: AtlasConcept) => {
+    const displayName = conceptDisplayName(concept)
+
     setReport((current) => ({
       ...current,
-      status: 'clinician_review',
+      status: 'draft',
       shareSlug: undefined,
       finding: {
         ...current.finding,
-        anatomicalStructure: conceptDisplayName(concept),
+        anatomicalStructure: displayName,
         atlasConceptId: concept.id,
+        patientExplanation:
+          `A estrutura anatômica confirmada é ${displayName}. Revise esta explicação para relacioná-la corretamente ao laudo antes de compartilhar com o paciente.`,
+        explanationReviewRequired: true,
+      },
+    }))
+  }
+
+  const updateExplanation = (value: string) => {
+    setReport((current) => ({
+      ...current,
+      status: 'draft',
+      shareSlug: undefined,
+      finding: {
+        ...current.finding,
+        patientExplanation: value,
+        explanationReviewRequired: true,
+      },
+    }))
+  }
+
+  const approveExplanation = () => {
+    setReport((current) => ({
+      ...current,
+      status: 'clinician_review',
+      finding: {
+        ...current.finding,
+        explanationReviewRequired: false,
       },
     }))
   }
@@ -95,7 +149,13 @@ function App() {
             'Publicar ao paciente',
           ].map((step, index) => (
             <div
-              className={index < 3 || report.status === 'published' ? 'done' : ''}
+              className={
+                index < 2 ||
+                (!report.finding.explanationReviewRequired && index === 2) ||
+                report.status === 'published'
+                  ? 'done'
+                  : ''
+              }
               key={step}
             >
               <span>{index + 1}</span>
@@ -129,11 +189,26 @@ function App() {
             />
           </div>
 
-          <ReportComposer report={report} onPublish={publish} />
+          <ReportComposer
+            report={report}
+            onPublish={publish}
+            onUpdateExplanation={updateExplanation}
+            onApproveExplanation={approveExplanation}
+          />
         </section>
       </section>
     </main>
   )
+}
+
+function App() {
+  const patientMatch = window.location.pathname.match(/^\/p\/([^/]+)\/?$/)
+
+  if (patientMatch) {
+    return <PatientRoute slug={decodeURIComponent(patientMatch[1])} />
+  }
+
+  return <ClinicianApp />
 }
 
 export default App

@@ -20,6 +20,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Separate preview from explicit clinician confirmation.
 - [x] Add isolate mode and zero-extra-download local anatomical context.
 - [x] Restore GitHub Actions by temporarily using the public repository.
+- [x] Add editable patient explanation with explicit re-review gate after changes.
+- [x] Add a real patient-facing demo route using the same confirmed 3D concept.
 - [ ] Add system layers and richer contextual body navigation.
 - [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
 - [ ] Validate browser interaction against a deployed preview.
@@ -31,7 +33,7 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [ ] Professionals and roles.
 - [ ] Patient/consultation/report persistence.
 - [ ] Private document storage.
-- [ ] Expiring/revocable patient share links.
+- [ ] Replace local demo share with opaque, expiring and revocable patient tokens.
 - [ ] Audit trail.
 
 ## P2 — AI workflow

@@ -13,6 +13,7 @@ export interface ClinicalFinding {
   atlasRef: string
   atlasConceptId: string
   patientExplanation: string
+  explanationReviewRequired: boolean
   clinicianNote: string
 }
 

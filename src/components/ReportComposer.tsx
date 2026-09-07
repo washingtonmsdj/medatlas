@@ -1,11 +1,37 @@
+import { useState } from 'react'
 import type { VisualReport } from '../domain/types'
 
 interface Props {
   report: VisualReport
   onPublish: () => void
+  onUpdateExplanation: (value: string) => void
+  onApproveExplanation: () => void
 }
 
-export function ReportComposer({ report, onPublish }: Props) {
+export function ReportComposer({
+  report,
+  onPublish,
+  onUpdateExplanation,
+  onApproveExplanation,
+}: Props) {
+  const [copied, setCopied] = useState(false)
+
+  const shareUrl =
+    report.status === 'published' && report.shareSlug
+      ? `${window.location.origin}/p/${report.shareSlug}`
+      : ''
+
+  const copyLink = async () => {
+    if (!shareUrl) return
+
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
   return (
     <aside className="report-card">
       <div className="section-kicker">RELATÓRIO VISUAL</div>
@@ -21,25 +47,65 @@ export function ReportComposer({ report, onPublish }: Props) {
 
       <div className="report-section">
         <span className="label">Explicação para o paciente</span>
-        <p>{report.finding.patientExplanation}</p>
+        <textarea
+          className="explanation-editor"
+          aria-label="Explicação para o paciente"
+          value={report.finding.patientExplanation}
+          onChange={(event) => onUpdateExplanation(event.target.value)}
+          rows={8}
+        />
       </div>
 
-      <div className="safety-box">
-        <strong>Revisão clínica obrigatória</strong>
-        <span>{report.finding.clinicianNote}</span>
-      </div>
-
-      {report.status === 'published' && report.shareSlug ? (
-        <div className="share-box">
-          <span>Link privado gerado</span>
-          <code>medatlas.app/p/{report.shareSlug}</code>
-          <button className="primary" type="button">
-            Copiar link
+      {report.finding.explanationReviewRequired ? (
+        <div className="review-required-box">
+          <strong>Revisão necessária</strong>
+          <span>
+            A anatomia ou a explicação mudou. O link do paciente só pode ser
+            publicado após confirmação explícita do profissional.
+          </span>
+          <button type="button" onClick={onApproveExplanation}>
+            Confirmar explicação revisada
           </button>
         </div>
       ) : (
-        <button className="primary full" type="button" onClick={onPublish}>
-          Aprovar e gerar link do paciente
+        <div className="safety-box">
+          <strong>Revisão clínica concluída</strong>
+          <span>{report.finding.clinicianNote}</span>
+        </div>
+      )}
+
+      {report.status === 'published' && report.shareSlug ? (
+        <div className="share-box">
+          <span>Link de demonstração gerado</span>
+          <code>{shareUrl}</code>
+          <div className="share-actions">
+            <button className="primary" type="button" onClick={copyLink}>
+              {copied ? 'Link copiado' : 'Copiar link'}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                window.open(shareUrl, '_blank', 'noopener,noreferrer')
+              }
+            >
+              Abrir visão do paciente
+            </button>
+          </div>
+          <small>
+            MVP: este link usa armazenamento local e dados fictícios. Tokens
+            privados, expiração e revogação entram no backend P1.
+          </small>
+        </div>
+      ) : (
+        <button
+          className="primary full"
+          type="button"
+          onClick={onPublish}
+          disabled={report.finding.explanationReviewRequired}
+        >
+          {report.finding.explanationReviewRequired
+            ? 'Revise a explicação antes de publicar'
+            : 'Aprovar e gerar link do paciente'}
         </button>
       )}
     </aside>
