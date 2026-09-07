@@ -7625,3 +7625,57 @@ button:not(:disabled):active {
     justify-self: start;
   }
 }
+/* MEDATLAS_BRANDING_SETTINGS_V1 */
+.settings-icon.branding {
+  color: white;
+  box-shadow: 0 8px 20px rgba(39, 105, 160, .16);
+}
+
+.settings-branding-card {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(31, 122, 215, .07), transparent 34%),
+    rgba(255, 255, 255, .96) !important;
+}
+
+.settings-branding-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding: 8px 9px;
+  border: 1px solid #dfe7ed;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.settings-branding-preview > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #526b7f;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.settings-branding-preview i {
+  width: 16px;
+  height: 16px;
+  display: block;
+  border: 2px solid white;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px #cfdbe4;
+}
+
+.settings-branding-preview code {
+  color: #2f6286;
+  font-size: 7px;
+}
+
+.settings-branding-card button:disabled {
+  color: #788895;
+  border-color: #d6dfe6;
+  background: #eef2f5;
+  cursor: not-allowed;
+  opacity: .78;
+}
