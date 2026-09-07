@@ -58,18 +58,86 @@ export function PatientReportPage({ report }: Props) {
         </div>
       </header>
 
-      <section className="patient-hero">
-        <span className="section-kicker">SEU EXAME, EXPLICADO VISUALMENTE</span>
-        <h1>{report.title}</h1>
-        <p>
-          Esta página foi preparada para ajudar você a visualizar a região
-          mencionada no relatório e entender a explicação revisada pelo
-          profissional.
-        </p>
+      <section className="patient-hero patient-hero-premium">
+        <div className="patient-hero-copy">
+          <span className="section-kicker">SEU EXAME, EXPLICADO VISUALMENTE</span>
+          <h1>{report.title}</h1>
+          <p>
+            Veja onde fica a região mencionada, entenda a explicação revisada
+            pelo profissional e leve perguntas mais claras para a próxima
+            conversa.
+          </p>
+
+          <div className="patient-report-chips" aria-label="Resumo do relatório">
+            <span>
+              <small>Região</small>
+              <strong>{report.finding.anatomicalStructure}</strong>
+            </span>
+            <span>
+              <small>Referência</small>
+              <strong>{report.finding.atlasConceptId}</strong>
+            </span>
+            <span className="reviewed">
+              <small>Status</small>
+              <strong>Revisado</strong>
+            </span>
+          </div>
+
+          <nav
+            className="patient-journey-nav"
+            aria-label="Navegar pelas partes do relatório"
+          >
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById('patient-anatomy')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            >
+              <b>01</b>
+              Ver anatomia
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById('patient-explanation')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            >
+              <b>02</b>
+              Entender explicação
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById('patient-questions')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            >
+              <b>03</b>
+              Preparar perguntas
+            </button>
+          </nav>
+        </div>
+
+        <aside className="patient-review-summary">
+          <span className="patient-review-icon">✓</span>
+          <div>
+            <span className="section-kicker">CONTEÚDO REVISADO</span>
+            <strong>Preparado para comunicação com o paciente</strong>
+            <p>
+              Dr. Carlos Mendes · Ortopedia<br />
+              Clínica Horizonte · demonstração
+            </p>
+          </div>
+        </aside>
       </section>
 
       <section className="patient-grid">
-        <section className="patient-atlas-card">
+        <section className="patient-atlas-card" id="patient-anatomy">
           <div className="patient-card-heading">
             <div>
               <span className="label">REGIÃO DESTACADA</span>
@@ -161,7 +229,7 @@ export function PatientReportPage({ report }: Props) {
           </p>
         </section>
 
-        <aside className="patient-explanation-card">
+        <aside className="patient-explanation-card" id="patient-explanation">
           <span className="section-kicker">O QUE O LAUDO MENCIONA</span>
           <blockquote>{report.finding.sourceText}</blockquote>
 
@@ -193,7 +261,31 @@ export function PatientReportPage({ report }: Props) {
         </aside>
       </section>
 
-      <section className="patient-next-step">
+      <section className="patient-clarity-strip" aria-label="Como usar o relatório visual">
+        <article>
+          <span>01</span>
+          <div>
+            <strong>Localize</strong>
+            <p>Use o 3D para reconhecer a região mencionada no relatório.</p>
+          </div>
+        </article>
+        <article>
+          <span>02</span>
+          <div>
+            <strong>Entenda</strong>
+            <p>Leia a explicação que foi revisada antes do compartilhamento.</p>
+          </div>
+        </article>
+        <article>
+          <span>03</span>
+          <div>
+            <strong>Converse</strong>
+            <p>Leve suas dúvidas ao profissional; o MedAtlas não substitui a consulta.</p>
+          </div>
+        </article>
+      </section>
+
+      <section className="patient-next-step" id="patient-questions">
         <div>
           <span className="section-kicker">PARA SUA PRÓXIMA CONVERSA</span>
           <h2>Perguntas úteis para levar ao profissional</h2>
