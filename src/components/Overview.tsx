@@ -3,6 +3,9 @@ import { PilotChecklist } from './PilotChecklist'
 
 interface Props {
   report: VisualReport
+  organizationName: string
+  workspaceName: string
+  unitName?: string
   onNewReport: () => void
   onOpenReport: () => void
   onOpenAtlas: () => void
@@ -23,6 +26,9 @@ const activity = [
 
 export function Overview({
   report,
+  organizationName,
+  workspaceName,
+  unitName,
   onNewReport,
   onOpenReport,
   onOpenAtlas,
@@ -58,7 +64,10 @@ export function Overview({
     <section className="overview-module overview-saas-v2">
       <div className="overview-welcome">
         <div>
-          <span className="section-kicker">CLÍNICA HORIZONTE · ORTOPEDIA</span>
+          <span className="section-kicker">
+            {organizationName.toUpperCase()} · {workspaceName.toUpperCase()}
+            {unitName ? ` · ${unitName.toUpperCase()}` : ''}
+          </span>
           <h2>Bom dia, Dr. Carlos.</h2>
           <p>
             Continue os atendimentos e transforme informação clínica em uma
