@@ -143,14 +143,14 @@ export class DeterministicPatientExplanationGenerator
 {
   async generate(report: VisualReport): Promise<PatientExplanationDraft> {
     const conceptId = report.finding.atlasConceptId
-    const context = CONTEXT[conceptId]
 
-    if (!conceptId) {
+    if (!conceptId || report.finding.anatomyReviewRequired) {
       throw new Error(
-        'Confirme uma estrutura anatômica antes de gerar a explicação.',
+        'Confirme a estrutura anatômica para o texto atual antes de gerar a explicação.',
       )
     }
 
+    const context = CONTEXT[conceptId]
     const text = context
       ? [
           `O laudo menciona “${report.finding.anatomicalStructure}”.`,

@@ -64,6 +64,12 @@ function read(token: string): VisualReport | null {
 
 export class DemoClinicalRepository implements ClinicalRepository {
   async publishReport(report: VisualReport): Promise<VisualReport> {
+    if (report.finding.anatomyReviewRequired) {
+      throw new Error(
+        'A anatomia precisa ser confirmada para o texto atual antes da publicação.',
+      )
+    }
+
     if (report.finding.explanationReviewRequired) {
       throw new Error(
         'A explicação precisa ser revisada antes da publicação.',
@@ -73,6 +79,12 @@ export class DemoClinicalRepository implements ClinicalRepository {
     if (!report.finding.atlasConceptId) {
       throw new Error(
         'Uma estrutura anatômica precisa ser confirmada antes da publicação.',
+      )
+    }
+
+    if (!report.finding.patientExplanation.trim()) {
+      throw new Error(
+        'A explicação para o paciente não pode estar vazia.',
       )
     }
 

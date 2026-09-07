@@ -59,6 +59,10 @@ export function ReportComposer({
     }
   }
 
+  const canWorkOnExplanation =
+    !report.finding.anatomyReviewRequired &&
+    Boolean(report.finding.atlasConceptId)
+
   return (
     <aside className="report-card">
       <div className="section-kicker">RELATÓRIO VISUAL</div>
@@ -85,13 +89,20 @@ export function ReportComposer({
             onClick={() => void onGenerateDraft()}
             disabled={
               generatingDraft ||
-              !report.finding.atlasConceptId ||
+              !canWorkOnExplanation ||
               !report.finding.sourceText.trim()
             }
           >
             {generatingDraft ? 'Gerando…' : 'Gerar rascunho educacional'}
           </button>
         </div>
+
+        {report.finding.anatomyReviewRequired && (
+          <div className="explanation-blocked-note">
+            Confirme novamente a anatomia para o texto atual antes de preparar
+            a explicação.
+          </div>
+        )}
 
         <textarea
           className="explanation-editor"
@@ -100,6 +111,7 @@ export function ReportComposer({
           onChange={(event) => onUpdateExplanation(event.target.value)}
           rows={8}
           placeholder="Gere um rascunho educacional ou escreva a explicação manualmente."
+          disabled={!canWorkOnExplanation}
         />
 
         {report.finding.explanationProvenance.origin === 'deterministic' && (
@@ -121,7 +133,10 @@ export function ReportComposer({
           <button
             type="button"
             onClick={onApproveExplanation}
-            disabled={!report.finding.patientExplanation.trim()}
+            disabled={
+              report.finding.anatomyReviewRequired ||
+              !report.finding.patientExplanation.trim()
+            }
           >
             Confirmar explicação revisada
           </button>
@@ -168,6 +183,7 @@ export function ReportComposer({
           type="button"
           onClick={() => void onPublish()}
           disabled={
+            report.finding.anatomyReviewRequired ||
             report.finding.explanationReviewRequired ||
             publishing ||
             !report.finding.patientExplanation.trim()
@@ -175,9 +191,11 @@ export function ReportComposer({
         >
           {publishing
             ? 'Gerando link…'
-            : report.finding.explanationReviewRequired
-              ? 'Revise a explicação antes de publicar'
-              : 'Aprovar e gerar link do paciente'}
+            : report.finding.anatomyReviewRequired
+              ? 'Confirme a anatomia antes de publicar'
+              : report.finding.explanationReviewRequired
+                ? 'Revise a explicação antes de publicar'
+                : 'Aprovar e gerar link do paciente'}
         </button>
       )}
     </aside>

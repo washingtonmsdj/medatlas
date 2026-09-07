@@ -56,6 +56,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Add deterministic patient-language educational draft generator.
 - [x] Track draft provenance and clinician edits in the frontend model.
 - [x] Clear stale explanation when source text or confirmed anatomy changes.
+- [x] Reopen anatomical confirmation whenever the source report text changes.
+- [x] Add synthetic multi-specialty demo scenarios (spine, kidney, heart, shoulder).
 - [ ] Add structured AI-generated patient-language draft.
 - [ ] Require clinician confirmation before publish.
 - [ ] Version prompts/model/output and preserve provenance.
@@ -63,6 +65,7 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 ## P3 — Product validation
 
 - [ ] Desktop/mobile E2E flow.
+- [ ] Validate all synthetic scenarios end-to-end in a browser.
 - [ ] Accessibility pass.
 - [ ] Performance budget for anatomy payload.
 - [ ] Privacy/security review before real PHI.

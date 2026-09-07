@@ -1,11 +1,51 @@
 import type { AnatomySuggestion } from '../clinical/anatomy-suggestions'
 
+export interface ReportExample {
+  id: string
+  label: string
+  title: string
+  sourceText: string
+}
+
+export const REPORT_EXAMPLES: ReportExample[] = [
+  {
+    id: 'spine-l4l5',
+    label: 'Coluna lombar',
+    title: 'Entenda seu exame — coluna lombar',
+    sourceText:
+      'Protusão discal posterior em L4–L5, com leve compressão do saco dural.',
+  },
+  {
+    id: 'kidney',
+    label: 'Rim',
+    title: 'Entenda seu exame — rim',
+    sourceText:
+      'Ultrassonografia abdominal: rim direito com discreta alteração descrita no relatório.',
+  },
+  {
+    id: 'heart',
+    label: 'Coração',
+    title: 'Entenda seu exame — coração',
+    sourceText:
+      'Relatório cardiológico: avaliação do coração com achado descrito pelo examinador.',
+  },
+  {
+    id: 'shoulder',
+    label: 'Ombro',
+    title: 'Entenda seu exame — ombro',
+    sourceText:
+      'Ressonância do ombro: alteração envolvendo o músculo supraespinal.',
+  },
+]
+
 interface Props {
   sourceText: string
   analyzing: boolean
+  anatomyReviewRequired: boolean
   error: string
   suggestions: AnatomySuggestion[]
   onSourceTextChange: (value: string) => void
+  onLoadExample: (example: ReportExample) => void
   onAnalyze: () => void | Promise<void>
   onConfirmSuggestion: (suggestion: AnatomySuggestion) => void
 }
@@ -13,9 +53,11 @@ interface Props {
 export function ReportIntake({
   sourceText,
   analyzing,
+  anatomyReviewRequired,
   error,
   suggestions,
   onSourceTextChange,
+  onLoadExample,
   onAnalyze,
   onConfirmSuggestion,
 }: Props) {
@@ -33,6 +75,19 @@ export function ReportIntake({
         <span className="intake-safety-badge">sem diagnóstico automático</span>
       </div>
 
+      <div className="example-row" aria-label="Exemplos sintéticos">
+        <span>Testar cenário:</span>
+        {REPORT_EXAMPLES.map((example) => (
+          <button
+            key={example.id}
+            type="button"
+            onClick={() => onLoadExample(example)}
+          >
+            {example.label}
+          </button>
+        ))}
+      </div>
+
       <textarea
         className="intake-editor"
         aria-label="Texto do laudo ou relatório"
@@ -41,6 +96,16 @@ export function ReportIntake({
         rows={5}
         placeholder="Ex.: Protusão discal posterior em L4-L5..."
       />
+
+      {anatomyReviewRequired && (
+        <div className="anatomy-reconfirm-note">
+          <strong>Reconfirmação anatômica necessária</strong>
+          <span>
+            O texto mudou. O último 3D pode continuar visível para comparação,
+            mas precisa ser confirmado novamente antes de gerar ou publicar.
+          </span>
+        </div>
+      )}
 
       <div className="intake-actions">
         <button

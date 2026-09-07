@@ -96,7 +96,9 @@ create table if not exists public.visual_reports (
 
   patient_explanation text not null default '',
   clinician_note text not null default '',
+  anatomy_review_required boolean not null default true,
   explanation_review_required boolean not null default true,
+  explanation_provenance jsonb not null default '{"origin":"manual","clinicianEdited":true}'::jsonb,
 
   version integer not null default 1 check (version > 0),
   approved_by uuid references auth.users(id) on delete set null,
@@ -109,7 +111,8 @@ create table if not exists public.visual_reports (
   check (
     status <> 'published'
     or (
-      explanation_review_required = false
+      anatomy_review_required = false
+      and explanation_review_required = false
       and approved_by is not null
       and approved_at is not null
       and char_length(atlas_concept_id) > 0
@@ -364,6 +367,7 @@ begin
   end if;
 
   if report_row.status <> 'published'
+     or report_row.anatomy_review_required
      or report_row.explanation_review_required
      or report_row.approved_by is null
      or report_row.approved_at is null then
@@ -471,6 +475,7 @@ begin
   where id = share_row.report_id
     and organization_id = share_row.organization_id
     and status = 'published'
+    and anatomy_review_required = false
     and explanation_review_required = false
     and version = share_row.report_version;
 

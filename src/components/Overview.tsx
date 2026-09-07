@@ -11,11 +11,17 @@ export function Overview({
   onOpenReport,
   onOpenAtlas,
 }: Props) {
-  const reviewLabel = report.finding.explanationReviewRequired
-    ? 'Revisão pendente'
-    : report.status === 'published'
-      ? 'Publicado'
-      : 'Pronto para publicar'
+  const reviewLabel = report.finding.anatomyReviewRequired
+    ? 'Anatomia pendente'
+    : report.finding.explanationReviewRequired
+      ? 'Revisão pendente'
+      : report.status === 'published'
+        ? 'Publicado'
+        : 'Pronto para publicar'
+
+  const anatomyLabel = report.finding.anatomyReviewRequired
+    ? 'Reconfirmação necessária'
+    : report.finding.anatomicalStructure
 
   return (
     <section className="overview-module">
@@ -46,19 +52,21 @@ export function Overview({
           <small>{report.title}</small>
         </article>
         <article>
-          <span>ANATOMIA CONFIRMADA</span>
-          <strong>{report.finding.anatomicalStructure}</strong>
-          <small>{report.finding.atlasConceptId}</small>
+          <span>ANATOMIA</span>
+          <strong>{anatomyLabel}</strong>
+          <small>
+            {report.finding.anatomicalStructure} · {report.finding.atlasConceptId}
+          </small>
         </article>
         <article>
           <span>DATA PLANE</span>
           <strong>Modo demonstração</strong>
-          <small>Supabase de produção ainda não ativado</small>
+          <small>Backend clínico adiado para uma etapa posterior</small>
         </article>
         <article>
           <span>SEGURANÇA</span>
           <strong>Fail-closed</strong>
-          <small>Publicação bloqueada quando revisão está pendente</small>
+          <small>Laudo alterado reabre confirmação anatômica e revisão</small>
         </article>
       </div>
 
@@ -75,8 +83,8 @@ export function Overview({
           {[
             ['01', 'Texto clínico', 'O profissional fornece ou edita o trecho.'],
             ['02', 'Triagem anatômica', 'Somente conceitos existentes no atlas.'],
-            ['03', 'Confirmação', 'Nenhuma sugestão muda o relatório sozinha.'],
-            ['04', 'Explicação', 'Conteúdo em linguagem mais simples.'],
+            ['03', 'Confirmação', 'Cada mudança de texto exige reconfirmação.'],
+            ['04', 'Explicação', 'Rascunho educacional com provenance.'],
             ['05', 'Revisão', 'Mudanças reabrem o gate clínico.'],
             ['06', 'Paciente', 'Experiência visual compartilhável.'],
           ].map(([number, title, description]) => (
@@ -91,22 +99,21 @@ export function Overview({
 
       <div className="overview-boundary">
         <div>
-          <span className="section-kicker">PRÓXIMA FRONTEIRA</span>
-          <h2>Backend clínico dedicado</h2>
+          <span className="section-kicker">FOCO ATUAL</span>
+          <h2>MVP clínico visual sem backend</h2>
           <p>
-            O schema, RLS, Storage privado, auditoria e tokens por hash já
-            existem como contrato source-first. O próximo passo de produção é
-            aplicá-los em um projeto Supabase exclusivo do MedAtlas e provar
-            isolamento entre tenants.
+            O contrato de backend continua preservado, mas a execução agora
+            prioriza produto, UX, cenários sintéticos, anatomia 3D e validação.
+            Supabase entra depois sem mudar as fronteiras principais.
           </p>
         </div>
         <div className="boundary-list">
-          <span>✓ Schema multi-tenant definido</span>
-          <span>✓ RLS exigida pelo CI</span>
-          <span>✓ Token bruto não persiste</span>
-          <span>○ Projeto Supabase dedicado</span>
-          <span>○ Auth e onboarding</span>
-          <span>○ Testes cross-tenant</span>
+          <span>✓ Anatomia real e curada</span>
+          <span>✓ Triagem do texto</span>
+          <span>✓ Rascunho educacional</span>
+          <span>✓ Revisão fail-closed</span>
+          <span>○ E2E visual</span>
+          <span>○ Backend dedicado depois</span>
         </div>
       </div>
     </section>

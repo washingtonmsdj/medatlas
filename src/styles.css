@@ -1015,3 +1015,57 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
     width:100%;
   }
 }
+
+
+.example-row {
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.example-row > span {
+  margin-right:2px;
+  color:#61778d;
+  font-size:8px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.example-row button {
+  border:1px solid #29445e;
+  border-radius:999px;
+  background:#0a1a2a;
+  color:#829db4;
+  padding:6px 8px;
+  cursor:pointer;
+  font-size:8px;
+}
+.example-row button:hover {
+  border-color:#3b79a1;
+  color:#c6e7f8;
+  background:#0e2437;
+}
+.anatomy-reconfirm-note,
+.explanation-blocked-note {
+  margin-top:10px;
+  padding:10px 11px;
+  border:1px solid #6c5534;
+  border-radius:10px;
+  background:#211a10;
+  color:#cdb77f;
+  font-size:9px;
+  line-height:1.45;
+}
+.anatomy-reconfirm-note {
+  display:grid;
+  gap:3px;
+}
+.anatomy-reconfirm-note strong {
+  color:#e6cc91;
+  font-size:9px;
+}
+.explanation-editor:disabled {
+  opacity:.55;
+  cursor:not-allowed;
+}

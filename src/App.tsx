@@ -17,7 +17,10 @@ import {
   PatientReportPage,
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
-import { ReportIntake } from './components/ReportIntake'
+import {
+  ReportIntake,
+  type ReportExample,
+} from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { demoReport } from './domain/demo'
 import type { VisualReport } from './domain/types'
@@ -148,6 +151,7 @@ function ClinicianApp() {
 
   const publish = async () => {
     if (
+      report.finding.anatomyReviewRequired ||
       report.finding.explanationReviewRequired ||
       publishing ||
       !report.finding.patientExplanation.trim()
@@ -185,6 +189,7 @@ function ClinicianApp() {
           ...draft.finding,
           anatomicalStructure: displayName,
           atlasConceptId: concept.id,
+          anatomyReviewRequired: false,
           ...emptyExplanation(),
         },
       }
@@ -203,6 +208,7 @@ function ClinicianApp() {
         finding: {
           ...draft.finding,
           sourceText: value,
+          anatomyReviewRequired: true,
           ...emptyExplanation(),
         },
       }
@@ -211,6 +217,28 @@ function ClinicianApp() {
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
+  }
+
+  const loadExample = (example: ReportExample) => {
+    setReport((current) => {
+      const draft = invalidatePublishedState(current)
+
+      return {
+        ...draft,
+        title: example.title,
+        finding: {
+          ...draft.finding,
+          sourceText: example.sourceText,
+          anatomyReviewRequired: true,
+          ...emptyExplanation(),
+        },
+      }
+    })
+
+    setSuggestions([])
+    setIntakeError('')
+    setPublishError('')
+    setActive('Relatórios')
   }
 
   const analyzeSourceText = async () => {
@@ -281,6 +309,8 @@ function ClinicianApp() {
   }
 
   const updateExplanation = (value: string) => {
+    if (report.finding.anatomyReviewRequired) return
+
     setReport((current) => {
       const draft = invalidatePublishedState(current)
 
@@ -301,7 +331,12 @@ function ClinicianApp() {
   }
 
   const approveExplanation = () => {
-    if (!report.finding.patientExplanation.trim()) return
+    if (
+      report.finding.anatomyReviewRequired ||
+      !report.finding.patientExplanation.trim()
+    ) {
+      return
+    }
 
     setReport((current) => ({
       ...current,
@@ -325,10 +360,12 @@ function ClinicianApp() {
         ].map((step, index) => (
           <div
             className={
-              index === 0 ||
-              (index === 1 && Boolean(report.finding.atlasConceptId)) ||
-              (!report.finding.explanationReviewRequired && index === 2) ||
-              report.status === 'published'
+              (index === 0 && Boolean(report.finding.sourceText.trim())) ||
+              (index === 1 && !report.finding.anatomyReviewRequired) ||
+              (!report.finding.explanationReviewRequired &&
+                !report.finding.anatomyReviewRequired &&
+                index === 2) ||
+              (report.status === 'published' && index === 3)
                 ? 'done'
                 : ''
             }
@@ -345,9 +382,11 @@ function ClinicianApp() {
           <ReportIntake
             sourceText={report.finding.sourceText}
             analyzing={analyzing}
+            anatomyReviewRequired={report.finding.anatomyReviewRequired}
             error={intakeError}
             suggestions={suggestions}
             onSourceTextChange={updateSourceText}
+            onLoadExample={loadExample}
             onAnalyze={analyzeSourceText}
             onConfirmSuggestion={(suggestion) =>
               confirmConcept(suggestion.concept)
@@ -356,18 +395,33 @@ function ClinicianApp() {
 
           <section className="finding-card">
             <div>
-              <span className="section-kicker">2 · ANATOMIA CONFIRMADA</span>
+              <span className="section-kicker">
+                2 · {report.finding.anatomyReviewRequired
+                  ? 'ÚLTIMA ANATOMIA SELECIONADA'
+                  : 'ANATOMIA CONFIRMADA'}
+              </span>
               <h2>{report.finding.anatomicalStructure}</h2>
               <p>
-                Estrutura que será usada na visualização e no relatório do
-                paciente.
+                {report.finding.anatomyReviewRequired
+                  ? 'O texto foi alterado. Confirme novamente esta estrutura ou escolha outra sugestão antes de continuar.'
+                  : 'Estrutura confirmada para o texto atual e usada no relatório do paciente.'}
               </p>
             </div>
 
             <div className="finding-match">
-              <span>Referência do atlas</span>
-              <strong>{report.finding.atlasConceptId}</strong>
-              <small>{report.finding.atlasRef}</small>
+              <span>
+                {report.finding.anatomyReviewRequired
+                  ? 'Status'
+                  : 'Referência do atlas'}
+              </span>
+              <strong>
+                {report.finding.anatomyReviewRequired
+                  ? 'Reconfirmação necessária'
+                  : report.finding.atlasConceptId}
+              </strong>
+              <small>
+                {report.finding.atlasRef} · {report.finding.atlasConceptId}
+              </small>
             </div>
           </section>
 

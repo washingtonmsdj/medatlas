@@ -16,6 +16,7 @@ export const demoReport: VisualReport = {
     anatomicalStructure: 'Disco intervertebral L4–L5',
     atlasRef: 'BodyParts3D 4.0 / FMA',
     atlasConceptId: 'FMA16036',
+    anatomyReviewRequired: false,
     patientExplanation:
       'O laudo descreve uma alteração no disco localizado entre as vértebras L4 e L5. O disco funciona como uma estrutura de amortecimento entre as vértebras. Neste exame, parte dele se projeta para trás e toca levemente estruturas próximas.',
     explanationReviewRequired: false,

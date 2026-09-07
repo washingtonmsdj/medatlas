@@ -36,6 +36,8 @@ const invariants = [
   ['share revocation', 'revoked_at timestamptz'],
   ['share expiry', 'expires_at timestamptz not null'],
   ['report publish gate', "status <> 'published'"],
+  ['anatomy review gate', 'anatomy_review_required boolean not null default true'],
+  ['explanation provenance', 'explanation_provenance jsonb not null'],
   ['approval identity', 'approved_by uuid references auth.users'],
   ['approval timestamp', 'approved_at timestamptz'],
   ['private document bucket', "'clinical-documents',\n  'clinical-documents',\n  false"],
