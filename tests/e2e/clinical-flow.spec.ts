@@ -133,7 +133,11 @@ test('clinician review gate leads to a patient-facing visual report', async ({
       name: 'Entenda seu exame — coração',
     }),
   ).toBeVisible()
-  await expect(patientPage.getByText('FMA7088')).toBeVisible()
+  await expect(
+    patientPage
+      .locator('#patient-anatomy')
+      .getByText('FMA7088', { exact: true }),
+  ).toBeVisible()
   await expect(
     patientPage.getByRole('button', { name: 'Imprimir / salvar PDF' }),
   ).toBeVisible()
