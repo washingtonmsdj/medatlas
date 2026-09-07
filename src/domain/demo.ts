@@ -14,7 +14,8 @@ export const demoReport: VisualReport = {
     sourceText:
       'Protusão discal posterior em L4–L5, com leve compressão do saco dural.',
     anatomicalStructure: 'Disco intervertebral L4–L5',
-    atlasRef: 'lumbar-l4-l5',
+    atlasRef: 'BodyParts3D 4.0 / FMA',
+    atlasConceptId: 'FMA16036',
     patientExplanation:
       'O laudo descreve uma alteração no disco localizado entre as vértebras L4 e L5. O disco funciona como uma estrutura de amortecimento entre as vértebras. Neste exame, parte dele se projeta para trás e toca levemente estruturas próximas.',
     clinicianNote:

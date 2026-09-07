@@ -11,6 +11,7 @@ export interface ClinicalFinding {
   sourceText: string
   anatomicalStructure: string
   atlasRef: string
+  atlasConceptId: string
   patientExplanation: string
   clinicianNote: string
 }

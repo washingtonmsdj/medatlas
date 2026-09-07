@@ -11,8 +11,12 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Create frontend shell and product flow.
 - [x] Establish clinical-review safety boundary.
 - [x] Record Human Atlas and BodyParts3D license obligations.
-- [ ] Integrate Human Atlas renderer and atlas catalogue.
-- [ ] Replace demo anatomy viewport with real Three.js viewer.
+- [x] Pin Human Atlas upstream commit and provenance.
+- [x] Resolve demo L4–L5 structure to real FMA concept `FMA16036`.
+- [x] Load real BodyParts3D geometry for the confirmed report structure.
+- [ ] Generalize renderer to compound concepts and multiple structures.
+- [ ] Add atlas search, system layers and isolation controls.
+- [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
 - [ ] Validate build + browser interaction.
 - [ ] Deploy preview.
 

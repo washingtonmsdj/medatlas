@@ -99,13 +99,18 @@ function App() {
               </div>
 
               <div className="finding-match">
-                <span>Estrutura sugerida</span>
+                <span>Estrutura confirmada no atlas</span>
                 <strong>{report.finding.anatomicalStructure}</strong>
-                <small>O profissional confirma antes da publicação.</small>
+                <small>
+                  {report.finding.atlasRef} · {report.finding.atlasConceptId}
+                </small>
               </div>
             </section>
 
-            <AtlasViewport selected={report.finding.anatomicalStructure} />
+            <AtlasViewport
+              selected={report.finding.anatomicalStructure}
+              conceptId={report.finding.atlasConceptId}
+            />
           </div>
 
           <ReportComposer report={report} onPublish={publish} />

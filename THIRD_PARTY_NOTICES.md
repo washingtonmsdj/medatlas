@@ -2,11 +2,19 @@
 
 ## Human Atlas
 
-Planned upstream: https://github.com/ashemag/human-atlas
+Upstream: https://github.com/ashemag/human-atlas
+
+Pinned integration commit:
+
+`1c38bf35c254a891200d3cedecfd57abebe83d8d`
 
 The upstream application code is licensed under the MIT License.
 
-When Human Atlas source code or substantial portions are incorporated into MedAtlas, preserve the upstream copyright notice and MIT permission notice with the vendored/adapted source.
+MedAtlas preserves the upstream MIT text in:
+
+`third_party/human-atlas/LICENSE`
+
+The binary decoding approach and BodyParts3D packaging contract used in `src/atlas/model.ts` are adapted from Human Atlas.
 
 ## BodyParts3D
 
@@ -22,7 +30,7 @@ Source and license information:
 - https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
 - https://creativecommons.org/licenses/by/4.0/
 
-When geometry/data is redistributed or adapted, attribution, license reference, and an indication of changes must be retained.
+Geometry/data redistribution or adaptation must preserve attribution, the license reference, and an indication of changes.
 
 ## Clinical scope
 
