@@ -556,7 +556,7 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Atlas 3D' }).click()
+  await page.getByRole('button', { name: 'Atlas 3D', exact: true }).click()
 
   await expect(
     page.getByRole('heading', { name: 'Atlas humano 3D' }),
