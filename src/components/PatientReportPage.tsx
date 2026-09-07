@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { appHomeUrl } from '../app-url'
+import type { AtlasView } from '../atlas/systems'
 import type { VisualReport } from '../domain/types'
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
@@ -20,6 +21,9 @@ export function PatientReportPage({ report }: Props) {
   >('loading')
   const [sourceLabel, setSourceLabel] = useState('')
   const [error, setError] = useState('')
+  const [view, setView] = useState<AtlasView>('three-quarter')
+  const [rotate, setRotate] = useState(false)
+  const [reset, setReset] = useState(0)
 
   const ready = useCallback((label: string) => {
     setSourceLabel(label)
@@ -80,6 +84,9 @@ export function PatientReportPage({ report }: Props) {
             <HumanAtlasScene
               conceptId={report.finding.atlasConceptId}
               contextMode="system"
+              view={view}
+              rotate={rotate}
+              reset={reset}
               appearance="patient"
               onReady={ready}
               onError={failed}
@@ -97,6 +104,56 @@ export function PatientReportPage({ report }: Props) {
                 <span>3D indisponível: {error}</span>
               )}
             </div>
+
+            <nav
+              className="patient-atlas-controls"
+              aria-label="Controles do modelo 3D do paciente"
+            >
+              {([
+                ['three-quarter', '3/4', 'Vista 3/4'],
+                ['front', 'Frente', 'Vista frontal'],
+                ['side', 'Lado', 'Vista lateral'],
+              ] as const).map(([nextView, label, ariaLabel]) => (
+                <button
+                  key={nextView}
+                  type="button"
+                  className={view === nextView ? 'active' : ''}
+                  aria-pressed={view === nextView}
+                  aria-label={ariaLabel}
+                  onClick={() => {
+                    setView(nextView)
+                    setRotate(false)
+                    setReset((current) => current + 1)
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={rotate ? 'active' : ''}
+                aria-pressed={rotate}
+                aria-label={
+                  rotate
+                    ? 'Pausar rotação do modelo 3D'
+                    : 'Girar modelo 3D automaticamente'
+                }
+                onClick={() => setRotate((current) => !current)}
+              >
+                ↻
+              </button>
+              <button
+                type="button"
+                aria-label="Redefinir modelo 3D"
+                onClick={() => {
+                  setView('three-quarter')
+                  setRotate(false)
+                  setReset((current) => current + 1)
+                }}
+              >
+                ↺
+              </button>
+            </nav>
           </div>
 
           <p className="patient-interaction-hint">
