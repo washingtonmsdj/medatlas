@@ -36,7 +36,7 @@ Hoje a geometria real BodyParts3D aparece em:
 - **Exames** — referência FMA ligada ao texto;
 - **Relatórios visuais** — Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
-- **link do paciente** — experiência simplificada com o mesmo engine.
+- **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;\n- **link do paciente** — experiência simplificada com o mesmo engine.
 
 `Equipe`, `Analytics` e `Configurações` não recebem canvas 3D por decoração: nessas telas não existe uma tarefa anatômica.
 
@@ -223,13 +223,13 @@ atual e as provas de deploy estão em `docs/RELEASE_READINESS.md`.
 
 ### GitHub Pages
 
-O workflow está em `.github/workflows/pages.yml`, mas a primeira ativação de Pages precisa ser feita administrativamente no repositório:
+O preview público está ativo em:
 
 ```text
-Settings → Pages → Source → GitHub Actions
+https://washingtonmsdj.github.io/medatlas/
 ```
 
-Depois disso o workflow pode publicar a demo.
+O workflow `.github/workflows/pages.yml` publica a aplicação, valida shell/assets anatômicos e executa Playwright contra o deploy real, incluindo canvas Human Atlas nas superfícies 3D-first, no preview pré-publicação e no portal do paciente.
 
 ## Licenças e provenance
 
@@ -250,8 +250,8 @@ O plano executável e continuamente atualizado está em:
 
 As próximas frentes são:
 
-1. habilitar/publicar uma preview externa e validar o deploy real;
-2. concluir o piloto sintético/manual e preparar critérios do piloto clínico controlado;
+1. concluir o piloto sintético/manual no preview público e corrigir UX observada;
+2. preparar critérios do piloto clínico controlado;
 3. somente depois, projeto Supabase exclusivo do MedAtlas;
 4. provas de isolamento multi-tenant + autenticação;
 5. adapter Supabase do `ClinicalRepository`;

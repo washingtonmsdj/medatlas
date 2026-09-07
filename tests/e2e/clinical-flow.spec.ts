@@ -183,7 +183,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   ).toBeVisible()
   await expect(
     patientPage.getByRole('navigation', {
-      name: 'Controles do modelo 3D do paciente',
+      name: 'Controles da anatomia 3D de referência',
     }),
   ).toBeVisible()
   await expect(

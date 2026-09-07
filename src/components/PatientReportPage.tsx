@@ -182,7 +182,7 @@ export function PatientReportPage({ report }: Props) {
 
             <nav
               className="patient-atlas-controls"
-              aria-label="Controles do modelo 3D do paciente"
+              aria-label="Controles da anatomia 3D de referência"
             >
               {([
                 ['three-quarter', '3/4', 'Vista 3/4'],

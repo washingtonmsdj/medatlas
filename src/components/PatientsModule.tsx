@@ -172,7 +172,7 @@ export function PatientsModule({
       <section className="patient-anatomy-live">
         <div className="patient-anatomy-live-copy">
           <span className="section-kicker">DIFERENCIAL MEDATLAS · 3D REAL</span>
-          <h2>A anatomia ligada a este paciente, agora no próprio contexto.</h2>
+          <h2>A anatomia ligada ao relatório deste paciente, agora no próprio contexto.</h2>
           <p>
             Esta área usa o mesmo Human Atlas do relatório e do link do paciente.
             Não é ilustração, thumbnail ou modelo genérico paralelo.

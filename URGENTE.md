@@ -393,7 +393,7 @@ Se o usuário autorizar **ativar produção/Supabase**:
 ## 10. DO NOT REPEAT
 
 - não recriar renderer 3D paralelo;
-- não substituir Human Atlas por modelo fake/simplificado;
+- não substituir Human Atlas por modelo fake/simplificado;\n- não usar linguagem que sugira que o BodyParts3D é o “modelo/corpo do paciente”; sempre deixar claro que é anatomia de referência;
 - não recolocar thumbnail, órbita, ilustração ou badge “3D” como substituto de geometria real em qualquer superfície anatômica;
 - não adicionar canvas 3D decorativo em Equipe, Analytics ou Configurações: 3D deve existir onde há tarefa anatômica real;
 - não reabrir layout antigo do Clinical Report Studio;

@@ -173,7 +173,7 @@ for (const fragment of requiredClinicalWorkbenchFragments) {
 }
 
 const requiredPatient3dFragments = [
-  'Controles do modelo 3D do paciente',
+  'Controles da anatomia 3D de referência',
   'Girar modelo 3D automaticamente',
   'appearance="patient"',
 ]
