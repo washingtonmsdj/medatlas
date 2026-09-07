@@ -161,8 +161,19 @@ export function HumanAtlasScene({
 
   if (!prepared) {
     return (
-      <div className="human-atlas-scene focused-reference-loading">
-        <span>Preparando anatomia de referência…</span>
+      <div
+        className="human-atlas-scene focused-reference-loading"
+        role="status"
+        aria-live="polite"
+        aria-label="Preparando anatomia de referência"
+      >
+        <div className="focused-reference-loading-card">
+          <span className="focused-reference-loader" aria-hidden="true" />
+          <div>
+            <strong>Preparando anatomia de referência</strong>
+            <small>Carregando somente as peças necessárias para este foco.</small>
+          </div>
+        </div>
       </div>
     )
   }
