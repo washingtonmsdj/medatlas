@@ -7968,3 +7968,497 @@ button:not(:disabled):active {
     min-width: 640px;
   }
 }
+
+
+/* MEDATLAS_3D_FIRST_MVP */
+.anatomy-focus-preview {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #cfdce8;
+  border-radius: 18px;
+  background: #07131f;
+  box-shadow: 0 18px 42px rgba(7, 25, 40, .14);
+}
+
+.anatomy-focus-preview-header {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  color: #eff8ff;
+  border-bottom: 1px solid rgba(129, 181, 213, .18);
+  background:
+    linear-gradient(135deg, rgba(19, 52, 76, .96), rgba(6, 21, 34, .98));
+}
+
+.anatomy-focus-preview-header > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.anatomy-focus-preview-header .section-kicker {
+  color: #79cbe5;
+}
+
+.anatomy-focus-preview-header strong {
+  overflow: hidden;
+  color: #f5fbff;
+  font-size: 15px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anatomy-focus-preview-header small {
+  color: #91aabd;
+  font-size: 9px;
+}
+
+.anatomy-focus-preview-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.anatomy-focus-preview-badges span {
+  padding: 5px 8px;
+  border: 1px solid rgba(127, 171, 199, .28);
+  border-radius: 999px;
+  color: #a9bdcb;
+  background: rgba(6, 17, 28, .6);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.anatomy-focus-preview-badges .is-live {
+  color: #98ead2;
+  border-color: rgba(71, 200, 160, .38);
+  background: rgba(17, 103, 78, .22);
+}
+
+.anatomy-focus-preview-badges .needs-review {
+  color: #ffd38e;
+  border-color: rgba(239, 173, 67, .38);
+  background: rgba(128, 78, 10, .24);
+}
+
+.anatomy-focus-preview-stage {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(37, 87, 120, .65), rgba(10, 27, 43, .94) 42%, #06111c 76%);
+}
+
+.anatomy-focus-preview-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 12% 2% 12%;
+  height: 18%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(54, 139, 181, .14), transparent 68%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.anatomy-focus-preview-stage .human-atlas-scene,
+.anatomy-focus-preview-stage .focused-reference-loading {
+  min-height: 360px;
+}
+
+.anatomy-focus-preview-compact .anatomy-focus-preview-stage,
+.anatomy-focus-preview-compact .anatomy-focus-preview-stage .human-atlas-scene,
+.anatomy-focus-preview-compact .anatomy-focus-preview-stage .focused-reference-loading {
+  min-height: 285px;
+}
+
+.anatomy-focus-preview-patient {
+  border-color: #d9e5ec;
+  background: #f7fbfd;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-header {
+  color: #18364a;
+  border-bottom-color: #dce8ef;
+  background: linear-gradient(135deg, #f9fcfd, #edf6f8);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-header .section-kicker {
+  color: #1e6f83;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-header strong {
+  color: #16364a;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-header small {
+  color: #607c8c;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-badges span {
+  color: #567481;
+  border-color: #cddfe6;
+  background: rgba(255,255,255,.78);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-badges .is-live {
+  color: #176958;
+  border-color: #b9ded3;
+  background: #edf9f5;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-stage {
+  background:
+    radial-gradient(circle at 50% 40%, #ffffff 0, #edf7f8 46%, #dcebed 100%);
+}
+
+.anatomy-focus-preview-review {
+  box-shadow: 0 0 0 1px rgba(223, 153, 46, .22), 0 18px 42px rgba(7, 25, 40, .14);
+}
+
+.anatomy-focus-preview-hud {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 4;
+  max-width: min(72%, 440px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 11px;
+  border: 1px solid rgba(103, 163, 197, .3);
+  border-radius: 11px;
+  color: #eaf7ff;
+  background: rgba(5, 18, 29, .8);
+  box-shadow: 0 8px 22px rgba(0,0,0,.24);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-hud {
+  color: #1b4052;
+  border-color: rgba(102, 146, 162, .25);
+  background: rgba(250, 254, 255, .86);
+  box-shadow: 0 8px 22px rgba(31, 72, 88, .12);
+}
+
+.anatomy-focus-preview-hud > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.anatomy-focus-preview-hud strong {
+  overflow: hidden;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anatomy-focus-preview-hud small {
+  color: #8faabd;
+  font-size: 7px;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-hud small {
+  color: #64808e;
+}
+
+.anatomy-focus-preview-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(100, 157, 190, .28);
+  border-radius: 10px;
+  background: rgba(5, 17, 28, .72);
+  backdrop-filter: blur(10px);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-controls {
+  border-color: rgba(94, 135, 150, .22);
+  background: rgba(250, 254, 255, .78);
+}
+
+.anatomy-focus-preview-controls button {
+  min-width: 38px;
+  height: 28px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 7px;
+  color: #9eb5c5;
+  background: transparent;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.anatomy-focus-preview-controls button:hover,
+.anatomy-focus-preview-controls button.active {
+  color: #eefaff;
+  background: #1b6e95;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-controls button {
+  color: #4f7180;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-controls button:hover,
+.anatomy-focus-preview-patient .anatomy-focus-preview-controls button.active {
+  color: #fff;
+  background: #2b7890;
+}
+
+.anatomy-focus-preview-empty {
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 36px;
+  color: #9fb5c4;
+  text-align: center;
+}
+
+.anatomy-focus-preview-empty > span {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(111, 169, 202, .3);
+  border-radius: 50%;
+  color: #7ec4e0;
+  background: rgba(20, 66, 91, .35);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.anatomy-focus-preview-empty strong {
+  color: #e9f6fd;
+  font-size: 12px;
+}
+
+.anatomy-focus-preview-empty p {
+  max-width: 380px;
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-empty {
+  color: #678493;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-empty > span {
+  color: #28768b;
+  border-color: #c6dde4;
+  background: #e8f4f6;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-empty strong {
+  color: #24495b;
+}
+
+.anatomy-focus-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 14px 12px;
+  color: #8fa8b9;
+  border-top: 1px solid rgba(129, 181, 213, .16);
+  background: #081624;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-footer {
+  color: #5f7b89;
+  border-top-color: #dce8ee;
+  background: #f8fbfc;
+}
+
+.anatomy-focus-preview-footer p {
+  max-width: 660px;
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.anatomy-focus-preview-footer button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(93, 157, 190, .3);
+  border-radius: 9px;
+  color: #b8d8e9;
+  background: rgba(26, 91, 124, .28);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-footer button {
+  color: #276d80;
+  border-color: #bdd5df;
+  background: #edf7f9;
+}
+
+.continue-care-body {
+  grid-template-columns: minmax(290px, 1.22fr) minmax(220px, .78fr);
+}
+
+.continue-care-body > .anatomy-focus-preview {
+  min-width: 0;
+  align-self: stretch;
+}
+
+.patient-anatomy-live,
+.consultation-anatomy-live,
+.documents-anatomy-live {
+  display: grid;
+  grid-template-columns: minmax(230px, .55fr) minmax(0, 1.45fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 16px;
+  border: 1px solid #dce6ed;
+  border-radius: 18px;
+  background: #f9fbfc;
+  box-shadow: 0 12px 30px rgba(31, 64, 84, .06);
+}
+
+.patient-anatomy-live-copy,
+.consultation-anatomy-live-copy,
+.documents-anatomy-live-copy {
+  align-self: center;
+  padding: 8px 6px;
+}
+
+.patient-anatomy-live-copy h2,
+.consultation-anatomy-live-copy h2,
+.documents-anatomy-live-copy h2 {
+  margin: 6px 0 7px;
+  color: #183a50;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.patient-anatomy-live-copy p,
+.consultation-anatomy-live-copy p,
+.documents-anatomy-live-copy p {
+  margin: 0;
+  color: #61798a;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.patient-anatomy-live {
+  border-color: #d6e5e9;
+  background: linear-gradient(135deg, #fbfdfd, #f1f7f8);
+}
+
+.patient-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage {
+  min-height: 430px;
+}
+
+.patient-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+.patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
+  min-height: 430px;
+}
+
+.consultation-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
+.documents-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage {
+  min-height: 380px;
+}
+
+.consultation-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+.consultation-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
+.documents-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+.documents-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
+  min-height: 380px;
+}
+
+@media (min-width: 1180px) {
+  .patient-grid {
+    grid-template-columns: minmax(0, 1.38fr) minmax(360px, .62fr);
+    align-items: start;
+  }
+
+  .patient-atlas-stage,
+  .patient-atlas-stage .human-atlas-scene {
+    min-height: 640px;
+  }
+
+  .patient-atlas-card {
+    box-shadow: 0 22px 55px rgba(37, 81, 99, .12);
+  }
+}
+
+@media (max-width: 1050px) {
+  .patient-anatomy-live,
+  .consultation-anatomy-live,
+  .documents-anatomy-live {
+    grid-template-columns: 1fr;
+  }
+
+  .continue-care-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .anatomy-focus-preview-header,
+  .anatomy-focus-preview-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .anatomy-focus-preview-badges {
+    justify-content: flex-start;
+  }
+
+  .anatomy-focus-preview-stage,
+  .anatomy-focus-preview-stage .human-atlas-scene,
+  .anatomy-focus-preview-stage .focused-reference-loading,
+  .patient-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
+  .patient-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+  .patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
+  .consultation-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
+  .consultation-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+  .consultation-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
+  .documents-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
+  .documents-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+  .documents-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
+    min-height: 340px;
+  }
+
+  .anatomy-focus-preview-controls {
+    top: 8px;
+    right: 8px;
+    max-width: calc(100% - 16px);
+    overflow-x: auto;
+  }
+
+  .anatomy-focus-preview-hud {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-width: none;
+  }
+
+  .patient-anatomy-live,
+  .consultation-anatomy-live,
+  .documents-anatomy-live {
+    padding: 10px;
+  }
+}
