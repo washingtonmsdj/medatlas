@@ -119,10 +119,11 @@ export function Overview({
               label={report.finding.anatomicalStructure}
               atlasRef={report.finding.atlasRef}
               eyebrow="3D DO ATENDIMENTO · HUMAN ATLAS"
+              contextMode="none"
               compact
               reviewRequired={report.finding.anatomyReviewRequired}
               onOpenAtlas={onOpenAtlas}
-              description="O atendimento já abre com a anatomia real ligada ao relatório. A geometria é de referência e continua dependente da confirmação profissional."
+              description="O atendimento abre com a anatomia confirmada em foco isolado. A geometria é de referência e continua dependente da confirmação profissional."
             />
 
             <div className="continue-care-copy">

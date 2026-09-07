@@ -135,6 +135,7 @@ Hierarquia permanente:
 - [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
 - [x] portal do paciente também possui gate mobile 390 px para canvas, controles horizontais e ausência de overflow;
 - [x] Dashboard mobile preserva o 3D do atendimento como superfície principal, com palco >= 400 px protegido por E2E;
+- [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
 - [x] capturas desktop/mobile geradas por Playwright.

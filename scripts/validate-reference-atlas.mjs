@@ -231,6 +231,12 @@ const contextual3dSurfaces = [
   ['patient-preview', reportComposer, 'HUMAN ATLAS 3D · VISÃO DO PACIENTE'],
 ]
 
+if (!overview.includes('contextMode="none"')) {
+  failures.push(
+    'dashboard contextual 3D must use isolated focus instead of broad system context',
+  )
+}
+
 for (const [surface, source, marker] of contextual3dSurfaces) {
   if (!source.includes('<AnatomyFocusPreview')) {
     failures.push(surface + ' surface is not using canonical AnatomyFocusPreview')
