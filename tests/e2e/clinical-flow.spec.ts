@@ -143,6 +143,9 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     patientPage.getByText('SEU EXAME, EXPLICADO VISUALMENTE'),
   ).toBeVisible()
   await expect(
+    patientPage.getByText('Clínica Horizonte', { exact: true }).first(),
+  ).toBeVisible()
+  await expect(
     patientPage.getByRole('heading', {
       name: 'Entenda seu exame — coração',
     }),
@@ -762,5 +765,29 @@ test('organization switcher changes the active clinical workspace locally', asyn
   await expect(
     page.getByText(/Cardiologia · Unidade principal · demonstração/),
   ).toBeVisible()
+})
+
+test('settings expose source-first clinic branding without enabling mutations', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Configurações' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Ambiente sintético e controles locais',
+    }),
+  ).toBeVisible()
+
+  await expect(page.getByText('BRANDING DA CLÍNICA')).toBeVisible()
+  await expect(
+    page.getByText('Clínica Horizonte', { exact: true }).first(),
+  ).toBeVisible()
+  await expect(page.getByText('#1E7AD7')).toBeVisible()
+
+  await expect(
+    page.getByRole('button', { name: 'Editar identidade visual' }),
+  ).toBeDisabled()
 })
 
