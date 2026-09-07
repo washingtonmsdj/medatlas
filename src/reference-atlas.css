@@ -864,8 +864,21 @@
   }
 
   .reference-atlas-stage {
-    min-height: 1040px;
+    min-height: 1320px;
     border-radius: 15px;
+  }
+
+  /*
+   * Mobile Explorer gets a dedicated 3D viewport below the search/layers/
+   * inspector stack. Those controls must never mask the anatomy itself.
+   */
+  .reference-atlas-scene {
+    top: 646px;
+    bottom: 145px;
+  }
+
+  .reference-renderer-loading {
+    inset: 646px 0 145px;
   }
 
   .reference-atlas-search {
@@ -893,6 +906,8 @@
     left: 12px;
     right: 12px;
     width: auto;
+    max-height: 285px;
+    overflow: auto;
   }
 
   .reference-view-controls {

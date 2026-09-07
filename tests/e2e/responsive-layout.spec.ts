@@ -208,5 +208,18 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   expect(mobileSystemsBox).not.toBeNull()
   expect(mobileSystemsBox!.width).toBeGreaterThan(300)
 
+  const mobileInspector = page.locator('.reference-inspector-card')
+  const mobileInspectorBox = await mobileInspector.boundingBox()
+  const mobileSceneBox = await stage
+    .locator('.reference-atlas-scene')
+    .boundingBox()
+
+  expect(mobileInspectorBox).not.toBeNull()
+  expect(mobileSceneBox).not.toBeNull()
+  expect(mobileSceneBox!.height).toBeGreaterThan(480)
+  expect(mobileSceneBox!.y).toBeGreaterThanOrEqual(
+    mobileInspectorBox!.y + mobileInspectorBox!.height + 8,
+  )
+
   await capture(page, 'atlas-explorer-mobile-390')
 })
