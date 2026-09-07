@@ -88,6 +88,20 @@ CI adicional cobre:
 - gate de revisão clínica;
 - licenças/proveniência.
 
+## Critérios 3D-first do piloto
+
+Em qualquer cenário anatômico, validar explicitamente:
+
+- o canvas real aparece no Dashboard/contexto atual, módulo clínico correspondente, preview pré-publicação e portal do paciente;
+- o 3D é visualmente dominante onde existe tarefa anatômica e não vira um thumbnail decorativo;
+- rotação por arraste, zoom e vistas 3/4/frente/lado respondem sem quebrar o layout;
+- o mesmo conceito FMA confirmado acompanha profissional → preview → paciente;
+- o deploy não apresenta erro de `atlas.json`, chunk, descompressão ou WebGL;
+- mudar o laudo/anatomia reabre a confirmação e exibe **reconfirmação anatômica necessária** enquanto a referência anterior ainda estiver visível;
+- nenhum texto sugere que BodyParts3D seja reconstrução ou “corpo/modelo do paciente”;
+- em 390 px, os controles clínicos de câmera permanecem horizontais, legíveis e sem overflow;
+- trocar de módulo não mantém canvases/renderers anteriores vivos.
+
 ## Fluxo manual sintético recomendado
 
 Executar pelo menos um cenário completo em desktop e mobile:

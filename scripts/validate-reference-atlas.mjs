@@ -194,6 +194,8 @@ const requiredFocusPreviewFragments = [
   'appearance={appearance}',
   '3D carregado',
   'chunks necessários',
+  'Reconfirmação anatômica necessária',
+  'anatomy-focus-preview-review-banner',
 ]
 
 for (const fragment of requiredFocusPreviewFragments) {

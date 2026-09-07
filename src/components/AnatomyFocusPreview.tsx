@@ -123,6 +123,23 @@ export function AnatomyFocusPreview({
         </div>
       </header>
 
+      {conceptId && reviewRequired && (
+        <div
+          className="anatomy-focus-preview-review-banner"
+          role="status"
+          aria-live="polite"
+        >
+          <span aria-hidden="true">!</span>
+          <div>
+            <strong>Reconfirmação anatômica necessária</strong>
+            <small>
+              O texto do relatório mudou. Confirme novamente esta referência
+              antes de usá-la na explicação ou publicação.
+            </small>
+          </div>
+        </div>
+      )}
+
       <div className="anatomy-focus-preview-stage">
         {conceptId ? (
           <HumanAtlasScene
