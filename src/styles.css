@@ -6385,3 +6385,24 @@ button:not(:disabled):active {
     width: 100%;
   }
 }
+/* MEDATLAS_CLINICAL_A11Y_HARDENING_V3 */
+.intake-source-status small {
+  color: #536a7d;
+}
+
+.intake-editor-toolbar small,
+.intake-editor-foot,
+.intake-editor-foot small {
+  color: #596f82;
+}
+
+.composer-progress small {
+  color: #5d7285;
+}
+
+.source-excerpt summary small,
+.explanation-heading-v2 small,
+.explanation-editor-meta,
+.provenance-panel p {
+  color: #596f82;
+}
