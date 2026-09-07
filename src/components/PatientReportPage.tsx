@@ -80,6 +80,7 @@ export function PatientReportPage({ report }: Props) {
             <HumanAtlasScene
               conceptId={report.finding.atlasConceptId}
               contextMode="system"
+              appearance="patient"
               onReady={ready}
               onError={failed}
             />
