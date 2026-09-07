@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { AtlasContextMode } from '../atlas/model'
 import type { AtlasConcept, HumanAtlas } from '../atlas/types'
 import {
   conceptDisplayName,
@@ -22,6 +23,28 @@ const QUICK_CONCEPTS = [
   { id: 'FMA7198', label: 'Pâncreas' },
 ]
 
+const CONTEXT_OPTIONS: Array<{
+  value: AtlasContextMode
+  label: string
+  description: string
+}> = [
+  {
+    value: 'none',
+    label: 'Isolado',
+    description: 'somente a estrutura selecionada',
+  },
+  {
+    value: 'system',
+    label: 'Sistema',
+    description: 'estruturas próximas do mesmo sistema',
+  },
+  {
+    value: 'region',
+    label: 'Região',
+    description: 'contexto local de vários sistemas',
+  },
+]
+
 export function AtlasViewport({
   selected,
   conceptId,
@@ -31,7 +54,8 @@ export function AtlasViewport({
   const [sourceLabel, setSourceLabel] = useState('')
   const [selectedPartCount, setSelectedPartCount] = useState(0)
   const [contextPartCount, setContextPartCount] = useState(0)
-  const [showContext, setShowContext] = useState(true)
+  const [contextMode, setContextMode] =
+    useState<AtlasContextMode>('system')
   const [error, setError] = useState('')
   const [atlas, setAtlas] = useState<HumanAtlas | null>(null)
   const [query, setQuery] = useState('')
@@ -70,7 +94,7 @@ export function AtlasViewport({
     setSourceLabel('')
     setSelectedPartCount(0)
     setContextPartCount(0)
-  }, [activeConceptId, showContext])
+  }, [activeConceptId, contextMode])
 
   const results = useMemo(
     () => (atlas ? searchAtlasConcepts(atlas, query) : []),
@@ -165,7 +189,7 @@ export function AtlasViewport({
       <div className="atlas-stage real-stage">
         <HumanAtlasScene
           conceptId={activeConceptId}
-          showContext={showContext}
+          contextMode={contextMode}
           onReady={ready}
           onError={failed}
         />
@@ -181,14 +205,20 @@ export function AtlasViewport({
           </span>
         </div>
 
-        {showContext && status === 'ready' && contextPartCount > 0 && (
-          <div className="context-legend">
-            <span className="legend-selected" />
-            <b>Estrutura</b>
-            <span className="legend-context" />
-            <b>Contexto próximo</b>
-          </div>
-        )}
+        {contextMode !== 'none' &&
+          status === 'ready' &&
+          contextPartCount > 0 && (
+            <div className="context-legend">
+              <span className="legend-selected" />
+              <b>Estrutura</b>
+              <span className="legend-context" />
+              <b>
+                {contextMode === 'system'
+                  ? 'Mesmo sistema'
+                  : 'Região próxima'}
+              </b>
+            </div>
+          )}
 
         {status === 'error' && (
           <div className="atlas-error" role="alert">
@@ -199,15 +229,19 @@ export function AtlasViewport({
       </div>
 
       <div className="atlas-actions">
-        <button type="button">Arraste para girar</button>
-        <button type="button">Role para aproximar</button>
-        <button
-          className={showContext ? 'active-context' : ''}
-          type="button"
-          onClick={() => setShowContext((current) => !current)}
-        >
-          {showContext ? 'Isolar estrutura' : 'Mostrar contexto'}
-        </button>
+        <div className="context-mode-group" aria-label="Contexto anatômico">
+          {CONTEXT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              className={contextMode === option.value ? 'active-context' : ''}
+              type="button"
+              title={option.description}
+              onClick={() => setContextMode(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
 
         {preview && preview.id !== conceptId && (
           <button
@@ -221,9 +255,10 @@ export function AtlasViewport({
       </div>
 
       <p className="integration-note">
-        O contexto usa peças vizinhas já presentes nos mesmos chunks carregados,
-        sem downloads anatômicos extras. Explorar não altera o relatório; a
-        mudança só acontece após confirmação explícita do profissional.
+        As trocas de contexto reutilizam chunks anatômicos em memória. O modo
+        Região usa somente peças próximas presentes nos blocos já necessários
+        à estrutura, evitando transformar cada clique em um novo download do
+        atlas completo.
       </p>
     </section>
   )

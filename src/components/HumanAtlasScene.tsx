@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { loadConceptScene } from '../atlas/model'
+import {
+  loadConceptScene,
+  type AtlasContextMode,
+} from '../atlas/model'
 import { findAtlasConcept, loadHumanAtlas } from '../atlas/source'
 
 interface Props {
   conceptId: string
-  showContext: boolean
+  contextMode: AtlasContextMode
   onReady?: (
     label: string,
     selectedPartCount: number,
@@ -35,7 +38,7 @@ const SYSTEM_COLORS: Record<string, string> = {
 
 export function HumanAtlasScene({
   conceptId,
-  showContext,
+  contextMode,
   onReady,
   onError,
 }: Props) {
@@ -46,7 +49,6 @@ export function HumanAtlasScene({
 
     if (!element) return
 
-    const abort = new AbortController()
     let disposed = false
     let frame = 0
 
@@ -148,8 +150,8 @@ export function HumanAtlasScene({
         const loaded = await loadConceptScene(
           atlas,
           concept,
-          abort.signal,
-          showContext ? 10 : 0,
+          contextMode,
+          contextMode === 'region' ? 18 : 10,
         )
 
         if (disposed) {
@@ -173,15 +175,20 @@ export function HumanAtlasScene({
           if (selected) selectedCount += 1
           else contextCount += 1
 
+          const contextColor =
+            contextMode === 'region'
+              ? SYSTEM_COLORS[part.system] ?? '#7890a4'
+              : '#7890a4'
+
           const material = new THREE.MeshStandardMaterial({
             color: selected
               ? SYSTEM_COLORS[part.system] ?? '#54c7ff'
-              : '#7890a4',
+              : contextColor,
             roughness: selected ? 0.46 : 0.72,
             metalness: selected ? 0.06 : 0,
             side: THREE.DoubleSide,
             transparent: !selected,
-            opacity: selected ? 1 : 0.16,
+            opacity: selected ? 1 : contextMode === 'region' ? 0.2 : 0.15,
             depthWrite: selected,
           })
           materials.push(material)
@@ -194,7 +201,7 @@ export function HumanAtlasScene({
         fit(visibleBounds)
         onReady?.(concept.name, selectedCount, contextCount)
       } catch (error) {
-        if (!disposed && !abort.signal.aborted) {
+        if (!disposed) {
           onError?.(
             error instanceof Error
               ? error.message
@@ -206,7 +213,6 @@ export function HumanAtlasScene({
 
     return () => {
       disposed = true
-      abort.abort()
       cancelAnimationFrame(frame)
       observer.disconnect()
       controls.dispose()
@@ -215,7 +221,7 @@ export function HumanAtlasScene({
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [conceptId, onError, onReady, showContext])
+  }, [conceptId, contextMode, onError, onReady])
 
   return <div className="human-atlas-scene" ref={host} />
 }

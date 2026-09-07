@@ -62,7 +62,7 @@ export function PatientReportPage({ report }: Props) {
           <div className="patient-atlas-stage">
             <HumanAtlasScene
               conceptId={report.finding.atlasConceptId}
-              showContext
+              contextMode="system"
               onReady={ready}
               onError={failed}
             />

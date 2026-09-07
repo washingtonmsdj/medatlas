@@ -496,3 +496,10 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   .patient-footer { align-items:flex-start; flex-direction:column; }
   .share-actions { flex-direction:column; }
 }
+
+
+.context-mode-group {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}

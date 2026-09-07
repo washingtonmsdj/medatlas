@@ -18,14 +18,14 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Avoid duplicate downloads when many concept parts share one atlas chunk.
 - [x] Add anatomical search with Portuguese aliases + FMA/source-name lookup.
 - [x] Separate preview from explicit clinician confirmation.
-- [x] Add isolate mode and zero-extra-download local anatomical context.
+- [x] Add progressive Isolado / Sistema / Região context modes.
+- [x] Cache immutable anatomy chunks in-memory across context changes.
 - [x] Restore GitHub Actions by temporarily using the public repository.
 - [x] Add editable patient explanation with explicit re-review gate after changes.
 - [x] Add a real patient-facing demo route using the same confirmed 3D concept.
-- [ ] Add system layers and richer contextual body navigation.
+- [ ] Enable repository GitHub Pages source once, then re-run the ready preview workflow.
 - [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
 - [ ] Validate browser interaction against a deployed preview.
-- [ ] Deploy preview.
 
 ## P1 — SaaS core
 

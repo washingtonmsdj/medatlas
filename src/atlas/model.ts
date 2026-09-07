@@ -13,11 +13,15 @@ import type {
   HumanAtlas,
 } from './types'
 
+export type AtlasContextMode = 'none' | 'system' | 'region'
+
 export interface LoadedAtlasPart {
   part: AtlasPart
   geometry: THREE.BufferGeometry
   selected: boolean
 }
+
+const chunkBufferCache = new Map<string, Promise<ArrayBuffer>>()
 
 async function decodeModelResponse(
   response: Response,
@@ -48,19 +52,25 @@ async function decodeModelResponse(
   return buffer
 }
 
-async function loadChunkBuffer(
-  chunk: AtlasChunk,
-  signal?: AbortSignal,
-): Promise<ArrayBuffer> {
+async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
   const canDecompress =
     Boolean(chunk.gzip) && typeof DecompressionStream !== 'undefined'
+  const url = assetUrl(canDecompress ? chunk.gzip! : chunk.url)
+  const cached = chunkBufferCache.get(url)
 
-  const response = await fetch(
-    assetUrl(canDecompress ? chunk.gzip! : chunk.url),
-    { signal },
-  )
+  if (cached) return cached
 
-  return decodeModelResponse(response, chunk.bytes, canDecompress)
+  const request = fetch(url)
+    .then((response) =>
+      decodeModelResponse(response, chunk.bytes, canDecompress),
+    )
+    .catch((error) => {
+      chunkBufferCache.delete(url)
+      throw error
+    })
+
+  chunkBufferCache.set(url, request)
+  return request
 }
 
 function geometryFromPart(
@@ -112,7 +122,7 @@ function partCenter(part: AtlasPart) {
 export async function loadConceptScene(
   atlas: HumanAtlas,
   concept: AtlasConcept,
-  signal?: AbortSignal,
+  contextMode: AtlasContextMode = 'system',
   contextLimit = 10,
 ): Promise<LoadedAtlasPart[]> {
   const selectedIds = new Set(concept.elements)
@@ -136,21 +146,27 @@ export async function loadConceptScene(
   }
 
   const selectedCenter = selectedBounds.getCenter(new THREE.Vector3())
+  const effectiveLimit =
+    contextMode === 'region' ? Math.max(contextLimit, 18) : contextLimit
 
-  const contextParts = atlas.parts
-    .filter(
-      (part) =>
-        !selectedIds.has(part.id) &&
-        selectedChunks.has(part.chunk) &&
-        selectedSystems.has(part.system),
-    )
-    .map((part) => ({
-      part,
-      distance: partCenter(part).distanceToSquared(selectedCenter),
-    }))
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, contextLimit)
-    .map(({ part }) => part)
+  const contextParts =
+    contextMode === 'none'
+      ? []
+      : atlas.parts
+          .filter(
+            (part) =>
+              !selectedIds.has(part.id) &&
+              selectedChunks.has(part.chunk) &&
+              (contextMode === 'region' ||
+                selectedSystems.has(part.system)),
+          )
+          .map((part) => ({
+            part,
+            distance: partCenter(part).distanceToSquared(selectedCenter),
+          }))
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, effectiveLimit)
+          .map(({ part }) => part)
 
   const allParts = [...selectedParts, ...contextParts]
   const neededChunks = new Set(allParts.map((part) => part.chunk))
@@ -166,7 +182,7 @@ export async function loadConceptScene(
 
         return [
           chunkIndex,
-          await loadChunkBuffer(chunk, signal),
+          await loadChunkBuffer(chunk),
         ] as [number, ArrayBuffer]
       }),
     ),
