@@ -653,3 +653,60 @@ test('clinical report uses the same Human Atlas reference engine in focused mode
     page.getByRole('button', { name: 'Vista frontal' }),
   ).toBeVisible()
 })
+
+test('team module mirrors source-first roles and keeps membership writes blocked', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Equipe' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Equipe e permissões da organização',
+    }),
+  ).toBeVisible()
+
+  const roster = page.getByRole('region', {
+    name: 'Membros da organização',
+  })
+
+  await expect(roster).toContainText('Dr. Carlos Mendes')
+  await expect(roster).toContainText('Administrador')
+  await expect(roster).toContainText('Dra. Marina Freitas')
+  await expect(roster).toContainText('Profissional clínico')
+  await expect(roster).toContainText('João Silva')
+  await expect(roster).toContainText('Equipe de apoio')
+
+  const matrix = page.getByRole('table', {
+    name: 'Matriz de permissões da equipe',
+  })
+
+  const adminRow = matrix.getByRole('row').filter({
+    hasText: 'Administrador',
+  })
+  const clinicianRow = matrix.getByRole('row').filter({
+    hasText: 'Profissional clínico',
+  })
+  const staffRow = matrix.getByRole('row').filter({
+    hasText: 'Equipe de apoio',
+  })
+
+  await expect(adminRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(3)
+  await expect(clinicianRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(2)
+  await expect(clinicianRow.getByRole('cell', { name: 'Não permitido' })).toHaveCount(1)
+  await expect(staffRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(1)
+  await expect(staffRow.getByRole('cell', { name: 'Não permitido' })).toHaveCount(2)
+
+  await expect(
+    page.getByRole('button', { name: 'Alterar papéis' }),
+  ).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Convidar membro' }),
+  ).toBeDisabled()
+
+  await expect(
+    page.getByText('Permissões visíveis; mutações bloqueadas.'),
+  ).toBeVisible()
+})
+
