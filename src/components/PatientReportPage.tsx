@@ -7,6 +7,12 @@ interface Props {
   report: VisualReport
 }
 
+const QUESTIONS = [
+  'Qual é a importância deste achado no meu caso?',
+  'Este achado pode ter relação com meus sintomas?',
+  'Preciso de acompanhamento, novos exames ou alguma mudança de rotina?',
+]
+
 export function PatientReportPage({ report }: Props) {
   const [atlasStatus, setAtlasStatus] = useState<
     'loading' | 'ready' | 'error'
@@ -31,9 +37,19 @@ export function PatientReportPage({ report }: Props) {
           <span className="brand-mark">M</span>
           <span>MedAtlas</span>
         </div>
-        <div className="patient-clinic">
-          <span>Clínica Horizonte</span>
-          <small>Demonstração · relatório visual</small>
+
+        <div className="patient-header-right">
+          <div className="patient-clinic">
+            <span>Clínica Horizonte</span>
+            <small>Demonstração · relatório visual</small>
+          </div>
+          <button
+            className="patient-print-button"
+            type="button"
+            onClick={() => window.print()}
+          >
+            Imprimir / salvar PDF
+          </button>
         </div>
       </header>
 
@@ -116,6 +132,27 @@ export function PatientReportPage({ report }: Props) {
             </p>
           </div>
         </aside>
+      </section>
+
+      <section className="patient-next-step">
+        <div>
+          <span className="section-kicker">PARA SUA PRÓXIMA CONVERSA</span>
+          <h2>Perguntas úteis para levar ao profissional</h2>
+          <p>
+            Estas perguntas são gerais e não pressupõem diagnóstico ou
+            tratamento. Elas ajudam a transformar o relatório em uma conversa
+            mais clara.
+          </p>
+        </div>
+
+        <div className="patient-question-list">
+          {QUESTIONS.map((question, index) => (
+            <article key={question}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <p>{question}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <footer className="patient-footer">

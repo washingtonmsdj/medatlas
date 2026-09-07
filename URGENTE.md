@@ -66,6 +66,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 - [ ] Desktop/mobile E2E flow.
 - [ ] Validate all synthetic scenarios end-to-end in a browser.
+- [x] Add patient discussion-question section without diagnostic/treatment claims.
+- [x] Add browser print / save-as-PDF patient report mode.
 - [ ] Accessibility pass.
 - [ ] Performance budget for anatomy payload.
 - [ ] Privacy/security review before real PHI.
