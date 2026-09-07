@@ -2118,7 +2118,7 @@ button:not(:disabled):active {
   padding: 3px 6px;
   border: 1px solid #dce5ef;
   border-radius: 6px;
-  color: #8394a8;
+  color: #415b78;
   background: #f6f8fb;
   font-size: 8px;
   font-family: inherit;
@@ -2400,7 +2400,7 @@ button:not(:disabled):active {
   padding: 6px 9px;
   border: 1px solid #cde6dc;
   border-radius: 999px;
-  color: #0e8a72;
+  color: #086953;
   background: #effaf6;
   font-size: 8px;
   font-weight: 800;
@@ -2591,7 +2591,7 @@ button:not(:disabled):active {
 }
 
 .queue-item small {
-  color: #7f8fa2;
+  color: #5b6f87;
   font-size: 8px;
 }
 
@@ -2633,7 +2633,7 @@ button:not(:disabled):active {
   display: grid;
   place-items: center;
   border-radius: 10px;
-  color: #126fe9;
+  color: #0757b5;
   background: #e6f1ff;
   font-size: 9px;
   font-weight: 900;
