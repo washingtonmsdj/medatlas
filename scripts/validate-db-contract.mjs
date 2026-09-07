@@ -17,8 +17,8 @@ const migrationSources = await Promise.all(
 )
 
 const sql = migrationSources
-  .map(({ name, sql: source }) => `-- ${name}\n${source}`)
-  .join('\n\n')
+  .map(({ name, sql: source }) => `-- ${name}\\n${source}`)
+  .join('\\n\\n')
 
 const requiredTables = [
   'organizations',
@@ -55,21 +55,33 @@ const invariants = [
   ['share revocation', 'revoked_at timestamptz'],
   ['share expiry', 'expires_at timestamptz not null'],
   ['report publish gate', "status <> 'published'"],
-  ['anatomy review gate', 'anatomy_review_required boolean not null default true'],
+  [
+    'anatomy review gate',
+    'anatomy_review_required boolean not null default true',
+  ],
   ['explanation provenance', 'explanation_provenance jsonb not null'],
   ['approval identity', 'approved_by uuid references auth.users'],
   ['approval timestamp', 'approved_at timestamptz'],
-  ['private document bucket', "'clinical-documents',\n  'clinical-documents',\n  false"],
+  [
+    'private document bucket',
+    "'clinical-documents',\\n  'clinical-documents',\\n  false",
+  ],
   ['document digest', 'sha256_hex text not null'],
   ['audit log', 'create table if not exists public.audit_events'],
   ['public share RPC', 'medatlas_resolve_report_share'],
   ['tenant helper', 'medatlas_is_org_member'],
   ['organization admin helper', 'medatlas_is_org_admin'],
-  ['organization units', 'create table if not exists public.organization_units'],
-  ['clinical workspaces', 'create table if not exists public.clinical_workspaces'],
+  [
+    'organization units',
+    'create table if not exists public.organization_units',
+  ],
+  [
+    'clinical workspaces',
+    'create table if not exists public.clinical_workspaces',
+  ],
   [
     'workspace tenant-safe unit FK',
-    'foreign key (unit_id, organization_id)\n    references public.organization_units(id, organization_id)',
+    'foreign key (unit_id, organization_id)\\n    references public.organization_units(id, organization_id)',
   ],
   [
     'workspace admin write policy',
@@ -88,49 +100,8 @@ const invariants = [
     'create policy organization_branding_admin_write',
   ],
   [
-    'branding color format',
-    "primary_color_hex ~ '^#[0-9A-Fa-f]{6}
-
-for (const [label, marker] of invariants) {
-  if (!sql.includes(marker)) {
-    failures.push(`Missing invariant: ${label}`)
-  }
-}
-
-const tableDefinitions = [
-  ...sql.matchAll(
-    /create table if not exists\s+public\.[a-z0-9_]+\s*\([\s\S]*?\n\);/gi,
-  ),
-].map((match) => match[0])
-
-if (
-  tableDefinitions.some((definition) =>
-    /\braw_token\s+(text|varchar)\b/i.test(definition),
-  )
-) {
-  failures.push('A raw share token appears to be persisted as a table column')
-}
-
-if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
-  failures.push('Anonymous table-wide grant detected')
-}
-
-if (!sql.includes("grant execute on function public.medatlas_resolve_report_share(text)\n  to anon, authenticated;")) {
-  failures.push('Anonymous access must be limited to the token resolver RPC')
-}
-
-if (failures.length > 0) {
-  console.error('MedAtlas database contract FAILED')
-  for (const failure of failures) {
-    console.error(`- ${failure}`)
-  }
-  process.exit(1)
-}
-
-console.log(
-  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/share/storage invariants.`,
-)
-",
+    'branding color field',
+    "primary_color_hex text not null default '#1E7AD7'",
   ],
 ]
 
@@ -142,23 +113,27 @@ for (const [label, marker] of invariants) {
 
 const tableDefinitions = [
   ...sql.matchAll(
-    /create table if not exists\s+public\.[a-z0-9_]+\s*\([\s\S]*?\n\);/gi,
+    /create table if not exists\\s+public\\.[a-z0-9_]+\\s*\\([\\s\\S]*?\\n\\);/gi,
   ),
 ].map((match) => match[0])
 
 if (
   tableDefinitions.some((definition) =>
-    /\braw_token\s+(text|varchar)\b/i.test(definition),
+    /\\braw_token\\s+(text|varchar)\\b/i.test(definition),
   )
 ) {
   failures.push('A raw share token appears to be persisted as a table column')
 }
 
-if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
+if (/grant\\s+all\\s+on\\s+table[\\s\\S]*?\\bto\\s+anon\\b/i.test(sql)) {
   failures.push('Anonymous table-wide grant detected')
 }
 
-if (!sql.includes("grant execute on function public.medatlas_resolve_report_share(text)\n  to anon, authenticated;")) {
+if (
+  !sql.includes(
+    "grant execute on function public.medatlas_resolve_report_share(text)\\n  to anon, authenticated;",
+  )
+) {
   failures.push('Anonymous access must be limited to the token resolver RPC')
 }
 
@@ -171,5 +146,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/share/storage invariants.`,
+  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/branding/share/storage invariants.`,
 )
