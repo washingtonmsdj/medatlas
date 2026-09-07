@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react'
+import { useMemo, useState, type ChangeEvent } from 'react'
 import type { AnatomySuggestion } from '../clinical/anatomy-suggestions'
 import {
   REPORT_EXAMPLES,
@@ -41,6 +41,38 @@ export function ReportIntake({
   const [fileError, setFileError] = useState('')
   const [fileName, setFileName] = useState('')
 
+  const sourceState = useMemo(() => {
+    if (analyzing) {
+      return {
+        label: 'Analisando',
+        detail: 'Comparando o texto com conceitos anatômicos permitidos.',
+        tone: 'working',
+      }
+    }
+
+    if (suggestions.length > 0) {
+      return {
+        label: `${suggestions.length} correspondência${suggestions.length === 1 ? '' : 's'}`,
+        detail: 'Sugestões prontas para confirmação humana.',
+        tone: 'ready',
+      }
+    }
+
+    if (sourceText.trim().length >= 3) {
+      return {
+        label: 'Texto pronto',
+        detail: 'Nenhuma anatomia será aplicada sem confirmação.',
+        tone: 'ready',
+      }
+    }
+
+    return {
+      label: 'Aguardando laudo',
+      detail: 'Cole texto ou carregue um exemplo sintético.',
+      tone: 'idle',
+    }
+  }, [analyzing, sourceText, suggestions.length])
+
   const importLocalText = async (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
@@ -82,31 +114,45 @@ export function ReportIntake({
   }
 
   return (
-    <section className="intake-card">
-      <div className="intake-heading">
+    <section className="intake-card intake-card-v2">
+      <div className="intake-heading intake-heading-v2">
         <div>
-          <span className="section-kicker">1 · LAUDO / RELATÓRIO</span>
+          <span className="section-kicker">FONTE CLÍNICA</span>
           <h2>Localizar anatomia mencionada</h2>
           <p>
-            Cole, edite ou importe um texto sintético. O MedAtlas procura
-            referências que existem no atlas e apresenta sugestões para
-            confirmação humana.
+            Texto primeiro. Sugestão depois. Confirmação humana sempre.
           </p>
         </div>
-        <span className="intake-safety-badge">sem diagnóstico automático</span>
+
+        <div className="intake-status-cluster">
+          <span className="intake-safety-badge">sem diagnóstico automático</span>
+          <span
+            className={`intake-source-status ${sourceState.tone}`}
+            role="status"
+            aria-live="polite"
+          >
+            <i aria-hidden="true" />
+            <span>
+              <strong>{sourceState.label}</strong>
+              <small>{sourceState.detail}</small>
+            </span>
+          </span>
+        </div>
       </div>
 
-      <div className="example-row" aria-label="Exemplos sintéticos">
-        <span>Testar cenário:</span>
-        {REPORT_EXAMPLES.map((example) => (
-          <button
-            key={example.id}
-            type="button"
-            onClick={() => onLoadExample(example)}
-          >
-            {example.label}
-          </button>
-        ))}
+      <div className="intake-example-strip">
+        <div className="example-row" aria-label="Exemplos sintéticos">
+          <span>Cenários rápidos</span>
+          {REPORT_EXAMPLES.map((example) => (
+            <button
+              key={example.id}
+              type="button"
+              onClick={() => onLoadExample(example)}
+            >
+              {example.label}
+            </button>
+          ))}
+        </div>
 
         <label className="file-import-button">
           <input
@@ -115,43 +161,53 @@ export function ReportIntake({
             accept=".txt,.md,text/plain,text/markdown"
             onChange={(event) => void importLocalText(event)}
           />
-          Importar .txt/.md
+          <span aria-hidden="true">↑</span>
+          Importar texto
         </label>
       </div>
 
-      <div className="local-file-note">
-        <span>Processamento local</span>
-        <p>
-          O arquivo não é enviado para servidor. Use somente conteúdo fictício
-          neste MVP.
-        </p>
-        {fileName && <strong>{fileName}</strong>}
-      </div>
+      <div className="intake-editor-shell">
+        <div className="intake-editor-toolbar">
+          <span>Laudo / relatório</span>
+          <div>
+            {fileName && <strong>{fileName}</strong>}
+            <small>{sourceText.length.toLocaleString('pt-BR')} caracteres</small>
+          </div>
+        </div>
 
-      <textarea
-        className="intake-editor"
-        aria-label="Texto do laudo ou relatório"
-        value={sourceText}
-        onChange={(event) => {
-          setFileName('')
-          setFileError('')
-          onSourceTextChange(event.target.value)
-        }}
-        rows={5}
-        placeholder="Ex.: Protusão discal posterior em L4-L5..."
-      />
+        <textarea
+          className="intake-editor"
+          aria-label="Texto do laudo ou relatório"
+          value={sourceText}
+          onChange={(event) => {
+            setFileName('')
+            setFileError('')
+            onSourceTextChange(event.target.value)
+          }}
+          rows={7}
+          placeholder="Ex.: Protusão discal posterior em L4-L5..."
+        />
+
+        <div className="intake-editor-foot">
+          <span>
+            <i aria-hidden="true">◉</i>
+            Processamento local · demonstração sintética
+          </span>
+          <small>Máx. 64 KB em .txt/.md neste MVP</small>
+        </div>
+      </div>
 
       {anatomyReviewRequired && (
         <div className="anatomy-reconfirm-note">
           <strong>Reconfirmação anatômica necessária</strong>
           <span>
-            O texto mudou. O último 3D pode continuar visível para comparação,
-            mas precisa ser confirmado novamente antes de gerar ou publicar.
+            O texto mudou. O último 3D continua visível apenas para comparação
+            até uma estrutura ser confirmada novamente.
           </span>
         </div>
       )}
 
-      <div className="intake-actions">
+      <div className="intake-actions intake-actions-v2">
         <button
           className="primary"
           type="button"
@@ -161,7 +217,7 @@ export function ReportIntake({
           {analyzing ? 'Analisando anatomia…' : 'Sugerir estruturas'}
         </button>
         <span>
-          A sugestão não altera o relatório até o profissional confirmar.
+          Nada é aplicado automaticamente ao relatório.
         </span>
       </div>
 
@@ -172,50 +228,63 @@ export function ReportIntake({
       )}
 
       {suggestions.length > 0 && (
-        <div className="suggestion-list">
+        <div className="suggestion-list suggestion-list-v2">
           <div className="suggestion-list-heading">
-            <strong>Estruturas encontradas no texto</strong>
+            <div>
+              <span className="section-kicker">RESULTADO DA TRIAGEM</span>
+              <strong>Confirme a referência visual correta</strong>
+            </div>
             <span>{suggestions.length} sugestão(ões)</span>
           </div>
 
-          {suggestions.map((suggestion) => (
-            <article
-              className="suggestion-item"
-              key={suggestion.concept.id}
-            >
-              <div className="suggestion-confidence">
-                <span
-                  className={
-                    suggestion.confidence === 'high'
-                      ? 'confidence-high'
-                      : 'confidence-medium'
-                  }
-                />
-                <small>
-                  {suggestion.confidence === 'high'
-                    ? 'correspondência direta'
-                    : 'nome do atlas'}
-                </small>
-              </div>
+          {suggestions.map((suggestion, index) => {
+            const highConfidence = suggestion.confidence === 'high'
 
-              <div className="suggestion-copy">
-                <strong>{suggestion.displayName}</strong>
-                <span>
-                  {suggestion.concept.name} · {suggestion.concept.id}
-                </span>
-                <small>
-                  encontrado por “{suggestion.evidence}”
-                </small>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => onConfirmSuggestion(suggestion)}
+            return (
+              <article
+                className={`suggestion-item ${index === 0 ? 'suggestion-primary' : ''}`}
+                key={suggestion.concept.id}
               >
-                Confirmar estrutura
-              </button>
-            </article>
-          ))}
+                <div
+                  className={`suggestion-rank ${highConfidence ? 'high' : 'medium'}`}
+                  aria-label={
+                    highConfidence
+                      ? 'Alta confiança: correspondência direta'
+                      : 'Confiança moderada: nome do atlas'
+                  }
+                >
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <small>
+                    {highConfidence ? 'Alta confiança' : 'Confiança moderada'}
+                  </small>
+                </div>
+
+                <div className="suggestion-copy">
+                  <div>
+                    <strong>{suggestion.displayName}</strong>
+                    <code>{suggestion.concept.id}</code>
+                  </div>
+                  <span>{suggestion.concept.name}</span>
+                  <small>
+                    encontrado por “{suggestion.evidence}”
+                  </small>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onConfirmSuggestion(suggestion)}
+                >
+                  Confirmar estrutura
+                </button>
+              </article>
+            )
+          })}
+
+          <p className="suggestion-safety-note">
+            A confiança indica apenas a força da correspondência textual com o
+            atlas. Não representa certeza clínica, diagnóstico ou relevância do
+            achado.
+          </p>
         </div>
       )}
     </section>
