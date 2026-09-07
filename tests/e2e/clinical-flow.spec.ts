@@ -1,0 +1,174 @@
+import { expect, test } from '@playwright/test'
+
+const scenarios = [
+  {
+    label: 'Coluna lombar',
+    conceptId: 'FMA16036',
+    displayName: 'Disco intervertebral L4–L5',
+  },
+  {
+    label: 'Rim',
+    conceptId: 'FMA7203',
+    displayName: 'Rins',
+  },
+  {
+    label: 'Coração',
+    conceptId: 'FMA7088',
+    displayName: 'Coração',
+  },
+  {
+    label: 'Ombro',
+    conceptId: 'FMA9629',
+    displayName: 'Supraespinal',
+  },
+]
+
+async function openReports(page: import('@playwright/test').Page) {
+  await page.goto('/')
+  await expect(
+    page.getByRole('heading', {
+      name: 'Visão geral do fluxo clínico visual.',
+    }),
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+}
+
+test('all synthetic scenarios surface the expected anatomy first', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  for (const scenario of scenarios) {
+    await page
+      .getByRole('button', { name: scenario.label, exact: true })
+      .click()
+
+    await expect(
+      page.getByText('Reconfirmação anatômica necessária'),
+    ).toBeVisible()
+
+    await page
+      .getByRole('button', { name: 'Sugerir estruturas' })
+      .click()
+
+    const firstSuggestion = page.locator('.suggestion-item').first()
+
+    await expect(firstSuggestion).toContainText(scenario.displayName)
+    await expect(firstSuggestion).toContainText(scenario.conceptId)
+  }
+})
+
+test('clinician review gate leads to a patient-facing visual report', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  const heartSuggestion = page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+
+  await expect(heartSuggestion).toContainText('Coração')
+  await heartSuggestion
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  await expect(
+    page.getByText('Coração', { exact: true }).first(),
+  ).toBeVisible()
+
+  const draftButton = page.getByRole('button', {
+    name: 'Gerar rascunho educacional',
+  })
+  await expect(draftButton).toBeEnabled()
+  await draftButton.click()
+
+  const explanation = page.getByLabel('Explicação para o paciente')
+  await expect(explanation).toContainText('tórax')
+  await expect(
+    page.getByText('Rascunho educacional MedAtlas'),
+  ).toBeVisible()
+
+  const publishBeforeReview = page.getByRole('button', {
+    name: 'Revise a explicação antes de publicar',
+  })
+  await expect(publishBeforeReview).toBeDisabled()
+
+  await page
+    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .click()
+
+  const publish = page.getByRole('button', {
+    name: 'Aprovar e gerar link do paciente',
+  })
+  await expect(publish).toBeEnabled()
+  await publish.click()
+
+  await expect(
+    page.getByText('Link de demonstração gerado'),
+  ).toBeVisible()
+
+  const [patientPage] = await Promise.all([
+    page.waitForEvent('popup'),
+    page
+      .getByRole('button', { name: 'Abrir visão do paciente' })
+      .click(),
+  ])
+
+  await patientPage.waitForLoadState('domcontentloaded')
+  await expect(
+    patientPage.getByText('SEU EXAME, EXPLICADO VISUALMENTE'),
+  ).toBeVisible()
+  await expect(
+    patientPage.getByRole('heading', {
+      name: 'Entenda seu exame — coração',
+    }),
+  ).toBeVisible()
+  await expect(patientPage.getByText('FMA7088')).toBeVisible()
+  await expect(
+    patientPage.getByRole('button', { name: 'Imprimir / salvar PDF' }),
+  ).toBeVisible()
+  await expect(
+    patientPage.getByRole('heading', {
+      name: 'Perguntas úteis para levar ao profissional',
+    }),
+  ).toBeVisible()
+})
+
+test('mobile workspace keeps the main clinical flow usable', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Rim', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  await expect(
+    page.locator('.suggestion-item').first(),
+  ).toContainText('FMA7203')
+
+  const hasHorizontalOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth + 1,
+  )
+
+  expect(hasHorizontalOverflow).toBe(false)
+})
