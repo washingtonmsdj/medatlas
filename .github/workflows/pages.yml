@@ -1,6 +1,16 @@
 name: GitHub Pages Preview
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
