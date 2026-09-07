@@ -101,7 +101,7 @@ const invariants = [
   ],
   [
     'branding color field',
-    "primary_color_hex text not null default '#1E7AD7'",
+    "primary_color_hex text not null default '#1769AA'",
   ],
 ]
 
