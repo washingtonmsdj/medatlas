@@ -39,10 +39,10 @@ const VIEW_OPTIONS: Array<{
   label: string
   short: string
 }> = [
-  { id: 'three-quarter', label: 'Vista 3/4', short: '¾' },
-  { id: 'front', label: 'Frente', short: 'F' },
-  { id: 'side', label: 'Lateral', short: 'L' },
-  { id: 'back', label: 'Costas', short: 'C' },
+  { id: 'three-quarter', label: 'Vista 3/4', short: '3/4' },
+  { id: 'front', label: 'Frente', short: 'Frente' },
+  { id: 'side', label: 'Lateral', short: 'Lado' },
+  { id: 'back', label: 'Costas', short: 'Costas' },
 ]
 
 function initialState(): AtlasExplorerSceneState {
@@ -188,6 +188,8 @@ export function ReferenceAtlasExplorer({
       selected: concept.elements,
       isolate: false,
       rotate: false,
+      explode: 0,
+      reset: current.reset + 1,
     }))
     setQuery('')
   }
@@ -230,6 +232,21 @@ export function ReferenceAtlasExplorer({
       selected: [],
       isolate: false,
       visible: [systemId],
+      explode: 0,
+      reset: current.reset + 1,
+    }))
+  }
+
+  const showPreset = (visible: AtlasSystemId[]) => {
+    setChosen(null)
+    setState((current) => ({
+      ...current,
+      selected: [],
+      isolate: false,
+      visible,
+      explode: 0,
+      rotate: false,
+      reset: current.reset + 1,
     }))
   }
 
@@ -261,21 +278,11 @@ export function ReferenceAtlasExplorer({
 
   return (
     <section
-      className="reference-atlas-explorer"
+      className="reference-atlas-explorer reference-atlas-workbench"
       aria-label="Explorador Human Atlas adaptado"
     >
-      <div className="reference-atlas-stage">
-        {atlas && (
-          <HumanAtlasExplorerScene
-            atlas={atlas}
-            state={state}
-            onSelect={choosePart}
-            onProgress={onProgress}
-            onError={onError}
-          />
-        )}
-
-        <div className="reference-atlas-identity">
+      <header className="reference-workbench-header">
+        <div>
           <span className="section-kicker">
             HUMAN ATLAS · MOTOR DE REFERÊNCIA
           </span>
@@ -292,16 +299,47 @@ export function ReferenceAtlasExplorer({
           </p>
         </div>
 
-        <div className="reference-atlas-search">
-          <label htmlFor="reference-atlas-search">
-            Buscar anatomia
-          </label>
-          <input
-            id="reference-atlas-search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Coração, rim, fêmur, FMA7088…"
+        <div className="reference-workbench-status">
+          <span className={error ? 'has-error' : progress === 100 ? 'ready' : ''}>
+            <i aria-hidden="true" />
+            {error
+              ? '3D indisponível'
+              : progress === 100
+                ? 'Atlas pronto'
+                : 'Preparando atlas'}
+          </span>
+          <button type="button" onClick={reset}>
+            Redefinir workspace
+          </button>
+        </div>
+      </header>
+
+      <div className="reference-atlas-stage">
+        {atlas && (
+          <HumanAtlasExplorerScene
+            atlas={atlas}
+            state={state}
+            onSelect={choosePart}
+            onProgress={onProgress}
+            onError={onError}
+            appearance="explorer"
           />
+        )}
+
+        <div className="reference-atlas-search reference-command-palette">
+          <label htmlFor="reference-atlas-search">
+            Buscar no corpo
+          </label>
+          <div>
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="reference-atlas-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Estrutura, órgão, osso ou FMA…"
+            />
+            <kbd>FMA</kbd>
+          </div>
 
           {query.trim().length >= 2 && (
             <div className="reference-atlas-results">
@@ -332,7 +370,10 @@ export function ReferenceAtlasExplorer({
           aria-label="Sistemas anatômicos"
         >
           <div className="reference-panel-heading">
-            <strong>Sistemas</strong>
+            <div>
+              <span className="section-kicker">CAMADAS</span>
+              <strong>Camadas anatômicas</strong>
+            </div>
             <span>{activeSystems.length}</span>
           </div>
 
@@ -340,41 +381,20 @@ export function ReferenceAtlasExplorer({
             <button
               type="button"
               onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  selected: [],
-                  isolate: false,
-                  visible: activeSystems.map(
-                    (system) => system.id,
-                  ),
-                }))
+                showPreset(activeSystems.map((system) => system.id))
               }
             >
-              Todos
+              Corpo
             </button>
             <button
               type="button"
-              onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  selected: [],
-                  isolate: false,
-                  visible: ['skeletal'],
-                }))
-              }
+              onClick={() => showPreset(['skeletal'])}
             >
               Esqueleto
             </button>
             <button
               type="button"
-              onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  selected: [],
-                  isolate: false,
-                  visible: ORGAN_SYSTEMS,
-                }))
-              }
+              onClick={() => showPreset(ORGAN_SYSTEMS)}
             >
               Órgãos
             </button>
@@ -423,21 +443,110 @@ export function ReferenceAtlasExplorer({
           </div>
 
           <div className="reference-panel-foot">
-            <span>{visibleCount.toLocaleString('pt-BR')} visíveis</span>
+            <span>
+              <b>{visibleCount.toLocaleString('pt-BR')}</b> estruturas visíveis
+            </span>
             <button
               type="button"
-              onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  selected: [],
-                  isolate: false,
-                  visible: [],
-                }))
-              }
+              onClick={() => showPreset([])}
             >
-              Ocultar tudo
+              Ocultar
             </button>
           </div>
+        </aside>
+
+        <aside className="reference-structure-card reference-inspector-card">
+          {chosen ? (
+            <>
+              <span
+                className="reference-structure-accent"
+                style={{ background: selectedSystem?.color }}
+              />
+              <span className="section-kicker">
+                ESTRUTURA SELECIONADA
+              </span>
+              <h3>{conceptDisplayName(chosen)}</h3>
+              <p>{chosen.name}</p>
+
+              <div className="reference-structure-meta">
+                <span>
+                  Referência
+                  <strong>{chosen.id}</strong>
+                </span>
+                <span>
+                  Peças
+                  <strong>{state.selected.length}</strong>
+                </span>
+                <span>
+                  Sistema
+                  <strong>{selectedSystem?.name ?? 'Anatomia'}</strong>
+                </span>
+              </div>
+
+              <button
+                className="primary"
+                type="button"
+                onClick={() =>
+                  setState((current) => ({
+                    ...current,
+                    isolate: !current.isolate,
+                    explode: 0,
+                    rotate: false,
+                    reset: current.reset + 1,
+                  }))
+                }
+              >
+                {state.isolate
+                  ? 'Reabrir contexto anatômico'
+                  : 'Focar somente nesta estrutura'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onConfirmConcept(chosen)}
+              >
+                Usar no relatório visual
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setChosen(null)
+                  setState((current) => ({
+                    ...current,
+                    selected: [],
+                    isolate: false,
+                  }))
+                }}
+              >
+                Limpar seleção
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="section-kicker">INSPETOR ANATÔMICO</span>
+              <h3>Explore antes de selecionar.</h3>
+              <p>
+                Clique diretamente no corpo, pesquise uma estrutura ou filtre
+                por camada. O MedAtlas mantém a seleção ligada ao conceito FMA
+                real usado no relatório.
+              </p>
+              <div className="reference-inspector-tips">
+                <span>
+                  <b>01</b>
+                  Arraste para girar
+                </span>
+                <span>
+                  <b>02</b>
+                  Role para aproximar
+                </span>
+                <span>
+                  <b>03</b>
+                  Clique para inspecionar
+                </span>
+              </div>
+            </>
+          )}
         </aside>
 
         <nav
@@ -509,76 +618,28 @@ export function ReferenceAtlasExplorer({
             }}
           />
           <div className="reference-explode-labels">
-            <span>Montado</span>
-            <span>Peça por peça</span>
+            <span>Corpo montado</span>
+            <span>Inventário anatômico</span>
           </div>
         </div>
 
-        {chosen && (
-          <aside className="reference-structure-card">
-            <span
-              className="reference-structure-accent"
-              style={{ background: selectedSystem?.color }}
-            />
-            <span className="section-kicker">
-              {selectedSystem?.name ?? 'ANATOMIA'}
-            </span>
-            <h3>{conceptDisplayName(chosen)}</h3>
-            <p>{chosen.name}</p>
-
-            <div className="reference-structure-meta">
-              <span>
-                FMA
-                <strong>{chosen.id}</strong>
-              </span>
-              <span>
-                Peças
-                <strong>{state.selected.length}</strong>
-              </span>
-            </div>
-
-            <button
-              className="primary"
-              type="button"
-              onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  isolate: !current.isolate,
-                  explode: 0,
-                }))
-              }
-            >
-              {state.isolate
-                ? 'Mostrar anatomia ao redor'
-                : 'Isolar estrutura'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onConfirmConcept(chosen)}
-            >
-              Usar no relatório
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setChosen(null)
-                setState((current) => ({
-                  ...current,
-                  selected: [],
-                  isolate: false,
-                }))
-              }}
-            >
-              Limpar seleção
-            </button>
-          </aside>
-        )}
+        <div className="reference-atlas-hud">
+          <span>
+            <i className="reference-hud-selected" aria-hidden="true" />
+            {chosen ? conceptDisplayName(chosen) : 'Nenhuma seleção'}
+          </span>
+          <span>
+            {state.isolate
+              ? 'Foco isolado'
+              : state.explode > 0.05
+                ? 'Anatomia separada'
+                : 'Exploração livre'}
+          </span>
+        </div>
 
         {progress < 100 && !error && (
           <div className="reference-atlas-loading" role="status">
-            <strong>Preparando anatomia completa</strong>
+            <strong>Preparando atlas anatômico</strong>
             <span>
               {progress}% · carregando{' '}
               {atlas?.parts.length.toLocaleString('pt-BR') ??
@@ -599,28 +660,17 @@ export function ReferenceAtlasExplorer({
         )}
 
         <footer className="reference-atlas-caption">
-          <span>
-            {state.isolate
-              ? chosen
-                ? conceptDisplayName(chosen)
-                : 'ESTRUTURA SELECIONADA'
-              : state.explode > 0.95
-                ? 'INVENTÁRIO ANATÔMICO'
-                : state.explode > 0.05
-                  ? 'ESTRUTURAS SEPARADAS'
-                  : 'ADULTO · MASCULINO · REFERÊNCIA'}
-          </span>
+          <span>ANATOMIA HUMANA DE REFERÊNCIA</span>
           <small>
-            Arraste para girar · zoom para aproximar · clique para
-            inspecionar
+            Human Atlas + BodyParts3D · não representa anatomia individual do paciente
           </small>
         </footer>
       </div>
 
       <p className="reference-atlas-source">
-        Engine adaptado diretamente do Human Atlas fixado em{' '}
-        <code>1c38bf35</code>. Geometria BodyParts3D 4.0 vendorizada e
-        verificada pelo MedAtlas.
+        Engine canônico do MedAtlas derivado do Human Atlas fixado em{' '}
+        <code>1c38bf35</code>. Geometria BodyParts3D 4.0 vendorizada,
+        verificada por SHA-256 e usada como anatomia de referência.
       </p>
     </section>
   )
