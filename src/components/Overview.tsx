@@ -1,4 +1,5 @@
 import type { VisualReport } from '../domain/types'
+import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 import { PilotChecklist } from './PilotChecklist'
 
 interface Props {
@@ -113,11 +114,16 @@ export function Overview({
           </div>
 
           <div className="continue-care-body">
-            <div className="anatomy-preview-orbit" aria-hidden="true">
-              <span className="orbit orbit-one" />
-              <span className="orbit orbit-two" />
-              <span className="anatomy-preview-core">3D</span>
-            </div>
+            <AnatomyFocusPreview
+              conceptId={report.finding.atlasConceptId || undefined}
+              label={report.finding.anatomicalStructure}
+              atlasRef={report.finding.atlasRef}
+              eyebrow="3D DO ATENDIMENTO · HUMAN ATLAS"
+              compact
+              reviewRequired={report.finding.anatomyReviewRequired}
+              onOpenAtlas={onOpenAtlas}
+              description="O atendimento já abre com a anatomia real ligada ao relatório. A geometria é de referência e continua dependente da confirmação profissional."
+            />
 
             <div className="continue-care-copy">
               <span>Anatomia do relatório</span>
