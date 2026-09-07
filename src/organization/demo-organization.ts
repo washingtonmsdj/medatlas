@@ -36,6 +36,14 @@ export interface DemoClinicalWorkspace {
   active: boolean
 }
 
+export interface DemoOrganizationBranding {
+  organizationId: string
+  brandName: string
+  markText: string
+  primaryColorHex: string
+  patientFooterText: string
+}
+
 export interface DemoOrganizationContext {
   id: string
   name: string
@@ -126,6 +134,14 @@ export const DEMO_ORGANIZATION: DemoOrganizationContext = {
       active: true,
     },
   ],
+}
+
+export const DEMO_ORGANIZATION_BRANDING: DemoOrganizationBranding = {
+  organizationId: DEMO_ORGANIZATION_ID,
+  brandName: 'Clínica Horizonte',
+  markText: 'CH',
+  primaryColorHex: '#1E7AD7',
+  patientFooterText: 'Clínica Horizonte · demonstração',
 }
 
 export const DEFAULT_DEMO_WORKSPACE_ID = 'demo-workspace-ortopedia'
