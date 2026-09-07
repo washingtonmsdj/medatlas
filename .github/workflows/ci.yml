@@ -16,16 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.13.0'
-      - run: npm install
+          cache: npm
+      - run: npm ci
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
       - run: npm run validate:db-contract
       - run: npm run check
       - run: npm run build
-      - name: Preserve generated lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: medatlas-package-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 1
