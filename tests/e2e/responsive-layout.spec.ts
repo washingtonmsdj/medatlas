@@ -144,3 +144,69 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
     }
   }
 })
+
+test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 1000 })
+  await page.goto('/')
+
+  await page
+    .getByRole('button', { name: 'Atlas 3D', exact: true })
+    .click()
+
+  await expect(
+    page.getByRole('heading', { name: 'Atlas humano 3D' }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('Atlas pronto', { exact: true }),
+  ).toBeVisible({ timeout: 60_000 })
+
+  const stage = page.locator('.reference-atlas-stage')
+  const canvas = stage.locator('.reference-atlas-scene canvas')
+
+  await expect(canvas).toBeVisible({ timeout: 60_000 })
+  await expect(
+    page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('navigation', {
+      name: 'Controles de câmera do Atlas 3D',
+    }),
+  ).toBeVisible()
+
+  await expectNoHorizontalOverflow(page)
+  await capture(page, 'atlas-explorer-1600')
+
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.waitForTimeout(250)
+  await expectNoHorizontalOverflow(page)
+  await expect(canvas).toBeVisible()
+  await capture(page, 'atlas-explorer-1440')
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.waitForTimeout(300)
+
+  await expectNoHorizontalOverflow(page)
+  await expect(canvas).toBeVisible()
+
+  const mobileStageBox = await stage.boundingBox()
+  expect(mobileStageBox).not.toBeNull()
+  expect(mobileStageBox!.height).toBeGreaterThan(900)
+
+  const mobileControls = page.locator('.reference-view-controls')
+  const mobileControlsBox = await mobileControls.boundingBox()
+  expect(mobileControlsBox).not.toBeNull()
+  expect(mobileControlsBox!.width).toBeGreaterThan(300)
+  expect(mobileControlsBox!.height).toBeLessThan(70)
+
+  const mobileSystems = page.getByRole('complementary', {
+    name: 'Sistemas anatômicos',
+  })
+  const mobileSystemsBox = await mobileSystems.boundingBox()
+  expect(mobileSystemsBox).not.toBeNull()
+  expect(mobileSystemsBox!.width).toBeGreaterThan(300)
+
+  await capture(page, 'atlas-explorer-mobile-390')
+})
