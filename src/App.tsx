@@ -12,6 +12,7 @@ import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
+import { TeamModule } from './components/TeamModule'
 import { DocumentsModule } from './components/DocumentsModule'
 import { PatientsModule } from './components/PatientsModule'
 import { ConsultationsModule } from './components/ConsultationsModule'
@@ -36,6 +37,7 @@ const nav = [
   'Consultas',
   'Exames',
   'Relatórios visuais',
+  'Equipe',
   'Configurações',
 ] as const
 
@@ -68,6 +70,10 @@ const moduleMeta: Record<
   'Relatórios visuais': {
     eyebrow: 'CONSULTA VISUAL',
     title: 'Transforme o laudo em uma explicação que o paciente entende.',
+  },
+  Equipe: {
+    eyebrow: 'ORGANIZAÇÃO',
+    title: 'Papéis e permissões alinhados ao contrato de produção.',
   },
   Configurações: {
     eyebrow: 'ORGANIZAÇÃO',
@@ -530,6 +536,9 @@ function ClinicianApp() {
             onStartImport={startNewReport}
           />
         )
+
+      case 'Equipe':
+        return <TeamModule />
 
       case 'Configurações':
         return <DemoSettings onNewReport={startNewReport} />
