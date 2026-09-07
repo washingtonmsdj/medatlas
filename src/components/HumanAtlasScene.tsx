@@ -1,13 +1,28 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { loadPartGeometry } from '../atlas/model'
+import { loadConceptGeometries } from '../atlas/model'
 import { findAtlasConcept, loadHumanAtlas } from '../atlas/source'
 
 interface Props {
   conceptId: string
-  onReady?: (label: string) => void
+  onReady?: (label: string, partCount: number) => void
   onError?: (message: string) => void
+}
+
+const SYSTEM_COLORS: Record<string, string> = {
+  skeletal: '#dce8f0',
+  muscular: '#d66f72',
+  nervous: '#e7c95b',
+  arterial: '#d95d67',
+  venous: '#577fd1',
+  digestive: '#d89b62',
+  respiratory: '#86b9c9',
+  urinary: '#b58bc7',
+  reproductive: '#d58fad',
+  endocrine: '#d9bd62',
+  lymphatic: '#7ab78a',
+  integumentary: '#aab8bc',
 }
 
 export function HumanAtlasScene({
@@ -30,7 +45,7 @@ export function HumanAtlasScene({
     scene.background = new THREE.Color('#081524')
 
     const camera = new THREE.PerspectiveCamera(34, 1, 0.001, 100)
-    camera.position.set(0.1, 1.03, 0.18)
+    camera.position.set(0.1, 1, 0.2)
 
     let renderer: THREE.WebGLRenderer
 
@@ -53,47 +68,50 @@ export function HumanAtlasScene({
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.08
-    controls.minDistance = 0.02
-    controls.maxDistance = 2
+    controls.minDistance = 0.015
+    controls.maxDistance = 4
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x233349, 2.1))
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x24364d, 1.9))
 
-    const key = new THREE.DirectionalLight(0xffffff, 3)
+    const key = new THREE.DirectionalLight(0xffffff, 2.8)
     key.position.set(-1, 2, 2)
     scene.add(key)
 
-    const rim = new THREE.DirectionalLight(0x78cfff, 2.2)
+    const rim = new THREE.DirectionalLight(0x78cfff, 2)
     rim.position.set(2, 1, -2)
     scene.add(rim)
 
-    const grid = new THREE.GridHelper(0.3, 14, 0x31506c, 0x17293c)
-    grid.position.y = 0.985
-    scene.add(grid)
+    const geometries: THREE.BufferGeometry[] = []
+    const materials: THREE.MeshStandardMaterial[] = []
+    const anatomyGroup = new THREE.Group()
+    scene.add(anatomyGroup)
 
-    let geometry: THREE.BufferGeometry | undefined
-    let material: THREE.MeshStandardMaterial | undefined
-
-    const fit = (targetGeometry: THREE.BufferGeometry) => {
-      const box =
-        targetGeometry.boundingBox ??
-        new THREE.Box3().setFromBufferAttribute(
-          targetGeometry.getAttribute('position') as THREE.BufferAttribute,
-        )
+    const fit = (box: THREE.Box3) => {
       const center = box.getCenter(new THREE.Vector3())
       const size = box.getSize(new THREE.Vector3())
       const radius = Math.max(size.x, size.y, size.z) * 0.5
-      const distance = Math.max(radius * 3.4, 0.07)
+      const verticalFov = THREE.MathUtils.degToRad(camera.fov)
+      const distance = Math.max(
+        radius / Math.tan(verticalFov / 2) * 1.45,
+        0.07,
+      )
 
       controls.target.copy(center)
-      camera.position.copy(center).add(new THREE.Vector3(0.45, 0.2, 1).normalize().multiplyScalar(distance))
-      camera.near = Math.max(distance / 100, 0.0005)
-      camera.far = Math.max(distance * 50, 2)
+      camera.position
+        .copy(center)
+        .add(
+          new THREE.Vector3(0.42, 0.18, 1)
+            .normalize()
+            .multiplyScalar(distance),
+        )
+      camera.near = Math.max(distance / 120, 0.0005)
+      camera.far = Math.max(distance * 60, 3)
       camera.updateProjectionMatrix()
       controls.update()
     }
 
     const resize = () => {
-      const width = element.clientWidth
+      const width = Math.max(1, element.clientWidth)
       const height = Math.max(320, element.clientHeight)
 
       camera.aspect = width / height
@@ -116,33 +134,44 @@ export function HumanAtlasScene({
 
     void (async () => {
       try {
-        const atlas = await loadHumanAtlas(abort.signal)
+        const atlas = await loadHumanAtlas()
         const concept = findAtlasConcept(atlas, conceptId)
-        const part = atlas.parts.find((candidate) =>
-          concept.elements.includes(candidate.id),
+        const loaded = await loadConceptGeometries(
+          atlas,
+          concept,
+          abort.signal,
         )
 
-        if (!part) {
-          throw new Error('A estrutura selecionada não possui geometria renderizável.')
-        }
-
-        geometry = await loadPartGeometry(atlas, part, abort.signal)
-
         if (disposed) {
-          geometry.dispose()
+          loaded.forEach(({ geometry }) => geometry.dispose())
           return
         }
 
-        material = new THREE.MeshStandardMaterial({
-          color: '#54c7ff',
-          roughness: 0.44,
-          metalness: 0.08,
-        })
+        const conceptBounds = new THREE.Box3()
 
-        const mesh = new THREE.Mesh(geometry, material)
-        scene.add(mesh)
-        fit(geometry)
-        onReady?.(concept.name)
+        for (const { part, geometry } of loaded) {
+          geometries.push(geometry)
+          conceptBounds.union(
+            new THREE.Box3(
+              new THREE.Vector3().fromArray(part.bounds[0]),
+              new THREE.Vector3().fromArray(part.bounds[1]),
+            ),
+          )
+
+          const material = new THREE.MeshStandardMaterial({
+            color: SYSTEM_COLORS[part.system] ?? '#54c7ff',
+            roughness: 0.46,
+            metalness: 0.06,
+            side: THREE.DoubleSide,
+          })
+          materials.push(material)
+
+          const mesh = new THREE.Mesh(geometry, material)
+          anatomyGroup.add(mesh)
+        }
+
+        fit(conceptBounds)
+        onReady?.(concept.name, loaded.length)
       } catch (error) {
         if (!disposed && !abort.signal.aborted) {
           onError?.(
@@ -160,10 +189,8 @@ export function HumanAtlasScene({
       cancelAnimationFrame(frame)
       observer.disconnect()
       controls.dispose()
-      geometry?.dispose()
-      material?.dispose()
-      grid.geometry.dispose()
-      ;(grid.material as THREE.Material).dispose()
+      geometries.forEach((geometry) => geometry.dispose())
+      materials.forEach((material) => material.dispose())
       renderer.dispose()
       renderer.domElement.remove()
     }

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import type { AtlasConcept } from './atlas/types'
+import { conceptDisplayName } from './atlas/source'
 import { AtlasViewport } from './components/AtlasViewport'
 import { ReportComposer } from './components/ReportComposer'
 import { demoReport } from './domain/demo'
@@ -23,6 +25,19 @@ function App() {
       ...current,
       status: 'published',
       shareSlug: 'demo-L4L5-7F3K2',
+    }))
+  }
+
+  const confirmConcept = (concept: AtlasConcept) => {
+    setReport((current) => ({
+      ...current,
+      status: 'clinician_review',
+      shareSlug: undefined,
+      finding: {
+        ...current.finding,
+        anatomicalStructure: conceptDisplayName(concept),
+        atlasConceptId: concept.id,
+      },
     }))
   }
 
@@ -110,6 +125,7 @@ function App() {
             <AtlasViewport
               selected={report.finding.anatomicalStructure}
               conceptId={report.finding.atlasConceptId}
+              onConfirmConcept={confirmConcept}
             />
           </div>
 

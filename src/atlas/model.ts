@@ -6,7 +6,17 @@
 
 import * as THREE from 'three'
 import { assetUrl } from './source'
-import type { AtlasPart, HumanAtlas } from './types'
+import type {
+  AtlasChunk,
+  AtlasConcept,
+  AtlasPart,
+  HumanAtlas,
+} from './types'
+
+export interface LoadedAtlasPart {
+  part: AtlasPart
+  geometry: THREE.BufferGeometry
+}
 
 async function decodeModelResponse(
   response: Response,
@@ -37,12 +47,10 @@ async function decodeModelResponse(
   return buffer
 }
 
-export async function loadPartGeometry(
-  atlas: HumanAtlas,
-  part: AtlasPart,
+async function loadChunkBuffer(
+  chunk: AtlasChunk,
   signal?: AbortSignal,
-): Promise<THREE.BufferGeometry> {
-  const chunk = atlas.chunks[part.chunk]
+): Promise<ArrayBuffer> {
   const canDecompress =
     Boolean(chunk.gzip) && typeof DecompressionStream !== 'undefined'
 
@@ -51,12 +59,13 @@ export async function loadPartGeometry(
     { signal },
   )
 
-  const buffer = await decodeModelResponse(
-    response,
-    chunk.bytes,
-    canDecompress,
-  )
+  return decodeModelResponse(response, chunk.bytes, canDecompress)
+}
 
+function geometryFromPart(
+  part: AtlasPart,
+  buffer: ArrayBuffer,
+): THREE.BufferGeometry {
   const geometry = new THREE.BufferGeometry()
 
   geometry.setAttribute(
@@ -83,8 +92,51 @@ export async function loadPartGeometry(
     ),
   )
 
-  geometry.computeBoundingBox()
+  geometry.boundingBox = new THREE.Box3(
+    new THREE.Vector3().fromArray(part.bounds[0]),
+    new THREE.Vector3().fromArray(part.bounds[1]),
+  )
   geometry.computeBoundingSphere()
 
   return geometry
+}
+
+export async function loadConceptGeometries(
+  atlas: HumanAtlas,
+  concept: AtlasConcept,
+  signal?: AbortSignal,
+): Promise<LoadedAtlasPart[]> {
+  const elementIds = new Set(concept.elements)
+  const parts = atlas.parts.filter((part) => elementIds.has(part.id))
+
+  if (parts.length === 0) {
+    throw new Error('A estrutura selecionada não possui geometria renderizável.')
+  }
+
+  const partsByChunk = new Map<number, AtlasPart[]>()
+
+  for (const part of parts) {
+    const chunkParts = partsByChunk.get(part.chunk) ?? []
+    chunkParts.push(part)
+    partsByChunk.set(part.chunk, chunkParts)
+  }
+
+  const groups = await Promise.all(
+    [...partsByChunk.entries()].map(async ([chunkIndex, chunkParts]) => {
+      const chunk = atlas.chunks[chunkIndex]
+
+      if (!chunk) {
+        throw new Error('O atlas referencia um bloco de geometria inexistente.')
+      }
+
+      const buffer = await loadChunkBuffer(chunk, signal)
+
+      return chunkParts.map((part) => ({
+        part,
+        geometry: geometryFromPart(part, buffer),
+      }))
+    }),
+  )
+
+  return groups.flat()
 }

@@ -14,8 +14,11 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Pin Human Atlas upstream commit and provenance.
 - [x] Resolve demo L4–L5 structure to real FMA concept `FMA16036`.
 - [x] Load real BodyParts3D geometry for the confirmed report structure.
-- [ ] Generalize renderer to compound concepts and multiple structures.
-- [ ] Add atlas search, system layers and isolation controls.
+- [x] Generalize renderer to compound concepts and multiple structures.
+- [x] Avoid duplicate downloads when many concept parts share one atlas chunk.
+- [x] Add anatomical search with Portuguese aliases + FMA/source-name lookup.
+- [x] Separate preview from explicit clinician confirmation.
+- [ ] Add system layers, isolation and contextual whole-body view.
 - [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
 - [ ] Validate build + browser interaction.
 - [ ] Deploy preview.
