@@ -310,3 +310,60 @@ test('synthetic pilot checklist reflects report progress', async ({ page }) => {
 
   await expect(page.locator('.pilot-score')).toContainText('0/5')
 })
+
+
+test('demo settings can clear local patient shares', async ({ page }) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  const suggestion = page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+
+  await suggestion
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Aprovar e gerar link do paciente' })
+    .click()
+
+  const shareUrl = await page.locator('.share-box code').innerText()
+
+  await page.getByRole('button', { name: 'Configurações' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Ambiente sintético e controles locais',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('1', { exact: true }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('button', {
+      name: 'Limpar dados locais da demonstração',
+    })
+    .click()
+
+  await expect(
+    page.getByText(/link\(s\) local\(is\) removido\(s\)/),
+  ).toBeVisible()
+
+  await page.goto(shareUrl)
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Este link de demonstração não está disponível.',
+    }),
+  ).toBeVisible()
+})

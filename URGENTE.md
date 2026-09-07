@@ -85,6 +85,7 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Browser E2E proved the renderer against MedAtlas-vendored anatomy assets.
 - [x] Privacy/security review for the synthetic MVP; real PHI remains explicitly blocked.
 - [x] Demo shares expire after 30 minutes and local retention is capped.
+- [x] Add functional demo settings with local-share count and explicit clear-data control.
 - [x] Add CSP/security headers and CI security-contract validation.
 - [x] Browser E2E proves expired demo patient links fail closed.
 - [x] Automated synthetic pilot across canonical scenarios and blank-report flow.

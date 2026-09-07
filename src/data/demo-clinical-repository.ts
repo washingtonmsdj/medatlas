@@ -175,6 +175,34 @@ function read(token: string): VisualReport | null {
   }
 }
 
+export function getStoredDemoShareCount() {
+  pruneExpiredAndExcessShares()
+  return storageEntries().length
+}
+
+export function clearDemoShares() {
+  let removed = 0
+
+  try {
+    const keys: string[] = []
+
+    for (let index = 0; index < window.localStorage.length; index += 1) {
+      const key = window.localStorage.key(index)
+      if (key?.startsWith(STORAGE_PREFIX)) keys.push(key)
+    }
+
+    for (const key of keys) {
+      window.localStorage.removeItem(key)
+      removed += 1
+    }
+  } catch {
+    // Memory cleanup still runs even when local storage is unavailable.
+  }
+
+  memoryShares.clear()
+  return removed
+}
+
 export class DemoClinicalRepository implements ClinicalRepository {
   async publishReport(report: VisualReport): Promise<VisualReport> {
     if (report.finding.anatomyReviewRequired) {

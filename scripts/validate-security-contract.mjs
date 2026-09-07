@@ -39,6 +39,8 @@ const requiredDemoFragments = [
   "syntheticOnly: true",
   "const DEMO_SHARE_TTL_MS = 30 * 60 * 1000",
   "const MAX_STORED_DEMO_SHARES = 10",
+  'clearDemoShares',
+  'getStoredDemoShareCount',
   "const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'",
   'expiresAt',
   'pruneExpiredAndExcessShares',

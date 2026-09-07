@@ -11,6 +11,7 @@ import {
 import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
+import { DemoSettings } from './components/DemoSettings'
 import { ModulePlaceholder } from './components/ModulePlaceholder'
 import { Overview } from './components/Overview'
 import {
@@ -546,19 +547,7 @@ function ClinicianApp() {
         )
 
       case 'Configurações':
-        return (
-          <ModulePlaceholder
-            title="Configurações da organização"
-            description="A área futura reunirá equipe, papéis, branding da clínica, política de compartilhamento e integrações."
-            status="Contrato pronto · backend adiado"
-            items={[
-              'Admin, clinician e staff',
-              'Identidade visual / white-label',
-              'Expiração padrão dos links',
-              'Auditoria e políticas da organização',
-            ]}
-          />
-        )
+        return <DemoSettings onNewReport={startNewReport} />
     }
   }
 
