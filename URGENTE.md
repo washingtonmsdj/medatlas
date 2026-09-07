@@ -35,10 +35,12 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Define private clinical document bucket and Storage RLS.
 - [x] Define hashed, expiring, revocable patient share tokens.
 - [x] Define immutable-style audit event model and audited share operations.
+- [x] Decouple UI from demo persistence through an async ClinicalRepository.
+- [x] Use cryptographically random opaque tokens in demo sharing.
 - [ ] Create a dedicated MedAtlas Supabase project.
 - [ ] Apply migrations and prove tenant isolation with database tests.
 - [ ] Connect authentication/onboarding UI.
-- [ ] Replace local demo storage with the Supabase persistence adapter.
+- [ ] Implement and activate the Supabase ClinicalRepository adapter.
 - [ ] Replace local demo share resolver with the token RPC.
 
 ## P2 — AI workflow
@@ -63,4 +65,5 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - Do not infer treatment autonomously.
 - Do not onboard real patient data before tenancy, authorization, private storage and audit are proven.
 - Do not reuse another product's Supabase project for MedAtlas.
+- Do not silently switch to a Supabase backend merely because env variables exist.
 - Do not fork multiple renderer architectures; integrate one canonical Human Atlas-derived 3D module.

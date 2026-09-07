@@ -4,13 +4,17 @@ import type { VisualReport } from '../domain/types'
 
 interface Props {
   report: VisualReport
-  onPublish: () => void
+  publishing: boolean
+  publishError: string
+  onPublish: () => void | Promise<void>
   onUpdateExplanation: (value: string) => void
   onApproveExplanation: () => void
 }
 
 export function ReportComposer({
   report,
+  publishing,
+  publishError,
   onPublish,
   onUpdateExplanation,
   onApproveExplanation,
@@ -75,6 +79,12 @@ export function ReportComposer({
         </div>
       )}
 
+      {publishError && (
+        <div className="publish-error" role="alert">
+          {publishError}
+        </div>
+      )}
+
       {report.status === 'published' && report.shareSlug ? (
         <div className="share-box">
           <span>Link de demonstração gerado</span>
@@ -93,20 +103,25 @@ export function ReportComposer({
             </button>
           </div>
           <small>
-            MVP: este link usa armazenamento local e dados fictícios. Tokens
-            privados, expiração e revogação entram no backend P1.
+            MVP: token opaco aleatório + armazenamento demo local. Expiração,
+            revogação e hash no banco já estão definidos no contrato Supabase
+            e entram quando o backend dedicado for ativado.
           </small>
         </div>
       ) : (
         <button
           className="primary full"
           type="button"
-          onClick={onPublish}
-          disabled={report.finding.explanationReviewRequired}
+          onClick={() => void onPublish()}
+          disabled={
+            report.finding.explanationReviewRequired || publishing
+          }
         >
-          {report.finding.explanationReviewRequired
-            ? 'Revise a explicação antes de publicar'
-            : 'Aprovar e gerar link do paciente'}
+          {publishing
+            ? 'Gerando link…'
+            : report.finding.explanationReviewRequired
+              ? 'Revise a explicação antes de publicar'
+              : 'Aprovar e gerar link do paciente'}
         </button>
       )}
     </aside>

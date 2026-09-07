@@ -51,10 +51,18 @@ for (const [label, marker] of invariants) {
   }
 }
 
-if (/\braw_token\s+(text|varchar)\b/i.test(
-  sql.replace(/declare\s+[\s\S]*?begin/i, ''),
-)) {
-  failures.push('A raw share token appears to be persisted as a column')
+const tableDefinitions = [
+  ...sql.matchAll(
+    /create table if not exists\s+public\.[a-z0-9_]+\s*\([\s\S]*?\n\);/gi,
+  ),
+].map((match) => match[0])
+
+if (
+  tableDefinitions.some((definition) =>
+    /\braw_token\s+(text|varchar)\b/i.test(definition),
+  )
+) {
+  failures.push('A raw share token appears to be persisted as a table column')
 }
 
 if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { AtlasConcept } from './atlas/types'
 import { conceptDisplayName } from './atlas/source'
 import { AtlasViewport } from './components/AtlasViewport'
@@ -7,11 +7,8 @@ import {
   PatientReportPage,
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
+import { getClinicalRepository } from './data/repository'
 import { demoReport } from './domain/demo'
-import {
-  persistPublishedDemoReport,
-  readPublishedDemoReport,
-} from './domain/demo-storage'
 import type { VisualReport } from './domain/types'
 
 const nav = [
@@ -24,11 +21,52 @@ const nav = [
   'Configurações',
 ]
 
-function PatientRoute({ slug }: { slug: string }) {
-  const report = readPublishedDemoReport(slug)
+const clinicalData = getClinicalRepository()
 
-  return report ? (
-    <PatientReportPage report={report} />
+function PatientRoute({ slug }: { slug: string }) {
+  const [state, setState] = useState<
+    | { status: 'loading' }
+    | { status: 'missing' }
+    | { status: 'ready'; report: VisualReport }
+  >({ status: 'loading' })
+
+  useEffect(() => {
+    let active = true
+
+    void clinicalData.repository
+      .resolvePatientShare(slug)
+      .then((report) => {
+        if (!active) return
+        setState(
+          report
+            ? { status: 'ready', report }
+            : { status: 'missing' },
+        )
+      })
+      .catch(() => {
+        if (active) setState({ status: 'missing' })
+      })
+
+    return () => {
+      active = false
+    }
+  }, [slug])
+
+  if (state.status === 'loading') {
+    return (
+      <main className="invalid-share">
+        <div className="brand">
+          <span className="brand-mark">M</span>
+          <span>MedAtlas</span>
+        </div>
+        <h1>Preparando seu relatório visual…</h1>
+        <p>Validando o link e carregando a experiência anatômica.</p>
+      </main>
+    )
+  }
+
+  return state.status === 'ready' ? (
+    <PatientReportPage report={state.report} />
   ) : (
     <InvalidPatientLink />
   )
@@ -37,51 +75,73 @@ function PatientRoute({ slug }: { slug: string }) {
 function ClinicianApp() {
   const [report, setReport] = useState<VisualReport>(demoReport)
   const [active, setActive] = useState('Relatórios')
+  const [publishing, setPublishing] = useState(false)
+  const [publishError, setPublishError] = useState('')
 
-  const publish = () => {
-    setReport((current) => {
-      if (current.finding.explanationReviewRequired) return current
+  const invalidatePublishedState = (
+    current: VisualReport,
+  ): VisualReport => ({
+    ...current,
+    status: 'draft',
+    shareSlug: undefined,
+  })
 
-      const published: VisualReport = {
-        ...current,
-        status: 'published',
-        shareSlug: 'demo-7F3K2',
-      }
+  const publish = async () => {
+    if (report.finding.explanationReviewRequired || publishing) return
 
-      persistPublishedDemoReport(published)
-      return published
-    })
+    setPublishing(true)
+    setPublishError('')
+
+    try {
+      const published =
+        await clinicalData.repository.publishReport(report)
+      setReport(published)
+    } catch (error) {
+      setPublishError(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível publicar o relatório.',
+      )
+    } finally {
+      setPublishing(false)
+    }
   }
 
   const confirmConcept = (concept: AtlasConcept) => {
     const displayName = conceptDisplayName(concept)
 
-    setReport((current) => ({
-      ...current,
-      status: 'draft',
-      shareSlug: undefined,
-      finding: {
-        ...current.finding,
-        anatomicalStructure: displayName,
-        atlasConceptId: concept.id,
-        patientExplanation:
-          `A estrutura anatômica confirmada é ${displayName}. Revise esta explicação para relacioná-la corretamente ao laudo antes de compartilhar com o paciente.`,
-        explanationReviewRequired: true,
-      },
-    }))
+    setReport((current) => {
+      const draft = invalidatePublishedState(current)
+
+      return {
+        ...draft,
+        finding: {
+          ...draft.finding,
+          anatomicalStructure: displayName,
+          atlasConceptId: concept.id,
+          patientExplanation:
+            `A estrutura anatômica confirmada é ${displayName}. Revise esta explicação para relacioná-la corretamente ao laudo antes de compartilhar com o paciente.`,
+          explanationReviewRequired: true,
+        },
+      }
+    })
+    setPublishError('')
   }
 
   const updateExplanation = (value: string) => {
-    setReport((current) => ({
-      ...current,
-      status: 'draft',
-      shareSlug: undefined,
-      finding: {
-        ...current.finding,
-        patientExplanation: value,
-        explanationReviewRequired: true,
-      },
-    }))
+    setReport((current) => {
+      const draft = invalidatePublishedState(current)
+
+      return {
+        ...draft,
+        finding: {
+          ...draft.finding,
+          patientExplanation: value,
+          explanationReviewRequired: true,
+        },
+      }
+    })
+    setPublishError('')
   }
 
   const approveExplanation = () => {
@@ -93,6 +153,7 @@ function ClinicianApp() {
         explanationReviewRequired: false,
       },
     }))
+    setPublishError('')
   }
 
   return (
@@ -121,7 +182,9 @@ function ClinicianApp() {
         <div className="clinic-card">
           <span className="eyebrow">AMBIENTE DEMO</span>
           <strong>Clínica Horizonte</strong>
-          <small>Conteúdo fictício para desenvolvimento</small>
+          <small>
+            {clinicalData.descriptor.label} · dados sintéticos
+          </small>
         </div>
       </aside>
 
@@ -191,6 +254,8 @@ function ClinicianApp() {
 
           <ReportComposer
             report={report}
+            publishing={publishing}
+            publishError={publishError}
             onPublish={publish}
             onUpdateExplanation={updateExplanation}
             onApproveExplanation={approveExplanation}
