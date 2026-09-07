@@ -102,6 +102,25 @@ Em qualquer cenário anatômico, validar explicitamente:
 - em 390 px, os controles clínicos de câmera permanecem horizontais, legíveis e sem overflow;
 - trocar de módulo não mantém canvases/renderers anteriores vivos.
 
+## Checkpoint de pré-piloto automatizado — 2026-09-07
+
+O pré-piloto automatizado está **concluído** no baseline atual.
+
+Evidências:
+
+- HEAD de prova: `419d8e7c9bf8f80fc8ba1f216c20d44690633412`;
+- produção correspondente: `770d4f6fc2700f660bd4e1547a867cfb2ffd5752`;
+- CI `34117852517` — PASS;
+- Browser E2E `34117852477` — **27/27 PASS em 2,7 min**;
+- Pages/Chromium remoto `34117434772` — PASS;
+- Explorer completo responsivo — PASS em **28,3 s** no runner;
+- artifact `visual-qa-34117852477` — **19 screenshots revisados**;
+- portal do paciente validado em 390 px com canvas real, controles horizontais, picking e ausência de overflow;
+- inspeção focada validada com destaque de alto contraste sem alterar a anatomia confirmada;
+- JS inicial ~324,35 kB e renderer lazy ~496,01 kB sob gate de bundle.
+
+**Importante:** isto não substitui o piloto manual abaixo. O item manual continua aberto até uma pessoa navegar no preview, executar o fluxo e registrar percepção/atrito real.
+
 ## Fluxo manual sintético recomendado
 
 Executar pelo menos um cenário completo em desktop e mobile:

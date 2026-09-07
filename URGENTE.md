@@ -143,10 +143,14 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
-- Preview externo 3D-first: **Pages run `34108052666` — PASS**, incluindo shell/assets, Dashboard/Pacientes/Consultas/Exames, preview pré-publicação, fluxo clínico e portal do paciente em Chromium contra `https://washingtonmsdj.github.io/medatlas/`.
-- Browser E2E do lote Equipe/convites: **run `34104398629` — PASS**.
-- CI do contrato de convites + membership: **PASS até `abbc3d20b5cb1f421b894c9e69a3548f9620d8c3`**.
-- Artifact visual anterior revisado: `visual-qa-34100520733`.
+- **Baseline funcional 3D-first atual:** código de produção em `770d4f6fc2700f660bd4e1547a867cfb2ffd5752`; HEAD de prova `419d8e7c9bf8f80fc8ba1f216c20d44690633412` altera somente o locator E2E final.
+- **CI:** run `34117852517` — PASS.
+- **Browser E2E:** run `34117852477` — **27/27 PASS em 2,7 min**, um worker WebGL no CI.
+- **GitHub Pages / Chromium remoto:** run `34117434772` — PASS contra `https://washingtonmsdj.github.io/medatlas/`.
+- **Atlas completo responsivo:** desktop → 1440 → 390 px, geometria real + estado `Atlas pronto`, PASS em **28,3 s** no runner headless.
+- **Bundle:** JS inicial ~**324,35 kB**; renderer canônico lazy ~**496,01 kB**; gate de bundle ativo.
+- **Artifact visual verde:** `visual-qa-34117852477` — **19 capturas** revisadas: Explorer completo, Clinical Studio, Dashboard, Pacientes, Consultas, Exames, picking focado, preview e portal do paciente em desktop/mobile.
+- **Correções fechadas nesta rodada:** asset base em subpath, fake 3D removido, preview pré-publicação com Human Atlas real, stale state fail-closed, picking sem mutar relatório, destaque de inspeção de alto contraste, dock clínico mobile, portal patient 390 px e isolamento do CSS do Explorer completo.
 
 ---
 
@@ -369,9 +373,10 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [x] validar Browser E2E completo contra deploy — baseline 3D-first `92c2044…`: CI `34112639281` PASS, Browser E2E `34112639286` PASS e Pages/Playwright remoto `34112639293` PASS em 2026-09-07;
-3. [ ] executar piloto manual sintético no preview;
-4. [ ] corrigir UX encontrada no piloto;
+2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34117852517` PASS, Browser E2E `34117852477` 27/27 PASS e Pages/Playwright remoto `34117434772` PASS;
+3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34117852477`, 19 capturas;
+4. [ ] executar piloto manual sintético no preview com navegação humana real;
+5. [ ] corrigir UX adicional encontrada no piloto manual;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;
 6. [ ] preparar termos, privacidade e compliance do mercado-alvo;
 7. [ ] somente então desenhar piloto clínico controlado com dados permitidos.
@@ -384,11 +389,11 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 
 Se continuar **sem Supabase ativo**:
 
-1. verificar CI do HEAD;
-2. manter o Playwright 3D do GitHub Pages verde;
-3. executar piloto manual sintético completo;
-4. corrigir somente bugs/UX reais encontrados;
-5. não iniciar billing nem IA remota.
+1. preservar o baseline funcional `770d4f6…` / prova `419d8e7…`;
+2. manter CI, Browser E2E e Playwright 3D do GitHub Pages verdes;
+3. executar **piloto manual sintético completo** no preview externo;
+4. registrar somente bugs/UX observados por navegação humana e corrigi-los;
+5. não iniciar billing, IA remota ou Supabase sem autorização.
 
 Se o usuário autorizar **ativar produção/Supabase**:
 
