@@ -364,22 +364,43 @@ function ClinicianApp() {
             </button>
           </div>
 
-          <section className="finding-card finding-card-studio">
+          <section
+            className={
+              'finding-card finding-card-studio ' +
+              (!report.finding.atlasConceptId
+                ? 'anatomy-empty'
+                : report.finding.anatomyReviewRequired
+                  ? 'anatomy-review'
+                  : 'anatomy-confirmed')
+            }
+          >
             <div>
-              <span className="section-kicker">
-                {!report.finding.atlasConceptId
-                  ? 'ANATOMIA A CONFIRMAR'
-                  : report.finding.anatomyReviewRequired
-                    ? 'RECONFIRMAÇÃO NECESSÁRIA'
-                    : 'ANATOMIA CONFIRMADA'}
-              </span>
+              <div className="finding-state-line">
+                <span
+                  className="finding-state-icon"
+                  aria-hidden="true"
+                >
+                  {!report.finding.atlasConceptId
+                    ? '○'
+                    : report.finding.anatomyReviewRequired
+                      ? '!'
+                      : '✓'}
+                </span>
+                <span className="section-kicker">
+                  {!report.finding.atlasConceptId
+                    ? 'ANATOMIA A CONFIRMAR'
+                    : report.finding.anatomyReviewRequired
+                      ? 'RECONFIRMAÇÃO NECESSÁRIA'
+                      : 'ANATOMIA CONFIRMADA'}
+                </span>
+              </div>
               <h2>{report.finding.anatomicalStructure}</h2>
               <p>
                 {!report.finding.atlasConceptId
                   ? 'Analise o texto ou use a busca do atlas para escolher uma referência.'
                   : report.finding.anatomyReviewRequired
                     ? 'O texto mudou. Confirme novamente a estrutura antes de continuar.'
-                    : 'Esta estrutura será a referência visual mostrada no relatório do paciente.'}
+                    : 'Referência visual validada para esta versão do texto.'}
               </p>
             </div>
 
