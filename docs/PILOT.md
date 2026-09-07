@@ -113,18 +113,21 @@ Executar pelo menos um cenário completo em desktop e mobile:
 4. carregar cenário sintético
 5. sugerir anatomia
 6. confirmar estrutura
-7. validar o 3D focado
-8. gerar rascunho educacional
-9. revisar explicitamente
-10. pré-visualizar paciente
-11. publicar link demo
-12. abrir visão do paciente
-13. confirmar branding + 3D + explicação + perguntas
-14. voltar ao ambiente clínico
-15. abrir Analytics
-16. confirmar que a visualização foi observada
-17. abrir Equipe
-18. confirmar papéis, unidade/workspaces e boundary de convites
+7. validar o 3D focado: enquadramento, rotação, zoom e vistas
+8. clicar em uma peça e confirmar identificação visual sem mudar a anatomia aprovada
+9. gerar rascunho educacional
+10. revisar explicitamente
+11. pré-visualizar paciente e confirmar Human Atlas real
+12. publicar link demo
+13. abrir visão do paciente
+14. confirmar branding + 3D + explicação + perguntas
+15. clicar em uma peça no portal e confirmar linguagem de anatomia de referência
+16. voltar ao ambiente clínico
+17. alterar o texto do laudo e confirmar banner de reconfirmação anatômica
+18. abrir Analytics
+19. confirmar que a visualização foi observada
+20. abrir Equipe
+21. confirmar papéis, unidade/workspaces e boundary de convites
 ```
 
 Registrar somente observações de produto, por exemplo:
@@ -133,6 +136,10 @@ Registrar somente observações de produto, por exemplo:
 - explicação ficou compreensível?
 - profissional entendeu quando precisava confirmar?
 - houve confusão entre anatomia de referência e corpo do paciente?
+- o destaque temporário da peça clicada ficou visualmente óbvio sem parecer nova confirmação clínica?
+- o banner de reconfirmação apareceu de forma inequívoca quando o laudo mudou?
+- o FMA/anatomia permaneceu consistente entre Clinical Studio, preview pré-publicação e portal do paciente?
+- em 390 px o dock de câmera ficou horizontal, legível e sem cobrir o foco anatômico?
 - página do paciente ficou clara?
 - organização/workspace ficaram compreensíveis sem parecer complexidade desnecessária?
 - papéis da Equipe ficaram compreensíveis?
@@ -153,6 +160,10 @@ O piloto sintético automatizado pode ser considerado concluído quando:
 - nenhum caminho demo transmite dados para telemetria externa;
 - nenhum botão de produção cria a falsa impressão de backend ativo;
 - BodyParts3D continua identificado como anatomia de referência.
+- inspeção temporária nunca altera silenciosamente a anatomia confirmada;
+- stale anatomy permanece visível apenas com aviso explícito de reconfirmação;
+- controles do 3D permanecem legíveis e operáveis em 390 px;
+- o mesmo conceito FMA chega ao preview e ao portal do paciente.
 
 Isso **não autoriza dados reais**.
 
