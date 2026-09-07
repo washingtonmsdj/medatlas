@@ -143,6 +143,14 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     }),
   ).toBeVisible()
   await expect(
+    patientPage.getByRole('navigation', {
+      name: 'Navegar pelas partes do relatório',
+    }),
+  ).toBeVisible()
+  await expect(
+    patientPage.getByText('CONTEÚDO REVISADO'),
+  ).toBeVisible()
+  await expect(
     patientPage.getByRole('heading', {
       name: 'Perguntas úteis para levar ao profissional',
     }),
