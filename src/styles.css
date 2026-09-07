@@ -177,7 +177,8 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   .app-shell{display:block}
   .sidebar{position:static;height:auto;display:flex;align-items:center;gap:12px;border-right:0;border-bottom:1px solid #203047}
   .sidebar nav{display:flex;overflow:auto}
-  .sidebar nav button{white-space:nowrap}
+  .sidebar nav button{white-space:nowrap;padding:9px 10px}
+  .sidebar nav button span:last-child{display:inline}
   .workspace{padding:22px 14px 35px}
   .workflow-strip{grid-template-columns:1fr 1fr}
   .finding-card{align-items:flex-start;flex-direction:column}

@@ -557,6 +557,9 @@ function ClinicianApp() {
               key={item}
               type="button"
               className={active === item ? 'active' : ''}
+              aria-label={item}
+              aria-current={active === item ? 'page' : undefined}
+              title={item}
               onClick={() => setActive(item)}
             >
               <span className="nav-dot" />
