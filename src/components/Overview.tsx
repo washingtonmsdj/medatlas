@@ -47,6 +47,13 @@ export function Overview({
       ? 'Reconfirmação necessária'
       : report.finding.anatomicalStructure
 
+  const completedSteps = [
+    Boolean(report.finding.sourceText.trim()),
+    hasAnatomy,
+    hasAnatomy && !report.finding.explanationReviewRequired,
+    report.status === 'published',
+  ].filter(Boolean).length
+
   return (
     <section className="overview-module overview-saas-v2">
       <div className="overview-welcome">
@@ -110,7 +117,14 @@ export function Overview({
                   : 'A confirmação humana continua obrigatória antes da publicação.'}
               </small>
 
-              <div className="care-progress" aria-label="Progresso do relatório">
+              <div
+                className="care-progress"
+                role="progressbar"
+                aria-label="Progresso do relatório"
+                aria-valuemin={0}
+                aria-valuemax={4}
+                aria-valuenow={completedSteps}
+              >
                 <span className={report.finding.sourceText.trim() ? 'done' : ''} />
                 <span className={hasAnatomy ? 'done' : ''} />
                 <span className={!report.finding.explanationReviewRequired && hasAnatomy ? 'done' : ''} />
