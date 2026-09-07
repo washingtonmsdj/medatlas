@@ -260,6 +260,9 @@ test('expired demo patient links fail closed', async ({ page }) => {
       name: 'Este link de demonstração não está disponível.',
     }),
   ).toBeVisible()
+  await expect(
+    page.getByText('Falha segura preservada'),
+  ).toBeVisible()
 })
 
 
@@ -284,6 +287,10 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
     page.getByRole('heading', {
       name: 'Nenhuma estrutura confirmada',
     }),
+  ).toBeVisible()
+
+  await expect(
+    page.locator('.finding-card-studio.anatomy-empty'),
   ).toBeVisible()
 
   await expect(
