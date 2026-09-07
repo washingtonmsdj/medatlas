@@ -223,6 +223,7 @@ export function HumanAtlasScene({
         atlas={prepared.atlas}
         state={sceneState}
         onSelect={inspectPart}
+        inspectedPartId={inspectedPart?.partId}
         onProgress={handleProgress}
         onError={handleError}
         appearance={appearance}
@@ -247,8 +248,9 @@ export function HumanAtlasScene({
             {inspectedPart.conceptId} · peça {inspectedPart.partId}
           </small>
           <em>
-            Inspeção visual apenas. A anatomia confirmada do relatório não foi
-            alterada.
+            {appearance === 'patient'
+              ? 'Identificação visual de anatomia humana de referência. Ela ajuda na orientação e não representa o corpo individual do paciente.'
+              : 'Inspeção visual apenas. A anatomia confirmada do relatório não foi alterada.'}
           </em>
         </aside>
       )}

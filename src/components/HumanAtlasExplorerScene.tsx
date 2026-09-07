@@ -18,6 +18,7 @@ interface Props {
   atlas: HumanAtlas
   state: AtlasExplorerSceneState
   onSelect: (partId: string) => void
+  inspectedPartId?: string
   onProgress: (progress: number) => void
   onError: (message: string) => void
   appearance?: AtlasSceneAppearance
@@ -27,6 +28,7 @@ export function HumanAtlasExplorerScene({
   atlas,
   state,
   onSelect,
+  inspectedPartId,
   onProgress,
   onError,
   appearance = 'clinical',
@@ -34,9 +36,11 @@ export function HumanAtlasExplorerScene({
   const host = useRef<HTMLDivElement>(null)
   const latest = useRef(state)
   const select = useRef(onSelect)
+  const inspected = useRef(inspectedPartId)
 
   latest.current = state
   select.current = onSelect
+  inspected.current = inspectedPartId
 
   useEffect(() => {
     const element = host.current
@@ -50,6 +54,7 @@ export function HumanAtlasExplorerScene({
     let lastView = ''
     let lastReset = -1
     let lastIsolate = ''
+    let lastInspectedPartId: string | undefined
     let layoutKey = ''
     let amount = 0
 
@@ -174,6 +179,10 @@ export function HumanAtlasExplorerScene({
     const selectionTexture = new THREE.DataTexture(selectedData, width, 1)
     selectionTexture.needsUpdate = true
 
+    const inspectedData = new Uint8Array(width * 4)
+    const inspectionTexture = new THREE.DataTexture(inspectedData, width, 1)
+    inspectionTexture.needsUpdate = true
+
     const materials: THREE.Material[] = []
     const geometries: THREE.BufferGeometry[] = []
     const pickers: Array<THREE.Mesh | undefined> = []
@@ -217,19 +226,20 @@ export function HumanAtlasExplorerScene({
       material.onBeforeCompile = (shader) => {
         shader.uniforms.partState = { value: partStateTexture }
         shader.uniforms.selectionState = { value: selectionTexture }
+        shader.uniforms.inspectionState = { value: inspectionTexture }
         shader.uniforms.stateWidth = { value: width }
 
         shader.vertexShader =
-          'attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform float stateWidth; varying float partVisible; varying float partSelected;\n' +
+          'attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform sampler2D inspectionState; uniform float stateWidth; varying float partVisible; varying float partSelected; varying float partInspected;\n' +
           shader.vertexShader
 
         shader.vertexShader = shader.vertexShader.replace(
           '#include <begin_vertex>',
-          '#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partVisible = state.w; partSelected = texture2D(selectionState, stateUv).r;',
+          '#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partVisible = state.w; partSelected = texture2D(selectionState, stateUv).r; partInspected = texture2D(inspectionState, stateUv).r;',
         )
 
         shader.fragmentShader =
-          'varying float partVisible; varying float partSelected;\n' +
+          'varying float partVisible; varying float partSelected; varying float partInspected;\n' +
           shader.fragmentShader
 
         shader.fragmentShader = shader.fragmentShader.replace(
@@ -239,7 +249,7 @@ export function HumanAtlasExplorerScene({
 
         shader.fragmentShader = shader.fragmentShader.replace(
           '#include <color_fragment>',
-          '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.18, 0.72, 0.92), partSelected * 0.78);',
+          '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.18, 0.72, 0.92), partSelected * 0.78); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.67, 0.18), partInspected * 0.92);',
         )
       }
 
@@ -551,6 +561,17 @@ export function HumanAtlasExplorerScene({
         lastState?.isolate !== current.isolate
 
       const moving = Math.abs(amount - current.explode) > 0.0001
+      const currentInspectedPartId = inspected.current
+
+      if (currentInspectedPartId !== lastInspectedPartId) {
+        atlas.parts.forEach((part, index) => {
+          inspectedData[index * 4] =
+            part.id === currentInspectedPartId ? 255 : 0
+        })
+        inspectionTexture.needsUpdate = true
+        lastInspectedPartId = currentInspectedPartId
+        dirty = true
+      }
 
       if (moving) {
         amount = THREE.MathUtils.damp(
@@ -795,6 +816,7 @@ export function HumanAtlasExplorerScene({
       environment.dispose()
       partStateTexture.dispose()
       selectionTexture.dispose()
+      inspectionTexture.dispose()
 
       scene.traverse((object) => {
         if (

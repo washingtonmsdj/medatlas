@@ -62,6 +62,8 @@ const requiredEngineFragments = [
   'new THREE.DataTexture',
   'partIndex',
   'selectionTexture',
+  'inspectionTexture',
+  'partInspected',
   'PointerTap',
   'createExplosionLayout',
   'raycaster.intersectObject',
@@ -80,6 +82,7 @@ const requiredEngineFragments = [
   'material.dispose()',
   'partStateTexture.dispose()',
   'selectionTexture.dispose()',
+  'inspectionTexture.dispose()',
   'renderer.dispose()',
   'renderer.domElement.remove()',
 ]
@@ -148,8 +151,10 @@ const requiredFocusedFragments = [
   'focusedAtlas',
   "contextMode === 'none'",
   'onSelect={inspectPart}',
+  'inspectedPartId={inspectedPart?.partId}',
   'focused-reference-inspector',
   'A anatomia confirmada do relatório não foi',
+  'Identificação visual de anatomia humana de referência',
 ]
 
 for (const fragment of requiredFocusedFragments) {

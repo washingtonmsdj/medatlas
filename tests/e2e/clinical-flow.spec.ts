@@ -195,6 +195,26 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(
     patientPage.locator('#patient-anatomy .human-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
+
+  const patientCanvas = patientPage.locator(
+    '#patient-anatomy .human-atlas-scene canvas',
+  )
+  const patientCanvasBox = await patientCanvas.boundingBox()
+  expect(patientCanvasBox).not.toBeNull()
+  await patientPage.mouse.click(
+    patientCanvasBox!.x + patientCanvasBox!.width * 0.5,
+    patientCanvasBox!.y + patientCanvasBox!.height * 0.58,
+  )
+  const patientInspector = patientPage.getByLabel(
+    'Estrutura anatômica inspecionada',
+  )
+  await expect(patientInspector).toBeVisible()
+  await expect(patientInspector).toContainText(
+    'Identificação visual de anatomia humana de referência',
+  )
+  await expect(patientInspector).toContainText(
+    'não representa o corpo individual do paciente',
+  )
   await expect(
     patientPage.getByRole('navigation', {
       name: 'Navegar pelas partes do relatório',
@@ -848,6 +868,12 @@ test('focused Human Atlas picking identifies a real part without changing the re
   await expect(inspector).toContainText('ESTRUTURA INSPECIONADA')
   await expect(inspector).toContainText(
     'A anatomia confirmada do relatório não foi alterada.',
+  )
+  await expect(
+    page.locator('.clinical-atlas-stage .human-atlas-scene canvas'),
+  ).toHaveAttribute(
+    'aria-label',
+    /clique em uma estrutura para inspecionar/i,
   )
 
   await expect(
