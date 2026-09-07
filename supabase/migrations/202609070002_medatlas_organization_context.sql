@@ -15,13 +15,14 @@ create table if not exists public.organization_units (
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (organization_id, slug)
+  unique (organization_id, slug),
+  unique (id, organization_id)
 );
 
 create table if not exists public.clinical_workspaces (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete cascade,
-  unit_id uuid references public.organization_units(id) on delete cascade,
+  unit_id uuid,
   name text not null check (char_length(name) between 2 and 120),
   slug text not null
     check (slug = lower(slug))
@@ -30,7 +31,10 @@ create table if not exists public.clinical_workspaces (
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (organization_id, unit_id, slug)
+  unique (organization_id, unit_id, slug),
+  foreign key (unit_id, organization_id)
+    references public.organization_units(id, organization_id)
+    on delete cascade
 );
 
 create index if not exists organization_units_org_idx
