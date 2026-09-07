@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react'
 import type { AtlasConcept } from './atlas/types'
-import { conceptDisplayName } from './atlas/source'
+import {
+  conceptDisplayName,
+  loadHumanAtlas,
+} from './atlas/source'
+import {
+  suggestAnatomyFromText,
+  type AnatomySuggestion,
+} from './clinical/anatomy-suggestions'
 import { AtlasViewport } from './components/AtlasViewport'
 import {
   InvalidPatientLink,
   PatientReportPage,
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
+import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { demoReport } from './domain/demo'
 import type { VisualReport } from './domain/types'
@@ -77,6 +85,9 @@ function ClinicianApp() {
   const [active, setActive] = useState('Relatórios')
   const [publishing, setPublishing] = useState(false)
   const [publishError, setPublishError] = useState('')
+  const [analyzing, setAnalyzing] = useState(false)
+  const [intakeError, setIntakeError] = useState('')
+  const [suggestions, setSuggestions] = useState<AnatomySuggestion[]>([])
 
   const invalidatePublishedState = (
     current: VisualReport,
@@ -125,7 +136,61 @@ function ClinicianApp() {
         },
       }
     })
+    setSuggestions([])
     setPublishError('')
+    setIntakeError('')
+  }
+
+  const updateSourceText = (value: string) => {
+    setReport((current) => {
+      const draft = invalidatePublishedState(current)
+
+      return {
+        ...draft,
+        finding: {
+          ...draft.finding,
+          sourceText: value,
+          explanationReviewRequired: true,
+        },
+      }
+    })
+
+    setSuggestions([])
+    setIntakeError('')
+    setPublishError('')
+  }
+
+  const analyzeSourceText = async () => {
+    const sourceText = report.finding.sourceText.trim()
+
+    if (sourceText.length < 3 || analyzing) return
+
+    setAnalyzing(true)
+    setIntakeError('')
+
+    try {
+      const atlas = await loadHumanAtlas()
+      const nextSuggestions = suggestAnatomyFromText(
+        atlas,
+        sourceText,
+      )
+
+      setSuggestions(nextSuggestions)
+
+      if (nextSuggestions.length === 0) {
+        setIntakeError(
+          'Nenhuma correspondência segura foi encontrada. Use a busca do atlas para escolher a estrutura manualmente.',
+        )
+      }
+    } catch (error) {
+      setIntakeError(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível analisar as referências anatômicas.',
+      )
+    } finally {
+      setAnalyzing(false)
+    }
   }
 
   const updateExplanation = (value: string) => {
@@ -213,7 +278,8 @@ function ClinicianApp() {
           ].map((step, index) => (
             <div
               className={
-                index < 2 ||
+                index === 0 ||
+                (index === 1 && Boolean(report.finding.atlasConceptId)) ||
                 (!report.finding.explanationReviewRequired && index === 2) ||
                 report.status === 'published'
                   ? 'done'
@@ -229,19 +295,32 @@ function ClinicianApp() {
 
         <section className="content-grid">
           <div className="left-stack">
+            <ReportIntake
+              sourceText={report.finding.sourceText}
+              analyzing={analyzing}
+              error={intakeError}
+              suggestions={suggestions}
+              onSourceTextChange={updateSourceText}
+              onAnalyze={analyzeSourceText}
+              onConfirmSuggestion={(suggestion) =>
+                confirmConcept(suggestion.concept)
+              }
+            />
+
             <section className="finding-card">
               <div>
-                <span className="section-kicker">EXAME IMPORTADO</span>
-                <h2>Ressonância da coluna lombar</h2>
-                <p>{report.finding.sourceText}</p>
+                <span className="section-kicker">2 · ANATOMIA CONFIRMADA</span>
+                <h2>{report.finding.anatomicalStructure}</h2>
+                <p>
+                  Estrutura que será usada na visualização e no relatório do
+                  paciente.
+                </p>
               </div>
 
               <div className="finding-match">
-                <span>Estrutura confirmada no atlas</span>
-                <strong>{report.finding.anatomicalStructure}</strong>
-                <small>
-                  {report.finding.atlasRef} · {report.finding.atlasConceptId}
-                </small>
+                <span>Referência do atlas</span>
+                <strong>{report.finding.atlasConceptId}</strong>
+                <small>{report.finding.atlasRef}</small>
               </div>
             </section>
 

@@ -23,6 +23,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Restore GitHub Actions by temporarily using the public repository.
 - [x] Add editable patient explanation with explicit re-review gate after changes.
 - [x] Add a real patient-facing demo route using the same confirmed 3D concept.
+- [x] Freeze reproducible Node dependency installs with a canonical lockfile + `npm ci`.
+- [x] Move Vite past the high-severity Windows dev-server advisory.
 - [ ] Enable repository GitHub Pages source once, then re-run the ready preview workflow.
 - [ ] Move anatomy binaries to MedAtlas-controlled immutable storage.
 - [ ] Validate browser interaction against a deployed preview.
@@ -45,8 +47,10 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 ## P2 — AI workflow
 
-- [ ] Extract anatomical terms from clinician-provided text/document.
-- [ ] Resolve only to known atlas concepts.
+- [x] Add deterministic report-text → known-atlas concept suggestions as a safe baseline.
+- [x] Keep text analysis advisory-only until explicit clinician confirmation.
+- [ ] Add structured AI extraction on top of the deterministic resolver.
+- [ ] Resolve AI output only to known atlas concepts.
 - [ ] Generate patient-language draft.
 - [ ] Require clinician confirmation before publish.
 - [ ] Version prompts/model/output and preserve provenance.
@@ -66,4 +70,5 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - Do not onboard real patient data before tenancy, authorization, private storage and audit are proven.
 - Do not reuse another product's Supabase project for MedAtlas.
 - Do not silently switch to a Supabase backend merely because env variables exist.
+- Do not accept an AI anatomy label that cannot be resolved to the pinned atlas.
 - Do not fork multiple renderer architectures; integrate one canonical Human Atlas-derived 3D module.
