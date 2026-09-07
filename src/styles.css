@@ -3936,3 +3936,455 @@ button:not(:disabled):active {
   color: #77cfff;
   background: #142d49;
 }
+/* MEDATLAS_PATIENT_PORTAL_AAA_V2 */
+.patient-shell {
+  max-width: 1320px;
+  padding: 0 32px 48px;
+  color: #18314e;
+}
+
+.patient-header {
+  height: 82px;
+  border-bottom-color: #d7e1eb;
+}
+
+.patient-header .brand {
+  color: #102542;
+}
+
+.patient-clinic span {
+  color: #18314e;
+}
+
+.patient-clinic small {
+  color: #60758c;
+}
+
+.patient-print-button {
+  border: 1px solid #cbd9e6;
+  color: #254563;
+  background: white;
+  box-shadow: 0 7px 20px rgba(42, 76, 110, .07);
+}
+
+.patient-print-button:hover {
+  border-color: #a9c6df;
+  background: #f7fbff;
+}
+
+.patient-hero-premium {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+  gap: 38px;
+  align-items: center;
+  padding: 46px 0 32px;
+}
+
+.patient-hero-copy h1 {
+  max-width: 820px;
+  color: #102542;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.02;
+}
+
+.patient-hero-copy > p {
+  max-width: 760px;
+  margin: 13px 0 0;
+  color: #5e748d;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.patient-report-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.patient-report-chips > span {
+  min-width: 130px;
+  display: grid;
+  gap: 2px;
+  padding: 9px 11px;
+  border: 1px solid #d8e4ef;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .80);
+  box-shadow: 0 8px 22px rgba(41, 75, 108, .05);
+}
+
+.patient-report-chips small {
+  color: #71859a;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.patient-report-chips strong {
+  overflow: hidden;
+  color: #1c3b59;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-report-chips .reviewed {
+  border-color: #c5e8dd;
+  background: #f1fbf7;
+}
+
+.patient-report-chips .reviewed strong {
+  color: #126b58;
+}
+
+.patient-journey-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 18px;
+}
+
+.patient-journey-nav button {
+  min-height: 39px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid #d4e1ec;
+  border-radius: 10px;
+  color: #385873;
+  background: white;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.patient-journey-nav button:hover {
+  border-color: #a8c7e2;
+  color: #155d9b;
+  background: #f6fbff;
+  box-shadow: 0 8px 22px rgba(38, 90, 138, .08);
+}
+
+.patient-journey-nav b {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: #116cb2;
+  background: #e9f5ff;
+  font-size: 7px;
+}
+
+.patient-review-summary {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #cde3ed;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(57, 160, 220, .12), transparent 38%),
+    linear-gradient(145deg, #f7fcff, #edf7fb);
+  box-shadow: 0 18px 42px rgba(52, 90, 126, .08);
+}
+
+.patient-review-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: white;
+  background: linear-gradient(145deg, #15a48a, #1a806f);
+  box-shadow: 0 10px 24px rgba(21, 142, 119, .20);
+  font-weight: 900;
+}
+
+.patient-review-summary > div {
+  display: grid;
+  gap: 4px;
+}
+
+.patient-review-summary .section-kicker {
+  color: #16856f;
+}
+
+.patient-review-summary strong {
+  color: #18364f;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.patient-review-summary p {
+  margin: 2px 0 0;
+  color: #617b8e;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.patient-grid {
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, .82fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.patient-atlas-card,
+.patient-explanation-card {
+  border-color: #d9e4ed;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 22px 56px rgba(41, 66, 93, .10);
+}
+
+.patient-card-heading {
+  border-bottom-color: #dfe8ef;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(45, 145, 219, .08), transparent 40%),
+    #fbfdff;
+}
+
+.patient-card-heading .label {
+  color: #617a90;
+}
+
+.patient-card-heading h2 {
+  color: #173550;
+}
+
+.patient-card-heading .atlas-badge {
+  color: #176aa8;
+  border: 1px solid #c9dfef;
+  background: #edf7fd;
+}
+
+.patient-explanation-card {
+  padding: 22px;
+}
+
+.patient-explanation-card .section-kicker {
+  color: #1870ac;
+}
+
+.patient-explanation-card blockquote {
+  margin: 11px 0 20px;
+  color: #294b68;
+  border-left-color: #2b87c8;
+  background: #f0f7fc;
+}
+
+.patient-explanation-section {
+  border-top-color: #e2eaf1;
+}
+
+.patient-explanation-section .label {
+  color: #627a90;
+}
+
+.patient-explanation-section p {
+  color: #29445f;
+}
+
+.patient-review-stamp {
+  border-color: #bfe4d8;
+  background: #effaf6;
+}
+
+.patient-review-stamp > span {
+  color: white;
+  background: #16866f;
+}
+
+.patient-review-stamp strong {
+  color: #145b4d;
+}
+
+.patient-review-stamp small {
+  color: #4e796d;
+}
+
+.patient-safety-note {
+  border-color: #dce4ea;
+  background: #f6f8fa;
+}
+
+.patient-safety-note strong {
+  color: #3f5568;
+}
+
+.patient-safety-note p {
+  color: #607486;
+}
+
+.patient-clarity-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.patient-clarity-strip article {
+  min-height: 105px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 15px;
+  border: 1px solid #dbe5ed;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 11px 30px rgba(46, 75, 104, .05);
+}
+
+.patient-clarity-strip article > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #1673b5;
+  background: #eaf6ff;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.patient-clarity-strip article > div {
+  display: grid;
+  gap: 4px;
+}
+
+.patient-clarity-strip strong {
+  color: #193a57;
+  font-size: 11px;
+}
+
+.patient-clarity-strip p {
+  margin: 0;
+  color: #667d92;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.patient-next-step {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid #dbe5ed;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0% 100%, rgba(42, 137, 215, .07), transparent 36%),
+    rgba(255, 255, 255, .92);
+  box-shadow: 0 18px 45px rgba(46, 72, 100, .07);
+}
+
+.patient-next-step h2 {
+  color: #173550;
+}
+
+.patient-next-step > div > p {
+  color: #657d92;
+}
+
+.patient-question-list article {
+  border-color: #dce6ee;
+  background: #f8fbfd;
+}
+
+.patient-question-list article > span {
+  color: #176fac;
+  background: #eaf5fd;
+}
+
+.patient-question-list article p {
+  color: #38556d;
+}
+
+.patient-footer {
+  color: #60758a;
+}
+
+.patient-footer button {
+  border-color: #cedce7;
+  color: #31526d;
+  background: white;
+}
+
+.patient-footer button:hover {
+  border-color: #aac5da;
+  background: #f7fbfe;
+}
+
+@media (max-width: 900px) {
+  .patient-hero-premium {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .patient-review-summary {
+    max-width: 480px;
+  }
+
+  .patient-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-clarity-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .patient-shell {
+    padding-inline: 14px;
+  }
+
+  .patient-hero-premium {
+    padding-top: 30px;
+  }
+
+  .patient-hero-copy h1 {
+    font-size: 34px;
+  }
+
+  .patient-report-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .patient-report-chips > span {
+    min-width: 0;
+  }
+
+  .patient-report-chips .reviewed {
+    grid-column: 1 / -1;
+  }
+
+  .patient-journey-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .patient-journey-nav button {
+    justify-content: flex-start;
+  }
+
+  .patient-review-summary {
+    grid-template-columns: 36px minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .patient-review-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .patient-next-step {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-journey-nav button {
+    scroll-behavior: auto;
+  }
+}
