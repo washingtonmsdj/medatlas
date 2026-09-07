@@ -55,15 +55,15 @@ const moduleMeta: Record<
   },
   Pacientes: {
     eyebrow: 'PACIENTES',
-    title: 'Base clínica isolada por organização.',
+    title: 'Paciente e relatório em contexto demonstrativo.',
   },
   Consultas: {
     eyebrow: 'CONSULTAS',
-    title: 'Contexto dos atendimentos e relatórios visuais.',
+    title: 'Acompanhe o workflow visual da sessão atual.',
   },
   Exames: {
     eyebrow: 'DOCUMENTOS CLÍNICOS',
-    title: 'Origem segura para laudos e exames.',
+    title: 'Entrada local e controlada de documentos sintéticos.',
   },
   'Relatórios visuais': {
     eyebrow: 'CONSULTA VISUAL',
@@ -71,7 +71,7 @@ const moduleMeta: Record<
   },
   Configurações: {
     eyebrow: 'ORGANIZAÇÃO',
-    title: 'Equipe, identidade e segurança do ambiente.',
+    title: 'Estado real do ambiente demo, segurança e governança.',
   },
 }
 
