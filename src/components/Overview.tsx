@@ -6,6 +6,7 @@ interface Props {
   organizationName: string
   workspaceName: string
   unitName?: string
+  professionalDisplayName: string
   onNewReport: () => void
   onOpenReport: () => void
   onOpenAtlas: () => void
@@ -29,6 +30,7 @@ export function Overview({
   organizationName,
   workspaceName,
   unitName,
+  professionalDisplayName,
   onNewReport,
   onOpenReport,
   onOpenAtlas,
@@ -68,7 +70,7 @@ export function Overview({
             {organizationName.toUpperCase()} · {workspaceName.toUpperCase()}
             {unitName ? ` · ${unitName.toUpperCase()}` : ''}
           </span>
-          <h2>Bom dia, Dr. Carlos.</h2>
+          <h2>Bom dia, {professionalDisplayName}.</h2>
           <p>
             Continue os atendimentos e transforme informação clínica em uma
             explicação visual revisada para cada paciente.
