@@ -11,16 +11,24 @@ import {
   isAtlasSystemId,
   type AtlasExplorerSceneState,
   type AtlasSystemId,
+  type AtlasView,
 } from '../atlas/systems'
 import type {
   AtlasConcept,
   HumanAtlas,
 } from '../atlas/types'
-import { HumanAtlasExplorerScene } from './HumanAtlasExplorerScene'
+import {
+  HumanAtlasExplorerScene,
+  type AtlasSceneAppearance,
+} from './HumanAtlasExplorerScene'
 
 interface Props {
   conceptId: string
   contextMode: AtlasContextMode
+  view?: AtlasView
+  rotate?: boolean
+  reset?: number
+  appearance?: AtlasSceneAppearance
   onReady?: (
     label: string,
     selectedPartCount: number,
@@ -40,6 +48,10 @@ interface PreparedFocus {
 export function HumanAtlasScene({
   conceptId,
   contextMode,
+  view = 'three-quarter',
+  rotate = false,
+  reset = 0,
+  appearance = 'clinical',
   onReady,
   onError,
 }: Props) {
@@ -103,9 +115,9 @@ export function HumanAtlasScene({
         visible: [],
         selected: [],
         isolate: true,
-        view: 'three-quarter',
-        rotate: false,
-        reset: 0,
+        view,
+        rotate,
+        reset,
       }
     }
 
@@ -121,11 +133,11 @@ export function HumanAtlasScene({
           : prepared.visibleSystems,
       selected,
       isolate: contextMode === 'none',
-      view: 'three-quarter',
-      rotate: false,
-      reset: 0,
+      view,
+      rotate,
+      reset,
     }
-  }, [contextMode, prepared])
+  }, [contextMode, prepared, reset, rotate, view])
 
   const handleProgress = useCallback(
     (progress: number) => {
@@ -163,6 +175,7 @@ export function HumanAtlasScene({
         onSelect={() => {}}
         onProgress={handleProgress}
         onError={handleError}
+        appearance={appearance}
       />
     </div>
   )
