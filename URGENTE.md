@@ -138,7 +138,7 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
-- Preview externo 3D-first: **Pages run `34107729098` — PASS**, incluindo shell/assets e Playwright real contra `https://washingtonmsdj.github.io/medatlas/`.
+- Preview externo 3D-first: **Pages run `34108052666` — PASS**, incluindo shell/assets, Dashboard/Pacientes/Consultas/Exames, preview pré-publicação, fluxo clínico e portal do paciente em Chromium contra `https://washingtonmsdj.github.io/medatlas/`.
 - Browser E2E do lote Equipe/convites: **run `34104398629` — PASS**.
 - CI do contrato de convites + membership: **PASS até `abbc3d20b5cb1f421b894c9e69a3548f9620d8c3`**.
 - Artifact visual anterior revisado: `visual-qa-34100520733`.
@@ -175,6 +175,7 @@ O diferencial do MedAtlas é a anatomia 3D integrada ao workflow, não um Atlas 
 | **Consultas** | foco anatômico permanece visível durante a sessão | mesmo engine clinical |
 | **Exames** | conceito FMA ligado ao texto aparece em geometria real | documento → conceito → 3D |
 | **Relatórios visuais** | Clinical 3D Workbench completo | busca, confirmação, contexto, câmera |
+| **Preview do paciente (pré-publicação)** | Human Atlas real em modo patient | preview local, não publica nem contorna review gate |
 | **Atlas 3D** | explorer completo de ~2.234 peças | picking, sistemas, explode, inspector |
 | **Link do paciente** | 3D real é o elemento visual dominante | modo patient, controles simplificados |
 | **Equipe / Analytics / Configurações** | **sem canvas 3D de propósito** | não existe tarefa anatômica; evitar decoração e custo de GPU |
@@ -183,6 +184,7 @@ Regras permanentes:
 
 - [x] o placeholder/orbit “3D” do Dashboard foi removido;
 - [x] nenhuma superfície anatômica usa imagem estática para fingir 3D;
+- [x] o preview do paciente dentro do Report Studio usa o Human Atlas real antes da publicação;
 - [x] `AnatomyFocusPreview` reutiliza `HumanAtlasScene`; não é renderer novo;
 - [x] sem conceito FMA válido, a UI mostra estado vazio e **não inventa modelo**;
 - [x] status mostra quando a geometria real terminou de carregar;
