@@ -18,6 +18,8 @@ A published demo report:
 - receives a 256-bit opaque token generated with `crypto.getRandomValues`;
 - is stored only in the browser for the synthetic demo flow;
 - carries an explicit `medatlas.demo-share/1` envelope;
+- may record only a local synthetic `viewCount` / `lastViewedAt` when that demo link is actually resolved;
+- does **not** send demo view analytics to an external telemetry service;
 - expires automatically after **30 minutes**;
 - is removed when malformed or expired;
 - is capped at **10** locally stored demo shares;
