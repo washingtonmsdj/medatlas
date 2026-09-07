@@ -12,6 +12,7 @@ import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
+import { DocumentsModule } from './components/DocumentsModule'
 import { ModulePlaceholder } from './components/ModulePlaceholder'
 import { Overview } from './components/Overview'
 import {
@@ -533,16 +534,9 @@ function ClinicianApp() {
 
       case 'Exames':
         return (
-          <ModulePlaceholder
-            title="Exames e documentos"
-            description="No MVP sem backend trabalhamos com texto sintético/local. Upload clínico real continuará bloqueado até Storage privado e autorização existirem."
-            status="Entrada local/sintética"
-            items={[
-              'Texto colado pelo profissional',
-              'Triagem anatômica determinística',
-              'PDF privado na futura fase de backend',
-              'Integridade e provenance do documento',
-            ]}
+          <DocumentsModule
+            report={report}
+            onStartImport={startNewReport}
           />
         )
 

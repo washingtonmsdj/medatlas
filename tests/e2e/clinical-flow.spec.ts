@@ -405,3 +405,37 @@ test('synthetic text file import stays local and resolves anatomy', async ({
     page.locator('.suggestion-item').first(),
   ).toContainText('FMA7088')
 })
+
+
+test('documents hub opens a blank local-only intake flow', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Exames' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Entrada local de laudos sintéticos',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('PDF / IMAGEM'),
+  ).toBeVisible()
+  await expect(
+    page.getByText('Ainda bloqueado'),
+  ).toBeVisible()
+
+  await page
+    .getByRole('button', { name: 'Importar texto sintético' })
+    .click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByLabel('Texto do laudo ou relatório'),
+  ).toHaveValue('')
+})
