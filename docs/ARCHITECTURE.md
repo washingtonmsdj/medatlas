@@ -89,7 +89,37 @@ Isso permite trocar persistência sem reescrever o fluxo clínico.
 
 O seletor do repositório é fail-closed: variáveis Supabase sozinhas não ativam automaticamente backend incompleto.
 
-### 4. Resolver anatômico
+### 4. Analytics de uso observável
+
+O MedAtlas não cria um segundo pipeline de tracking para o MVP.
+
+```text
+Demo
+share local → resolvePatientShare → contador local de abertura
+                         ↓
+                 ClinicalRepository
+                         ↓
+                    Analytics UI
+
+Produção
+report_shares + audit_events(report.share_viewed)
+                         ↓
+        RPC autenticada + membership do tenant
+                         ↓
+                    Analytics UI
+```
+
+Regras:
+
+- a UI não lê `localStorage` diretamente;
+- preview clínico não conta como visualização do paciente;
+- no demo, contadores permanecem somente no navegador e são sintéticos;
+- em produção, visualizações são derivadas de `audit_events` e `report_shares`;
+- as RPCs de analytics exigem usuário autenticado e membership ativo;
+- não existe tabela paralela de tracking;
+- analytics não pode tornar dados clínicos públicos.
+
+### 5. Resolver anatômico
 
 Existem duas entradas complementares:
 
@@ -112,7 +142,7 @@ known IDs only
 clinician confirmation
 ```
 
-### 5. Renderer
+### 6. Renderer
 
 Existe **um único engine 3D canônico**, derivado diretamente do Human Atlas.
 
@@ -163,7 +193,7 @@ interface AtlasSelection {
 }
 ```
 
-### 6. Data plane Supabase
+### 7. Data plane Supabase
 
 Contrato source-first:
 
