@@ -119,6 +119,52 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
   }
 })
 
+test('clinical Studio keeps a desktop-first three-column productivity layout', async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1600, height: 1000 },
+    { width: 1440, height: 960 },
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Relatórios' }).click()
+
+    const studio = page.locator('.clinical-report-studio')
+    await expect(studio).toHaveAttribute(
+      'data-surface-priority',
+      'desktop-first',
+    )
+
+    const source = page.locator('.report-source-column')
+    const atlas = page.locator('.report-atlas-column')
+    const explanation = page.locator('.report-explanation-column')
+    const stage = page.locator('.clinical-atlas-stage')
+
+    const [sourceBox, atlasBox, explanationBox, stageBox] =
+      await Promise.all([
+        source.boundingBox(),
+        atlas.boundingBox(),
+        explanation.boundingBox(),
+        stage.boundingBox(),
+      ])
+
+    expect(sourceBox).not.toBeNull()
+    expect(atlasBox).not.toBeNull()
+    expect(explanationBox).not.toBeNull()
+    expect(stageBox).not.toBeNull()
+
+    expect(Math.abs(sourceBox!.y - atlasBox!.y)).toBeLessThan(2)
+    expect(Math.abs(atlasBox!.y - explanationBox!.y)).toBeLessThan(2)
+    expect(atlasBox!.width).toBeGreaterThan(sourceBox!.width)
+    expect(atlasBox!.width).toBeGreaterThan(430)
+    expect(explanationBox!.width).toBeGreaterThan(300)
+    expect(stageBox!.height).toBeGreaterThanOrEqual(560)
+
+    await expectNoHorizontalOverflow(page)
+  }
+})
+
 test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')

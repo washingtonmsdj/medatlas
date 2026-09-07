@@ -41,7 +41,7 @@ export function PatientReportPage({ report }: Props) {
   }, [])
 
   return (
-    <main className="patient-shell">
+    <main className="patient-shell" data-surface-priority="mobile-first">
       <header className="patient-header">
         <div className="brand">
           <span className="brand-mark">M</span>
@@ -101,7 +101,7 @@ export function PatientReportPage({ report }: Props) {
               }
             >
               <b>01</b>
-              Ver anatomia
+              Anatomia
             </button>
             <button
               type="button"
@@ -112,7 +112,7 @@ export function PatientReportPage({ report }: Props) {
               }
             >
               <b>02</b>
-              Entender explicação
+              Explicação
             </button>
             <button
               type="button"
@@ -123,7 +123,7 @@ export function PatientReportPage({ report }: Props) {
               }
             >
               <b>03</b>
-              Preparar perguntas
+              Perguntas
             </button>
           </nav>
         </div>

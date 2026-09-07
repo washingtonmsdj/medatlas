@@ -379,7 +379,7 @@ function ClinicianApp() {
         ))}
       </section>
 
-      <section className="clinical-report-studio">
+      <section className="clinical-report-studio" data-surface-priority="desktop-first">
         <div className="report-source-column studio-panel">
           <div className="studio-panel-label">
             <span>01</span>

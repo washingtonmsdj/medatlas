@@ -296,13 +296,49 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     patientPage.locator('#patient-anatomy .human-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
 
+  await expect(
+    patientPage.locator('.patient-shell'),
+  ).toHaveAttribute('data-surface-priority', 'mobile-first')
+
+  await expect(
+    patientPage.locator('.patient-clinic').getByText('Clínica Horizonte', { exact: true }),
+  ).toBeVisible()
+
+  const patientMobileStage = patientPage.locator('.patient-atlas-stage')
+  const patientMobileStageBox = await patientMobileStage.boundingBox()
+  expect(patientMobileStageBox).not.toBeNull()
+  expect(patientMobileStageBox!.height).toBeGreaterThanOrEqual(500)
+
   const patientMobileControls = patientPage.locator(
     '.patient-atlas-controls',
   )
   const patientMobileControlsBox = await patientMobileControls.boundingBox()
   expect(patientMobileControlsBox).not.toBeNull()
   expect(patientMobileControlsBox!.width).toBeGreaterThan(300)
-  expect(patientMobileControlsBox!.height).toBeLessThan(60)
+  expect(patientMobileControlsBox!.height).toBeLessThan(70)
+
+  const patientControlBoxes = await patientMobileControls
+    .getByRole('button')
+    .evaluateAll((buttons) =>
+      buttons.map((button) => {
+        const box = button.getBoundingClientRect()
+        return { width: box.width, height: box.height }
+      }),
+    )
+  expect(patientControlBoxes.length).toBeGreaterThanOrEqual(5)
+  for (const box of patientControlBoxes) {
+    expect(box.width).toBeGreaterThanOrEqual(44)
+    expect(box.height).toBeGreaterThanOrEqual(44)
+  }
+
+  for (const label of ['Anatomia', 'Explicação', 'Perguntas']) {
+    const target = patientPage
+      .getByRole('navigation', { name: 'Navegar pelas partes do relatório' })
+      .getByRole('button', { name: label })
+    const targetBox = await target.boundingBox()
+    expect(targetBox).not.toBeNull()
+    expect(targetBox!.height).toBeGreaterThanOrEqual(44)
+  }
 
   const patientMobileOverflow = await patientPage.evaluate(
     () =>

@@ -8797,3 +8797,208 @@ button:not(:disabled):active {
     min-height: 420px;
   }
 }
+
+
+/* MEDATLAS_ROLE_FIRST_RESPONSIVE_V1
+ * Patient portal is mobile-first. Clinical Studio is desktop-first.
+ * Intentionally last: protects role-specific layout from older generic media rules.
+ */
+@media (max-width: 620px) {
+  .patient-shell[data-surface-priority="mobile-first"] {
+    padding: 0 12px 34px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    min-height: 70px;
+    height: auto;
+    gap: 10px;
+    padding-block: 8px;
+    background: rgba(247, 251, 254, .96);
+    backdrop-filter: blur(18px);
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-header .brand {
+    flex: 0 0 auto;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-header-right {
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-clinic {
+    display: grid;
+    min-width: 0;
+    max-width: 170px;
+    text-align: right;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-clinic span {
+    overflow: hidden;
+    color: #18314e;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-clinic small {
+    display: none;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-hero-premium {
+    gap: 12px;
+    padding: 20px 0 16px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-hero-copy h1 {
+    font-size: clamp(28px, 9vw, 34px);
+    line-height: 1.06;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-hero-copy > p {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-report-chips {
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-report-chips > span {
+    padding: 8px 9px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-report-chips small {
+    font-size: 9px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-report-chips strong {
+    font-size: 11px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-journey-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-journey-nav button {
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+    padding: 0 6px;
+    font-size: 9px;
+    text-align: center;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-journey-nav b {
+    display: none;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-review-summary {
+    padding: 13px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-card-heading {
+    min-height: 64px;
+    padding: 12px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-stage,
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-stage .human-atlas-scene {
+    min-height: max(500px, 62dvh);
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-controls {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    gap: 3px;
+    padding: 4px;
+    scrollbar-width: none;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-controls button {
+    min-width: 44px;
+    height: 44px;
+    flex: 1 0 44px;
+    font-size: 9px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-atlas-status {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-interaction-hint {
+    padding: 11px 12px 13px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-explanation-card {
+    padding: 16px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-explanation-card blockquote,
+  .patient-shell[data-surface-priority="mobile-first"] .patient-explanation-section p {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-review-stamp strong {
+    font-size: 11px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-review-stamp small,
+  .patient-shell[data-surface-priority="mobile-first"] .patient-safety-note p {
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-question-list article {
+    min-height: 52px;
+    padding: 13px;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-question-list p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .patient-shell[data-surface-priority="mobile-first"] .patient-footer button {
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .clinical-report-studio[data-surface-priority="desktop-first"] {
+    grid-template-columns:
+      minmax(280px, .76fr)
+      minmax(460px, 1.34fr)
+      minmax(320px, .90fr);
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
+    min-height: 560px;
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .studio-panel-label {
+    min-height: 60px;
+  }
+}

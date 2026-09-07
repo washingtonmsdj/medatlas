@@ -129,12 +129,20 @@ Hierarquia permanente:
 
 ### Visual QA / responsividade
 
+**Contrato de prioridade por perfil (invariante):**
+
+- **Paciente:** mobile-first. Smartphone é a superfície primária; branding, leitura, toque e Human Atlas devem ser excelentes em 390 px antes de considerar desktop.
+- **Clínica/profissional:** desktop-first. O Clinical Report Studio deve preservar as três colunas de trabalho, 3D dominante e produtividade em 1440/1600 px; mobile continua funcional, mas não dita a densidade do workspace profissional.
+- Responsividade não significa apenas reduzir o desktop: cada perfil pode reorganizar densidade, alvos de toque e hierarquia conforme o dispositivo principal.
+
+
 - [x] Browser E2E desktop/mobile.
 - [x] axe/WCAG serious/critical gate.
 - [x] gate automático de overflow em **1600 / 1440 / 390 px**.
 - [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
-- [x] portal do paciente também possui gate mobile 390 px para canvas, controles horizontais e ausência de overflow;
+- [x] portal do paciente possui contrato mobile-first em 390 px: branding da clínica permanece visível, palco 3D >= 500 px, controles/tabs com alvos >= 44 px e ausência de overflow;
 - [x] Dashboard mobile preserva o 3D do atendimento como superfície principal, com palco >= 400 px protegido por E2E;
+- [x] Clinical Report Studio possui contrato desktop-first protegido por E2E em 1440/1600 px: três colunas alinhadas, coluna 3D mais larga e palco >= 560 px;
 - [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
