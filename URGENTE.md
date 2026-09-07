@@ -142,7 +142,7 @@ Hierarquia permanente:
 - [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
 - [x] portal do paciente possui contrato mobile-first em 390 px: branding da clínica e ação PDF permanecem visíveis, palco 3D >= 500 px, controles/tabs/ações com alvos >= 44 px e ausência de overflow;
 - [x] Dashboard mobile preserva o 3D do atendimento como superfície principal, com palco >= 400 px protegido por E2E;
-- [x] Clinical Report Studio possui contrato desktop-first protegido por E2E em 1440/1600 px: três colunas alinhadas, coluna 3D mais larga e palco >= 560 px;
+- [x] Clinical Report Studio possui contrato desktop-first protegido por E2E em 1440/1600 px: três colunas alinhadas, coluna 3D mais larga e palco >= 560 px; override explícito do breakpoint legado <=1450 mantém a explicação na terceira coluna em desktop;
 - [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
@@ -436,3 +436,5 @@ Se o usuário autorizar **ativar produção/Supabase**:
 - não reutilizar Supabase de outro projeto;
 - não dizer que Supabase/auth/convites de produção estão ativos enquanto não estiverem;
 - não permitir PHI no demo.
+
+- [x] contraste do texto auxiliar da zona de publicação corrigido para WCAG AA (de ~3,3:1 para >5:1 em fundo claro); gate Axe permanece bloqueante.

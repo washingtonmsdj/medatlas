@@ -5190,7 +5190,7 @@ button:not(:disabled):active {
 }
 
 .publish-zone span {
-  color: #7d8f9f;
+  color: #526a80;
   font-size: 7px;
   text-align: right;
 }
@@ -9009,6 +9009,18 @@ button:not(:disabled):active {
       minmax(280px, .76fr)
       minmax(460px, 1.34fr)
       minmax(320px, .90fr);
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column {
+    grid-column: auto;
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-card-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-card-v2 > * {
+    grid-column: auto;
   }
 
   .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
