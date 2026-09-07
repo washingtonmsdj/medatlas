@@ -55,6 +55,14 @@ const requiredEngineFragments = [
   'atlasCenter',
   "appearance !== 'explorer'",
   'surfacePadding',
+  'cancelAnimationFrame(frame)',
+  'controls.dispose()',
+  'geometry.dispose()',
+  'material.dispose()',
+  'partStateTexture.dispose()',
+  'selectionTexture.dispose()',
+  'renderer.dispose()',
+  'renderer.domElement.remove()',
 ]
 
 for (const fragment of requiredEngineFragments) {

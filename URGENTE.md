@@ -144,7 +144,7 @@ Referências recentes de validação:
 
 ---
 
-## 3. Human Atlas / anatomia — FECHADO NO MVP
+## 3. Human Atlas / anatomia — 3D-FIRST NO MVP
 
 - [x] upstream Human Atlas fixado em `1c38bf35c254a891200d3cedecfd57abebe83d8d`.
 - [x] BodyParts3D vendorizado com provenance e SHA-256.
@@ -162,6 +162,36 @@ Referências recentes de validação:
 - [x] gate permanente `validate-reference-atlas`.
 
 Não voltar ao visual/pedestal original do upstream nas superfícies clinical/patient.
+
+### 3.1 Regra 3D-first — ONDE O MODELO REAL DEVE APARECER
+
+O diferencial do MedAtlas é a anatomia 3D integrada ao workflow, não um Atlas isolado.
+
+| Superfície | Uso do 3D | Contrato |
+| --- | --- | --- |
+| **Visão geral** | preview real do atendimento atual | `AnatomyFocusPreview → HumanAtlasScene` |
+| **Pacientes** | anatomia do relatório atual em modo patient | mesmo engine, sem thumbnail fake |
+| **Consultas** | foco anatômico permanece visível durante a sessão | mesmo engine clinical |
+| **Exames** | conceito FMA ligado ao texto aparece em geometria real | documento → conceito → 3D |
+| **Relatórios visuais** | Clinical 3D Workbench completo | busca, confirmação, contexto, câmera |
+| **Atlas 3D** | explorer completo de ~2.234 peças | picking, sistemas, explode, inspector |
+| **Link do paciente** | 3D real é o elemento visual dominante | modo patient, controles simplificados |
+| **Equipe / Analytics / Configurações** | **sem canvas 3D de propósito** | não existe tarefa anatômica; evitar decoração e custo de GPU |
+
+Regras permanentes:
+
+- [x] o placeholder/orbit “3D” do Dashboard foi removido;
+- [x] nenhuma superfície anatômica usa imagem estática para fingir 3D;
+- [x] `AnatomyFocusPreview` reutiliza `HumanAtlasScene`; não é renderer novo;
+- [x] sem conceito FMA válido, a UI mostra estado vazio e **não inventa modelo**;
+- [x] status mostra quando a geometria real terminou de carregar;
+- [x] troca de superfície desmonta o renderer anterior;
+- [x] cleanup canônico cancela animation frame, listeners/observer e descarta controls, geometrias, materiais, textures e renderer WebGL;
+- [x] source gate falha se Dashboard voltar ao placeholder fake ou se Pacientes/Consultas/Exames perderem o preview canônico;
+- [x] Browser E2E exige canvas real nas superfícies 3D-first;
+- [x] Pages executa Playwright contra o site publicado e exige canvas Human Atlas também no portal do paciente.
+
+O 3D continua sendo **anatomia humana de referência**. Não chamar esse modelo de “corpo do paciente”, “reconstrução do exame” ou equivalente.
 
 ---
 
@@ -323,8 +353,8 @@ Depois do backend:
 
 Prioridade depois do P1 source-first:
 
-1. [ ] publicar/confirmar preview externo atual;
-2. [ ] validar browser real contra deploy;
+1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
+2. [ ] validar Browser E2E completo contra deploy — shell/assets já validados; Playwright 3D remoto adicionado e aguardando checkpoint verde;
 3. [ ] executar piloto manual sintético no preview;
 4. [ ] corrigir UX encontrada no piloto;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;
@@ -340,7 +370,7 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 Se continuar **sem Supabase ativo**:
 
 1. verificar CI do HEAD;
-2. revisar preview/deploy externo disponível;
+2. validar o Playwright 3D contra o GitHub Pages publicado;
 3. executar piloto manual sintético completo;
 4. corrigir somente bugs/UX reais encontrados;
 5. não iniciar billing nem IA remota.
@@ -360,6 +390,8 @@ Se o usuário autorizar **ativar produção/Supabase**:
 
 - não recriar renderer 3D paralelo;
 - não substituir Human Atlas por modelo fake/simplificado;
+- não recolocar thumbnail, órbita, ilustração ou badge “3D” como substituto de geometria real em qualquer superfície anatômica;
+- não adicionar canvas 3D decorativo em Equipe, Analytics ou Configurações: 3D deve existir onde há tarefa anatômica real;
 - não reabrir layout antigo do Clinical Report Studio;
 - não tratar confiança textual como certeza clínica;
 - não fazer IA diagnosticar/publicar automaticamente;
