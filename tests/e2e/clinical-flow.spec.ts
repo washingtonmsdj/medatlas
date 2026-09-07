@@ -289,3 +289,24 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
     }),
   ).toBeEnabled()
 })
+
+
+test('synthetic pilot checklist reflects report progress', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Critérios de aceite do fluxo',
+    }),
+  ).toBeVisible()
+
+  await expect(page.locator('.pilot-score')).toContainText('4/5')
+
+  await page
+    .getByRole('button', { name: 'Novo relatório visual' })
+    .click()
+
+  await page.getByRole('button', { name: 'Visão geral' }).click()
+
+  await expect(page.locator('.pilot-score')).toContainText('0/5')
+})

@@ -87,7 +87,10 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Demo shares expire after 30 minutes and local retention is capped.
 - [x] Add CSP/security headers and CI security-contract validation.
 - [x] Browser E2E proves expired demo patient links fail closed.
-- [ ] Pilot with synthetic data, then controlled clinical pilot.
+- [x] Automated synthetic pilot across canonical scenarios and blank-report flow.
+- [x] Add guided synthetic pilot checklist to the product.
+- [x] Document synthetic pilot protocol and acceptance criteria.
+- [ ] Controlled clinical pilot with external professionals after production blockers are cleared.
 
 ## Do not do yet
 

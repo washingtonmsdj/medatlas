@@ -1,4 +1,5 @@
 import type { VisualReport } from '../domain/types'
+import { PilotChecklist } from './PilotChecklist'
 
 interface Props {
   report: VisualReport
@@ -111,6 +112,8 @@ export function Overview({
           ))}
         </div>
       </div>
+
+      <PilotChecklist report={report} />
 
       <div className="overview-boundary">
         <div>

@@ -41,6 +41,7 @@ O MVP já possui:
 - provenance + SHA-256 verificados no CI;
 - Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
 - gate axe/WCAG para violações serious/critical;
+- piloto sintético guiado com critérios de aceite no dashboard;
 - modo demo synthetic-only com shares locais expirando em 30 minutos;
 - CSP e headers de segurança no deploy Vercel;
 - explicação editável para o paciente;
@@ -173,7 +174,7 @@ Alguns invariantes já são gates permanentes:
 - nenhuma IA pode publicar diretamente;
 - dados demo não devem compartilhar projeto/storage com dados clínicos reais.
 
-Veja `docs/SECURITY.md`.
+Veja `docs/SECURITY.md` e `docs/PILOT.md`.
 
 ## Deploy
 
