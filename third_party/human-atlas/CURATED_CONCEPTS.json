@@ -1,0 +1,223 @@
+{
+  "schema": "medatlas.curated-anatomy-concepts/1",
+  "upstream_repository": "ashemag/human-atlas",
+  "upstream_commit": "1c38bf35c254a891200d3cedecfd57abebe83d8d",
+  "generated_from": "public/models/atlas.json",
+  "concepts": [
+    {
+      "id": "FMA16033",
+      "name": "intervertebral disk of first lumbar vertebra",
+      "elements": 1,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA16034",
+      "name": "intervertebral disk of second lumbar vertebra",
+      "elements": 1,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA16035",
+      "name": "intervertebral disk of third lumbar vertebra",
+      "elements": 1,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA16036",
+      "name": "intervertebral disk of fourth lumbar vertebra",
+      "elements": 1,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA16037",
+      "name": "intervertebral disk of fifth lumbar vertebra",
+      "elements": 1,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA16203",
+      "name": "lumbar vertebral column",
+      "elements": 10,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA9921",
+      "name": "lumbar vertebra",
+      "elements": 5,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA24138",
+      "name": "cervical vertebral column",
+      "elements": 13,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA9915",
+      "name": "cervical vertebra",
+      "elements": 7,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA7647",
+      "name": "spinal cord",
+      "elements": 1,
+      "systems": [
+        "nervous"
+      ]
+    },
+    {
+      "id": "FMA7088",
+      "name": "heart",
+      "elements": 83,
+      "systems": [
+        "cardiac",
+        "muscular",
+        "arterial",
+        "venous"
+      ]
+    },
+    {
+      "id": "FMA7203",
+      "name": "kidney",
+      "elements": 2,
+      "systems": [
+        "urinary"
+      ]
+    },
+    {
+      "id": "FMA9611",
+      "name": "femur",
+      "elements": 2,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA24485",
+      "name": "patella",
+      "elements": 2,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA13303",
+      "name": "humerus",
+      "elements": 2,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA7197",
+      "name": "liver",
+      "elements": 60,
+      "systems": [
+        "digestive",
+        "venous",
+        "arterial"
+      ]
+    },
+    {
+      "id": "FMA50801",
+      "name": "brain",
+      "elements": 59,
+      "systems": [
+        "cardiac",
+        "nervous",
+        "endocrine"
+      ]
+    },
+    {
+      "id": "FMA7148",
+      "name": "stomach",
+      "elements": 1,
+      "systems": [
+        "digestive"
+      ]
+    },
+    {
+      "id": "FMA7198",
+      "name": "pancreas",
+      "elements": 4,
+      "systems": [
+        "digestive"
+      ]
+    },
+    {
+      "id": "FMA7196",
+      "name": "spleen",
+      "elements": 1,
+      "systems": [
+        "lymphatic"
+      ]
+    },
+    {
+      "id": "FMA15900",
+      "name": "urinary bladder",
+      "elements": 1,
+      "systems": [
+        "urinary"
+      ]
+    },
+    {
+      "id": "FMA9600",
+      "name": "prostate",
+      "elements": 1,
+      "systems": [
+        "reproductive"
+      ]
+    },
+    {
+      "id": "FMA9629",
+      "name": "supraspinatus",
+      "elements": 2,
+      "systems": [
+        "muscular"
+      ]
+    },
+    {
+      "id": "FMA32546",
+      "name": "infraspinatus",
+      "elements": 2,
+      "systems": [
+        "muscular"
+      ]
+    },
+    {
+      "id": "FMA13413",
+      "name": "subscapularis",
+      "elements": 2,
+      "systems": [
+        "skeletal"
+      ]
+    },
+    {
+      "id": "FMA32550",
+      "name": "teres minor",
+      "elements": 2,
+      "systems": [
+        "muscular"
+      ]
+    }
+  ]
+}
