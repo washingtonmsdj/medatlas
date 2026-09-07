@@ -132,6 +132,7 @@ Hierarquia permanente:
 - [x] Browser E2E desktop/mobile.
 - [x] axe/WCAG serious/critical gate.
 - [x] gate automático de overflow em **1600 / 1440 / 390 px**.
+- [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
 - [x] workflow publica artifact de visual QA também em runs verdes.
@@ -151,6 +152,9 @@ Referências recentes de validação:
 - [x] BodyParts3D vendorizado com provenance e SHA-256.
 - [x] aproximadamente 2.234 peças no explorer completo.
 - [x] picking por peça.
+- [x] inspeção temporária de peça no modo focado, sem alterar a anatomia confirmada do relatório.
+- [x] destaque visual efêmero da peça inspecionada no mesmo shader/engine.
+- [x] linguagem de inspeção adaptada: workflow clínico para profissional; orientação de referência para paciente.
 - [x] sistemas anatômicos.
 - [x] aliases em português.
 - [x] busca FMA.
@@ -188,6 +192,8 @@ Regras permanentes:
 - [x] `AnatomyFocusPreview` reutiliza `HumanAtlasScene`; não é renderer novo;
 - [x] sem conceito FMA válido, a UI mostra estado vazio e **não inventa modelo**;
 - [x] status mostra quando a geometria real terminou de carregar;
+- [x] seleção clínica confirmada e inspeção visual temporária são estados diferentes; clicar numa peça não muda o relatório;
+- [x] a peça inspecionada recebe destaque visual distinto e o inspector pode ser fechado sem alterar o foco clínico;
 - [x] troca de superfície desmonta o renderer anterior;
 - [x] cleanup canônico cancela animation frame, listeners/observer e descarta controls, geometrias, materiais, textures e renderer WebGL;
 - [x] source gate falha se Dashboard voltar ao placeholder fake ou se Pacientes/Consultas/Exames perderem o preview canônico;
@@ -394,6 +400,7 @@ Se o usuário autorizar **ativar produção/Supabase**:
 
 - não recriar renderer 3D paralelo;
 - não substituir Human Atlas por modelo fake/simplificado;
+- não transformar inspeção de peça em nova seleção clínica automaticamente; inspeção é efêmera, confirmação é explícita;
 - não usar linguagem que sugira que o BodyParts3D é o “modelo/corpo do paciente”; sempre deixar claro que é anatomia de referência;
 - não recolocar thumbnail, órbita, ilustração ou badge “3D” como substituto de geometria real em qualquer superfície anatômica;
 - não adicionar canvas 3D decorativo em Equipe, Analytics ou Configurações: 3D deve existir onde há tarefa anatômica real;

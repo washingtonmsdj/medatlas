@@ -869,6 +869,11 @@ test('focused Human Atlas picking identifies a real part without changing the re
   await expect(inspector).toContainText(
     'A anatomia confirmada do relatório não foi alterada.',
   )
+  await mkdir('test-results/visual-qa', { recursive: true })
+  await page.screenshot({
+    path: 'test-results/visual-qa/focused-inspection-highlight.png',
+    fullPage: true,
+  })
   await expect(
     page.locator('.clinical-atlas-stage .human-atlas-scene canvas'),
   ).toHaveAttribute(
