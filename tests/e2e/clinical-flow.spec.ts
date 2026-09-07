@@ -337,6 +337,17 @@ test('mobile workspace keeps the main clinical flow usable', async ({
     page.locator('.suggestion-item').first(),
   ).toContainText('FMA7203')
 
+  const mobileDock = page.locator('.clinical-atlas-view-dock')
+  await expect(mobileDock).toBeVisible()
+
+  const mobileDockBox = await mobileDock.boundingBox()
+  expect(mobileDockBox).not.toBeNull()
+  expect(mobileDockBox!.width).toBeGreaterThan(250)
+  expect(mobileDockBox!.height).toBeLessThan(60)
+  expect(mobileDockBox!.width).toBeGreaterThan(
+    mobileDockBox!.height * 4,
+  )
+
   const hasHorizontalOverflow = await page.evaluate(
     () =>
       document.documentElement.scrollWidth >
