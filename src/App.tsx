@@ -35,7 +35,7 @@ const nav = [
   'Pacientes',
   'Consultas',
   'Exames',
-  'Relatórios',
+  'Relatórios visuais',
   'Configurações',
 ] as const
 
@@ -65,7 +65,7 @@ const moduleMeta: Record<
     eyebrow: 'DOCUMENTOS CLÍNICOS',
     title: 'Origem segura para laudos e exames.',
   },
-  Relatórios: {
+  'Relatórios visuais': {
     eyebrow: 'CONSULTA VISUAL',
     title: 'Transforme o laudo em uma explicação que o paciente entende.',
   },
@@ -149,7 +149,7 @@ function ClinicianApp() {
     setPublishError('')
     setPublishing(false)
     setGeneratingDraft(false)
-    setActive('Relatórios')
+    setActive('Relatórios visuais')
   }
 
   const publish = async () => {
@@ -216,7 +216,7 @@ function ClinicianApp() {
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
-    setActive('Relatórios')
+    setActive('Relatórios visuais')
   }
 
   const analyzeSourceText = async () => {
@@ -301,7 +301,7 @@ function ClinicianApp() {
 
   const reportWorkflow = (
     <>
-      <section className="workflow-strip" aria-label="Fluxo do relatório">
+      <section className="workflow-strip workflow-strip-premium" aria-label="Fluxo do relatório">
         {[
           'Importar laudo',
           'Confirmar anatomia',
@@ -327,8 +327,16 @@ function ClinicianApp() {
         ))}
       </section>
 
-      <section className="content-grid">
-        <div className="left-stack">
+      <section className="clinical-report-studio">
+        <div className="report-source-column studio-panel">
+          <div className="studio-panel-label">
+            <span>01</span>
+            <div>
+              <strong>Laudo / exame</strong>
+              <small>Fonte clínica e estruturas sugeridas</small>
+            </div>
+          </div>
+
           <ReportIntake
             sourceText={report.finding.sourceText}
             analyzing={analyzing}
@@ -342,39 +350,46 @@ function ClinicianApp() {
               confirmConcept(suggestion.concept)
             }
           />
+        </div>
 
-          <section className="finding-card">
+        <div className="report-atlas-column studio-panel">
+          <div className="studio-panel-label">
+            <span>02</span>
+            <div>
+              <strong>Visualização 3D</strong>
+              <small>Confirme a referência anatômica</small>
+            </div>
+            <button type="button" onClick={() => setActive('Atlas 3D')}>
+              Abrir Atlas completo
+            </button>
+          </div>
+
+          <section className="finding-card finding-card-studio">
             <div>
               <span className="section-kicker">
-                2 · {!report.finding.atlasConceptId
+                {!report.finding.atlasConceptId
                   ? 'ANATOMIA A CONFIRMAR'
                   : report.finding.anatomyReviewRequired
-                    ? 'ÚLTIMA ANATOMIA SELECIONADA'
+                    ? 'RECONFIRMAÇÃO NECESSÁRIA'
                     : 'ANATOMIA CONFIRMADA'}
               </span>
               <h2>{report.finding.anatomicalStructure}</h2>
               <p>
                 {!report.finding.atlasConceptId
-                  ? 'Nenhuma estrutura foi confirmada. Analise o texto ou use a busca do atlas para selecionar uma referência.'
+                  ? 'Analise o texto ou use a busca do atlas para escolher uma referência.'
                   : report.finding.anatomyReviewRequired
-                    ? 'O texto foi alterado. Confirme novamente esta estrutura ou escolha outra sugestão antes de continuar.'
-                    : 'Estrutura confirmada para o texto atual e usada no relatório do paciente.'}
+                    ? 'O texto mudou. Confirme novamente a estrutura antes de continuar.'
+                    : 'Esta estrutura será a referência visual mostrada no relatório do paciente.'}
               </p>
             </div>
 
             <div className="finding-match">
-              <span>
-                {!report.finding.atlasConceptId
-                  ? 'Status'
-                  : report.finding.anatomyReviewRequired
-                    ? 'Status'
-                    : 'Referência do atlas'}
-              </span>
+              <span>Referência</span>
               <strong>
                 {!report.finding.atlasConceptId
                   ? 'Aguardando seleção'
                   : report.finding.anatomyReviewRequired
-                    ? 'Reconfirmação necessária'
+                    ? 'Revisar seleção'
                     : report.finding.atlasConceptId}
               </strong>
               <small>
@@ -392,16 +407,26 @@ function ClinicianApp() {
           />
         </div>
 
-        <ReportComposer
-          report={report}
-          publishing={publishing}
-          generatingDraft={generatingDraft}
-          publishError={publishError}
-          onPublish={publish}
-          onGenerateDraft={generateExplanationDraft}
-          onUpdateExplanation={updateExplanation}
-          onApproveExplanation={approveExplanation}
-        />
+        <div className="report-explanation-column studio-panel">
+          <div className="studio-panel-label">
+            <span>03</span>
+            <div>
+              <strong>Explicação ao paciente</strong>
+              <small>Rascunho assistido + revisão clínica</small>
+            </div>
+          </div>
+
+          <ReportComposer
+            report={report}
+            publishing={publishing}
+            generatingDraft={generatingDraft}
+            publishError={publishError}
+            onPublish={publish}
+            onGenerateDraft={generateExplanationDraft}
+            onUpdateExplanation={updateExplanation}
+            onApproveExplanation={approveExplanation}
+          />
+        </div>
       </section>
     </>
   )
@@ -413,7 +438,7 @@ function ClinicianApp() {
           <Overview
             report={report}
             onNewReport={startNewReport}
-            onOpenReport={() => setActive('Relatórios')}
+            onOpenReport={() => setActive('Relatórios visuais')}
             onOpenAtlas={() => setActive('Atlas 3D')}
           />
         )
@@ -428,14 +453,14 @@ function ClinicianApp() {
           />
         )
 
-      case 'Relatórios':
+      case 'Relatórios visuais':
         return reportWorkflow
 
       case 'Pacientes':
         return (
           <PatientsModule
             report={report}
-            onOpenReport={() => setActive('Relatórios')}
+            onOpenReport={() => setActive('Relatórios visuais')}
             onOpenAtlas={() => setActive('Atlas 3D')}
           />
         )
@@ -444,7 +469,7 @@ function ClinicianApp() {
         return (
           <ConsultationsModule
             report={report}
-            onOpenReport={() => setActive('Relatórios')}
+            onOpenReport={() => setActive('Relatórios visuais')}
             onNewReport={startNewReport}
           />
         )
@@ -474,7 +499,7 @@ function ClinicianApp() {
           <span className="brand-mark">M</span>
           <span>MedAtlas</span>
         </div>
-        <p className="brand-subtitle">Consulta visual com IA</p>
+        <p className="brand-subtitle">Comunicação clínica visual</p>
 
         <nav aria-label="Navegação principal">
           {nav.map((item) => (
@@ -493,30 +518,65 @@ function ClinicianApp() {
           ))}
         </nav>
 
-        <div className="clinic-card">
-          <span className="eyebrow">AMBIENTE DEMO</span>
-          <strong>Clínica Horizonte</strong>
-          <small>
-            {clinicalData.descriptor.label} · dados sintéticos
+        <div className="clinic-card clinic-card-premium">
+          <div className="clinic-card-logo">CH</div>
+          <div>
+            <span className="eyebrow">ORGANIZAÇÃO ATIVA</span>
+            <strong>Clínica Horizonte</strong>
+            <small>Ortopedia · plano demonstração</small>
+          </div>
+          <span className="clinic-card-chevron" aria-hidden="true">⌃</span>
+          <small className="clinic-card-data">
+            {clinicalData.descriptor.label} · somente dados sintéticos
           </small>
         </div>
       </aside>
 
       <main className="workspace" id="clinical-workspace" tabIndex={-1}>
-        <header className="topbar">
+        <header className="topbar topbar-saas">
+          <button className="org-switcher" type="button" aria-label="Organização ativa: Clínica Horizonte, Ortopedia">
+            <span className="org-switcher-mark">CH</span>
+            <span>
+              <strong>Clínica Horizonte</strong>
+              <small>Ortopedia</small>
+            </span>
+            <b aria-hidden="true">⌄</b>
+          </button>
+
+          <label className="global-search">
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              aria-label="Buscar paciente, exame ou laudo"
+              placeholder="Buscar paciente, exame ou laudo..."
+            />
+            <kbd>⌘ K</kbd>
+          </label>
+
+          <div className="topbar-actions">
+            <button type="button" className="topbar-icon-button" aria-label="Ajuda">?</button>
+            <button type="button" className="topbar-icon-button notification-button" aria-label="Notificações">
+              <span aria-hidden="true">♢</span>
+              <i />
+            </button>
+            <button className="doctor-chip doctor-chip-button" type="button" aria-label="Abrir menu do profissional">
+              <span>CM</span>
+              <div>
+                <strong>Dr. Carlos Mendes</strong>
+                <small>Ortopedia · demonstração</small>
+              </div>
+              <b aria-hidden="true">⌄</b>
+            </button>
+          </div>
+        </header>
+
+        <section className="module-heading">
           <div>
             <span className="eyebrow">{meta.eyebrow}</span>
             <h1>{meta.title}</h1>
           </div>
-
-          <div className="doctor-chip">
-            <span>DR</span>
-            <div>
-              <strong>Dr. Carlos Mendes</strong>
-              <small>Ortopedia · demonstração</small>
-            </div>
-          </div>
-        </header>
+          <span className="synthetic-badge">DEMO · DADOS SINTÉTICOS</span>
+        </section>
 
         <DemoPrivacyBanner />
 
