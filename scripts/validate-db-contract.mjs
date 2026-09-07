@@ -17,8 +17,8 @@ const migrationSources = await Promise.all(
 )
 
 const sql = migrationSources
-  .map(({ name, sql: source }) => `-- ${name}\\n${source}`)
-  .join('\\n\\n')
+  .map(({ name, sql: source }) => `-- ${name}\n${source}`)
+  .join('\n\n')
 
 const requiredTables = [
   'organizations',
@@ -64,7 +64,7 @@ const invariants = [
   ['approval timestamp', 'approved_at timestamptz'],
   [
     'private document bucket',
-    "'clinical-documents',\\n  'clinical-documents',\\n  false",
+    "'clinical-documents',\n  'clinical-documents',\n  false",
   ],
   ['document digest', 'sha256_hex text not null'],
   ['audit log', 'create table if not exists public.audit_events'],
@@ -81,7 +81,7 @@ const invariants = [
   ],
   [
     'workspace tenant-safe unit FK',
-    'foreign key (unit_id, organization_id)\\n    references public.organization_units(id, organization_id)',
+    'foreign key (unit_id, organization_id)\n    references public.organization_units(id, organization_id)',
   ],
   [
     'workspace admin write policy',
@@ -113,25 +113,25 @@ for (const [label, marker] of invariants) {
 
 const tableDefinitions = [
   ...sql.matchAll(
-    /create table if not exists\\s+public\\.[a-z0-9_]+\\s*\\([\\s\\S]*?\\n\\);/gi,
+    /create table if not exists\s+public\\.[a-z0-9_]+\s*\\([\s\S]*?\n\\);/gi,
   ),
 ].map((match) => match[0])
 
 if (
   tableDefinitions.some((definition) =>
-    /\\braw_token\\s+(text|varchar)\\b/i.test(definition),
+    /\braw_token\s+(text|varchar)\b/i.test(definition),
   )
 ) {
   failures.push('A raw share token appears to be persisted as a table column')
 }
 
-if (/grant\\s+all\\s+on\\s+table[\\s\\S]*?\\bto\\s+anon\\b/i.test(sql)) {
+if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
   failures.push('Anonymous table-wide grant detected')
 }
 
 if (
   !sql.includes(
-    "grant execute on function public.medatlas_resolve_report_share(text)\\n  to anon, authenticated;",
+    "grant execute on function public.medatlas_resolve_report_share(text)\n  to anon, authenticated;",
   )
 ) {
   failures.push('Anonymous access must be limited to the token resolver RPC')
