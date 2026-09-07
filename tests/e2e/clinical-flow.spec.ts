@@ -708,6 +708,17 @@ test('team module mirrors source-first roles and keeps membership writes blocked
   await expect(
     page.getByText('Permissões visíveis; mutações bloqueadas.'),
   ).toBeVisible()
+
+  await expect(
+    page.getByText('Unidades e workspaces clínicos'),
+  ).toBeVisible()
+  await expect(page.getByText('Unidade principal')).toBeVisible()
+  await expect(page.getByText('Ortopedia', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Cardiologia', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Fisioterapia', { exact: true }).first()).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Gerenciar estrutura' }),
+  ).toBeDisabled()
 })
 
 test('organization switcher changes the active clinical workspace locally', async ({
