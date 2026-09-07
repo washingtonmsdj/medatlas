@@ -28,6 +28,7 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Replace the Exames placeholder with a functional local-ingestion hub; keep PDF/image explicitly blocked.
 - [x] Replace Pacientes placeholder with a synthetic current-report workspace.
 - [x] Replace Consultas placeholder with a synthetic visual-session timeline.
+- [x] Remove the obsolete shared placeholder component and its dead CSS after all navigation modules became functional.
 - [x] Make AtlasViewport safe and searchable with no initial concept.
 - [x] Freeze reproducible Node dependency installs with a canonical lockfile + `npm ci`.
 - [x] Move Vite past the high-severity Windows dev-server advisory.

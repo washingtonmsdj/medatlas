@@ -714,8 +714,7 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
 .overview-hero,
 .overview-flow,
 .overview-boundary,
-.module-intro-card,
-.module-placeholder {
+.module-intro-card {
   border:1px solid #263951;
   border-radius:18px;
   background:linear-gradient(180deg,rgba(17,32,51,.92),rgba(8,18,31,.96));
@@ -730,7 +729,6 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
 }
 .overview-hero h2,
 .module-intro-card h2,
-.module-placeholder h2,
 .overview-boundary h2,
 .overview-flow h2 {
   font-size:24px;
@@ -738,7 +736,6 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
 }
 .overview-hero p,
 .module-intro-card p,
-.module-placeholder > p,
 .overview-boundary p {
   margin:0;
   color:#8ca0b7;
@@ -863,69 +860,6 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
 .module-intro-card {
   padding:20px;
 }
-.module-placeholder {
-  min-height:520px;
-  padding:34px;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  justify-content:center;
-}
-.module-placeholder-icon {
-  width:54px;
-  height:54px;
-  display:grid;
-  place-items:center;
-  margin-bottom:20px;
-  border:1px solid #32617e;
-  border-radius:16px;
-  background:linear-gradient(145deg,#122d46,#102037);
-  color:#5cc7ff;
-  font-size:19px;
-  font-weight:900;
-  box-shadow:0 18px 38px #0005;
-}
-.module-status {
-  margin-top:18px;
-  padding:7px 10px;
-  border:1px solid #594d31;
-  border-radius:999px;
-  background:#211b10;
-  color:#c9ad6f;
-  font-size:9px;
-  font-weight:700;
-}
-.module-roadmap {
-  width:min(650px,100%);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:22px 0;
-}
-.module-roadmap > div {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:10px;
-  border:1px solid #263a50;
-  border-radius:10px;
-  background:#091724;
-}
-.module-roadmap span {
-  color:#45a9d9;
-  font-size:8px;
-  font-weight:800;
-}
-.module-roadmap p {
-  margin:0;
-  color:#91a5ba;
-  font-size:9px;
-}
-.module-placeholder > small {
-  color:#53687d;
-  font-size:9px;
-}
-
 @media (max-width:1150px) {
   .overview-metrics {
     grid-template-columns:1fr 1fr;
@@ -951,13 +885,6 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   }
   .overview-boundary {
     grid-template-columns:1fr;
-  }
-  .module-roadmap {
-    grid-template-columns:1fr;
-  }
-  .module-placeholder {
-    min-height:430px;
-    padding:22px;
   }
 }
 
