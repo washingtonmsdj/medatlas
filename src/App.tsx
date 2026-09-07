@@ -13,7 +13,8 @@ import { AtlasViewport } from './components/AtlasViewport'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
 import { DocumentsModule } from './components/DocumentsModule'
-import { ModulePlaceholder } from './components/ModulePlaceholder'
+import { PatientsModule } from './components/PatientsModule'
+import { ConsultationsModule } from './components/ConsultationsModule'
 import { Overview } from './components/Overview'
 import {
   InvalidPatientLink,
@@ -504,31 +505,19 @@ function ClinicianApp() {
 
       case 'Pacientes':
         return (
-          <ModulePlaceholder
-            title="Pacientes"
-            description="O domínio multi-tenant já está definido, mas o backend foi adiado intencionalmente. Seguimos com dados sintéticos até o MVP visual e os testes ficarem maduros."
-            status="Backend adiado · MVP local ativo"
-            items={[
-              'Cadastro mínimo e organização por tenant',
-              'Histórico de consultas e relatórios',
-              'Busca sem expor dados entre organizações',
-              'Acesso condicionado por papel e RLS',
-            ]}
+          <PatientsModule
+            report={report}
+            onOpenReport={() => setActive('Relatórios')}
+            onOpenAtlas={() => setActive('Atlas 3D')}
           />
         )
 
       case 'Consultas':
         return (
-          <ModulePlaceholder
-            title="Consultas"
-            description="Cada consulta será o contexto clínico para documentos, anatomia confirmada e relatórios visuais."
-            status="Data model pronto · persistência adiada"
-            items={[
-              'Vínculo profissional + paciente',
-              'Linha do tempo de relatórios',
-              'Estados de revisão e publicação',
-              'Auditoria dos eventos relevantes',
-            ]}
+          <ConsultationsModule
+            report={report}
+            onOpenReport={() => setActive('Relatórios')}
+            onNewReport={startNewReport}
           />
         )
 

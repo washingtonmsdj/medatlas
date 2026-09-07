@@ -32,6 +32,7 @@ O MVP já possui:
 - edição/colagem de texto de laudo;
 - importação local de arquivo sintético .txt/.md (máx. 64 KB), sem upload;
 - módulo Exames funcional para iniciar ingestão local, com PDF/imagem explicitamente bloqueados nesta fase;
+- módulos Pacientes e Consultas funcionais no modo sintético, derivados do relatório atual e sem persistência paralela;
 - triagem determinística de referências anatômicas;
 - sugestões limitadas a conceitos que realmente existem no atlas;
 - busca manual por conceitos FMA;

@@ -1574,3 +1574,264 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
     grid-template-columns:1fr;
   }
 }
+
+
+.patients-module,
+.consultations-module {
+  display:grid;
+  gap:14px;
+}
+.patients-hero,
+.consultations-hero,
+.patient-profile-card,
+.patient-current-report,
+.consultation-summary article {
+  border:1px solid #263951;
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(17,32,51,.92),rgba(8,18,31,.96));
+}
+.patients-hero,
+.consultations-hero {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:22px;
+  padding:22px;
+}
+.patients-hero h2,
+.consultations-hero h2 {
+  margin:7px 0;
+  font-size:22px;
+}
+.patients-hero p,
+.consultations-hero p {
+  max-width:650px;
+  margin:0;
+  color:#8398ad;
+  font-size:10px;
+  line-height:1.5;
+}
+.synthetic-chip,
+.consultation-score {
+  flex:0 0 auto;
+  border:1px solid #315a4d;
+  border-radius:999px;
+  background:#10251f;
+  color:#8dd9bd;
+  padding:7px 10px;
+  font-size:9px;
+  font-weight:800;
+}
+.patient-workspace-grid {
+  display:grid;
+  grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  gap:10px;
+}
+.patient-profile-card,
+.patient-current-report {
+  padding:18px;
+}
+.patient-profile-card > strong,
+.patient-current-report > strong {
+  display:block;
+  margin:10px 0 6px;
+  color:#e2edf7;
+  font-size:17px;
+}
+.patient-profile-card > p,
+.patient-current-report > p {
+  margin:0;
+  color:#8196aa;
+  font-size:10px;
+}
+.patient-profile-card dl {
+  margin:18px 0 0;
+  display:grid;
+  gap:8px;
+}
+.patient-profile-card dl div {
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:9px 0;
+  border-top:1px solid #203247;
+}
+.patient-profile-card dt {
+  color:#6f8499;
+  font-size:9px;
+}
+.patient-profile-card dd {
+  margin:0;
+  color:#afc2d3;
+  font-size:9px;
+  text-align:right;
+}
+.patient-report-facts {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:16px;
+}
+.patient-report-facts div {
+  min-height:76px;
+  padding:10px;
+  border:1px solid #24384d;
+  border-radius:10px;
+  background:#091724;
+}
+.patient-report-facts span {
+  display:block;
+  color:#677d92;
+  font-size:8px;
+}
+.patient-report-facts b {
+  display:block;
+  margin-top:8px;
+  color:#bed1df;
+  font-size:9px;
+  line-height:1.35;
+}
+.patient-workspace-actions,
+.consultation-actions {
+  display:flex;
+  gap:8px;
+  margin-top:16px;
+}
+.patient-workspace-actions button,
+.consultation-actions button {
+  border:1px solid #355069;
+  border-radius:9px;
+  background:#0b1b2a;
+  color:#a9bfd0;
+  padding:9px 11px;
+  cursor:pointer;
+  font-size:9px;
+}
+.patient-workspace-actions button.primary,
+.consultation-actions button.primary {
+  background:#1e779d;
+  border-color:#2a8eb8;
+  color:#fff;
+}
+.patient-production-boundary {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:12px 14px;
+  border:1px solid #3d3942;
+  border-radius:12px;
+  background:#13151b;
+}
+.patient-production-boundary strong {
+  margin-right:5px;
+  color:#c9bfc7;
+  font-size:9px;
+}
+.patient-production-boundary span {
+  padding:5px 7px;
+  border:1px solid #3a3d49;
+  border-radius:999px;
+  color:#8c93a0;
+  font-size:8px;
+}
+.consultation-score {
+  min-width:54px;
+  text-align:center;
+  font-size:12px;
+}
+.consultation-timeline {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.consultation-timeline article {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:82px;
+  padding:12px;
+  border:1px solid #263951;
+  border-radius:12px;
+  background:#091724;
+}
+.consultation-timeline article > span {
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+  display:grid;
+  place-items:center;
+  border:1px solid #384e63;
+  border-radius:50%;
+  color:#91a6bb;
+  font-size:8px;
+  font-weight:900;
+}
+.consultation-timeline article strong {
+  color:#aebfce;
+  font-size:9px;
+}
+.consultation-timeline article p {
+  margin:4px 0 0;
+  color:#687e93;
+  font-size:8px;
+}
+.consultation-timeline article.done {
+  border-color:#2e5c4d;
+  background:#0d211c;
+}
+.consultation-timeline article.done > span {
+  border-color:#3b7d65;
+  color:#71d0ad;
+}
+.consultation-timeline article.done strong {
+  color:#b8d8cb;
+}
+.consultation-summary {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.consultation-summary article {
+  min-height:130px;
+  padding:16px;
+}
+.consultation-summary article strong {
+  display:block;
+  margin:18px 0 6px;
+  color:#dce8f2;
+  font-size:13px;
+}
+.consultation-summary article p {
+  margin:0;
+  color:#8196aa;
+  font-size:9px;
+  line-height:1.4;
+}
+@media (max-width:850px) {
+  .patient-workspace-grid,
+  .consultation-summary {
+    grid-template-columns:1fr;
+  }
+  .consultation-timeline {
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media (max-width:560px) {
+  .patients-hero,
+  .consultations-hero {
+    flex-direction:column;
+  }
+  .patient-report-facts,
+  .consultation-timeline {
+    grid-template-columns:1fr;
+  }
+  .patient-workspace-actions,
+  .consultation-actions {
+    flex-direction:column;
+  }
+  .patient-workspace-actions button,
+  .consultation-actions button {
+    width:100%;
+  }
+}

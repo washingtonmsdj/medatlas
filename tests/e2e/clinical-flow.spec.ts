@@ -439,3 +439,55 @@ test('documents hub opens a blank local-only intake flow', async ({ page }) => {
     page.getByLabel('Texto do laudo ou relatório'),
   ).toHaveValue('')
 })
+
+
+test('patients module reflects only the current synthetic report context', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Pacientes' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Contexto sintético do relatório atual',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('Paciente demonstração', { exact: true }),
+  ).toBeVisible()
+  await expect(page.getByText('FMA16036')).toBeVisible()
+
+  await page
+    .getByRole('button', { name: 'Abrir relatório visual' })
+    .click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+})
+
+test('consultations module mirrors workflow progress without persistence', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Consultas' }).click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Sessão clínica visual em andamento',
+    }),
+  ).toBeVisible()
+
+  await expect(page.locator('.consultation-score')).toContainText('3/4')
+
+  await page
+    .getByRole('button', { name: 'Iniciar nova sessão sintética' })
+    .click()
+
+  await expect(
+    page.getByLabel('Texto do laudo ou relatório'),
+  ).toHaveValue('')
+})
