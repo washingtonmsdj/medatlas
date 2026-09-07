@@ -497,8 +497,8 @@ export function ReferenceAtlasExplorer({
                 }
               >
                 {state.isolate
-                  ? 'Reabrir contexto anatômico'
-                  : 'Focar somente nesta estrutura'}
+                  ? 'Mostrar anatomia ao redor'
+                  : 'Isolar estrutura'}
               </button>
 
               <button
