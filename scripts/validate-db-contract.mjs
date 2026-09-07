@@ -149,6 +149,22 @@ const invariants = [
     'set\n      role = invitation.role,\n      active = true',
   ],
   [
+    'invitation atomic membership upsert',
+    'on conflict (organization_id, user_id)\n  do update',
+  ],
+  [
+    'invitation does not overwrite active member',
+    'where public.organization_members.active = false',
+  ],
+  [
+    'invitation upsert result gate',
+    'returning true into membership_upserted',
+  ],
+  [
+    'invitation active member race rejection',
+    'if not coalesce(membership_upserted, false) then',
+  ],
+  [
     'invitation admin read policy',
     'create policy organization_invitations_admin_select',
   ],
