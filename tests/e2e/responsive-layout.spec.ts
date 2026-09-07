@@ -127,6 +127,17 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
       name: 'Visão geral do fluxo clínico visual.',
     }),
   ).toBeVisible()
+
+  const dashboardMobile3dStage = page.locator(
+    '.continue-care-card .anatomy-focus-preview-stage',
+  )
+  await expect(dashboardMobile3dStage).toBeVisible()
+
+  const dashboardMobile3dStageBox =
+    await dashboardMobile3dStage.boundingBox()
+  expect(dashboardMobile3dStageBox).not.toBeNull()
+  expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)
+
   await capture(page, 'dashboard-mobile-390')
 
   for (const module of MODULES) {

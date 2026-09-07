@@ -8786,3 +8786,14 @@ button:not(:disabled):active {
   color: #7f9bad;
   font-size: 7px;
 }
+
+
+/* MEDATLAS_DASHBOARD_MOBILE_3D_PRIORITY_V1 */
+@media (max-width: 620px) {
+  .continue-care-body > .anatomy-focus-preview .anatomy-focus-preview-stage,
+  .continue-care-body > .anatomy-focus-preview .human-atlas-scene,
+  .continue-care-body > .anatomy-focus-preview .focused-reference-loading,
+  .continue-care-body > .anatomy-focus-preview .renderer-module-loading {
+    min-height: 420px;
+  }
+}
