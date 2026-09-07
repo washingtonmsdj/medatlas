@@ -1,12 +1,13 @@
 {
   "name": "medatlas-saas",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3016",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
     "check": "tsc --noEmit -p tsconfig.app.json",
+    "validate:db-contract": "node scripts/validate-db-contract.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 3016"
   },
   "dependencies": {

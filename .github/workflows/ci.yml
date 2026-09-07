@@ -17,5 +17,6 @@ jobs:
         with:
           node-version: '22.13.0'
       - run: npm install
+      - run: npm run validate:db-contract
       - run: npm run check
       - run: npm run build

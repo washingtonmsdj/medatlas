@@ -29,12 +29,17 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 ## P1 — SaaS core
 
-- [ ] Authentication and organization tenancy.
-- [ ] Professionals and roles.
-- [ ] Patient/consultation/report persistence.
-- [ ] Private document storage.
-- [ ] Replace local demo share with opaque, expiring and revocable patient tokens.
-- [ ] Audit trail.
+- [x] Define canonical Supabase schema + RLS contract in source.
+- [x] Define organization membership and professional roles.
+- [x] Define patient, consultation, report and document persistence model.
+- [x] Define private clinical document bucket and Storage RLS.
+- [x] Define hashed, expiring, revocable patient share tokens.
+- [x] Define immutable-style audit event model and audited share operations.
+- [ ] Create a dedicated MedAtlas Supabase project.
+- [ ] Apply migrations and prove tenant isolation with database tests.
+- [ ] Connect authentication/onboarding UI.
+- [ ] Replace local demo storage with the Supabase persistence adapter.
+- [ ] Replace local demo share resolver with the token RPC.
 
 ## P2 — AI workflow
 
@@ -57,4 +62,5 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - Do not claim diagnosis from an uploaded exam.
 - Do not infer treatment autonomously.
 - Do not onboard real patient data before tenancy, authorization, private storage and audit are proven.
+- Do not reuse another product's Supabase project for MedAtlas.
 - Do not fork multiple renderer architectures; integrate one canonical Human Atlas-derived 3D module.
