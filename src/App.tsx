@@ -513,6 +513,9 @@ function ClinicianApp() {
             organizationName={DEMO_ORGANIZATION.name}
             workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
             unitName={activeUnit?.name}
+            professionalDisplayName={
+              currentMember?.displayName ?? 'Profissional demo'
+            }
             onNewReport={startNewReport}
             onOpenReport={() => setActive('Relatórios visuais')}
             onOpenAtlas={() => setActive('Atlas 3D')}
