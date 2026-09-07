@@ -17,6 +17,7 @@ import { DocumentsModule } from './components/DocumentsModule'
 import { PatientsModule } from './components/PatientsModule'
 import { ConsultationsModule } from './components/ConsultationsModule'
 import { Overview } from './components/Overview'
+import { OrganizationSwitcher } from './components/OrganizationSwitcher'
 import {
   InvalidPatientLink,
   PatientReportPage,
@@ -29,6 +30,12 @@ import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
 import { reportWorkflowReducer } from './domain/report-workflow'
 import type { VisualReport } from './domain/types'
+import {
+  DEFAULT_DEMO_WORKSPACE_ID,
+  DEMO_ORGANIZATION,
+  getDemoUnit,
+  getDemoWorkspace,
+} from './organization/demo-organization'
 
 const nav = [
   'Visão geral',
@@ -166,6 +173,9 @@ function ClinicianApp() {
     demoReport,
   )
   const [active, setActive] = useState<ModuleName>('Visão geral')
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState(
+    DEFAULT_DEMO_WORKSPACE_ID,
+  )
   const [publishing, setPublishing] = useState(false)
   const [generatingDraft, setGeneratingDraft] = useState(false)
   const [publishError, setPublishError] = useState('')
@@ -492,6 +502,9 @@ function ClinicianApp() {
         return (
           <Overview
             report={report}
+            organizationName={DEMO_ORGANIZATION.name}
+            workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
+            unitName={activeUnit?.name}
             onNewReport={startNewReport}
             onOpenReport={() => setActive('Relatórios visuais')}
             onOpenAtlas={() => setActive('Atlas 3D')}
@@ -546,6 +559,8 @@ function ClinicianApp() {
   }
 
   const meta = moduleMeta[active]
+  const activeWorkspace = getDemoWorkspace(activeWorkspaceId)
+  const activeUnit = getDemoUnit(activeWorkspace?.unitId)
 
   return (
     <div className="app-shell">
@@ -580,8 +595,11 @@ function ClinicianApp() {
           <div className="clinic-card-logo">CH</div>
           <div>
             <span className="eyebrow">ORGANIZAÇÃO ATIVA</span>
-            <strong>Clínica Horizonte</strong>
-            <small>Ortopedia · plano demonstração</small>
+            <strong>{DEMO_ORGANIZATION.name}</strong>
+            <small>
+              {activeWorkspace?.name ?? 'Sem workspace'}
+              {activeUnit ? ` · ${activeUnit.name}` : ''} · demonstração
+            </small>
           </div>
           <span className="clinic-card-chevron" aria-hidden="true">⌃</span>
           <small className="clinic-card-data">
@@ -592,14 +610,10 @@ function ClinicianApp() {
 
       <main className="workspace" id="clinical-workspace" tabIndex={-1}>
         <header className="topbar topbar-saas">
-          <button className="org-switcher" type="button" aria-label="Organização ativa: Clínica Horizonte, Ortopedia">
-            <span className="org-switcher-mark">CH</span>
-            <span>
-              <strong>Clínica Horizonte</strong>
-              <small>Ortopedia</small>
-            </span>
-            <b aria-hidden="true">⌄</b>
-          </button>
+          <OrganizationSwitcher
+            activeWorkspaceId={activeWorkspaceId}
+            onWorkspaceChange={setActiveWorkspaceId}
+          />
 
           <label className="global-search">
             <span aria-hidden="true">⌕</span>
