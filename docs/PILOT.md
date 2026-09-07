@@ -2,16 +2,20 @@
 
 ## Objetivo
 
-Validar o MVP de ponta a ponta sem dados reais e sem depender do backend.
+Validar o MVP de ponta a ponta sem dados reais e sem depender do backend ativo.
 
 O piloto sintético existe para responder:
 
-- o profissional consegue iniciar do zero?
+- o profissional consegue entrar no contexto correto de organização/workspace?
+- o profissional consegue iniciar um relatório do zero?
 - o texto clínico encontra anatomia conhecida?
 - a estrutura precisa ser confirmada explicitamente?
 - a explicação permanece bloqueada até revisão?
 - o link do paciente só nasce depois do gate humano?
 - a página do paciente abre com a mesma anatomia?
+- abrir o link realmente aparece no Analytics local?
+- papéis/permissões continuam legíveis e sem mutações fake?
+- branding e contexto da clínica chegam ao paciente sem confundir anatomia de referência com reconstrução individual?
 - mobile, acessibilidade, expiração e performance continuam dentro dos gates?
 
 ## Cenários canônicos
@@ -27,11 +31,31 @@ A SSOT dos textos e IDs é:
 
 `src/clinical/demo-scenarios.json`
 
+## Contexto SaaS sintético canônico
+
+O piloto atual também exercita uma organização fictícia:
+
+```text
+Clínica Horizonte
+└── Unidade principal
+    ├── Ortopedia
+    ├── Cardiologia
+    └── Fisioterapia
+```
+
+Papéis source-first usados na superfície Equipe:
+
+- `admin`;
+- `clinician`;
+- `staff`.
+
+Esses papéis precisam continuar espelhando as policies SQL. O modo demo não pode habilitar convites, alteração de papel ou persistência de membership.
+
 ## Aceite automatizado
 
-O Browser E2E já cobre:
+O Browser E2E cobre:
 
-1. os quatro cenários acima;
+1. os quatro cenários anatômicos acima;
 2. criação de relatório visual vazio;
 3. sugestão anatômica;
 4. confirmação explícita;
@@ -39,25 +63,55 @@ O Browser E2E já cobre:
 6. revisão;
 7. publicação;
 8. abertura da visão do paciente;
-9. mobile sem overflow horizontal;
-10. link demo expirado falhando fechado;
-11. axe/WCAG nas superfícies principais.
+9. contagem observável da abertura no Analytics local;
+10. organização/workspace ativo e troca local de especialidade;
+11. Equipe com matriz de permissões source-first;
+12. branding da clínica presente sem mutações fake;
+13. contrato visual de convites com transporte bloqueado;
+14. mobile sem overflow horizontal;
+15. link demo expirado falhando fechado;
+16. axe/WCAG nas superfícies principais;
+17. Human Atlas completo e modo clínico focado usando o mesmo engine canônico.
 
 CI adicional cobre:
 
 - contrato do banco;
+- RLS source-first;
+- convites de organização com token hash, admin gate, e-mail vinculado, expiração/revogação e auditoria;
 - anatomia curada;
 - cenário → FMA;
 - integridade SHA-256 dos assets;
 - budget de payload;
 - privacy/security;
+- analytics demo sem telemetria externa;
 - contrato de IA;
-- gate de revisão clínica.
+- gate de revisão clínica;
+- licenças/proveniência.
 
-## Piloto manual sintético
+## Fluxo manual sintético recomendado
 
-Antes de qualquer uso com PHI, executar manualmente os quatro cenários em desktop
-e mobile usando apenas nomes e textos fictícios.
+Executar pelo menos um cenário completo em desktop e mobile:
+
+```text
+1. abrir Visão geral
+2. confirmar organização/workspace ativo
+3. abrir Relatórios visuais
+4. carregar cenário sintético
+5. sugerir anatomia
+6. confirmar estrutura
+7. validar o 3D focado
+8. gerar rascunho educacional
+9. revisar explicitamente
+10. pré-visualizar paciente
+11. publicar link demo
+12. abrir visão do paciente
+13. confirmar branding + 3D + explicação + perguntas
+14. voltar ao ambiente clínico
+15. abrir Analytics
+16. confirmar que a visualização foi observada
+17. abrir Equipe
+18. confirmar papéis, unidade/workspaces e boundary de convites
+```
 
 Registrar somente observações de produto, por exemplo:
 
@@ -66,9 +120,27 @@ Registrar somente observações de produto, por exemplo:
 - profissional entendeu quando precisava confirmar?
 - houve confusão entre anatomia de referência e corpo do paciente?
 - página do paciente ficou clara?
+- organização/workspace ficaram compreensíveis sem parecer complexidade desnecessária?
+- papéis da Equipe ficaram compreensíveis?
+- usuário entende que convites estão source-ready, mas ainda não ativos?
+- Analytics comunica somente eventos realmente observados?
 - qual etapa pareceu lenta ou desnecessária?
 
-Não registrar nomes reais, exames reais ou qualquer identificador.
+Não registrar nomes reais, exames reais ou qualquer identificador real.
+
+## Critério de conclusão do piloto sintético
+
+O piloto sintético automatizado pode ser considerado concluído quando:
+
+- CI completo passa no mesmo baseline funcional;
+- Browser E2E passa o fluxo clínico, paciente, organização, Equipe e Analytics;
+- gate responsivo passa em desktop e mobile;
+- nenhuma violação axe serious/critical é introduzida;
+- nenhum caminho demo transmite dados para telemetria externa;
+- nenhum botão de produção cria a falsa impressão de backend ativo;
+- BodyParts3D continua identificado como anatomia de referência.
+
+Isso **não autoriza dados reais**.
 
 ## Etapa clínica controlada — futura
 
@@ -76,10 +148,13 @@ Permanece bloqueada até:
 
 - backend dedicado;
 - autenticação;
-- RLS testada;
+- migrations aplicadas no projeto de produção;
+- testes reais de isolamento cross-tenant;
+- RLS provada por papel;
 - Storage privado;
 - política de retenção;
 - compartilhamentos de produção;
+- transporte seguro de convites;
 - revisão jurídica/privacidade para o uso pretendido;
 - protocolo de suporte/incidente;
 - definição formal do escopo do piloto.
