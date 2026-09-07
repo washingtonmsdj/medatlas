@@ -148,7 +148,7 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   font-weight:700;
   box-shadow:0 8px 24px #2b64d438;
 }
-.integration-note { margin:0; padding:0 15px 14px; text-align:center; color:#52677f; font-size:10px; background:#0a1727; }
+.integration-note { margin:0; padding:0 15px 14px; text-align:center; color:#8ea3ba; font-size:10px; background:#0a1727; }
 .report-card { padding:21px; position:sticky; top:22px; align-self:start; }
 .report-card>.muted { color:#758aa4; font-size:12px; margin-top:0; }
 .report-section { padding:15px 0; border-top:1px solid #22354d; }
