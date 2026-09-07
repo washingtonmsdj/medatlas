@@ -550,6 +550,7 @@ function ClinicianApp() {
             report={report}
             onOpenReport={() => setActive('Relatórios visuais')}
             onNewReport={startNewReport}
+            onOpenAtlas={() => setActive('Atlas 3D')}
           />
         )
 
@@ -558,6 +559,7 @@ function ClinicianApp() {
           <DocumentsModule
             report={report}
             onStartImport={startNewReport}
+            onOpenAtlas={() => setActive('Atlas 3D')}
           />
         )
 
