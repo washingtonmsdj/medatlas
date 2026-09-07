@@ -695,11 +695,11 @@ test('team module mirrors source-first roles and keeps membership writes blocked
     hasText: 'Equipe de apoio',
   })
 
-  await expect(adminRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(3)
-  await expect(clinicianRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(2)
-  await expect(clinicianRow.getByRole('cell', { name: 'Não permitido' })).toHaveCount(1)
-  await expect(staffRow.getByRole('cell', { name: 'Permitido' })).toHaveCount(1)
-  await expect(staffRow.getByRole('cell', { name: 'Não permitido' })).toHaveCount(2)
+  await expect(adminRow.getByRole('cell', { name: 'Permitido', exact: true })).toHaveCount(3)
+  await expect(clinicianRow.getByRole('cell', { name: 'Permitido', exact: true })).toHaveCount(2)
+  await expect(clinicianRow.getByRole('cell', { name: 'Não permitido', exact: true })).toHaveCount(1)
+  await expect(staffRow.getByRole('cell', { name: 'Permitido', exact: true })).toHaveCount(1)
+  await expect(staffRow.getByRole('cell', { name: 'Não permitido', exact: true })).toHaveCount(2)
 
   await expect(
     page.getByRole('button', { name: 'Alterar papéis' }),
@@ -784,7 +784,7 @@ test('settings expose source-first clinic branding without enabling mutations', 
   await expect(
     page.getByText('Clínica Horizonte', { exact: true }).first(),
   ).toBeVisible()
-  await expect(page.getByText('#1E7AD7')).toBeVisible()
+  await expect(page.getByText('#1769AA')).toBeVisible()
 
   await expect(
     page.getByRole('button', { name: 'Editar identidade visual' }),
