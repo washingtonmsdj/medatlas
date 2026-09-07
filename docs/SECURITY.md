@@ -29,6 +29,15 @@ phone numbers, addresses, chart/prontuário numbers or other real identifiers.
 Browser storage is **not** a clinical storage system. The TTL and limit reduce
 demo residue; they do not make the demo suitable for PHI.
 
+## Local report-text import
+
+The demo accepts optional synthetic `.txt` / `.md` files up to 64 KB.
+
+The browser reads these files with the File API and copies only their text into
+the current in-memory report state. This MVP does not upload the selected file
+to a server. The same synthetic-only restriction applies: real patient reports
+must not be used.
+
 ## Runtime/network boundary
 
 The anatomy catalog and compressed Human Atlas/BodyParts3D assets required by

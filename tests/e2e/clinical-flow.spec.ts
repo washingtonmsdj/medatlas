@@ -367,3 +367,41 @@ test('demo settings can clear local patient shares', async ({ page }) => {
     }),
   ).toBeVisible()
 })
+
+
+test('synthetic text file import stays local and resolves anatomy', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page
+    .getByRole('button', { name: 'Novo relatório visual' })
+    .click()
+
+  await page
+    .getByLabel('Importar laudo de texto sintético')
+    .setInputFiles({
+      name: 'laudo-demo.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(
+        'Relatório cardiológico sintético: avaliação do coração em anatomia de referência.',
+        'utf8',
+      ),
+    })
+
+  await expect(
+    page.getByLabel('Texto do laudo ou relatório'),
+  ).toContainText('coração')
+
+  await expect(
+    page.getByText('laudo-demo.txt', { exact: true }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('button', { name: 'Sugerir estruturas' })
+    .click()
+
+  await expect(
+    page.locator('.suggestion-item').first(),
+  ).toContainText('FMA7088')
+})

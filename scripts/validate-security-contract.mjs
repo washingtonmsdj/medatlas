@@ -31,6 +31,7 @@ async function collectTextFiles(root) {
 }
 
 const demoRepo = await read('src/data/demo-clinical-repository.ts')
+const reportIntake = await read('src/components/ReportIntake.tsx')
 const indexHtml = await read('index.html')
 const vercel = await read('vercel.json')
 const envExample = await read('.env.example')
@@ -58,6 +59,21 @@ if (!demoRepo.includes('crypto.getRandomValues')) {
 
 if (!demoRepo.includes('/^[0-9a-f]{64}$/')) {
   failures.push('demo patient token format is not fail-closed')
+}
+
+const localImportInvariants = [
+  'const MAX_LOCAL_TEXT_BYTES = 64 * 1024',
+  "const ALLOWED_TEXT_EXTENSIONS = ['.txt', '.md']",
+  'await file.text()',
+  'Importar laudo de texto sintético',
+]
+
+for (const fragment of localImportInvariants) {
+  if (!reportIntake.includes(fragment)) {
+    failures.push(
+      `local synthetic report import missing invariant: ${fragment}`,
+    )
+  }
 }
 
 const requiredMetaCsp = [

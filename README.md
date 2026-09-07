@@ -30,6 +30,7 @@ O MVP já possui:
 
 - fluxo clínico em português;
 - edição/colagem de texto de laudo;
+- importação local de arquivo sintético .txt/.md (máx. 64 KB), sem upload;
 - triagem determinística de referências anatômicas;
 - sugestões limitadas a conceitos que realmente existem no atlas;
 - busca manual por conceitos FMA;

@@ -1,8 +1,12 @@
+import { useState, type ChangeEvent } from 'react'
 import type { AnatomySuggestion } from '../clinical/anatomy-suggestions'
 import {
   REPORT_EXAMPLES,
   type ReportExample,
 } from '../clinical/demo-scenarios'
+
+const MAX_LOCAL_TEXT_BYTES = 64 * 1024
+const ALLOWED_TEXT_EXTENSIONS = ['.txt', '.md']
 
 interface Props {
   sourceText: string
@@ -16,6 +20,13 @@ interface Props {
   onConfirmSuggestion: (suggestion: AnatomySuggestion) => void
 }
 
+function hasAllowedTextExtension(filename: string) {
+  const normalized = filename.toLowerCase()
+  return ALLOWED_TEXT_EXTENSIONS.some((extension) =>
+    normalized.endsWith(extension),
+  )
+}
+
 export function ReportIntake({
   sourceText,
   analyzing,
@@ -27,6 +38,49 @@ export function ReportIntake({
   onAnalyze,
   onConfirmSuggestion,
 }: Props) {
+  const [fileError, setFileError] = useState('')
+  const [fileName, setFileName] = useState('')
+
+  const importLocalText = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+
+    if (!file) return
+
+    setFileError('')
+    setFileName('')
+
+    if (!hasAllowedTextExtension(file.name)) {
+      setFileError(
+        'Formato não suportado neste MVP. Use somente arquivo sintético .txt ou .md.',
+      )
+      return
+    }
+
+    if (file.size > MAX_LOCAL_TEXT_BYTES) {
+      setFileError(
+        'Arquivo muito grande para a demonstração local. Limite: 64 KB.',
+      )
+      return
+    }
+
+    try {
+      const text = await file.text()
+
+      if (text.trim().length < 3) {
+        setFileError('O arquivo não contém texto suficiente para análise.')
+        return
+      }
+
+      onSourceTextChange(text)
+      setFileName(file.name)
+    } catch {
+      setFileError('Não foi possível ler o arquivo local.')
+    }
+  }
+
   return (
     <section className="intake-card">
       <div className="intake-heading">
@@ -34,8 +88,9 @@ export function ReportIntake({
           <span className="section-kicker">1 · LAUDO / RELATÓRIO</span>
           <h2>Localizar anatomia mencionada</h2>
           <p>
-            Cole ou edite um trecho. O MedAtlas procura referências que
-            existem no atlas e apresenta sugestões para confirmação humana.
+            Cole, edite ou importe um texto sintético. O MedAtlas procura
+            referências que existem no atlas e apresenta sugestões para
+            confirmação humana.
           </p>
         </div>
         <span className="intake-safety-badge">sem diagnóstico automático</span>
@@ -52,13 +107,36 @@ export function ReportIntake({
             {example.label}
           </button>
         ))}
+
+        <label className="file-import-button">
+          <input
+            aria-label="Importar laudo de texto sintético"
+            type="file"
+            accept=".txt,.md,text/plain,text/markdown"
+            onChange={(event) => void importLocalText(event)}
+          />
+          Importar .txt/.md
+        </label>
+      </div>
+
+      <div className="local-file-note">
+        <span>Processamento local</span>
+        <p>
+          O arquivo não é enviado para servidor. Use somente conteúdo fictício
+          neste MVP.
+        </p>
+        {fileName && <strong>{fileName}</strong>}
       </div>
 
       <textarea
         className="intake-editor"
         aria-label="Texto do laudo ou relatório"
         value={sourceText}
-        onChange={(event) => onSourceTextChange(event.target.value)}
+        onChange={(event) => {
+          setFileName('')
+          setFileError('')
+          onSourceTextChange(event.target.value)
+        }}
         rows={5}
         placeholder="Ex.: Protusão discal posterior em L4-L5..."
       />
@@ -87,9 +165,9 @@ export function ReportIntake({
         </span>
       </div>
 
-      {error && (
+      {(error || fileError) && (
         <div className="intake-error" role="alert">
-          {error}
+          {fileError || error}
         </div>
       )}
 
