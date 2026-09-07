@@ -1,5 +1,8 @@
 import type { VisualReport } from './types'
 
+const clinicianNote =
+  'Explicação educacional. A interpretação final do exame e a decisão de tratamento pertencem ao profissional responsável.'
+
 export const demoReport: VisualReport = {
   id: 'rep_demo_l4l5',
   patient: {
@@ -24,7 +27,39 @@ export const demoReport: VisualReport = {
       origin: 'manual',
       clinicianEdited: true,
     },
-    clinicianNote:
-      'Explicação educacional. A interpretação final do exame e a decisão de tratamento pertencem ao profissional responsável.',
+    clinicianNote,
   },
+}
+
+export function createEmptyDemoReport(): VisualReport {
+  const suffix =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : String(Date.now())
+
+  return {
+    id: `rep_demo_${suffix}`,
+    patient: {
+      id: 'pat_demo_001',
+      displayName: 'Paciente demonstração',
+      age: 52,
+    },
+    title: 'Nova explicação visual',
+    status: 'draft',
+    finding: {
+      id: `finding_demo_${suffix}`,
+      sourceText: '',
+      anatomicalStructure: 'Nenhuma estrutura confirmada',
+      atlasRef: 'BodyParts3D 4.0 / FMA',
+      atlasConceptId: '',
+      anatomyReviewRequired: true,
+      patientExplanation: '',
+      explanationReviewRequired: true,
+      explanationProvenance: {
+        origin: 'manual',
+        clinicianEdited: false,
+      },
+      clinicianNote,
+    },
+  }
 }

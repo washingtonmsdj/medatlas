@@ -2,26 +2,36 @@ import type { VisualReport } from '../domain/types'
 
 interface Props {
   report: VisualReport
+  onNewReport: () => void
   onOpenReport: () => void
   onOpenAtlas: () => void
 }
 
 export function Overview({
   report,
+  onNewReport,
   onOpenReport,
   onOpenAtlas,
 }: Props) {
-  const reviewLabel = report.finding.anatomyReviewRequired
-    ? 'Anatomia pendente'
-    : report.finding.explanationReviewRequired
-      ? 'Revisão pendente'
-      : report.status === 'published'
-        ? 'Publicado'
-        : 'Pronto para publicar'
+  const hasAnatomy =
+    Boolean(report.finding.atlasConceptId) &&
+    !report.finding.anatomyReviewRequired
 
-  const anatomyLabel = report.finding.anatomyReviewRequired
-    ? 'Reconfirmação necessária'
-    : report.finding.anatomicalStructure
+  const reviewLabel = !report.finding.sourceText.trim()
+    ? 'Novo relatório'
+    : report.finding.anatomyReviewRequired
+      ? 'Anatomia pendente'
+      : report.finding.explanationReviewRequired
+        ? 'Revisão pendente'
+        : report.status === 'published'
+          ? 'Publicado'
+          : 'Pronto para publicar'
+
+  const anatomyLabel = !report.finding.atlasConceptId
+    ? 'Ainda não selecionada'
+    : report.finding.anatomyReviewRequired
+      ? 'Reconfirmação necessária'
+      : report.finding.anatomicalStructure
 
   return (
     <section className="overview-module">
@@ -36,8 +46,11 @@ export function Overview({
         </div>
 
         <div className="overview-actions">
-          <button className="primary" type="button" onClick={onOpenReport}>
-            Abrir relatório em trabalho
+          <button className="primary" type="button" onClick={onNewReport}>
+            Novo relatório visual
+          </button>
+          <button type="button" onClick={onOpenReport}>
+            Continuar relatório atual
           </button>
           <button type="button" onClick={onOpenAtlas}>
             Explorar Atlas 3D
@@ -55,7 +68,9 @@ export function Overview({
           <span>ANATOMIA</span>
           <strong>{anatomyLabel}</strong>
           <small>
-            {report.finding.anatomicalStructure} · {report.finding.atlasConceptId}
+            {hasAnatomy
+              ? `${report.finding.anatomicalStructure} · ${report.finding.atlasConceptId}`
+              : 'Confirmação humana obrigatória antes da explicação'}
           </small>
         </article>
         <article>
@@ -76,7 +91,7 @@ export function Overview({
             <span className="section-kicker">FLUXO CANÔNICO</span>
             <h2>Uma linha clara de responsabilidade.</h2>
           </div>
-          <span className="overview-status">CI validado</span>
+          <span className="overview-status">CI + E2E validados</span>
         </div>
 
         <div className="overview-steps">
@@ -112,7 +127,7 @@ export function Overview({
           <span>✓ Triagem do texto</span>
           <span>✓ Rascunho educacional</span>
           <span>✓ Revisão fail-closed</span>
-          <span>○ E2E visual</span>
+          <span>✓ E2E desktop/mobile</span>
           <span>○ Backend dedicado depois</span>
         </div>
       </div>

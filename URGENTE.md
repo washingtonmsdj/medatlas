@@ -23,6 +23,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Restore GitHub Actions by temporarily using the public repository.
 - [x] Add editable patient explanation with explicit re-review gate after changes.
 - [x] Add a real patient-facing demo route using the same confirmed 3D concept.
+- [x] Add a true blank “Novo relatório visual” flow with no inherited anatomy/explanation.
+- [x] Make AtlasViewport safe and searchable with no initial concept.
 - [x] Freeze reproducible Node dependency installs with a canonical lockfile + `npm ci`.
 - [x] Move Vite past the high-severity Windows dev-server advisory.
 - [ ] Enable repository GitHub Pages source once, then re-run the ready preview workflow.

@@ -230,3 +230,62 @@ test('expired demo patient links fail closed', async ({ page }) => {
     }),
   ).toBeVisible()
 })
+
+
+test('new visual report starts empty and fail-closed', async ({ page }) => {
+  await page.goto('/')
+
+  await page
+    .getByRole('button', { name: 'Novo relatório visual' })
+    .click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByLabel('Texto do laudo ou relatório'),
+  ).toHaveValue('')
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Nenhuma estrutura confirmada',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('Nenhuma anatomia selecionada'),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Gerar rascunho educacional',
+    }),
+  ).toBeDisabled()
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Confirme a anatomia antes de publicar',
+    }),
+  ).toBeDisabled()
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  const suggestion = page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+
+  await expect(suggestion).toContainText('Coração')
+  await suggestion
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Gerar rascunho educacional',
+    }),
+  ).toBeEnabled()
+})

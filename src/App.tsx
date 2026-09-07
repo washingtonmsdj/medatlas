@@ -21,7 +21,7 @@ import { ReportComposer } from './components/ReportComposer'
 import type { ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
-import { demoReport } from './domain/demo'
+import { createEmptyDemoReport, demoReport } from './domain/demo'
 import type { VisualReport } from './domain/types'
 
 const nav = [
@@ -147,6 +147,16 @@ function ClinicianApp() {
       clinicianEdited: false,
     },
   })
+
+  const startNewReport = () => {
+    setReport(createEmptyDemoReport())
+    setSuggestions([])
+    setIntakeError('')
+    setPublishError('')
+    setPublishing(false)
+    setGeneratingDraft(false)
+    setActive('Relatórios')
+  }
 
   const publish = async () => {
     if (
@@ -395,31 +405,41 @@ function ClinicianApp() {
           <section className="finding-card">
             <div>
               <span className="section-kicker">
-                2 · {report.finding.anatomyReviewRequired
-                  ? 'ÚLTIMA ANATOMIA SELECIONADA'
-                  : 'ANATOMIA CONFIRMADA'}
+                2 · {!report.finding.atlasConceptId
+                  ? 'ANATOMIA A CONFIRMAR'
+                  : report.finding.anatomyReviewRequired
+                    ? 'ÚLTIMA ANATOMIA SELECIONADA'
+                    : 'ANATOMIA CONFIRMADA'}
               </span>
               <h2>{report.finding.anatomicalStructure}</h2>
               <p>
-                {report.finding.anatomyReviewRequired
-                  ? 'O texto foi alterado. Confirme novamente esta estrutura ou escolha outra sugestão antes de continuar.'
-                  : 'Estrutura confirmada para o texto atual e usada no relatório do paciente.'}
+                {!report.finding.atlasConceptId
+                  ? 'Nenhuma estrutura foi confirmada. Analise o texto ou use a busca do atlas para selecionar uma referência.'
+                  : report.finding.anatomyReviewRequired
+                    ? 'O texto foi alterado. Confirme novamente esta estrutura ou escolha outra sugestão antes de continuar.'
+                    : 'Estrutura confirmada para o texto atual e usada no relatório do paciente.'}
               </p>
             </div>
 
             <div className="finding-match">
               <span>
-                {report.finding.anatomyReviewRequired
+                {!report.finding.atlasConceptId
                   ? 'Status'
-                  : 'Referência do atlas'}
+                  : report.finding.anatomyReviewRequired
+                    ? 'Status'
+                    : 'Referência do atlas'}
               </span>
               <strong>
-                {report.finding.anatomyReviewRequired
-                  ? 'Reconfirmação necessária'
-                  : report.finding.atlasConceptId}
+                {!report.finding.atlasConceptId
+                  ? 'Aguardando seleção'
+                  : report.finding.anatomyReviewRequired
+                    ? 'Reconfirmação necessária'
+                    : report.finding.atlasConceptId}
               </strong>
               <small>
-                {report.finding.atlasRef} · {report.finding.atlasConceptId}
+                {report.finding.atlasConceptId
+                  ? `${report.finding.atlasRef} · ${report.finding.atlasConceptId}`
+                  : `${report.finding.atlasRef} · nenhuma referência confirmada`}
               </small>
             </div>
           </section>
@@ -451,6 +471,7 @@ function ClinicianApp() {
         return (
           <Overview
             report={report}
+            onNewReport={startNewReport}
             onOpenReport={() => setActive('Relatórios')}
             onOpenAtlas={() => setActive('Atlas 3D')}
           />

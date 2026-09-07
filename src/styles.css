@@ -1233,3 +1233,45 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
     gap:4px;
   }
 }
+
+
+.atlas-empty-state {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-content:center;
+  justify-items:center;
+  gap:8px;
+  padding:28px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(44,126,170,.14), transparent 32%),
+    linear-gradient(180deg,rgba(8,20,33,.35),rgba(5,13,23,.76));
+}
+.atlas-empty-state > span {
+  width:54px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  border:1px solid #31536f;
+  border-radius:50%;
+  color:#70b9dc;
+  background:#0c2133;
+  font-size:12px;
+  font-weight:900;
+}
+.atlas-empty-state strong {
+  color:#dce9f5;
+  font-size:13px;
+}
+.atlas-empty-state p {
+  max-width:360px;
+  margin:0;
+  color:#8398ad;
+  font-size:10px;
+  line-height:1.5;
+}
+.context-mode-group button:disabled {
+  opacity:.38;
+  cursor:not-allowed;
+}

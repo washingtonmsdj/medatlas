@@ -50,7 +50,9 @@ export function AtlasViewport({
   conceptId,
   onConfirmConcept,
 }: Props) {
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [status, setStatus] = useState<
+    'idle' | 'loading' | 'ready' | 'error'
+  >(conceptId ? 'loading' : 'idle')
   const [sourceLabel, setSourceLabel] = useState('')
   const [selectedPartCount, setSelectedPartCount] = useState(0)
   const [contextPartCount, setContextPartCount] = useState(0)
@@ -68,7 +70,14 @@ export function AtlasViewport({
       .then((loadedAtlas) => {
         if (!active) return
         setAtlas(loadedAtlas)
-        setPreview(findAtlasConcept(loadedAtlas, conceptId))
+
+        if (conceptId) {
+          setPreview(findAtlasConcept(loadedAtlas, conceptId))
+          setStatus('loading')
+        } else {
+          setPreview(null)
+          setStatus('idle')
+        }
       })
       .catch((reason) => {
         if (!active) return
@@ -89,6 +98,15 @@ export function AtlasViewport({
   const activeLabel = preview ? conceptDisplayName(preview) : selected
 
   useEffect(() => {
+    if (!activeConceptId) {
+      setStatus('idle')
+      setError('')
+      setSourceLabel('')
+      setSelectedPartCount(0)
+      setContextPartCount(0)
+      return
+    }
+
     setStatus('loading')
     setError('')
     setSourceLabel('')
@@ -129,10 +147,12 @@ export function AtlasViewport({
   return (
     <section className="atlas-card" aria-label="Atlas anatômico 3D">
       <div className="atlas-toolbar">
-        <span className={status === 'error' ? 'live-dot error-dot' : 'live-dot'} />
+        <span
+          className={status === 'error' ? 'live-dot error-dot' : 'live-dot'}
+        />
         <span>Atlas anatômico real</span>
         <span className="atlas-badge">
-          BodyParts3D 4.0 · {activeConceptId}
+          BodyParts3D 4.0 · {activeConceptId || 'aguardando seleção'}
         </span>
       </div>
 
@@ -187,21 +207,38 @@ export function AtlasViewport({
       </div>
 
       <div className="atlas-stage real-stage">
-        <HumanAtlasScene
-          conceptId={activeConceptId}
-          contextMode={contextMode}
-          onReady={ready}
-          onError={failed}
-        />
+        {activeConceptId ? (
+          <HumanAtlasScene
+            conceptId={activeConceptId}
+            contextMode={contextMode}
+            onReady={ready}
+            onError={failed}
+          />
+        ) : (
+          <div className="atlas-empty-state">
+            <span aria-hidden="true">3D</span>
+            <strong>Nenhuma anatomia selecionada</strong>
+            <p>
+              Pesquise uma estrutura ou use um atalho acima. O modelo 3D só é
+              carregado depois de uma seleção válida.
+            </p>
+          </div>
+        )}
 
-        <div className="structure-label real-label" role="status" aria-live="polite">
-          <strong>{activeLabel}</strong>
+        <div
+          className="structure-label real-label"
+          role="status"
+          aria-live="polite"
+        >
+          <strong>{activeConceptId ? activeLabel : 'Aguardando seleção'}</strong>
           <span>
-            {status === 'ready'
-              ? `${sourceLabel} · ${selectedPartCount} selecionada${selectedPartCount === 1 ? '' : 's'}${contextPartCount ? ` + ${contextPartCount} de contexto` : ''}`
-              : status === 'error'
-                ? 'falha ao carregar a referência'
-                : 'carregando geometria de referência…'}
+            {status === 'idle'
+              ? 'selecione uma estrutura para iniciar o 3D'
+              : status === 'ready'
+                ? `${sourceLabel} · ${selectedPartCount} selecionada${selectedPartCount === 1 ? '' : 's'}${contextPartCount ? ` + ${contextPartCount} de contexto` : ''}`
+                : status === 'error'
+                  ? 'falha ao carregar a referência'
+                  : 'carregando geometria de referência…'}
           </span>
         </div>
 
@@ -229,7 +266,11 @@ export function AtlasViewport({
       </div>
 
       <div className="atlas-actions">
-        <div className="context-mode-group" role="group" aria-label="Contexto anatômico">
+        <div
+          className="context-mode-group"
+          role="group"
+          aria-label="Contexto anatômico"
+        >
           {CONTEXT_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -237,6 +278,7 @@ export function AtlasViewport({
               type="button"
               title={option.description}
               onClick={() => setContextMode(option.value)}
+              disabled={!activeConceptId}
             >
               {option.label}
             </button>
