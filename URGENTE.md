@@ -1,14 +1,17 @@
 # URGENTE — MedAtlas
 
-> Documento canônico de continuidade. Leia este arquivo antes de alterar o projeto.
-> Atualize este checkpoint sempre que uma etapa relevante for concluída.
+> **Documento canônico de continuidade.** Leia antes de alterar o projeto.
+> O objetivo deste arquivo é registrar o estado **atual**, não preservar um diário de commits.
 >
-> Última revisão: **2026-09-07**
-> Código 3D/AAA consolidado até: **`f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`** · Browser E2E da superfície em **`2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`**
+> Última consolidação: **2026-09-07**
+> Branch canônica: **`main`**
+> Repositório: **`washingtonmsdj/medatlas`**
 
-## 0. Missão do produto
+---
 
-Construir um SaaS clínico visual premium em que clínicas e profissionais de saúde transformam informação de laudos/relatórios em uma experiência anatômica 3D compreensível, **revisada pelo profissional** e compartilhável com o paciente.
+## 0. Missão — NÃO REINTERPRETAR
+
+MedAtlas é um **SaaS clínico visual B2B/B2B2C** para clínicas e profissionais de saúde transformarem laudos/relatórios em uma explicação anatômica 3D compreensível, **revisada por um profissional** e compartilhável com o paciente.
 
 Fluxo canônico:
 
@@ -21,107 +24,73 @@ conceitos reais FMA / BodyParts3D
       ↓
 confirmação explícita do profissional
       ↓
-Human Atlas 3D
+Human Atlas 3D de referência
       ↓
 explicação em linguagem clara
       ↓
 revisão clínica obrigatória
       ↓
 link / experiência do paciente
+      ↓
+visualização observável / auditável
 ```
 
-O MedAtlas **não é** um diagnosticador automático, um PACS, um prontuário completo ou apenas um visualizador anatômico.
+O MedAtlas **não é**:
 
-O wedge vencedor é:
+- diagnosticador automático;
+- PACS;
+- prontuário completo;
+- segmentador de DICOM;
+- reconstrução 3D específica do corpo do paciente;
+- apenas um atlas anatômico.
+
+O wedge vencedor continua sendo:
 
 > **comunicação clínica visual entre profissional e paciente.**
 
-A anatomia 3D é o motor visual; o produto é o fluxo clínico revisado ao redor dela.
+---
+
+## 1. Regras de arquitetura — INVARIANTES
+
+1. Existe **um único engine Human Atlas canônico**.
+2. Explorer, clinical e patient são modos do mesmo engine, não renderers paralelos.
+3. BodyParts3D/FMA representam **anatomia humana de referência**, nunca reconstrução do paciente.
+4. IA nunca pode inventar anatomia que não resolva no atlas fixado.
+5. IA nunca publica sozinha.
+6. Alterar laudo, anatomia ou explicação invalida as revisões necessárias.
+7. Patient share não expõe IDs internos previsíveis.
+8. Token bruto de share ou convite não é persistido.
+9. Dados clínicos reais **não entram no modo demo**.
+10. Bucket clínico de produção nunca é público.
+11. Não reutilizar banco/Supabase de Achegue-se, OrdaX ou outro produto.
+12. Não criar segunda autoridade de persistência paralela ao `ClinicalRepository`.
+13. Não habilitar botão ou fluxo de produção fake para “parecer pronto”.
+14. Supabase/auth real permanece bloqueado até ativação deliberada do P2.
 
 ---
 
-## 1. Modelo SaaS decidido
+## 2. Estado atual do MVP visual — P0 FECHADO
 
-O MedAtlas é **um único SaaS multi-tenant**, não vários produtos separados.
+### Produto / shell SaaS
 
-### 1.1 Organização / clínica
+- [x] Dashboard clínico premium.
+- [x] Sidebar/topbar SaaS.
+- [x] organização e workspace ativos visíveis.
+- [x] troca local sintética de workspace/especialidade.
+- [x] Pacientes.
+- [x] Consultas.
+- [x] Exames/documentos sintéticos.
+- [x] Relatórios visuais.
+- [x] Atlas 3D.
+- [x] Equipe.
+- [x] Analytics.
+- [x] Configurações.
+- [x] portal do paciente.
+- [x] empty/loading/error/fail-closed states.
 
-Uma organização pode representar uma clínica, consultório, centro médico ou rede.
+### Clinical Report Studio
 
-Responsabilidades:
-
-- membros e papéis;
-- profissionais;
-- pacientes;
-- consultas;
-- exames/documentos;
-- relatórios visuais;
-- compartilhamentos;
-- auditoria;
-- branding e configurações;
-- futuramente unidades/workspaces por especialidade.
-
-### 1.2 Workspace do profissional
-
-Experiência focada no trabalho clínico:
-
-- meu dia;
-- pacientes;
-- consultas;
-- exames;
-- relatórios visuais;
-- Atlas 3D;
-- fila de revisão;
-- compartilhamentos.
-
-O profissional individual ("Solo") usa o mesmo produto e a mesma arquitetura, apenas sem a complexidade administrativa de uma clínica grande.
-
-### 1.3 Equipe / recepção
-
-Experiência operacional com permissões menores:
-
-- pacientes;
-- agenda/consultas;
-- recebimento de documentos;
-- preparação do atendimento;
-- sem autoridade para aprovar conteúdo clínico quando o papel não permitir.
-
-### 1.4 Paciente
-
-O paciente **não recebe o dashboard clínico**.
-
-Ele abre uma experiência simplificada e patient-safe contendo somente o que foi explicitamente publicado:
-
-- anatomia 3D aprovada;
-- trecho clínico selecionado;
-- explicação revisada;
-- observações do profissional;
-- perguntas para a próxima consulta;
-- identidade da clínica/profissional;
-- impressão/PDF;
-- futuramente revogação/expiração real via backend.
-
----
-
-## 2. Direção visual — AAA SaaS
-
-Referência aprovada em 2026-09-07:
-
-- sidebar clínica escura e premium;
-- canvas principal claro;
-- organização/especialidade sempre visíveis;
-- busca global no topo;
-- dashboard com métricas, fila e continuidade do atendimento;
-- Human Atlas como centro visual do produto;
-- microinterações discretas;
-- sem aparência de template genérico;
-- sem aparência de prontuário hospitalar legado;
-- desktop-first profissional, com adaptação mobile;
-- dados sintéticos claramente identificados no MVP.
-
-### 2.1 Tela-chave: Clinical Report Studio
-
-A tela de relatório deve seguir permanentemente esta hierarquia:
+Hierarquia permanente:
 
 ```text
 ┌──────────────────┬──────────────────────────┬──────────────────────┐
@@ -133,355 +102,271 @@ A tela de relatório deve seguir permanentemente esta hierarquia:
 └──────────────────┴──────────────────────────┴──────────────────────┘
 ```
 
-Não voltar ao layout antigo em que laudo + anatomia ficavam empilhados numa única coluna.
+- [x] triagem determinística.
+- [x] confiança textual acessível — não representa certeza clínica.
+- [x] confirmação anatômica explícita.
+- [x] 3D focado usando bounds reais da geometria.
+- [x] Isolado / Sistema / Região.
+- [x] vistas, rotação, reset e fullscreen.
+- [x] rascunho educacional.
+- [x] provenance.
+- [x] revisão clínica obrigatória.
+- [x] preview do paciente antes de publicar.
+- [x] publicação fail-closed.
 
----
+### Portal do paciente
 
-## 3. Checkpoint atual
+- [x] experiência separada do dashboard clínico.
+- [x] branding da clínica/profissional.
+- [x] Human Atlas em modo patient.
+- [x] explicação revisada.
+- [x] selo de revisão.
+- [x] perguntas para próxima consulta.
+- [x] impressão/PDF.
+- [x] aviso explícito de anatomia de referência.
+- [x] link demo opaco e temporário.
+- [x] link inválido/expirado falha fechado.
 
-### Concluído — núcleo clínico/anatômico
+### Visual QA / responsividade
 
-- [x] Repositório canônico `washingtonmsdj/medatlas`.
-- [x] Frontend React/Vite/TypeScript.
-- [x] Human Atlas fixado no upstream commit `1c38bf35c254a891200d3cedecfd57abebe83d8d`.
-- [x] BodyParts3D vendorizado sob origem controlada pelo MedAtlas.
-- [x] SHA-256 + provenance dos assets anatômicos.
-- [x] Human Atlas completo com aproximadamente 2.234 peças.
-- [x] Picking por estrutura.
-- [x] sistemas anatômicos.
-- [x] vistas.
-- [x] rotação.
-- [x] isolate.
-- [x] explode.
-- [x] busca anatômica.
-- [x] aliases em português.
-- [x] conceitos FMA reais.
-- [x] modo clínico focado usando o **mesmo engine canônico**.
-- [x] página do paciente usando o mesmo engine.
-- [x] payload anatômico focado por chunks.
-- [x] cache de chunks.
-- [x] licença/atribuição Human Atlas + BodyParts3D preservadas e validadas.
-
-### Concluído — segurança do fluxo
-
-- [x] triagem anatômica determinística como baseline;
-- [x] sugestão não altera anatomia sem confirmação;
-- [x] edição do laudo reabre confirmação anatômica;
-- [x] edição da explicação reabre revisão clínica;
-- [x] publicação bloqueada enquanto houver revisão pendente;
-- [x] reducer fail-closed para lifecycle do relatório;
-- [x] tokens demo opacos e aleatórios;
-- [x] expiração de share demo em 30 minutos;
-- [x] dados atuais explicitamente synthetic-only;
-- [x] CSP/headers de segurança;
-- [x] gates de licença, segurança, IA e review no CI;
-- [x] E2E desktop/mobile já criado;
+- [x] Browser E2E desktop/mobile.
 - [x] axe/WCAG serious/critical gate.
+- [x] gate automático de overflow em **1600 / 1440 / 390 px**.
+- [x] capturas desktop/mobile geradas por Playwright.
+- [x] capturas revisadas visualmente.
+- [x] workflow publica artifact de visual QA também em runs verdes.
 
-### Concluído — contrato SaaS source-first
+Referências recentes de validação:
 
-- [x] organizations;
-- [x] organization_members;
-- [x] professionals;
-- [x] patients;
-- [x] consultations;
-- [x] visual_reports;
-- [x] clinical_documents;
-- [x] report_shares;
-- [x] audit_events;
-- [x] RLS fail-closed em source;
-- [x] Storage clínico privado em source;
-- [x] shares de produção definidos com hash, expiração e revogação;
-- [x] `ClinicalRepository` abstraindo persistência;
-- [x] seletor fail-closed que não ativa Supabase apenas por env vars.
-
-### Concluído — redesign SaaS AAA, lote 1
-
-- [x] Dashboard clínico redesenhado como produto SaaS.
-- [x] Métricas sintéticas do dia.
-- [x] card "Continuar atendimento".
-- [x] fila clínica/itens que precisam de atenção.
-- [x] fluxo visual "Laudo → 3D → Explicação → Revisão → Paciente".
-- [x] bloco de posicionamento "uma plataforma / diferentes papéis".
-- [x] nova topbar com organização/especialidade ativa.
-- [x] busca global visual.
-- [x] perfil profissional e ações rápidas.
-- [x] sidebar premium.
-- [x] módulo renomeado para **Relatórios visuais**.
-- [x] Clinical Report Studio reorganizado em 3 colunas.
-- [x] sistema visual responsivo inicial para desktop/tablet/mobile.
-
-### Concluído — Clinical Studio + portal + módulos AAA, lote 3
-
-- [x] Reduzir o painel de laudo para o fluxo **texto → triagem → confirmação humana**.
-- [x] Transformar sugestões anatômicas em cards compactos, mantendo `.suggestion-item` e confirmação explícita.
-- [x] Exibir **Alta confiança / Confiança moderada** como semântica textual acessível; confiança representa correspondência com o atlas, não certeza clínica.
-- [x] Adicionar estado do intake, contagem de caracteres, importação local e boundary sintético sem aumentar permissões.
-- [x] Transformar o composer em fluxo visível **Anatomia → Explicação → Revisão**.
-- [x] Tornar provenance/origem do rascunho explícita.
-- [x] Manter review gate humano fail-closed e reforçar visualmente a revisão obrigatória.
-- [x] Adicionar **preview do paciente antes da publicação** sem gerar share nem contornar review gate.
-- [x] Melhorar CTA final e estado de compartilhamento.
-- [x] Adicionar feedback visual seguro para anatomia confirmada/reconfirmação, respeitando reduced-motion.
-- [x] Redesenhar o portal do paciente como jornada **Ver anatomia → Entender explicação → Preparar perguntas**.
-- [x] Aplicar portal claro/premium com resumo da região, FMA, status revisado e identidade da clínica/profissional.
-- [x] Preservar 3D interativo, impressão/PDF, perguntas e aviso de anatomia de referência.
-- [x] Corrigir contraste WCAG introduzido pelo portal e pelo Clinical Studio.
-- [x] Redesenhar **Pacientes** sem fingir prontuário: contexto atual, progresso e fronteira de produção.
-- [x] Redesenhar **Consultas** como workflow visual sem simular agenda/prontuário persistente.
-- [x] Redesenhar **Exames** com pipeline local e PDF/imagem explicitamente bloqueados.
-- [x] Redesenhar **Configurações** com estados reais do ambiente demo, governança e recursos bloqueados.
-- [x] Unificar esses quatro módulos sob o mesmo design system SaaS do restante do MedAtlas.
-- [x] CI completo PASS no HEAD `b6c24babc64afa342a4789f8d2969241733cef22`.
-- [x] Browser E2E principal PASS no mesmo HEAD; nenhum artifact de falha foi gerado.
-
-### Concluído — redesign 3D AAA, lote 2
-
-- [x] Preservar **um único engine Human Atlas canônico** para todas as superfícies.
-- [x] Adicionar modos de apresentação `clinical`, `explorer` e `patient` sem criar renderer paralelo.
-- [x] Remover aparência cinza/pedestal do Human Atlas original nos modos clínico e paciente.
-- [x] Criar apresentação clínica escura com iluminação fria, HUD e identidade MedAtlas.
-- [x] Manter apresentação do paciente clara, calma e menos técnica.
-- [x] Transformar o 3D focado do relatório em **Clinical 3D Workbench**.
-- [x] Adicionar busca anatômica e atalhos com nomes acessíveis.
-- [x] Adicionar vistas 3/4, frontal, lateral e posterior.
-- [x] Adicionar rotação automática, reset e tela cheia no workspace clínico.
-- [x] Integrar **Isolado / Sistema / Região** diretamente ao palco 3D.
-- [x] Adicionar HUD com estrutura, peças selecionadas, peças de contexto e modo ativo.
-- [x] Redesenhar o Atlas completo como **MedAtlas Atlas Lab / Workbench**, sem aparência de upstream.
-- [x] Adicionar command palette, camadas anatômicas, inspetor permanente, dock de câmera, explode e HUD de seleção.
-- [x] Manter picking por peça e ação **Usar no relatório visual**.
-- [x] Adicionar controles simples de câmera na experiência do paciente.
-- [x] Corrigir enquadramento de estruturas focadas usando os **bounds reais da geometria**; estruturas como coração/rim não reutilizam mais a distância de câmera do corpo completo.
-- [x] Ocultar piso/pedestal nas superfícies focadas clinical/patient.
-- [x] Corrigir contraste e heranças visuais do cabeçalho/card anatômico do paciente.
-- [x] Endurecer `validate-reference-atlas` para impedir regressão dos três modos e do geometry-aware camera fit.
-- [x] Expandir Browser E2E para cobrir o workbench clínico, Atlas completo e controles 3D do paciente.
-- [x] CI completo PASS no contrato 3D até `f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`.
-- [x] Browser E2E **16/16 PASS** em `2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`.
+- Browser E2E do lote Equipe/convites: **run `34104398629` — PASS**.
+- CI do contrato de convites + membership: **PASS até `abbc3d20b5cb1f421b894c9e69a3548f9620d8c3`**.
+- Artifact visual anterior revisado: `visual-qa-34100520733`.
 
 ---
 
-## 4. P0 — agora: fechar o redesign AAA
+## 3. Human Atlas / anatomia — FECHADO NO MVP
 
-Esta é a prioridade imediata. Não iniciar features grandes de backend antes de fechar esta superfície.
+- [x] upstream Human Atlas fixado em `1c38bf35c254a891200d3cedecfd57abebe83d8d`.
+- [x] BodyParts3D vendorizado com provenance e SHA-256.
+- [x] aproximadamente 2.234 peças no explorer completo.
+- [x] picking por peça.
+- [x] sistemas anatômicos.
+- [x] aliases em português.
+- [x] busca FMA.
+- [x] isolate/explode.
+- [x] modos `explorer`, `clinical` e `patient`.
+- [x] chunk loading no modo focado.
+- [x] cache de chunks.
+- [x] geometry-aware camera framing.
+- [x] licenças/atribuições visíveis e validadas.
+- [x] gate permanente `validate-reference-atlas`.
 
-### P0.1 Validar o lote atual
-
-- [x] Rodar CI/build/typecheck no novo HEAD — PASS completo em `b6c24babc64afa342a4789f8d2969241733cef22`.
-- [x] Rodar Browser E2E do fluxo clínico — PASS no HEAD `b6c24babc64afa342a4789f8d2969241733cef22`, incluindo axe/WCAG, portal, Clinical Studio e superfícies 3D.
-- [ ] Fazer captura visual desktop 1440/1600px.
-- [ ] Fazer captura mobile.
-- [x] Corrigir regressões de acessibilidade introduzidas pelo redesign: ARIA do progresso + contraste do dashboard + contraste do Clinical Report Studio.
-- [x] Gate responsivo automatizado sem overflow horizontal em 1600/1440/390px (`0d4ef6c5dc7d75f020bd23ad73722f6b55fd1e0a`).
-- [x] Confirmar que o Human Atlas e o fluxo clínico continuam funcionais após o redesign via Browser E2E.
-- [x] Confirmar que review gate, publicação e handoff ao paciente continuam funcionais via Browser E2E.
-
-### P0.2 Uniformizar todos os módulos
-
-Aplicar o mesmo design system premium, sem criar telas fake:
-
-- [x] Pacientes — contexto sintético premium, progresso e production boundary.
-- [x] Consultas — workflow visual premium, sem agenda/prontuário fake.
-- [x] Exames — pipeline local, formatos ativos e bloqueios explícitos.
-- [x] Atlas 3D — MedAtlas Atlas Lab/Workbench aplicado e validado.
-- [x] Configurações — estado real do demo, governança e controles locais.
-- [x] experiência do paciente — jornada guiada clara/premium com 3D.
-- [x] empty states — relatório novo + anatomia sem seleção com estado explícito.
-- [x] loading states — link do paciente e anatomia focada com status acessível e reduced-motion.
-- [x] errors/fail-closed states — link inválido/expirado, Atlas e publicação preservam bloqueio seguro.
-
-Regra: módulo que ainda não tiver backend real pode operar em modo sintético, mas precisa ser funcional e declarar isso claramente.
-
-### P0.3 Melhorar o Clinical Report Studio
-
-- [x] Reduzir ruído textual no painel de laudo.
-- [x] Transformar sugestões anatômicas em seleção visual mais compacta.
-- [x] Adicionar status/confiança com semântica acessível e aviso de que confiança é textual, não clínica.
-- [x] Melhorar toolbar do 3D focado — vistas, rotação, reset e tela cheia.
-- [x] Mostrar modos Isolado / Sistema / Região com UI consistente dentro do palco 3D.
-- [x] Enquadrar automaticamente anatomia focada pelos bounds reais da geometria.
-- [x] Diferenciar visualmente as superfícies clinical / explorer / patient sem duplicar o engine.
-- [x] Criar transição visual ao confirmar anatomia, com reduced-motion seguro.
-- [x] Melhorar editor de explicação com estado, contagem e provenance.
-- [x] Destacar claramente "rascunho assistido" versus "conteúdo aprovado".
-- [x] Melhorar CTA final de aprovação/compartilhamento.
-- [x] Criar preview rápido da experiência do paciente antes da publicação.
-- [x] Manter todas as regras fail-closed — review, anatomia, share, provider e estados inválidos continuam cobertos por contratos/E2E.
-
-### P0.4 Portal do paciente AAA
-
-- [x] Hero mais humano e menos técnico.
-- [x] 3D central e responsivo, com controles simplificados para o paciente e geometry-aware framing.
-- [x] narrativa guiada: "ver anatomia / entender explicação / preparar perguntas".
-- [x] identidade/branding demonstrativo da clínica e profissional.
-- [x] selo claro de conteúdo revisado.
-- [x] perguntas para próxima conversa.
-- [x] impressão/PDF preservados.
-- [x] acessibilidade mobile + axe/WCAG no portal.
-- [x] nunca representar o BodyParts3D como reconstrução do paciente.
+Não voltar ao visual/pedestal original do upstream nas superfícies clinical/patient.
 
 ---
 
-## 5. P1 — produto para clínicas
+## 4. P1 — organização SaaS source-first
 
-Depois do fechamento visual do MVP:
+### Equipe e permissões — IMPLEMENTADO EM SOURCE/UI
 
-### Administração da organização
+- [x] módulo Equipe real no frontend.
+- [x] papéis canônicos `admin | clinician | staff`.
+- [x] matriz de permissões visível.
+- [x] membership separado de perfil `professionals`.
+- [x] todos membros ativos podem ler conforme RLS.
+- [x] `admin` e `clinician` podem escrever dados clínicos conforme contrato.
+- [x] somente `admin` administra membership/estrutura organizacional.
+- [x] E2E de papéis/permissões.
 
-- [ ] módulo Equipe real no frontend;
-- [ ] papéis e permissões visíveis;
-- [ ] convites;
-- [ ] unidades/locais;
-- [ ] especialidades/workspaces;
-- [ ] branding da clínica;
-- [ ] analytics de uso;
-- [ ] relatório de visualizações;
+### Unidades e workspaces — IMPLEMENTADO EM SOURCE/UI
+
+- [x] `organization_units`.
+- [x] `clinical_workspaces`.
+- [x] FK tenant-safe workspace → unit + organization.
+- [x] policies admin-write.
+- [x] switcher local de unidade/workspace.
+- [x] Ortopedia / Cardiologia / Fisioterapia no demo.
+- [x] E2E do switcher.
+
+### Branding — IMPLEMENTADO EM SOURCE/UI
+
+- [x] `organization_branding`.
+- [x] policy admin-write.
+- [x] branding demonstrativo da Clínica Horizonte.
+- [x] branding chega ao paciente.
+- [x] edição continua bloqueada no demo.
+- [x] E2E de branding.
+
+### Analytics / visualizações — IMPLEMENTADO EM SOURCE + DEMO LOCAL
+
+- [x] módulo Analytics.
+- [x] resumo de uso.
+- [x] visualizações por relatório.
+- [x] demo deriva eventos realmente observados localmente.
+- [x] produção deriva de `report_shares` + `audit_events` — sem tabela paralela de tracking.
+- [x] dedupe de retry imediato.
+- [x] demo sem `fetch`, `sendBeacon` ou `XMLHttpRequest` para analytics.
+- [x] E2E prova `abrir link → visualização > 0`.
+
+### Convites — SOURCE-READY, TRANSPORTE AINDA BLOQUEADO
+
+Contrato canônico:
+
+- [x] `organization_invitations`.
+- [x] criação admin-only.
+- [x] token aleatório de 32 bytes.
+- [x] somente SHA-256 persistido.
+- [x] TTL entre 1 hora e 30 dias; default 7 dias.
+- [x] revogação.
+- [x] aceite autenticado.
+- [x] e-mail da sessão deve coincidir com e-mail do convite.
+- [x] audit events de criação/aceite/revogação.
+- [x] membership inativa pode ser reativada pelo convite.
+- [x] membership ativa nunca tem papel sobrescrito pelo aceite.
+- [x] race de insert/reativação fechado com `INSERT ... ON CONFLICT ... WHERE active = false`.
+- [x] UI explica o contrato.
+- [x] Browser E2E da superfície.
+- [x] documentação `docs/ORGANIZATION_INVITATIONS.md`.
+- [ ] transporte de e-mail/edge/backend — **bloqueado até P2**.
+- [ ] botão `Convidar membro` ativo — **bloqueado até P2**.
+
+Não implementar envio fake em browser/localStorage.
+
+### Ainda pendente em P1
+
 - [ ] plano/assinatura — somente depois da infraestrutura de produção.
 
-### Navegação por contexto
+Billing não é prioridade antes de auth/RLS/backend reais.
 
-Alvo futuro:
+---
+
+## 5. Piloto sintético — AUTOMATIZADO / DOCUMENTADO
+
+Documento: `docs/PILOT.md`.
+
+O fluxo automatizado já cobre:
 
 ```text
-Clínica Horizonte
-├── Unidade principal
-│   ├── Ortopedia
-│   ├── Cardiologia
-│   └── Fisioterapia
-├── profissionais
-├── equipe
-├── pacientes
-└── relatórios visuais
+organização/workspace
+  → relatório
+  → triagem
+  → confirmação anatômica
+  → Human Atlas 3D
+  → rascunho
+  → revisão
+  → preview
+  → share
+  → portal do paciente
+  → abertura do link
+  → Analytics registra visualização
 ```
 
-Não obrigar clínica pequena/usuário Solo a enxergar essa complexidade.
+Também cobre Equipe, branding, convites source-ready, mobile, acessibilidade e fail-closed states.
+
+- [x] piloto sintético automatizado.
+- [x] protocolo manual sintético atualizado.
+- [ ] piloto manual final em preview externo.
+- [ ] piloto controlado com profissionais externos — bloqueado até produção clínica segura.
+
+Nenhum desses itens autoriza PHI/dados clínicos reais.
 
 ---
 
-## 6. P2 — Supabase dedicado / produção clínica
+## 6. P2 — Supabase dedicado / produção clínica — BLOQUEADO DELIBERADAMENTE
 
-**Deliberadamente adiado até o MVP visual estar fechado.**
+**Não ativar por conta própria enquanto a decisão de adiar Supabase permanecer.**
+
+Source-first já existe, mas produção ainda precisa:
 
 - [ ] criar projeto Supabase exclusivo do MedAtlas;
-- [ ] aplicar migrations canônicas;
-- [ ] executar testes reais de cross-tenant isolation;
-- [ ] provar RLS por papel;
+- [ ] aplicar migrations canônicas em ambiente dedicado;
 - [ ] autenticação/onboarding;
+- [ ] provar isolamento cross-tenant real;
+- [ ] provar RLS por papel com usuários reais de teste;
 - [ ] implementar `SupabaseClinicalRepository`;
-- [ ] Storage privado;
-- [ ] resolver share público pela RPC patient-safe;
-- [ ] auditar criação/uso/revogação;
-- [ ] provar expiração/revogação;
-- [ ] só então permitir dados reais conforme requisitos jurídicos/regulatórios aplicáveis.
-
-Não reutilizar Supabase do Achegue-se, OrdaX ou qualquer outro produto.
-
----
-
-## 7. P3 — IA
-
-### Já existe
-
-- [x] contrato `medatlas.clinical-extraction/1`;
-- [x] runtime validator;
-- [x] anatomia da IA precisa resolver para conceito real;
-- [x] review clínico obrigatório;
-- [x] provenance planejada;
-- [x] gerador educacional determinístico;
-- [x] provedor remoto desativado sem backend.
-
-### Próximo
-
-- [ ] structured AI extraction atrás do backend;
-- [ ] AI patient-language draft;
-- [ ] provider/model/promptVersion/generatedAt;
-- [ ] avaliação de qualidade em cenários sintéticos;
-- [ ] nenhum output de IA publica diretamente;
-- [ ] nenhuma chave de modelo no bundle Vite.
+- [ ] Storage privado real;
+- [ ] resolver share pelo RPC patient-safe;
+- [ ] provar expiração/revogação real;
+- [ ] ativar transporte seguro de convites;
+- [ ] provar aceite/revogação/reativação de convite;
+- [ ] auditoria real;
+- [ ] política de retenção;
+- [ ] só então permitir dados reais conforme requisitos jurídicos/regulatórios.
 
 ---
 
-## 8. P4 — validação e lançamento
+## 7. P3 — IA real — BLOQUEADA ATÉ BACKEND
 
-- [ ] habilitar GitHub Pages Source = GitHub Actions, se ainda necessário;
-- [ ] publicar preview externo após disponibilidade de deploy;
-- [ ] validar o browser real contra deploy;
-- [ ] piloto sintético completo;
-- [ ] piloto controlado com profissionais externos;
-- [ ] medir tempo para criar relatório;
-- [ ] medir taxa de conclusão/revisão;
-- [ ] medir compreensão/satisfação qualitativa;
-- [ ] corrigir UX antes de produção com PHI;
-- [ ] preparar termos, privacidade e compliance para o mercado-alvo.
+Já existe:
 
----
+- [x] contrato `medatlas.clinical-extraction/1`.
+- [x] runtime validator.
+- [x] output anatômico precisa resolver para conceito real.
+- [x] review clínico obrigatório.
+- [x] gerador educacional determinístico.
+- [x] provenance.
+- [x] provedor remoto desativado no browser.
 
-## 9. Invariantes — NÃO QUEBRAR
+Depois do backend:
 
-1. Existe **um único engine Human Atlas canônico**.
-2. Modo completo e modo focado são entradas/estados diferentes do mesmo engine.
-3. IA nunca pode inventar uma anatomia que não resolve no atlas fixado.
-4. IA nunca publica sozinha.
-5. Alterar laudo/anatomia/explicação invalida aprovações necessárias.
-6. Patient share não deve expor IDs internos previsíveis.
-7. Dados clínicos reais não entram no modo demo.
-8. Bucket clínico de produção nunca é público.
-9. Não usar banco de outro produto.
-10. Não representar anatomia de referência como corpo/reconstrução individual do paciente.
-11. Não criar um segundo mecanismo de relatório paralelo ao `report-workflow`.
-12. Não criar uma segunda persistência paralela fora de `ClinicalRepository`.
+- [ ] provider/model atrás de servidor seguro.
+- [ ] structured extraction real.
+- [ ] patient-language draft por modelo.
+- [ ] `provider/model/promptVersion/generatedAt`.
+- [ ] avaliação de qualidade em cenários sintéticos.
+- [ ] nenhuma chave de modelo no Vite bundle.
+- [ ] nenhum output de IA publica diretamente.
 
 ---
 
-## 10. Do not repeat
+## 8. P4 — preview / validação / lançamento
 
-As próximas IAs **não devem**:
+Prioridade depois do P1 source-first:
 
-- recomeçar o MedAtlas do zero;
-- voltar a tratar o produto como simples "site de anatomia";
-- substituir o Human Atlas atual por iframe;
-- criar renderer simplificado paralelo;
-- reabrir decisões de licenciamento já documentadas;
-- criar backend antes de validar o redesign atual;
-- adicionar diagnóstico/tratamento automático para tornar a demo "mais impressionante";
-- esconder que os dados atuais são sintéticos;
-- converter o portal do paciente em um dashboard clínico completo;
-- criar quatro aplicações independentes para clínica/profissional/equipe/paciente.
+1. [ ] publicar/confirmar preview externo atual;
+2. [ ] validar browser real contra deploy;
+3. [ ] executar piloto manual sintético no preview;
+4. [ ] corrigir UX encontrada no piloto;
+5. [ ] preparar Supabase dedicado (P2) quando autorizado;
+6. [ ] preparar termos, privacidade e compliance do mercado-alvo;
+7. [ ] somente então desenhar piloto clínico controlado com dados permitidos.
 
----
-
-## 11. Próxima ação exata
-
-1. Fazer visual QA final em 1440/1600px do dashboard, Clinical Report Studio e **novo enquadramento 3D focado**.
-2. Concluir o redesign AAA do portal do paciente ao redor do novo 3D: hero, narrativa/abas, branding e hierarquia de conteúdo.
-3. Melhorar o painel de laudo e sugestões anatômicas do Clinical Report Studio, reduzindo densidade sem remover os gates.
-4. Melhorar editor, provenance visual, CTA de revisão/publicação e preview do paciente.
-5. Uniformizar Pacientes/Consultas/Exames/Configurações com o mesmo design system; Atlas 3D já está concluído.
-6. Criar o módulo Equipe apenas quando for funcional, sem placeholder.
-7. Rodar CI + Browser E2E + axe após cada lote.
-8. Só depois iniciar o Supabase dedicado.
+Se GitHub Pages continuar dependendo de configuração administrativa, não criar workaround inseguro. Se Vercel tiver quota/bloqueio, não alterar arquitetura para contornar quota.
 
 ---
 
-## 12. Comandos de validação
+## 9. Próxima ação recomendada
 
-Requer Node.js 22.13+.
+Se continuar **sem Supabase ativo**:
 
-```bash
-npm ci
-npm run validate:db-contract
-npm run validate:anatomy-contract
-npm run validate:demo-scenarios
-npm run validate:vendored-assets
-npm run validate:performance-budget
-npm run validate:security-contract
-npm run validate:ai-contract
-npm run validate:review-gate
-npm run validate:report-workflow
-npm run validate:license-attribution
-npm run validate:reference-atlas
-npm run check
-npm run build
-npm audit --omit=dev --audit-level=high
-```
+1. verificar CI do HEAD;
+2. revisar preview/deploy externo disponível;
+3. executar piloto manual sintético completo;
+4. corrigir somente bugs/UX reais encontrados;
+5. não iniciar billing nem IA remota.
+
+Se o usuário autorizar **ativar produção/Supabase**:
+
+1. criar Supabase dedicado MedAtlas;
+2. aplicar migrations na ordem;
+3. rodar testes cross-tenant e RLS antes da UI de auth;
+4. implementar `SupabaseClinicalRepository`;
+5. ativar auth e convites somente após os testes passarem;
+6. continuar proibindo dados reais até segurança/compliance estar validada.
+
+---
+
+## 10. DO NOT REPEAT
+
+- não recriar renderer 3D paralelo;
+- não substituir Human Atlas por modelo fake/simplificado;
+- não reabrir layout antigo do Clinical Report Studio;
+- não tratar confiança textual como certeza clínica;
+- não fazer IA diagnosticar/publicar automaticamente;
+- não criar analytics/telemetria paralela;
+- não persistir token bruto;
+- não tornar bucket clínico público;
+- não ativar convite fake/local;
+- não reutilizar Supabase de outro projeto;
+- não dizer que Supabase/auth/convites de produção estão ativos enquanto não estiverem;
+- não permitir PHI no demo.
