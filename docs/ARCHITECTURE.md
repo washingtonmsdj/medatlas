@@ -1,62 +1,269 @@
-# MedAtlas — arquitetura alvo
+# MedAtlas — arquitetura
 
-## Product boundary
+## Objetivo do sistema
 
-MedAtlas is a communication layer between clinician and patient. It may assist with extraction, anatomical matching and educational explanations, but the clinician remains the publishing authority.
+O MedAtlas é uma camada de comunicação clínica visual entre profissional e paciente.
 
-## Core domains
+Ele pode auxiliar em:
 
-- **Organizations** — clinic/hospital tenant and branding.
-- **Professionals** — authenticated clinicians with roles.
-- **Patients** — minimal patient record scoped to organization.
-- **Consultations** — encounter/context for a report.
-- **Documents** — uploaded report/exam metadata and secure storage pointer.
-- **Findings** — source excerpt + proposed anatomical mapping + clinician confirmation.
-- **Atlas state** — structure IDs, systems, camera, visibility and annotations.
-- **Visual reports** — clinician-approved patient-facing content.
-- **Shares** — opaque, revocable, expiring links with audit events.
-- **AI generations** — structured draft outputs, provenance, prompt/model version and human approval state.
+- leitura estrutural de um texto fornecido pelo profissional;
+- localização de anatomia;
+- geração de rascunhos educacionais;
+- preparação de uma experiência 3D;
+- compartilhamento controlado.
 
-## Security invariants
+Ele não transforma uma sugestão de software em diagnóstico ou conduta clínica.
 
-1. No report becomes patient-visible without clinician approval.
-2. Share URLs use random opaque tokens; never patient IDs or sequential report IDs.
-3. Tenant isolation is enforced server-side and in database policies.
-4. Uploaded clinical documents are private by default.
-5. Service credentials never reach the browser.
-6. Audit events record publication, revocation and relevant sensitive reads.
-7. AI output is stored as a draft distinct from clinician-approved content.
-8. Demo fixtures never share the same storage/project as real patient data.
+## Fluxo canônico
 
-## 3D integration
+```text
+Clinical source text
+        ↓
+Anatomy resolver
+        ↓
+Known atlas concepts only
+        ↓
+Clinician confirmation
+        ↓
+Atlas selection state
+        ↓
+Patient explanation draft
+        ↓
+Clinician review gate
+        ↓
+Published visual report
+        ↓
+Opaque patient share
+```
 
-The Human Atlas renderer should be integrated as an internal module, not an iframe in production. Preserve upstream notices and BodyParts3D attribution.
+## Camadas
+
+### 1. UI clínica
+
+Responsabilidades:
+
+- entrada do laudo/relatório;
+- mostrar candidatos anatômicos;
+- navegação 3D;
+- edição da explicação;
+- revisão/publicação.
+
+A UI não deve conhecer diretamente Storage, SQL ou `localStorage`.
+
+### 2. ClinicalRepository
+
+`src/data/clinical-repository.ts` define a fronteira de persistência.
+
+Hoje:
+
+```text
+UI → ClinicalRepository → DemoClinicalRepository
+```
+
+Alvo:
+
+```text
+UI → ClinicalRepository → SupabaseClinicalRepository
+```
+
+Isso permite trocar persistência sem reescrever o fluxo clínico.
+
+O seletor do repositório é fail-closed: variáveis Supabase sozinhas não ativam automaticamente backend incompleto.
+
+### 3. Resolver anatômico
+
+Existem duas entradas complementares:
+
+- busca manual;
+- triagem do texto do relatório.
+
+O resolvedor determinístico é a SSOT inicial de segurança. Candidatos precisam existir no `atlas.json` fixado.
+
+A futura IA entra acima dele, não abaixo:
+
+```text
+LLM output
+   ↓
+schema validation
+   ↓
+atlas concept resolution
+   ↓
+known IDs only
+   ↓
+clinician confirmation
+```
+
+### 4. Renderer
+
+O renderer usa Three.js e a geometria BodyParts3D empacotada pelo Human Atlas.
+
+Propriedades atuais:
+
+- upstream fixado por SHA;
+- conceitos com uma ou várias meshes;
+- download agrupado por chunk;
+- cache de chunks imutáveis;
+- modos Isolado/Sistema/Região;
+- contexto próximo sem carregar o atlas completo;
+- mesma seleção semântica na visão clínica e na visão do paciente.
+
+O relatório deve armazenar estado semântico, não apenas screenshot.
+
+Exemplo:
 
 ```ts
 interface AtlasSelection {
   conceptId: string
   elementIds: string[]
-  camera?: { view: string; zoom: number }
   visibleSystems: string[]
-  annotations: Array<{ elementId: string; label: string }>
+  contextMode: 'none' | 'system' | 'region'
+  camera?: {
+    position: [number, number, number]
+    target: [number, number, number]
+  }
+  annotations: Array<{
+    elementId: string
+    label: string
+  }>
 }
 ```
 
-The report stores semantic atlas state, not screenshots only. This allows the patient view to reopen the same interactive structure.
+### 5. Data plane Supabase
 
-## AI contract
+Contrato source-first:
 
-AI extraction must return structured candidates, not free-form clinical decisions:
+`supabase/migrations/202609070001_medatlas_core.sql`
+
+Domínios:
+
+- **organizations** — tenant;
+- **organization_members** — identidade + papel;
+- **professionals** — perfil clínico;
+- **patients** — paciente dentro do tenant;
+- **consultations** — contexto do atendimento;
+- **visual_reports** — conteúdo e estado aprovado;
+- **clinical_documents** — metadata/integridade de arquivo privado;
+- **report_shares** — links de paciente;
+- **audit_events** — trilha de eventos relevantes.
+
+## Segurança multi-tenant
+
+Todos os objetos clínicos pertencem a uma organização.
+
+RLS usa a identidade autenticada para resolver membership.
+
+Escrita clínica:
+
+- admin;
+- clinician.
+
+Leitura clínica interna:
+
+- membro ativo da organização, conforme política.
+
+A validação real de cross-tenant ainda precisa ser provada em um projeto Supabase dedicado antes de qualquer dado real.
+
+## Publicação do relatório
+
+Um relatório só pode ficar `published` quando:
+
+- não há revisão pendente;
+- existe conceito anatômico;
+- existe explicação;
+- existe aprovador;
+- existe timestamp de aprovação.
+
+Modificar anatomia ou explicação invalida o estado publicado no frontend; a implementação Supabase deve manter a mesma propriedade transacionalmente.
+
+## Compartilhamento do paciente
+
+Produção:
+
+1. gera 32 bytes aleatórios;
+2. retorna o token bruto uma única vez;
+3. persiste somente `SHA-256(token)`;
+4. registra versão do relatório;
+5. define expiração;
+6. permite revogação.
+
+Resolver público recebe token, aplica hash e retorna somente projeção patient-safe.
+
+Nenhuma tabela de aplicação recebe grant de leitura para `anon`.
+
+## Storage clínico
+
+Bucket:
+
+`clinical-documents`
+
+Características:
+
+- privado;
+- path prefixado pelo UUID do tenant;
+- RLS de leitura;
+- escrita limitada a papel clínico;
+- metadata com SHA-256 e tamanho;
+- formatos limitados no contrato inicial.
+
+## Auditoria
+
+A aplicação não concede insert arbitrário na tabela de auditoria para o navegador.
+
+Eventos críticos são emitidos por operações controladas, incluindo:
+
+- criação de organização;
+- criação de compartilhamento;
+- visualização válida de compartilhamento.
+
+## IA
+
+Contrato alvo:
 
 ```json
 {
   "source_excerpt": "...",
   "candidate_structures": [
-    {"concept_id": "...", "label": "...", "confidence": 0.0}
+    {
+      "concept_id": "FMA...",
+      "label": "...",
+      "confidence": 0.0
+    }
   ],
   "patient_explanation_draft": "...",
   "requires_clinician_review": true
 }
 ```
 
-The application verifies concept IDs against the atlas catalogue before rendering them.
+O campo `concept_id` precisa ser resolvido contra o atlas fixado antes de a resposta ser considerada utilizável.
+
+## Ambientes
+
+### Demo
+
+- dados sintéticos;
+- DemoClinicalRepository;
+- token aleatório;
+- persistência local;
+- sem alegação de privacidade clínica.
+
+### Produção futura
+
+- Supabase dedicado;
+- autenticação;
+- RLS testada;
+- Storage privado;
+- compartilhamentos expirados/revogáveis;
+- logs/auditoria;
+- secrets separados;
+- dados anatômicos em origem controlada pelo MedAtlas.
+
+## Proibições arquiteturais
+
+- não reutilizar banco de outro produto;
+- não usar ID de paciente/report como token;
+- não guardar token bruto;
+- não abrir bucket clínico;
+- não aceitar ID anatômico inventado por IA;
+- não publicar automaticamente saída de IA;
+- não criar segundo renderer paralelo;
+- não representar BodyParts3D como reconstrução do paciente.

@@ -1,78 +1,200 @@
 # MedAtlas
 
-**Consulta visual com IA para clínicas, médicos e pacientes.**
+**Consulta visual com anatomia 3D para clínicas, profissionais de saúde e pacientes.**
 
-O MedAtlas transforma um laudo ou explicação clínica em um relatório visual interativo: o profissional confirma a estrutura anatômica, revisa o conteúdo em linguagem simples e publica um link privado para o paciente.
+O MedAtlas transforma um trecho de laudo ou explicação clínica em uma experiência visual revisada pelo profissional:
+
+```text
+laudo / relatório
+      ↓
+triagem anatômica
+      ↓
+conceitos reais FMA / BodyParts3D
+      ↓
+confirmação explícita do profissional
+      ↓
+anatomia 3D interativa
+      ↓
+explicação em linguagem simples
+      ↓
+revisão clínica
+      ↓
+link do paciente
+```
+
+O produto não foi desenhado para emitir diagnóstico automático. A automação ajuda a localizar anatomia, preparar conteúdo e reduzir atrito; a autoridade de publicação continua sendo humana.
 
 ## Estado atual
 
 O MVP já possui:
 
-- dashboard clínico em português;
-- fluxo `laudo → anatomia → revisão → compartilhamento`;
-- gate explícito de revisão clínica;
-- relatório visual com link privado simulado;
-- integração P0 com o catálogo e a geometria real BodyParts3D do Human Atlas;
-- mapeamento demonstrativo do disco L4–L5 para o conceito FMA `FMA16036`;
-- arquitetura e roadmap documentados.
+- fluxo clínico em português;
+- edição/colagem de texto de laudo;
+- triagem determinística de referências anatômicas;
+- sugestões limitadas a conceitos que realmente existem no atlas;
+- busca manual por conceitos FMA;
+- Human Atlas / BodyParts3D real em Three.js;
+- suporte a conceitos compostos e várias meshes;
+- modos **Isolado**, **Sistema** e **Região**;
+- cache de chunks anatômicos;
+- explicação editável para o paciente;
+- re-review obrigatório quando anatomia/texto muda;
+- página separada do paciente usando o mesmo conceito 3D aprovado;
+- tokens demo criptograficamente aleatórios;
+- abstração assíncrona `ClinicalRepository`;
+- contrato Supabase multi-tenant com RLS fail-closed em source;
+- bucket clínico privado e modelo de auditoria;
+- tokens de compartilhamento de produção definidos por hash, expiração e revogação;
+- CI com `npm ci`, typecheck, build, contrato de banco e auditoria de dependências de produção.
 
-Todos os nomes e dados clínicos exibidos atualmente são **fictícios e apenas demonstrativos**.
+Todos os pacientes, profissionais, clínicas e laudos exibidos atualmente são **dados sintéticos de demonstração**.
 
-## Rodar
+## Rodar localmente
 
 Requer Node.js 22.13+.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Abra `http://localhost:3016`.
+Abra:
 
-Durante o desenvolvimento, o Vite faz proxy de `/atlas-assets/*` para o commit fixado do Human Atlas. Em Vercel, a mesma rota é configurada por rewrite.
+```text
+http://localhost:3016
+```
+
+Validação completa:
+
+```bash
+npm run validate:db-contract
+npm run check
+npm run build
+npm audit --omit=dev --audit-level=high
+```
 
 ## Anatomia 3D
 
-A primeira integração carrega a geometria real da estrutura confirmada no relatório. Ela é intencionalmente menor que o explorador completo do Human Atlas: primeiro provamos a cadeia semântica e de provenance, depois expandimos para busca, camadas, seleção e múltiplas estruturas.
+O MedAtlas fixa sua integração inicial ao Human Atlas no commit:
 
 ```text
-trecho do laudo
-      ↓
-estrutura confirmada pelo profissional
-      ↓
-FMA16036
-      ↓
-atlas.json fixado
-      ↓
-FJ3216 / chunk BodyParts3D
-      ↓
-Three.js
-      ↓
-relatório visual
+1c38bf35c254a891200d3cedecfd57abebe83d8d
 ```
 
-A geometria é **anatomia de referência**, não uma reconstrução do paciente.
+O renderer não usa iframe. O catálogo e as geometrias BodyParts3D são resolvidos semanticamente e renderizados dentro da aplicação.
 
-## Segurança de produto
+Exemplo atual:
 
-A IA **não publica diagnóstico automaticamente**. O produto é uma ferramenta de comunicação e educação clínica com revisão humana antes do compartilhamento.
+```text
+“L4-L5”
+   ↓
+FMA16036
+   ↓
+Intervertebral disk of fourth lumbar vertebra
+   ↓
+BodyParts3D element FJ3216
+   ↓
+Three.js
+```
+
+A anatomia é **referência educacional**, não reconstrução do corpo individual do paciente.
+
+## Triagem do laudo
+
+O primeiro resolvedor de texto é deliberadamente determinístico.
+
+Ele:
+
+1. normaliza o texto;
+2. procura aliases anatômicos conhecidos em português;
+3. cruza com IDs existentes no atlas fixado;
+4. também pode detectar nomes originais do catálogo;
+5. retorna sugestões;
+6. exige confirmação explícita antes de alterar o relatório.
+
+A próxima camada de IA deverá obedecer à mesma fronteira: um modelo poderá sugerir candidatos, mas um ID que não exista no atlas nunca poderá chegar ao renderer como estrutura clínica aprovada.
+
+## Dados e Supabase
+
+O projeto ainda opera em modo demo no navegador.
+
+O contrato de produção está em:
+
+- `supabase/migrations/202609070001_medatlas_core.sql`
+- `docs/SECURITY.md`
+- `docs/ARCHITECTURE.md`
+
+Ele define:
+
+- organizações/tenants;
+- membros e papéis;
+- profissionais;
+- pacientes;
+- consultas;
+- relatórios visuais;
+- documentos clínicos;
+- compartilhamentos;
+- auditoria;
+- RLS em todas as tabelas de aplicação;
+- Storage privado;
+- token de paciente armazenado somente como SHA-256.
+
+O backend Supabase **não é ativado silenciosamente** só porque variáveis de ambiente existem. A troca do adaptador demo pelo adaptador Supabase ocorrerá somente depois de migration + testes de isolamento.
+
+## Segurança
+
+Alguns invariantes já são gates permanentes:
+
+- nenhuma publicação com revisão pendente;
+- nenhum token previsível;
+- nenhum ID de paciente em URL de compartilhamento;
+- nenhum grant amplo para `anon`;
+- nenhuma tabela clínica sem RLS;
+- nenhum documento clínico em bucket público;
+- nenhuma IA pode publicar diretamente;
+- dados demo não devem compartilhar projeto/storage com dados clínicos reais.
+
+Veja `docs/SECURITY.md`.
+
+## Deploy
+
+### Vercel
+
+`vercel.json` está pronto e usa `npm ci`.
+
+### GitHub Pages
+
+O workflow está em `.github/workflows/pages.yml`, mas a primeira ativação de Pages precisa ser feita administrativamente no repositório:
+
+```text
+Settings → Pages → Source → GitHub Actions
+```
+
+Depois disso o workflow pode publicar a demo.
 
 ## Licenças e provenance
 
-- Human Atlas: MIT, fixado no commit `1c38bf35c254a891200d3cedecfd57abebe83d8d`
-- BodyParts3D 4.0: CC BY 4.0
+- Human Atlas: MIT.
+- BodyParts3D 4.0: CC BY 4.0.
 
-Veja `THIRD_PARTY_NOTICES.md` e `third_party/human-atlas/PROVENANCE.md`.
+Veja:
 
-## Próximos checkpoints
+- `THIRD_PARTY_NOTICES.md`
+- `third_party/human-atlas/LICENSE`
+- `third_party/human-atlas/PROVENANCE.md`
 
-1. generalizar o renderer para conceitos compostos e múltiplas estruturas;
-2. busca anatômica e camadas;
-3. mover os assets 3D para storage/CDN controlado pelo MedAtlas;
-4. autenticação multi-tenant;
-5. pacientes, consultas e relatórios persistidos;
-6. links privados revogáveis e com expiração;
-7. IA estruturada com revisão clínica obrigatória;
-8. deploy preview e testes E2E.
+## Roadmap
 
-Veja `docs/ARCHITECTURE.md` e `URGENTE.md`.
+O plano executável e continuamente atualizado está em:
+
+`URGENTE.md`
+
+As próximas frentes são:
+
+1. projeto Supabase exclusivo do MedAtlas;
+2. provas de isolamento multi-tenant;
+3. autenticação/onboarding;
+4. adapter Supabase do `ClinicalRepository`;
+5. IA estruturada sobre o resolvedor anatômico determinístico;
+6. storage/CDN próprio para os assets anatômicos;
+7. E2E e validação visual do deploy.
