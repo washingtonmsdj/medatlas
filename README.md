@@ -1,6 +1,6 @@
 # MedAtlas
 
-**Consulta visual com anatomia 3D para clínicas, profissionais de saúde e pacientes.**
+**SaaS de comunicação clínica visual 3D para clínicas, profissionais de saúde e pacientes.**
 
 O MedAtlas transforma um trecho de laudo ou explicação clínica em uma experiência visual revisada pelo profissional:
 
@@ -24,6 +24,28 @@ link do paciente
 
 O produto não foi desenhado para emitir diagnóstico automático. A automação ajuda a localizar anatomia, preparar conteúdo e reduzir atrito; a autoridade de publicação continua sendo humana.
 
+### 3D-first
+
+O Human Atlas não é uma página isolada do MedAtlas: ele é a camada visual que acompanha o workflow anatômico.
+
+Hoje a geometria real BodyParts3D aparece em:
+
+- **Visão geral** — atendimento atual;
+- **Pacientes** — contexto visual do relatório;
+- **Consultas** — foco anatômico durante a sessão;
+- **Exames** — referência FMA ligada ao texto;
+- **Relatórios visuais** — Clinical 3D Workbench;
+- **Atlas 3D** — explorer completo;
+- **link do paciente** — experiência simplificada com o mesmo engine.
+
+`Equipe`, `Analytics` e `Configurações` não recebem canvas 3D por decoração: nessas telas não existe uma tarefa anatômica.
+
+O preview público do MVP está em:
+
+`https://washingtonmsdj.github.io/medatlas/`
+
+O workflow de Pages valida a publicação, os assets anatômicos e executa Playwright contra o site publicado.
+
 ## Estado atual
 
 O MVP já possui:
@@ -38,7 +60,7 @@ O MVP já possui:
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
 - explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
-- o relatório clínico e a página do paciente usam o mesmo engine 3D em modo focado, com recorte de anatomia e somente os chunks necessários;
+- Dashboard, Pacientes, Consultas, Exames, relatório clínico e página do paciente reutilizam o mesmo engine 3D canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
@@ -107,7 +129,7 @@ O MedAtlas fixa sua integração inicial ao Human Atlas no commit:
 
 O renderer não usa iframe. O catálogo e as geometrias BodyParts3D são resolvidos semanticamente e renderizados dentro da aplicação.
 
-Os arquivos necessários ao runtime estão em `public/atlas-assets/`. Eles foram copiados do commit upstream fixado por um workflow reproduzível e possuem `SHA256SUMS` + `PROVENANCE.json`. O navegador não precisa buscar geometrias no repositório upstream durante o uso normal.
+Os arquivos necessários ao runtime estão em `public/atlas-assets/`. O runtime resolve esse diretório relativamente ao `BASE_URL` do Vite, permitindo deploy tanto na raiz quanto em subpaths como `/medatlas/`. Eles foram copiados do commit upstream fixado por um workflow reproduzível e possuem `SHA256SUMS` + `PROVENANCE.json`. O navegador não precisa buscar geometrias no repositório upstream durante o uso normal.
 
 Nos cenários sintéticos atuais, o payload inicial de atlas fica aproximadamente entre **3,4 MB e 6,0 MB**, apesar da closure total vendorizada ter 34,3 MB, porque o renderer carrega somente os chunks necessários ao conceito selecionado.
 
