@@ -21,7 +21,7 @@ invitee authenticates with matching email
         ↓
 resolve active, unexpired, unrevoked invitation
         ↓
-create organization_members row
+insert membership OR reactivate inactive membership
         ↓
 mark invitation accepted
         ↓
@@ -54,6 +54,16 @@ Acceptance requires an authenticated user. The authenticated email from `auth.jw
 Creation uses 32 random bytes encoded as hexadecimal. Only `digest(raw_token, 'sha256')` is persisted. The raw token is returned once by `medatlas_create_organization_invitation` so a future backend transport can place it into a one-time invitation URL.
 
 The acceptance RPC validates the expected 64-character hexadecimal format before looking up the token hash.
+
+## Membership acceptance semantics
+
+Acceptance is membership-safe and race-aware.
+
+- If the authenticated account is not yet a member, the invitation creates the membership with the invited role.
+- If the same account has an **inactive** membership in the organization, acceptance reactivates that row and applies the invited role instead of attempting a duplicate insert.
+- If the account is already an **active** member, acceptance fails with `user_already_member` and does not overwrite its role.
+- The final membership write uses an atomic `INSERT ... ON CONFLICT ... DO UPDATE ... WHERE active = false`. This closes the race where another process creates the membership between the initial invitation validation and the write.
+- The invitation row itself is locked while acceptance is processed, so the same invitation cannot be successfully consumed twice.
 
 ## Expiration and revocation
 
@@ -88,6 +98,6 @@ Production activation requires:
 3. applied migrations and cross-tenant tests;
 4. backend/edge transport for invitation links;
 5. secure application URL handling;
-6. end-to-end acceptance/revocation tests.
+6. end-to-end acceptance/revocation/reactivation tests.
 
 Do not enable a browser-only or fake invitation path as a shortcut.
