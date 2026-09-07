@@ -78,6 +78,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     .filter({ hasText: 'FMA7088' })
 
   await expect(heartSuggestion).toContainText('Coração')
+  await expect(heartSuggestion).toContainText('Alta confiança')
   await heartSuggestion
     .getByRole('button', { name: 'Confirmar estrutura' })
     .click()
@@ -97,6 +98,19 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(
     page.getByText('Rascunho educacional MedAtlas'),
   ).toBeVisible()
+
+  const previewButton = page.getByRole('button', {
+    name: 'Pré-visualizar experiência do paciente',
+  })
+  await expect(previewButton).toBeVisible()
+  await previewButton.click()
+
+  const patientPreview = page.getByRole('region', {
+    name: 'Preview do paciente',
+  })
+  await expect(patientPreview).toBeVisible()
+  await expect(patientPreview).toContainText('Coração')
+  await expect(patientPreview).toContainText('FMA7088')
 
   const publishBeforeReview = page.getByRole('button', {
     name: 'Revise a explicação antes de publicar',
