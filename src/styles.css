@@ -3205,3 +3205,627 @@ button:not(:disabled):active {
 .report-explanation-column .safety-box span {
   color: #365f55;
 }
+/* MEDATLAS_CLINICAL_3D_WORKBENCH_V2 */
+.clinical-atlas-card {
+  overflow: visible;
+  border-color: #1f3854;
+  background: #071422;
+  box-shadow: 0 28px 64px rgba(0, 0, 0, .34);
+}
+
+.clinical-atlas-header {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 13px;
+  border-bottom: 1px solid rgba(120, 164, 207, .16);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(40, 149, 255, .12), transparent 35%),
+    linear-gradient(180deg, #10253b, #0b1c2f);
+}
+
+.clinical-atlas-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clinical-atlas-title > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.clinical-atlas-title strong {
+  overflow: hidden;
+  color: #edf7ff;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-atlas-title .section-kicker {
+  color: #69bff1;
+}
+
+.clinical-atlas-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.clinical-atlas-meta span,
+.clinical-atlas-meta code {
+  padding: 5px 7px;
+  border: 1px solid rgba(126, 170, 211, .18);
+  border-radius: 999px;
+  color: #a7c5dd;
+  background: rgba(8, 27, 46, .76);
+  font-size: 8px;
+}
+
+.clinical-atlas-meta code {
+  color: #79d9ff;
+}
+
+.clinical-atlas-commandbar {
+  position: relative;
+  z-index: 24;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(119, 161, 203, .13);
+  background: #0a192a;
+}
+
+.clinical-atlas-search {
+  position: relative;
+  min-width: 0;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid #294763;
+  border-radius: 11px;
+  color: #7fa1bb;
+  background: #071421;
+}
+
+.clinical-atlas-search:focus-within {
+  border-color: #4a8ccc;
+  box-shadow: 0 0 0 3px rgba(56, 150, 239, .10);
+}
+
+.clinical-atlas-search input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #eef8ff;
+  background: transparent;
+  font-size: 10px;
+}
+
+.clinical-atlas-search input::placeholder {
+  color: #7890a5;
+}
+
+.clinical-atlas-results {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 7px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid #2d4a67;
+  border-radius: 12px;
+  background: rgba(7, 20, 34, .98);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, .42);
+  backdrop-filter: blur(18px);
+}
+
+.clinical-atlas-results button {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  color: #ecf7ff;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.clinical-atlas-results button:hover {
+  background: #102b45;
+}
+
+.clinical-atlas-results button span {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.clinical-atlas-results button small,
+.clinical-atlas-results p {
+  margin: 0;
+  color: #96adc1;
+  font-size: 8px;
+}
+
+.clinical-atlas-quick {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.clinical-atlas-quick::-webkit-scrollbar {
+  display: none;
+}
+
+.clinical-atlas-quick button {
+  min-height: 32px;
+  flex: 0 0 auto;
+  padding: 0 9px;
+  border: 1px solid #29435e;
+  border-radius: 9px;
+  color: #b6cbe0;
+  background: #0e2237;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.clinical-atlas-quick button:hover {
+  color: white;
+  border-color: #3d78ae;
+  background: #13314f;
+}
+
+.clinical-atlas-stage {
+  position: relative;
+  min-height: 500px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(33, 115, 201, .18), transparent 34%),
+    linear-gradient(180deg, #071522 0%, #06111c 100%);
+}
+
+.clinical-atlas-stage .human-atlas-scene,
+.clinical-atlas-stage .reference-atlas-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.clinical-atlas-stage .reference-atlas-scene canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.clinical-atlas-ambient {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(82, 151, 220, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(82, 151, 220, .035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, transparent 0 34%, rgba(3, 10, 18, .16) 68%, rgba(2, 8, 14, .46) 100%);
+  background-size: 46px 46px, 46px 46px, auto;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.72), rgba(0,0,0,.22));
+}
+
+.clinical-atlas-focus {
+  position: absolute;
+  z-index: 9;
+  top: 14px;
+  left: 14px;
+  width: min(245px, calc(100% - 96px));
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+  border: 1px solid rgba(111, 165, 214, .20);
+  border-radius: 13px;
+  color: #dceeff;
+  background: rgba(7, 22, 36, .80);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(16px);
+  pointer-events: none;
+}
+
+.clinical-atlas-focus .section-kicker {
+  color: #66c7f2;
+}
+
+.clinical-atlas-focus > strong {
+  color: white;
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.clinical-atlas-focus > small {
+  color: #a8bfd2;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.clinical-atlas-focus-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.clinical-atlas-focus-metrics span {
+  display: grid;
+  gap: 1px;
+  padding: 6px;
+  border: 1px solid rgba(116, 161, 203, .13);
+  border-radius: 8px;
+  color: #90a9bf;
+  background: rgba(13, 39, 62, .55);
+  font-size: 7px;
+}
+
+.clinical-atlas-focus-metrics b {
+  overflow: hidden;
+  color: #e4f6ff;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-atlas-view-dock {
+  position: absolute;
+  z-index: 12;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid rgba(116, 165, 210, .20);
+  border-radius: 12px;
+  background: rgba(6, 20, 34, .82);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(15px);
+}
+
+.clinical-atlas-view-dock button {
+  min-width: 44px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #9db4c8;
+  background: transparent;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.clinical-atlas-view-dock button:hover:not(:disabled) {
+  color: white;
+  background: #13324f;
+}
+
+.clinical-atlas-view-dock button.active {
+  color: #f4fbff;
+  border-color: #317eb9;
+  background: linear-gradient(145deg, #135a91, #123d63);
+  box-shadow: inset 0 0 0 1px rgba(97, 210, 255, .08);
+}
+
+.clinical-atlas-view-dock button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.clinical-atlas-view-dock i {
+  height: 1px;
+  margin: 2px 4px;
+  background: #29425a;
+}
+
+.clinical-context-switcher {
+  position: absolute;
+  z-index: 11;
+  left: 50%;
+  bottom: 14px;
+  width: min(500px, calc(100% - 130px));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  transform: translateX(-50%);
+  padding: 5px;
+  border: 1px solid rgba(114, 165, 210, .19);
+  border-radius: 14px;
+  background: rgba(6, 20, 34, .84);
+  box-shadow: 0 17px 42px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(16px);
+}
+
+.clinical-context-switcher button {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #aac0d4;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.clinical-context-switcher button:hover:not(:disabled) {
+  background: #102b45;
+}
+
+.clinical-context-switcher button.active-context {
+  color: white;
+  border-color: #2e77b2;
+  background: linear-gradient(145deg, #124a78, #0f3353);
+}
+
+.clinical-context-switcher button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.clinical-context-switcher span {
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.clinical-context-switcher small {
+  overflow: hidden;
+  color: #8da6bb;
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-context-switcher .active-context small {
+  color: #c1d7e8;
+}
+
+.clinical-context-legend {
+  position: absolute;
+  z-index: 8;
+  left: 14px;
+  bottom: 17px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #a9bfd2;
+  font-size: 7px;
+}
+
+.clinical-context-legend span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.clinical-context-legend .legend-selected {
+  background: #35c6f2;
+  box-shadow: 0 0 10px rgba(53, 198, 242, .6);
+}
+
+.clinical-context-legend .legend-context {
+  background: #72879a;
+}
+
+.clinical-atlas-empty {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px;
+  color: #aac0d2;
+  text-align: center;
+  background:
+    radial-gradient(circle, rgba(31, 116, 202, .16), transparent 35%),
+    linear-gradient(180deg, #071522, #06111c);
+}
+
+.clinical-atlas-empty > span {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #2c5d86;
+  border-radius: 50%;
+  color: #6ad4ff;
+  background: rgba(15, 54, 88, .55);
+  box-shadow: 0 0 0 14px rgba(45, 139, 222, .05);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.clinical-atlas-empty strong {
+  color: #eef8ff;
+  font-size: 13px;
+}
+
+.clinical-atlas-empty p {
+  max-width: 390px;
+  margin: 0;
+  color: #9eb4c7;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.clinical-atlas-error {
+  z-index: 30;
+  background: rgba(65, 16, 24, .94);
+}
+
+.clinical-atlas-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 11px 13px;
+  border-top: 1px solid rgba(115, 160, 201, .13);
+  background: #091827;
+}
+
+.clinical-atlas-footer > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.clinical-atlas-footer strong {
+  color: #b9cee1;
+  font-size: 8px;
+}
+
+.clinical-atlas-footer > div > span {
+  max-width: 650px;
+  color: #829bb0;
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.clinical-atlas-footer .confirm-anatomy {
+  min-height: 36px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid #248bc7;
+  border-radius: 10px;
+  color: white;
+  background: linear-gradient(135deg, #1377b8, #195c96);
+  box-shadow: 0 12px 28px rgba(10, 106, 169, .24);
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.clinical-atlas-footer .confirm-anatomy:hover {
+  background: linear-gradient(135deg, #1686ca, #1e6ca8);
+}
+
+.clinical-atlas-stage:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  border-radius: 0;
+  background: #06111c;
+}
+
+.clinical-atlas-stage:fullscreen .clinical-context-switcher {
+  bottom: 24px;
+}
+
+.clinical-atlas-stage:fullscreen .clinical-atlas-focus,
+.clinical-atlas-stage:fullscreen .clinical-atlas-view-dock {
+  top: 24px;
+}
+
+@media (max-width: 900px) {
+  .clinical-atlas-commandbar {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-atlas-quick {
+    padding-bottom: 2px;
+  }
+
+  .clinical-atlas-stage {
+    min-height: 540px;
+  }
+
+  .clinical-atlas-focus {
+    width: min(220px, calc(100% - 82px));
+  }
+
+  .clinical-context-switcher {
+    width: calc(100% - 24px);
+    bottom: 12px;
+  }
+
+  .clinical-context-legend {
+    display: none;
+  }
+
+  .clinical-atlas-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 620px) {
+  .clinical-atlas-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .clinical-atlas-meta {
+    width: 100%;
+  }
+
+  .clinical-atlas-stage {
+    min-height: 620px;
+  }
+
+  .clinical-atlas-focus {
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 72px);
+  }
+
+  .clinical-atlas-focus-metrics {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .clinical-atlas-view-dock {
+    top: 10px;
+    right: 10px;
+  }
+
+  .clinical-atlas-view-dock button {
+    min-width: 38px;
+    width: 38px;
+    overflow: hidden;
+    font-size: 0;
+  }
+
+  .clinical-atlas-view-dock button::first-letter {
+    font-size: 9px;
+  }
+
+  .clinical-context-switcher button {
+    padding: 7px 5px;
+  }
+
+  .clinical-context-switcher small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clinical-atlas-results button,
+  .clinical-atlas-view-dock button,
+  .clinical-context-switcher button {
+    transition: none;
+  }
+}
