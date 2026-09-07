@@ -10,6 +10,41 @@ const demo = JSON.parse(
 )
 
 const failures = []
+
+const focusedSceneSource = await readFile(
+  'src/components/HumanAtlasScene.tsx',
+  'utf8',
+)
+const explorerSource = await readFile(
+  'src/components/ReferenceAtlasExplorer.tsx',
+  'utf8',
+)
+const staticRendererImport =
+  /import\s*\{[^}]*HumanAtlasExplorerScene[^}]*\}\s*from\s*['"]\.\/HumanAtlasExplorerScene['"]/
+
+for (const [surface, source] of [
+  ['focused', focusedSceneSource],
+  ['explorer', explorerSource],
+]) {
+  if (staticRendererImport.test(source)) {
+    failures.push(
+      `${surface}: HumanAtlasExplorerScene must not be statically imported`,
+    )
+  }
+
+  if (!source.includes("import('./HumanAtlasExplorerScene')")) {
+    failures.push(
+      `${surface}: canonical HumanAtlas renderer is not lazy-loaded`,
+    )
+  }
+
+  if (!source.includes('Suspense')) {
+    failures.push(
+      `${surface}: deferred renderer is missing a Suspense boundary`,
+    )
+  }
+}
+
 const catalogBytes = (await stat(path.join(assetRoot, 'atlas.json'))).size
 const assetEntries = await readdir(assetRoot)
 

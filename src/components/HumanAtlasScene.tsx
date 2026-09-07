@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   createFocusedAtlas,
   type AtlasContextMode,
@@ -18,10 +18,12 @@ import type {
   AtlasConcept,
   HumanAtlas,
 } from '../atlas/types'
-import {
-  HumanAtlasExplorerScene,
-  type AtlasSceneAppearance,
-} from './HumanAtlasExplorerScene'
+import type { AtlasSceneAppearance } from './HumanAtlasExplorerScene'
+
+const HumanAtlasExplorerScene = lazy(async () => {
+  const module = await import('./HumanAtlasExplorerScene')
+  return { default: module.HumanAtlasExplorerScene }
+})
 
 interface Props {
   conceptId: string
@@ -219,15 +221,34 @@ export function HumanAtlasScene({
 
   return (
     <div className="human-atlas-scene">
-      <HumanAtlasExplorerScene
-        atlas={prepared.atlas}
-        state={sceneState}
-        onSelect={inspectPart}
-        inspectedPartId={inspectedPart?.partId}
-        onProgress={handleProgress}
-        onError={handleError}
-        appearance={appearance}
-      />
+      <Suspense
+        fallback={
+          <div
+            className="focused-reference-loading renderer-module-loading"
+            role="status"
+            aria-live="polite"
+            aria-label="Carregando motor 3D"
+          >
+            <div className="focused-reference-loading-card">
+              <span className="focused-reference-loader" aria-hidden="true" />
+              <div>
+                <strong>Carregando motor 3D</strong>
+                <small>O shell clínico permanece disponível enquanto o renderer é preparado.</small>
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <HumanAtlasExplorerScene
+          atlas={prepared.atlas}
+          state={sceneState}
+          onSelect={inspectPart}
+          inspectedPartId={inspectedPart?.partId}
+          onProgress={handleProgress}
+          onError={handleError}
+          appearance={appearance}
+        />
+      </Suspense>
 
       {inspectedPart && (
         <aside

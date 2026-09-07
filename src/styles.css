@@ -8746,3 +8746,43 @@ button:not(:disabled):active {
     width: calc(100% - 20px);
   }
 }
+
+
+/* MEDATLAS_RENDERER_CODE_SPLIT_V1 */
+.renderer-module-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  min-height: 100%;
+}
+
+.reference-renderer-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  color: #9fc3d7;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(42, 117, 158, .24), transparent 34%),
+    #071522;
+}
+
+.reference-renderer-loading > div {
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.reference-renderer-loading strong {
+  color: #e8f7ff;
+  font-size: 10px;
+}
+
+.reference-renderer-loading small {
+  color: #7f9bad;
+  font-size: 7px;
+}

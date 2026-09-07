@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import '../reference-atlas.css'
 import {
   conceptDisplayName,
@@ -18,7 +18,10 @@ import type {
   AtlasPart,
   HumanAtlas,
 } from '../atlas/types'
-import { HumanAtlasExplorerScene } from './HumanAtlasExplorerScene'
+const HumanAtlasExplorerScene = lazy(async () => {
+  const module = await import('./HumanAtlasExplorerScene')
+  return { default: module.HumanAtlasExplorerScene }
+})
 
 interface Props {
   initialConceptId?: string
@@ -316,14 +319,30 @@ export function ReferenceAtlasExplorer({
 
       <div className="reference-atlas-stage">
         {atlas && (
-          <HumanAtlasExplorerScene
-            atlas={atlas}
-            state={state}
-            onSelect={choosePart}
-            onProgress={onProgress}
-            onError={onError}
-            appearance="explorer"
-          />
+          <Suspense
+            fallback={
+              <div
+                className="reference-renderer-loading"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="focused-reference-loader" aria-hidden="true" />
+                <div>
+                  <strong>Carregando motor Human Atlas</strong>
+                  <small>Catálogo pronto; preparando renderer 3D sob demanda.</small>
+                </div>
+              </div>
+            }
+          >
+            <HumanAtlasExplorerScene
+              atlas={atlas}
+              state={state}
+              onSelect={choosePart}
+              onProgress={onProgress}
+              onError={onError}
+              appearance="explorer"
+            />
+          </Suspense>
         )}
 
         <div className="reference-atlas-search reference-command-palette">

@@ -137,6 +137,7 @@ Hierarquia permanente:
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
 - [x] workflow publica artifact de visual QA também em runs verdes.
+- [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 
 Referências recentes de validação:
 

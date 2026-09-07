@@ -18,7 +18,8 @@
     "validate:review-gate": "node scripts/validate-review-gate.mjs",
     "validate:report-workflow": "node scripts/validate-report-workflow.mjs",
     "validate:license-attribution": "node scripts/validate-license-attribution.mjs",
-    "validate:reference-atlas": "node scripts/validate-reference-atlas.mjs"
+    "validate:reference-atlas": "node scripts/validate-reference-atlas.mjs",
+    "validate:bundle-budget": "node scripts/validate-bundle-budget.mjs"
   },
   "dependencies": {
     "react": "19.2.6",
