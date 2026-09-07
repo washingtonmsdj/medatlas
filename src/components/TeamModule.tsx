@@ -153,6 +153,77 @@ export function TeamModule() {
         </aside>
       </div>
 
+      <section className="organization-structure-card">
+        <header>
+          <div>
+            <span className="section-kicker">ESTRUTURA DA ORGANIZAÇÃO</span>
+            <strong>Unidades e workspaces clínicos</strong>
+          </div>
+          <small>
+            Fonte: contrato <code>organization_units</code> +{' '}
+            <code>clinical_workspaces</code>
+          </small>
+        </header>
+
+        <div className="organization-structure-tree">
+          {DEMO_ORGANIZATION.units
+            .filter((unit) => unit.active)
+            .map((unit) => {
+              const workspaces = DEMO_ORGANIZATION.workspaces.filter(
+                (workspace) =>
+                  workspace.active && workspace.unitId === unit.id,
+              )
+
+              return (
+                <article key={unit.id}>
+                  <div className="organization-structure-unit">
+                    <span aria-hidden="true">U</span>
+                    <div>
+                      <strong>{unit.name}</strong>
+                      <small>
+                        {[unit.city, unit.region, unit.countryCode]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </small>
+                    </div>
+                    <b>{workspaces.length} workspaces</b>
+                  </div>
+
+                  <div className="organization-structure-workspaces">
+                    {workspaces.map((workspace) => (
+                      <span key={workspace.id}>
+                        <i aria-hidden="true">
+                          {workspace.name.slice(0, 2).toUpperCase()}
+                        </i>
+                        <span>
+                          <strong>{workspace.name}</strong>
+                          <small>
+                            {workspace.specialty ?? 'Workspace clínico'}
+                          </small>
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              )
+            })}
+        </div>
+
+        <footer>
+          <span>
+            Inclusão, edição e remoção são operações de administrador no
+            contrato de produção.
+          </span>
+          <button
+            type="button"
+            disabled
+            title="Disponível somente após autenticação e backend de produção"
+          >
+            Gerenciar estrutura
+          </button>
+        </footer>
+      </section>
+
       <section className="permission-matrix">
         <header>
           <div>
