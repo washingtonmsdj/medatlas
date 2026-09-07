@@ -19,8 +19,21 @@ const explorerSource = await readFile(
   'src/components/ReferenceAtlasExplorer.tsx',
   'utf8',
 )
+const modelSource = await readFile(
+  'src/atlas/model.ts',
+  'utf8',
+)
 const staticRendererImport =
   /import\s*\{[^}]*HumanAtlasExplorerScene[^}]*\}\s*from\s*['"]\.\/HumanAtlasExplorerScene['"]/
+
+if (
+  modelSource.includes("from 'three'") ||
+  modelSource.includes('from "three"')
+) {
+  failures.push(
+    'atlas/model.ts must remain Three-free so focused slicing does not pull the renderer into the initial bundle',
+  )
+}
 
 for (const [surface, source] of [
   ['focused', focusedSceneSource],

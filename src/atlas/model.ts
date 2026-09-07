@@ -4,7 +4,6 @@
  * See third_party/human-atlas/LICENSE and PROVENANCE.md.
  */
 
-import * as THREE from 'three'
 import { assetUrl } from './source'
 import type {
   AtlasChunk,
@@ -72,11 +71,39 @@ export async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
   return request
 }
 
-function partCenter(part: AtlasPart) {
-  return new THREE.Vector3()
-    .fromArray(part.bounds[0])
-    .add(new THREE.Vector3().fromArray(part.bounds[1]))
-    .multiplyScalar(0.5)
+type Vec3 = [number, number, number]
+
+function partCenter(part: AtlasPart): Vec3 {
+  return [
+    (part.bounds[0][0] + part.bounds[1][0]) * 0.5,
+    (part.bounds[0][1] + part.bounds[1][1]) * 0.5,
+    (part.bounds[0][2] + part.bounds[1][2]) * 0.5,
+  ]
+}
+
+function distanceToSquared(a: Vec3, b: Vec3) {
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  const dz = a[2] - b[2]
+  return dx * dx + dy * dy + dz * dz
+}
+
+function boundsCenter(parts: AtlasPart[]): Vec3 {
+  const min: Vec3 = [Infinity, Infinity, Infinity]
+  const max: Vec3 = [-Infinity, -Infinity, -Infinity]
+
+  for (const part of parts) {
+    for (let axis = 0; axis < 3; axis += 1) {
+      min[axis] = Math.min(min[axis], part.bounds[0][axis])
+      max[axis] = Math.max(max[axis], part.bounds[1][axis])
+    }
+  }
+
+  return [
+    (min[0] + max[0]) * 0.5,
+    (min[1] + max[1]) * 0.5,
+    (min[2] + max[2]) * 0.5,
+  ]
 }
 
 export function selectConceptSceneParts(
@@ -94,18 +121,7 @@ export function selectConceptSceneParts(
 
   const selectedChunks = new Set(selectedParts.map((part) => part.chunk))
   const selectedSystems = new Set(selectedParts.map((part) => part.system))
-  const selectedBounds = new THREE.Box3()
-
-  for (const part of selectedParts) {
-    selectedBounds.union(
-      new THREE.Box3(
-        new THREE.Vector3().fromArray(part.bounds[0]),
-        new THREE.Vector3().fromArray(part.bounds[1]),
-      ),
-    )
-  }
-
-  const selectedCenter = selectedBounds.getCenter(new THREE.Vector3())
+  const selectedCenter = boundsCenter(selectedParts)
   const effectiveLimit =
     contextMode === 'region' ? Math.max(contextLimit, 18) : contextLimit
 
@@ -122,7 +138,7 @@ export function selectConceptSceneParts(
           )
           .map((part) => ({
             part,
-            distance: partCenter(part).distanceToSquared(selectedCenter),
+            distance: distanceToSquared(partCenter(part), selectedCenter),
           }))
           .sort((a, b) => a.distance - b.distance)
           .slice(0, effectiveLimit)
