@@ -31,6 +31,9 @@ jobs:
         env:
           VITE_ATLAS_ASSET_BASE: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/public/atlas-assets
 
+      - name: Remove vendored binaries from lightweight preview artifact
+        run: rm -rf dist/atlas-assets
+
       - name: Harden preview CSP for immutable GitHub asset origin
         shell: bash
         run: |
