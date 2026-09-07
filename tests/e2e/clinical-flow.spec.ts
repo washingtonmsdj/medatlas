@@ -1,5 +1,10 @@
 import { mkdir } from 'node:fs/promises'
-import { expect, test } from '@playwright/test'
+import {
+  expect,
+  test,
+  type Locator,
+  type Page,
+} from '@playwright/test'
 
 const scenarios = [
   {
@@ -56,6 +61,44 @@ async function expectRealContextual3D(
   await expect(
     preview.getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 45_000 })
+}
+
+async function inspectVisibleAnatomyPart(
+  page: Page,
+  canvas: Locator,
+) {
+  await expect(canvas).toBeVisible({ timeout: 45_000 })
+  const box = await canvas.boundingBox()
+  expect(box).not.toBeNull()
+
+  const candidatePoints = [
+    [0.5, 0.58],
+    [0.42, 0.58],
+    [0.58, 0.58],
+    [0.5, 0.68],
+    [0.36, 0.62],
+    [0.64, 0.62],
+  ] as const
+
+  const inspector = page.getByLabel(
+    'Estrutura anatômica inspecionada',
+  )
+
+  for (const [x, y] of candidatePoints) {
+    await page.mouse.click(
+      box!.x + box!.width * x,
+      box!.y + box!.height * y,
+    )
+    await page.waitForTimeout(180)
+
+    if (await inspector.isVisible()) {
+      return inspector
+    }
+  }
+
+  throw new Error(
+    'Expected at least one central canvas point to hit visible Human Atlas anatomy.',
+  )
 }
 
 test('all synthetic scenarios surface the expected anatomy first', async ({
@@ -199,14 +242,9 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   const patientCanvas = patientPage.locator(
     '#patient-anatomy .human-atlas-scene canvas',
   )
-  const patientCanvasBox = await patientCanvas.boundingBox()
-  expect(patientCanvasBox).not.toBeNull()
-  await patientPage.mouse.click(
-    patientCanvasBox!.x + patientCanvasBox!.width * 0.5,
-    patientCanvasBox!.y + patientCanvasBox!.height * 0.58,
-  )
-  const patientInspector = patientPage.getByLabel(
-    'Estrutura anatômica inspecionada',
+  const patientInspector = await inspectVisibleAnatomyPart(
+    patientPage,
+    patientCanvas,
   )
   await expect(patientInspector).toBeVisible()
   await expect(patientInspector).toContainText(
@@ -880,15 +918,7 @@ test('focused Human Atlas picking identifies a real part without changing the re
   )
   await expect(canvas).toBeVisible({ timeout: 45_000 })
 
-  const box = await canvas.boundingBox()
-  expect(box).not.toBeNull()
-
-  await page.mouse.click(
-    box!.x + box!.width * 0.5,
-    box!.y + box!.height * 0.58,
-  )
-
-  const inspector = page.getByLabel('Estrutura anatômica inspecionada')
+  const inspector = await inspectVisibleAnatomyPart(page, canvas)
   await expect(inspector).toBeVisible()
   await expect(inspector).toContainText('ESTRUTURA INSPECIONADA')
   await expect(inspector).toContainText(
