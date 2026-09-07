@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   DEMO_ORGANIZATION,
+  DEMO_ORGANIZATION_BRANDING,
   getDemoUnit,
   type DemoClinicalWorkspace,
 } from '../organization/demo-organization'
@@ -54,7 +55,12 @@ export function OrganizationSwitcher({
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
       >
-        <span className="org-switcher-mark">CH</span>
+        <span
+          className="org-switcher-mark"
+          style={{ background: DEMO_ORGANIZATION_BRANDING.primaryColorHex }}
+        >
+          {DEMO_ORGANIZATION_BRANDING.markText}
+        </span>
         <span>
           <strong>{DEMO_ORGANIZATION.name}</strong>
           <small>
