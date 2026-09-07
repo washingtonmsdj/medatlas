@@ -23,6 +23,10 @@ const MODULES = [
     heading: 'Entrada local de laudos sintéticos',
   },
   {
+    button: 'Equipe',
+    heading: 'Equipe e permissões da organização',
+  },
+  {
     button: 'Configurações',
     heading: 'Ambiente sintético e controles locais',
   },
