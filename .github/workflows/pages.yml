@@ -47,6 +47,8 @@ jobs:
           path: dist
 
   deploy:
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -56,3 +58,95 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - name: Verify published shell and assets
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          node <<'NODE'
+          const pageUrl = process.env.PAGE_URL
+
+          if (!pageUrl) {
+            throw new Error('pages_url_missing')
+          }
+
+          async function fetchOk(url, attempts = 6) {
+            let lastError
+
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              try {
+                const response = await fetch(url, {
+                  redirect: 'follow',
+                  cache: 'no-store',
+                })
+
+                if (response.ok) return response
+                lastError = new Error(`${url} -> HTTP ${response.status}`)
+              } catch (error) {
+                lastError = error
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, attempt * 1500))
+            }
+
+            throw lastError
+          }
+
+          const pageResponse = await fetchOk(pageUrl)
+          const html = await pageResponse.text()
+
+          if (!html.includes('<div id="root"></div>')) {
+            throw new Error('published_root_mount_missing')
+          }
+
+          const assetRefs = [
+            ...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]+)"/g),
+          ]
+            .map((match) => match[1])
+            .filter((value) => /\.(?:js|css)(?:\?|$)/.test(value))
+
+          if (assetRefs.length < 2) {
+            throw new Error('published_js_css_assets_missing')
+          }
+
+          for (const ref of assetRefs) {
+            const assetUrl = new URL(ref, pageUrl)
+            const response = await fetchOk(assetUrl)
+            const length = Number(response.headers.get('content-length') ?? '0')
+
+            if (length === 0) {
+              const bytes = new Uint8Array(await response.arrayBuffer())
+              if (bytes.byteLength === 0) {
+                throw new Error(`empty_published_asset:${assetUrl}`)
+              }
+            }
+          }
+
+          const provenanceUrl = new URL('atlas-assets/PROVENANCE.json', pageUrl)
+          const provenanceResponse = await fetchOk(provenanceUrl)
+          const provenance = await provenanceResponse.json()
+
+          if (!provenance || typeof provenance !== 'object') {
+            throw new Error('published_atlas_provenance_invalid')
+          }
+
+          const atlasResponse = await fetchOk(
+            new URL('atlas-assets/atlas.json', pageUrl),
+          )
+          const atlasText = await atlasResponse.text()
+
+          if (atlasText.length < 100000) {
+            throw new Error('published_atlas_index_too_small')
+          }
+
+          console.log(`MedAtlas Pages preview PASS: ${pageUrl}`)
+          console.log(`Validated ${assetRefs.length} JS/CSS asset(s) + atlas provenance/index.`)
+          NODE
