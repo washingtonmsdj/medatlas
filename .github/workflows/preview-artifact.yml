@@ -1,0 +1,122 @@
+name: Preview Static Artifact
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preview-artifact.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build preview without vendoring binaries into artifact
+        run: npm run build
+        env:
+          VITE_ATLAS_ASSET_BASE: https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/public/atlas-assets
+
+      - name: Harden preview CSP for immutable GitHub asset origin
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs')
+
+          const file = 'dist/index.html'
+          let html = fs.readFileSync(file, 'utf8')
+
+          html = html.replace(
+            "connect-src 'self' ws: wss:;",
+            "connect-src 'self' https://raw.githubusercontent.com ws: wss:;",
+          )
+
+          fs.writeFileSync(file, html)
+          NODE
+
+      - name: Add static Vercel preview routing and provenance
+        shell: bash
+        run: |
+          cat > dist/vercel.json <<'JSON'
+          {
+            "rewrites": [
+              {
+                "source": "/p/:path*",
+                "destination": "/index.html"
+              }
+            ],
+            "headers": [
+              {
+                "source": "/(.*)",
+                "headers": [
+                  {
+                    "key": "Content-Security-Policy",
+                    "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://raw.githubusercontent.com; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+                  },
+                  {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                  },
+                  {
+                    "key": "Referrer-Policy",
+                    "value": "no-referrer"
+                  },
+                  {
+                    "key": "Permissions-Policy",
+                    "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                  }
+                ]
+              }
+            ]
+          }
+          JSON
+
+          cat > dist/PREVIEW-PROVENANCE.json <<JSON
+          {
+            "schema": "medatlas.preview-artifact/1",
+            "repository": "${GITHUB_REPOSITORY}",
+            "commit": "${GITHUB_SHA}",
+            "anatomy_asset_origin": "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/public/atlas-assets",
+            "clinical_data": "synthetic-only"
+          }
+          JSON
+
+      - name: Verify preview artifact is small and contains no anatomy binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if find dist -type f \( -name '*.bin' -o -name '*.bin.gz' \) | grep -q .; then
+            echo "Preview artifact unexpectedly contains anatomy binaries" >&2
+            exit 1
+          fi
+
+          total_bytes=$(du -sb dist | cut -f1)
+          echo "Preview artifact bytes: ${total_bytes}"
+
+          if [ "${total_bytes}" -gt 5000000 ]; then
+            echo "Preview artifact exceeds 5 MB budget" >&2
+            exit 1
+          fi
+
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: medatlas-preview-static
+          path: dist/
+          if-no-files-found: error
+          retention-days: 3
