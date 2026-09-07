@@ -7,7 +7,7 @@ create table if not exists public.organization_branding (
     check (char_length(brand_name) between 2 and 120),
   mark_text text not null
     check (char_length(mark_text) between 1 and 4),
-  primary_color_hex text not null default '#1E7AD7'
+  primary_color_hex text not null default '#1769AA'
     check (primary_color_hex ~ '^#[0-9A-Fa-f]{6}$'),
   patient_footer_text text
     check (
