@@ -5,6 +5,7 @@ import {
   demoRepositoryDescriptor,
   getStoredDemoShareCount,
 } from '../data/demo-clinical-repository'
+import { DEMO_ORGANIZATION_BRANDING } from '../organization/demo-organization'
 
 interface Props {
   onNewReport: () => void
@@ -67,6 +68,45 @@ export function DemoSettings({ onNewReport }: Props) {
       </section>
 
       <div className="settings-grid settings-grid-v2">
+        <article className="settings-branding-card">
+          <div className="settings-card-heading">
+            <span
+              className="settings-icon branding"
+              aria-hidden="true"
+              style={{ background: DEMO_ORGANIZATION_BRANDING.primaryColorHex }}
+            >
+              {DEMO_ORGANIZATION_BRANDING.markText}
+            </span>
+            <div>
+              <span className="label">BRANDING DA CLÍNICA</span>
+              <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
+            </div>
+          </div>
+          <p>
+            Identidade demonstrativa centralizada no mesmo contrato que será
+            administrado por organização em produção.
+          </p>
+          <div className="settings-branding-preview">
+            <span>
+              <i
+                aria-hidden="true"
+                style={{
+                  background: DEMO_ORGANIZATION_BRANDING.primaryColorHex,
+                }}
+              />
+              Cor primária
+            </span>
+            <code>{DEMO_ORGANIZATION_BRANDING.primaryColorHex}</code>
+          </div>
+          <button
+            type="button"
+            disabled
+            title="Disponível somente após autenticação e backend de produção"
+          >
+            Editar identidade visual
+          </button>
+        </article>
+
         <article>
           <div className="settings-card-heading">
             <span className="settings-icon safe" aria-hidden="true">S</span>
