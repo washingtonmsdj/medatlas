@@ -103,6 +103,22 @@ const invariants = [
     'branding color field',
     "primary_color_hex text not null default '#1769AA'",
   ],
+  [
+    'usage summary RPC',
+    'create or replace function public.medatlas_get_usage_summary',
+  ],
+  [
+    'report view stats RPC',
+    'create or replace function public.medatlas_get_report_view_stats',
+  ],
+  [
+    'analytics membership gate',
+    'if not public.medatlas_is_org_member(p_organization_id) then',
+  ],
+  [
+    'analytics from audit views',
+    "event.event_type = 'report.share_viewed'",
+  ],
 ]
 
 for (const [label, marker] of invariants) {
