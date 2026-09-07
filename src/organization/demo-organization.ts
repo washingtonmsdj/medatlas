@@ -140,7 +140,7 @@ export const DEMO_ORGANIZATION_BRANDING: DemoOrganizationBranding = {
   organizationId: DEMO_ORGANIZATION_ID,
   brandName: 'Clínica Horizonte',
   markText: 'CH',
-  primaryColorHex: '#1E7AD7',
+  primaryColorHex: '#1769AA',
   patientFooterText: 'Clínica Horizonte · demonstração',
 }
 
