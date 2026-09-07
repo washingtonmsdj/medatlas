@@ -90,6 +90,18 @@ async function inspectVisibleAnatomyPart(
   )
 
   for (const [x, y] of candidatePoints) {
+    await page.mouse.move(
+      box!.x + box!.width * x,
+      box!.y + box!.height * y,
+    )
+    await page.waitForTimeout(90)
+
+    const cursor = await canvas.evaluate(
+      (element) => getComputedStyle(element).cursor,
+    )
+
+    if (cursor !== 'pointer') continue
+
     await canvas.click({
       position: {
         x: box!.width * x,

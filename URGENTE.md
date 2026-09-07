@@ -162,6 +162,7 @@ Referências recentes de validação:
 - [x] picking por peça.
 - [x] inspeção temporária de peça no modo focado, sem alterar a anatomia confirmada do relatório.
 - [x] destaque visual efêmero da peça inspecionada no mesmo shader/engine, com contraste âmbar pós-iluminação para não se confundir com o foco clínico ciano.
+- [x] hover de descoberta nos modos clinical/patient: brilho leve + cursor pointer antes do clique, sem ativar raycast contínuo no Explorer completo;
 - [x] linguagem de inspeção adaptada: workflow clínico para profissional; orientação de referência para paciente.
 - [x] sistemas anatômicos.
 - [x] aliases em português.
@@ -202,6 +203,7 @@ Regras permanentes:
 - [x] status mostra quando a geometria real terminou de carregar;
 - [x] seleção clínica confirmada e inspeção visual temporária são estados diferentes; clicar numa peça não muda o relatório;
 - [x] a peça inspecionada recebe destaque visual distinto e o inspector pode ser fechado sem alterar o foco clínico;
+- [x] hover só antecipa interatividade; não muda seleção, inspeção persistida nem estado do relatório;
 - [x] toda prévia contextual explicita que o 3D é interativo e orienta arrastar/clicar, sem duplicar lógica por módulo;
 - [x] troca de superfície desmonta o renderer anterior;
 - [x] cleanup canônico cancela animation frame, listeners/observer e descarta controls, geometrias, materiais, textures e renderer WebGL;

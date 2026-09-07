@@ -183,6 +183,10 @@ export function HumanAtlasExplorerScene({
     const inspectionTexture = new THREE.DataTexture(inspectedData, width, 1)
     inspectionTexture.needsUpdate = true
 
+    const hoveredData = new Uint8Array(width * 4)
+    const hoverTexture = new THREE.DataTexture(hoveredData, width, 1)
+    hoverTexture.needsUpdate = true
+
     const materials: THREE.Material[] = []
     const geometries: THREE.BufferGeometry[] = []
     const pickers: Array<THREE.Mesh | undefined> = []
@@ -227,19 +231,20 @@ export function HumanAtlasExplorerScene({
         shader.uniforms.partState = { value: partStateTexture }
         shader.uniforms.selectionState = { value: selectionTexture }
         shader.uniforms.inspectionState = { value: inspectionTexture }
+        shader.uniforms.hoverState = { value: hoverTexture }
         shader.uniforms.stateWidth = { value: width }
 
         shader.vertexShader =
-          'attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform sampler2D inspectionState; uniform float stateWidth; varying float partVisible; varying float partSelected; varying float partInspected;\n' +
+          'attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform sampler2D inspectionState; uniform sampler2D hoverState; uniform float stateWidth; varying float partVisible; varying float partSelected; varying float partInspected; varying float partHovered;\n' +
           shader.vertexShader
 
         shader.vertexShader = shader.vertexShader.replace(
           '#include <begin_vertex>',
-          '#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partVisible = state.w; partSelected = texture2D(selectionState, stateUv).r; partInspected = texture2D(inspectionState, stateUv).r;',
+          '#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partVisible = state.w; partSelected = texture2D(selectionState, stateUv).r; partInspected = texture2D(inspectionState, stateUv).r; partHovered = texture2D(hoverState, stateUv).r;',
         )
 
         shader.fragmentShader =
-          'varying float partVisible; varying float partSelected; varying float partInspected;\n' +
+          'varying float partVisible; varying float partSelected; varying float partInspected; varying float partHovered;\n' +
           shader.fragmentShader
 
         shader.fragmentShader = shader.fragmentShader.replace(
@@ -254,7 +259,7 @@ export function HumanAtlasExplorerScene({
 
         shader.fragmentShader = shader.fragmentShader.replace(
           '#include <opaque_fragment>',
-          'outgoingLight = mix(outgoingLight, vec3(1.0, 0.62, 0.05), partInspected * 0.86);\n#include <opaque_fragment>',
+          'float hoverStrength = partHovered * (1.0 - partInspected); outgoingLight = mix(outgoingLight, vec3(0.68, 0.92, 1.0), hoverStrength * 0.34); outgoingLight = mix(outgoingLight, vec3(1.0, 0.62, 0.05), partInspected * 0.86);\n#include <opaque_fragment>',
         )
       }
 
@@ -490,37 +495,15 @@ export function HumanAtlasExplorerScene({
     const tap = new PointerTap()
     const worldBox = new THREE.Box3()
     const hitPoint = new THREE.Vector3()
+    let pendingHover: { x: number; y: number } | null = null
+    let hoverDirty = false
+    let lastHoveredIndex = -1
 
-    const pointerDown = (event: PointerEvent) => {
-      tap.down(
-        event.pointerId,
-        event.clientX,
-        event.clientY,
-        event.pointerType === 'touch' ? 12 : 5,
-      )
-    }
-
-    const pointerMove = (event: PointerEvent) => {
-      tap.move(event.pointerId, event.clientX, event.clientY)
-    }
-
-    const pointerCancel = (event: PointerEvent) => {
-      tap.cancel(event.pointerId)
-    }
-
-    const pointerUp = (event: PointerEvent) => {
-      const validTap = tap.up(
-        event.pointerId,
-        event.clientX,
-        event.clientY,
-      )
-
-      if (!validTap || !ready) return
-
+    const hitTest = (clientX: number, clientY: number) => {
       const rect = renderer.domElement.getBoundingClientRect()
       pointer.set(
-        ((event.clientX - rect.left) / rect.width) * 2 - 1,
-        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1,
       )
       raycaster.setFromCamera(pointer, camera)
 
@@ -543,6 +526,65 @@ export function HumanAtlasExplorerScene({
         }
       })
 
+      return found
+    }
+
+    const clearHover = () => {
+      pendingHover = null
+      hoverDirty = false
+
+      if (lastHoveredIndex >= 0) {
+        hoveredData[lastHoveredIndex * 4] = 0
+        hoverTexture.needsUpdate = true
+        lastHoveredIndex = -1
+        dirty = true
+      }
+
+      renderer.domElement.style.cursor = 'grab'
+    }
+
+    const pointerDown = (event: PointerEvent) => {
+      tap.down(
+        event.pointerId,
+        event.clientX,
+        event.clientY,
+        event.pointerType === 'touch' ? 12 : 5,
+      )
+    }
+
+    const pointerMove = (event: PointerEvent) => {
+      tap.move(event.pointerId, event.clientX, event.clientY)
+
+      if (
+        appearance !== 'explorer' &&
+        event.pointerType !== 'touch' &&
+        ready
+      ) {
+        pendingHover = { x: event.clientX, y: event.clientY }
+        hoverDirty = true
+      }
+    }
+
+    const pointerCancel = (event: PointerEvent) => {
+      tap.cancel(event.pointerId)
+      clearHover()
+    }
+
+    const pointerLeave = () => {
+      clearHover()
+    }
+
+    const pointerUp = (event: PointerEvent) => {
+      const validTap = tap.up(
+        event.pointerId,
+        event.clientX,
+        event.clientY,
+      )
+
+      if (!validTap || !ready) return
+
+      const found = hitTest(event.clientX, event.clientY)
+
       if (found >= 0) select.current(atlas.parts[found].id)
     }
 
@@ -550,6 +592,7 @@ export function HumanAtlasExplorerScene({
     renderer.domElement.addEventListener('pointermove', pointerMove)
     renderer.domElement.addEventListener('pointerup', pointerUp)
     renderer.domElement.addEventListener('pointercancel', pointerCancel)
+    renderer.domElement.addEventListener('pointerleave', pointerLeave)
 
     const clock = new THREE.Clock()
 
@@ -567,6 +610,28 @@ export function HumanAtlasExplorerScene({
 
       const moving = Math.abs(amount - current.explode) > 0.0001
       const currentInspectedPartId = inspected.current
+
+      if (hoverDirty && pendingHover && appearance !== 'explorer') {
+        const hoveredIndex = hitTest(pendingHover.x, pendingHover.y)
+
+        if (hoveredIndex !== lastHoveredIndex) {
+          if (lastHoveredIndex >= 0) {
+            hoveredData[lastHoveredIndex * 4] = 0
+          }
+
+          if (hoveredIndex >= 0) {
+            hoveredData[hoveredIndex * 4] = 255
+          }
+
+          hoverTexture.needsUpdate = true
+          lastHoveredIndex = hoveredIndex
+          renderer.domElement.style.cursor =
+            hoveredIndex >= 0 ? 'pointer' : 'grab'
+          dirty = true
+        }
+
+        hoverDirty = false
+      }
 
       if (currentInspectedPartId !== lastInspectedPartId) {
         atlas.parts.forEach((part, index) => {
@@ -812,6 +877,10 @@ export function HumanAtlasExplorerScene({
         pointerCancel,
       )
       renderer.domElement.removeEventListener(
+        'pointerleave',
+        pointerLeave,
+      )
+      renderer.domElement.removeEventListener(
         'webglcontextlost',
         contextLost,
       )
@@ -822,6 +891,7 @@ export function HumanAtlasExplorerScene({
       partStateTexture.dispose()
       selectionTexture.dispose()
       inspectionTexture.dispose()
+      hoverTexture.dispose()
 
       scene.traverse((object) => {
         if (
