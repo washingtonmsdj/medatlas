@@ -273,7 +273,7 @@ Esta é a prioridade imediata. Não iniciar features grandes de backend antes de
 - [ ] Fazer captura visual desktop 1440/1600px.
 - [ ] Fazer captura mobile.
 - [x] Corrigir regressões de acessibilidade introduzidas pelo redesign: ARIA do progresso + contraste do dashboard + contraste do Clinical Report Studio.
-- [ ] Continuar visual QA de overflow, clipping e densidade em 1440/1600px.
+- [x] Gate responsivo automatizado sem overflow horizontal em 1600/1440/390px (`0d4ef6c5dc7d75f020bd23ad73722f6b55fd1e0a`).
 - [x] Confirmar que o Human Atlas e o fluxo clínico continuam funcionais após o redesign via Browser E2E.
 - [x] Confirmar que review gate, publicação e handoff ao paciente continuam funcionais via Browser E2E.
 
@@ -287,9 +287,9 @@ Aplicar o mesmo design system premium, sem criar telas fake:
 - [x] Atlas 3D — MedAtlas Atlas Lab/Workbench aplicado e validado.
 - [x] Configurações — estado real do demo, governança e controles locais.
 - [x] experiência do paciente — jornada guiada clara/premium com 3D.
-- [ ] empty states.
-- [ ] loading states.
-- [ ] errors/fail-closed states.
+- [x] empty states — relatório novo + anatomia sem seleção com estado explícito.
+- [x] loading states — link do paciente e anatomia focada com status acessível e reduced-motion.
+- [x] errors/fail-closed states — link inválido/expirado, Atlas e publicação preservam bloqueio seguro.
 
 Regra: módulo que ainda não tiver backend real pode operar em modo sintético, mas precisa ser funcional e declarar isso claramente.
 
@@ -307,7 +307,7 @@ Regra: módulo que ainda não tiver backend real pode operar em modo sintético,
 - [x] Destacar claramente "rascunho assistido" versus "conteúdo aprovado".
 - [x] Melhorar CTA final de aprovação/compartilhamento.
 - [x] Criar preview rápido da experiência do paciente antes da publicação.
-- [ ] Manter todas as regras fail-closed.
+- [x] Manter todas as regras fail-closed — review, anatomia, share, provider e estados inválidos continuam cobertos por contratos/E2E.
 
 ### P0.4 Portal do paciente AAA
 
