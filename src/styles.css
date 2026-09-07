@@ -6406,3 +6406,290 @@ button:not(:disabled):active {
 .provenance-panel p {
   color: #596f82;
 }
+/* MEDATLAS_TRANSVERSAL_STATES_V2 */
+.patient-route-state {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: #17324f;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(35, 137, 222, .10), transparent 32%),
+    linear-gradient(180deg, #f7fbfe 0%, #edf4f8 100%);
+}
+
+.patient-route-state-card {
+  width: min(500px, 100%);
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 28px;
+  border: 1px solid #d7e4ee;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 28px 72px rgba(38, 68, 99, .13);
+}
+
+.patient-route-state-card .brand {
+  margin-bottom: 6px;
+  color: #102542;
+}
+
+.patient-route-state-card .brand-mark {
+  color: white;
+}
+
+.patient-route-state-card .section-kicker {
+  color: #2477b3;
+}
+
+.patient-route-state-card h1 {
+  max-width: 420px;
+  margin: 1px 0 0;
+  color: #14314d;
+  font-size: clamp(27px, 5vw, 38px);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.patient-route-state-card > p {
+  max-width: 430px;
+  margin: 0;
+  color: #5b7288;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.patient-route-state-card > small {
+  color: #657b8f;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.patient-route-state-visual {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  margin: 8px 0;
+  border: 1px solid #c8deed;
+  border-radius: 21px;
+  background:
+    radial-gradient(circle, rgba(54, 156, 226, .16), transparent 60%),
+    #f2f9fd;
+  overflow: hidden;
+}
+
+.patient-route-state-visual > i {
+  position: absolute;
+  width: 38px;
+  height: 1px;
+  background: rgba(65, 137, 185, .12);
+}
+
+.patient-route-state-visual > i:nth-of-type(1) {
+  transform: rotate(30deg);
+}
+
+.patient-route-state-visual > i:nth-of-type(2) {
+  transform: rotate(90deg);
+}
+
+.patient-route-state-visual > i:nth-of-type(3) {
+  transform: rotate(150deg);
+}
+
+.patient-route-spinner {
+  position: relative;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #d6e9f4;
+  border-top-color: #2388c5;
+  border-radius: 50%;
+  animation: patient-route-spin .9s linear infinite;
+}
+
+.patient-route-state-visual.error {
+  color: #a13d4b;
+  border-color: #edd0d5;
+  background:
+    radial-gradient(circle, rgba(202, 70, 87, .10), transparent 60%),
+    #fff7f8;
+}
+
+.patient-route-state-visual.error > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e6b8c0;
+  border-radius: 50%;
+  color: #b24857;
+  background: white;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.patient-route-state-steps {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.patient-route-state-steps span {
+  min-width: 0;
+  padding: 7px;
+  border: 1px solid #e0e8ee;
+  border-radius: 8px;
+  color: #778b9d;
+  background: #f8fafc;
+  font-size: 7px;
+  text-align: center;
+}
+
+.patient-route-state-steps span.active {
+  color: #1d6697;
+  border-color: #c5ddeb;
+  background: #eef8fd;
+}
+
+.patient-route-safety-note {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid #cce5dc;
+  border-radius: 11px;
+  background: #f1faf7;
+}
+
+.patient-route-safety-note > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: white;
+  background: #178a70;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.patient-route-safety-note > div {
+  display: grid;
+  gap: 2px;
+}
+
+.patient-route-safety-note strong {
+  color: #245d50;
+  font-size: 9px;
+}
+
+.patient-route-safety-note small {
+  color: #536f67;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.patient-route-state-card > button.primary {
+  min-height: 40px;
+  margin-top: 4px;
+  padding-inline: 14px;
+}
+
+.focused-reference-loading {
+  position: absolute;
+  inset: 0;
+  min-height: 100% !important;
+  display: grid;
+  place-items: center;
+  z-index: 4;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(32, 127, 208, .15), transparent 30%),
+    #071522;
+}
+
+.focused-reference-loading-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border: 1px solid rgba(100, 157, 207, .20);
+  border-radius: 12px;
+  color: #d9ecfb;
+  background: rgba(8, 26, 42, .88);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(14px);
+}
+
+.focused-reference-loader {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  border: 2px solid #294b67;
+  border-top-color: #54c3f1;
+  border-radius: 50%;
+  animation: patient-route-spin .9s linear infinite;
+}
+
+.focused-reference-loading-card > div {
+  display: grid;
+  gap: 2px;
+}
+
+.focused-reference-loading-card strong {
+  color: #edf8ff;
+  font-size: 9px;
+}
+
+.focused-reference-loading-card small {
+  color: #93adc2;
+  font-size: 7px;
+}
+
+.finding-card-studio.anatomy-empty {
+  border-style: dashed;
+  border-color: #355069;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(84, 131, 169, .06), transparent 36%),
+    linear-gradient(180deg, #102236, #0d1c2d);
+}
+
+.finding-card-studio.anatomy-empty .finding-state-icon {
+  color: #9fb4c6;
+  border-style: dashed;
+}
+
+@keyframes patient-route-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 620px) {
+  .patient-route-state {
+    padding: 14px;
+  }
+
+  .patient-route-state-card {
+    padding: 20px;
+    border-radius: 17px;
+  }
+
+  .patient-route-state-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-route-spinner,
+  .focused-reference-loader {
+    animation: none;
+  }
+}
