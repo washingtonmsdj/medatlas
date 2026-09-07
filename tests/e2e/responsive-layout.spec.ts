@@ -160,9 +160,13 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
     page.getByRole('heading', { name: 'Atlas humano 3D' }),
   ).toBeVisible()
 
-  await expect(
-    page.getByText(/Preparando atlas|Atlas pronto/, { exact: true }),
-  ).toBeVisible({ timeout: 20_000 })
+  const atlasStatus = page.locator(
+    '.reference-workbench-status > span',
+  )
+  await expect(atlasStatus).toBeVisible({ timeout: 20_000 })
+  await expect(atlasStatus).toContainText(
+    /Preparando atlas|Atlas pronto/,
+  )
 
   await expect(
     page.getByText('Atlas pronto', { exact: true }),
