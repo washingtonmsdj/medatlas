@@ -233,6 +233,31 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     fullPage: true,
   })
 
+  await patientPage.setViewportSize({ width: 390, height: 844 })
+  await expect(
+    patientPage.locator('#patient-anatomy .human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+
+  const patientMobileControls = patientPage.locator(
+    '.patient-atlas-controls',
+  )
+  const patientMobileControlsBox = await patientMobileControls.boundingBox()
+  expect(patientMobileControlsBox).not.toBeNull()
+  expect(patientMobileControlsBox!.width).toBeGreaterThan(300)
+  expect(patientMobileControlsBox!.height).toBeLessThan(60)
+
+  const patientMobileOverflow = await patientPage.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth + 1,
+  )
+  expect(patientMobileOverflow).toBe(false)
+
+  await patientPage.screenshot({
+    path: 'test-results/visual-qa/patient-portal-mobile-real-3d.png',
+    fullPage: true,
+  })
+
   await patientPage.close()
 
   await page.getByRole('button', { name: 'Analytics' }).click()

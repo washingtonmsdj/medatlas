@@ -133,6 +133,7 @@ Hierarquia permanente:
 - [x] axe/WCAG serious/critical gate.
 - [x] gate automático de overflow em **1600 / 1440 / 390 px**.
 - [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
+- [x] portal do paciente também possui gate mobile 390 px para canvas, controles horizontais e ausência de overflow;
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
 - [x] workflow publica artifact de visual QA também em runs verdes.
