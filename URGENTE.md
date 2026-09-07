@@ -66,10 +66,10 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 ## P3 — Product validation
 
-- [ ] Desktop/mobile E2E flow.
+- [x] Desktop/mobile E2E flow.
 - [x] Browser E2E proved the complete desktop clinician → patient flow.
 - [x] Fix mobile navigation labels/accessibility discovered by Browser E2E.
-- [ ] Validate all synthetic scenarios end-to-end in a browser.
+- [x] Validate all synthetic scenarios end-to-end in a browser.
 - [x] Add patient discussion-question section without diagnostic/treatment claims.
 - [x] Add browser print / save-as-PDF patient report mode.
 - [ ] Accessibility pass.

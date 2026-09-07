@@ -1,0 +1,141 @@
+name: Vendor pinned Human Atlas assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vendor-atlas-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      HUMAN_ATLAS_SHA: 1c38bf35c254a891200d3cedecfd57abebe83d8d
+      ASSET_DIR: public/atlas-assets
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download immutable compressed anatomy assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://raw.githubusercontent.com/ashemag/human-atlas/${HUMAN_ATLAS_SHA}/public/models"
+          mkdir -p "${ASSET_DIR}"
+
+          curl --fail --location --retry 4 --retry-delay 2             "${base}/atlas.json"             --output "${ASSET_DIR}/atlas.json"
+
+          for index in $(seq 0 14); do
+            curl --fail --location --retry 4 --retry-delay 2               "${base}/body-${index}.bin.gz"               --output "${ASSET_DIR}/body-${index}.bin.gz"
+          done
+
+      - name: Validate atlas closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs')
+          const path = require('node:path')
+
+          const root = 'public/atlas-assets'
+          const atlas = JSON.parse(
+            fs.readFileSync(path.join(root, 'atlas.json'), 'utf8'),
+          )
+
+          if (!Array.isArray(atlas.chunks) || atlas.chunks.length !== 15) {
+            throw new Error(
+              `Expected exactly 15 Human Atlas chunks, got ${atlas.chunks?.length}`,
+            )
+          }
+
+          for (const chunk of atlas.chunks) {
+            if (!chunk.gzip) {
+              throw new Error('Pinned atlas chunk is missing gzip provenance')
+            }
+
+            const filename = path.basename(chunk.gzip)
+            const target = path.join(root, filename)
+
+            if (!fs.existsSync(target)) {
+              throw new Error(`Missing vendored asset: ${filename}`)
+            }
+
+            if (fs.statSync(target).size < 1024) {
+              throw new Error(`Vendored asset is unexpectedly small: ${filename}`)
+            }
+          }
+          NODE
+
+          total_bytes=$(du -sb "${ASSET_DIR}" | cut -f1)
+          if [ "${total_bytes}" -lt 30000000 ]; then
+            echo "Vendored anatomy payload is unexpectedly small: ${total_bytes}" >&2
+            exit 1
+          fi
+
+      - name: Generate immutable asset provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd "${ASSET_DIR}"
+            sha256sum atlas.json body-*.bin.gz | sort -k2 > SHA256SUMS
+          )
+
+          node <<'NODE'
+          const fs = require('node:fs')
+
+          const root = 'public/atlas-assets'
+          const assets = fs
+            .readFileSync(`${root}/SHA256SUMS`, 'utf8')
+            .trim()
+            .split('\n')
+            .map((line) => {
+              const [sha256, filename] = line.trim().split(/\s+/)
+              return { filename, sha256 }
+            })
+
+          fs.writeFileSync(
+            `${root}/PROVENANCE.json`,
+            JSON.stringify(
+              {
+                schema: 'medatlas.atlas-assets/1',
+                upstream_repository: 'ashemag/human-atlas',
+                upstream_commit:
+                  '1c38bf35c254a891200d3cedecfd57abebe83d8d',
+                upstream_path: 'public/models',
+                licensing: {
+                  code: 'MIT',
+                  anatomy_data: 'CC BY 4.0',
+                },
+                assets,
+              },
+              null,
+              2,
+            ) + '\n',
+          )
+          NODE
+
+      - name: Commit vendored assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${ASSET_DIR}"
+
+          if git diff --cached --quiet; then
+            echo "Pinned anatomy assets are already vendored."
+            exit 0
+          fi
+
+          git commit -m "chore: vendor pinned Human Atlas compressed assets"
+          git push origin HEAD:main
