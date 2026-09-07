@@ -3176,3 +3176,18 @@ button:not(:disabled):active {
     transition: none;
   }
 }
+
+
+/* AAA dashboard specificity hardening */
+.overview-metrics.premium-metrics article strong {
+  margin-top: 0;
+  color: #102542;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.overview-metrics.premium-metrics article small {
+  color: #5b6f87;
+  font-size: 8px;
+  line-height: 1.35;
+}
