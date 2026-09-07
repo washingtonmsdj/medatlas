@@ -2,11 +2,11 @@
 
 Checkpoint: **2026-09-07**
 Canonical branch: `main`
-Verified product HEAD: `119de599601b29b46c9dca7376598dd36c4147b2`
+Verified product HEAD: `f275696e828df5ad1ef2c9b2ddf51ca4720eebb4`
 
 ## Current verdict
 
-The browser-only MedAtlas MVP is **ready for an external synthetic preview**.
+The browser-only MedAtlas MVP is **ready for an external synthetic preview**. The canonical 3D engine now derives directly from Human Atlas in both full explorer and focused clinical modes.
 
 It is **not ready for real patient data** and is **not yet a production clinical
 system**. Supabase, authentication, tenant isolation proofs, private clinical
@@ -94,9 +94,9 @@ total: 100
 remaining: 0
 ```
 
-The API response reported quota reset at approximately:
+The latest API response reports quota reset at approximately:
 
-**2026-09-08 03:26 (America/Bahia)**.
+**2026-09-08 03:58:37 (America/Bahia)**.
 
 This is an account quota blocker, not a build/application failure.
 
@@ -149,4 +149,4 @@ Unless source changes invalidate them, do not redo:
 - report state-machine extraction;
 - Vercel “how to avoid uploading the 34 MB anatomy binaries” investigation.
 
-The current preview blocker is quota only.
+The current preview blocker is quota only. The full Human Atlas explorer and the focused clinical/patient renderer are already validated on the same canonical engine.

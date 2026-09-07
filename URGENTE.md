@@ -41,7 +41,7 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Generate SHA-256 manifest + upstream provenance for all vendored anatomy assets.
 - [x] Add CI integrity verification for the vendored anatomy closure.
 - [x] Build and verify a lightweight external-preview artifact with immutable commit provenance and no anatomy binaries.
-- [ ] Deploy the verified preview artifact after Vercel API quota reset (checkpoint blocker: 100/100 free API deployments used; reset reported ~2026-09-08 03:26 Bahia).
+- [ ] Deploy the current Human Atlas reference-engine preview after Vercel API quota reset (checkpoint blocker: 100/100 free API deployments used; latest reset reported 2026-09-08 03:58:37 Bahia).
 - [ ] Validate browser interaction against a deployed preview.
 
 ## P1 — SaaS core
