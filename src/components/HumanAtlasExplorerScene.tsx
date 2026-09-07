@@ -164,6 +164,32 @@ export function HumanAtlasExplorerScene({
     platform.position.y = -0.016
     scene.add(platform)
 
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.63, 0.632, 128),
+      new THREE.MeshBasicMaterial({
+        color: isLightSurface ? 0x8c969f : 0x4c7ca0,
+        transparent: true,
+        opacity: isLightSurface ? 0.4 : 0.5,
+        side: THREE.DoubleSide,
+      }),
+    )
+    ring.rotation.x = -Math.PI / 2
+    ring.position.y = 0.001
+    scene.add(ring)
+
+    const innerRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.55, 0.551, 128),
+      new THREE.MeshBasicMaterial({
+        color: isLightSurface ? 0xa4aeb8 : 0x5f9bc6,
+        transparent: true,
+        opacity: isLightSurface ? 0.16 : 0.18,
+        side: THREE.DoubleSide,
+      }),
+    )
+    innerRing.rotation.x = -Math.PI / 2
+    innerRing.position.y = 0.001
+    scene.add(innerRing)
+
     const width = THREE.MathUtils.ceilPowerOfTwo(atlas.parts.length)
     const partStateData = new Float32Array(width * 4)
     const partStateTexture = new THREE.DataTexture(
@@ -210,6 +236,78 @@ export function HumanAtlasExplorerScene({
     const atlasCenter = atlasBounds.getCenter(new THREE.Vector3())
     const atlasSize = atlasBounds.getSize(new THREE.Vector3())
     const offsets: THREE.Vector3[] = []
+
+    const markerPositions = new Float32Array(atlas.parts.length * 3)
+    const markerGeometry = new THREE.BufferGeometry()
+    markerGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(markerPositions, 3),
+    )
+    const markerMaterial = new THREE.PointsMaterial({
+      color: isLightSurface ? 0x64748b : 0x8ccff5,
+      size: 5,
+      sizeAttenuation: false,
+      transparent: true,
+      opacity: 0.72,
+      depthTest: false,
+    })
+    markerMaterial.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <clipping_planes_fragment>',
+        '#include <clipping_planes_fragment>\nif (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;',
+      )
+    }
+    const markers = new THREE.Points(markerGeometry, markerMaterial)
+    markers.frustumCulled = false
+    markers.renderOrder = 10
+    markers.visible = false
+    scene.add(markers)
+
+    const hover = document.createElement('div')
+    hover.className = 'reference-part-hover'
+    hover.setAttribute('role', 'tooltip')
+    hover.hidden = true
+    element.appendChild(hover)
+
+    type ProjectedTarget = {
+      index: number
+      x: number
+      y: number
+      left: number
+      right: number
+      top: number
+      bottom: number
+    }
+
+    let targets: ProjectedTarget[] = []
+    const projected = new THREE.Vector3()
+
+    const findProjectedTarget = (
+      x: number,
+      y: number,
+      radius: number,
+    ) => {
+      let best = -1
+      let score = Infinity
+
+      for (const target of targets) {
+        const dx = Math.max(target.left - x, 0, x - target.right)
+        const dy = Math.max(target.top - y, 0, y - target.bottom)
+        const distance = Math.hypot(dx, dy)
+
+        if (distance > radius) continue
+
+        const candidate =
+          distance + Math.hypot(target.x - x, target.y - y) * 0.025
+
+        if (candidate < score) {
+          score = candidate
+          best = target.index
+        }
+      }
+
+      return best
+    }
 
     const materialFor = (systemId: string) => {
       const system = ATLAS_SYSTEMS.find(
@@ -400,6 +498,27 @@ export function HumanAtlasExplorerScene({
 
     const fit = (view: AtlasExplorerSceneState['view'], extent = 0) => {
       const mobile = element.clientWidth < 768
+
+      if (appearance === 'explorer' && element.clientWidth > 900) {
+        const width = element.clientWidth
+        const height = element.clientHeight
+        const left = 270
+        const right = Math.max(left + 180, width - 340)
+        const top = 100
+        const bottom = Math.max(top + 180, height - 110)
+
+        camera.setViewOffset(
+          width,
+          height,
+          width / 2 - (left + right) / 2,
+          height / 2 - (top + bottom) / 2,
+          width,
+          height,
+        )
+      } else {
+        camera.clearViewOffset()
+      }
+
       const direction =
         view === 'front'
           ? new THREE.Vector3(0, 0.02, 1)
@@ -529,21 +648,32 @@ export function HumanAtlasExplorerScene({
       return found
     }
 
-    const clearHover = () => {
-      pendingHover = null
-      hoverDirty = false
+    const setHoveredIndex = (index: number) => {
+      if (index === lastHoveredIndex) return
 
       if (lastHoveredIndex >= 0) {
         hoveredData[lastHoveredIndex * 4] = 0
-        hoverTexture.needsUpdate = true
-        lastHoveredIndex = -1
-        dirty = true
       }
 
-      renderer.domElement.style.cursor = 'grab'
+      if (index >= 0) {
+        hoveredData[index * 4] = 255
+      }
+
+      hoverTexture.needsUpdate = true
+      lastHoveredIndex = index
+      renderer.domElement.style.cursor = index >= 0 ? 'pointer' : 'grab'
+      dirty = true
+    }
+
+    const clearHover = () => {
+      pendingHover = null
+      hoverDirty = false
+      hover.hidden = true
+      setHoveredIndex(-1)
     }
 
     const pointerDown = (event: PointerEvent) => {
+      clearHover()
       tap.down(
         event.pointerId,
         event.clientX,
@@ -555,14 +685,38 @@ export function HumanAtlasExplorerScene({
     const pointerMove = (event: PointerEvent) => {
       tap.move(event.pointerId, event.clientX, event.clientY)
 
-      if (
-        appearance !== 'explorer' &&
-        event.pointerType !== 'touch' &&
-        ready
-      ) {
-        pendingHover = { x: event.clientX, y: event.clientY }
-        hoverDirty = true
+      if (event.pointerType === 'touch' || !ready) {
+        clearHover()
+        return
       }
+
+      if (appearance === 'explorer') {
+        if (event.buttons || amount <= 0.45) {
+          clearHover()
+          return
+        }
+
+        const rect = element.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        const hoveredIndex = findProjectedTarget(x, y, 12)
+
+        setHoveredIndex(hoveredIndex)
+        hover.hidden = hoveredIndex < 0
+
+        if (hoveredIndex >= 0) {
+          hover.textContent = atlas.parts[hoveredIndex].name
+          hover.style.left =
+            Math.max(8, Math.min(x + 14, element.clientWidth - 260)) + 'px'
+          hover.style.top =
+            Math.max(8, Math.min(y + 18, element.clientHeight - 55)) + 'px'
+        }
+
+        return
+      }
+
+      pendingHover = { x: event.clientX, y: event.clientY }
+      hoverDirty = true
     }
 
     const pointerCancel = (event: PointerEvent) => {
@@ -613,23 +767,7 @@ export function HumanAtlasExplorerScene({
 
       if (hoverDirty && pendingHover && appearance !== 'explorer') {
         const hoveredIndex = hitTest(pendingHover.x, pendingHover.y)
-
-        if (hoveredIndex !== lastHoveredIndex) {
-          if (lastHoveredIndex >= 0) {
-            hoveredData[lastHoveredIndex * 4] = 0
-          }
-
-          if (hoveredIndex >= 0) {
-            hoveredData[hoveredIndex * 4] = 255
-          }
-
-          hoverTexture.needsUpdate = true
-          lastHoveredIndex = hoveredIndex
-          renderer.domElement.style.cursor =
-            hoveredIndex >= 0 ? 'pointer' : 'grab'
-          dirty = true
-        }
-
+        setHoveredIndex(hoveredIndex)
         hoverDirty = false
       }
 
@@ -737,6 +875,13 @@ export function HumanAtlasExplorerScene({
           )
           selectedData[index * 4] = selected ? 255 : 0
 
+          markerPositions.set(
+            isVisible
+              ? [center.x + dx, center.y + dy, center.z + dz]
+              : [10000, 10000, 10000],
+            index * 3,
+          )
+
           const picker = pickers[index]
           if (picker) {
             picker.position.set(dx, dy, dz)
@@ -747,6 +892,7 @@ export function HumanAtlasExplorerScene({
 
         partStateTexture.needsUpdate = true
         selectionTexture.needsUpdate = true
+        markerGeometry.attributes.position.needsUpdate = true
         lastState = current
         dirty = true
       }
@@ -829,13 +975,92 @@ export function HumanAtlasExplorerScene({
 
       if (controls.autoRotate) dirty = true
 
-      ground.visible = platform.visible =
+      ground.visible =
+        platform.visible =
+        ring.visible =
+        innerRing.visible =
+          appearance === 'explorer' &&
+          amount < 0.5 &&
+          !current.isolate
+
+      markers.visible =
         appearance === 'explorer' &&
-        amount < 0.5 &&
+        amount > 0.75 &&
         !current.isolate
 
       if (dirty) {
         renderer.render(scene, camera)
+
+        targets = []
+
+        if (appearance === 'explorer' && amount > 0.45) {
+          const hasSolid = atlas.parts.some(
+            (part, index) =>
+              part.system !== 'integumentary' &&
+              partStateData[index * 4 + 3] > 0.5,
+          )
+
+          atlas.parts.forEach((part, index) => {
+            if (
+              partStateData[index * 4 + 3] < 0.5 ||
+              (hasSolid && part.system === 'integumentary')
+            ) {
+              return
+            }
+
+            let left = Infinity
+            let right = -Infinity
+            let top = Infinity
+            let bottom = -Infinity
+
+            for (let corner = 0; corner < 8; corner += 1) {
+              projected
+                .set(
+                  part.bounds[corner & 1 ? 1 : 0][0] +
+                    partStateData[index * 4],
+                  part.bounds[corner & 2 ? 1 : 0][1] +
+                    partStateData[index * 4 + 1],
+                  part.bounds[corner & 4 ? 1 : 0][2] +
+                    partStateData[index * 4 + 2],
+                )
+                .project(camera)
+
+              const x =
+                ((projected.x + 1) * element.clientWidth) / 2
+              const y =
+                ((1 - projected.y) * element.clientHeight) / 2
+
+              left = Math.min(left, x)
+              right = Math.max(right, x)
+              top = Math.min(top, y)
+              bottom = Math.max(bottom, y)
+            }
+
+            projected
+              .copy(centers[index])
+              .add(
+                new THREE.Vector3(
+                  partStateData[index * 4],
+                  partStateData[index * 4 + 1],
+                  partStateData[index * 4 + 2],
+                ),
+              )
+              .project(camera)
+
+            if (projected.z < -1 || projected.z > 1) return
+
+            targets.push({
+              index,
+              x: ((projected.x + 1) * element.clientWidth) / 2,
+              y: ((1 - projected.y) * element.clientHeight) / 2,
+              left,
+              right,
+              top,
+              bottom,
+            })
+          })
+        }
+
         dirty = false
       }
     }
@@ -892,6 +1117,9 @@ export function HumanAtlasExplorerScene({
       selectionTexture.dispose()
       inspectionTexture.dispose()
       hoverTexture.dispose()
+      markerGeometry.dispose()
+      markerMaterial.dispose()
+      hover.remove()
 
       scene.traverse((object) => {
         if (

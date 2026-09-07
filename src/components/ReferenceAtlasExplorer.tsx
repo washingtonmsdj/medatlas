@@ -686,11 +686,29 @@ export function ReferenceAtlasExplorer({
         </footer>
       </div>
 
-      <p className="reference-atlas-source">
-        Engine canônico do MedAtlas derivado do Human Atlas fixado em{' '}
-        <code>1c38bf35</code>. Geometria BodyParts3D 4.0 vendorizada,
-        verificada por SHA-256 e usada como anatomia de referência.
-      </p>
+      <div className="reference-atlas-source">
+        <span>
+          Engine canônico do MedAtlas derivado do Human Atlas fixado em{' '}
+          <code>1c38bf35</code>. Geometria BodyParts3D 4.0 vendorizada,
+          verificada por SHA-256 e usada como anatomia de referência.
+        </span>
+        <nav aria-label="Fontes do Atlas 3D">
+          <a
+            href="https://github.com/ashemag/human-atlas"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Human Atlas
+          </a>
+          <a
+            href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Licença BodyParts3D
+          </a>
+        </nav>
+      </div>
     </section>
   )
 }

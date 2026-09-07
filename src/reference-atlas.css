@@ -764,6 +764,10 @@
 .reference-atlas-source {
   margin: 0;
   padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   color: #687f96;
   font-size: 8px;
   line-height: 1.5;
@@ -771,6 +775,55 @@
 
 .reference-atlas-source code {
   color: #477aa3;
+}
+
+.reference-atlas-source nav {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.reference-atlas-source a {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #243b50;
+  border-radius: 999px;
+  padding: 0 9px;
+  color: #83aecb;
+  background: #0a1b2a;
+  text-decoration: none;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.reference-atlas-source a:hover,
+.reference-atlas-source a:focus-visible {
+  border-color: #3f769b;
+  color: #d5efff;
+  outline: none;
+}
+
+.reference-part-hover {
+  position: absolute;
+  z-index: 30;
+  max-width: 250px;
+  pointer-events: none;
+  border: 1px solid rgba(112, 176, 215, .26);
+  border-radius: 8px;
+  background: rgba(7, 21, 34, .95);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .34);
+  color: #ecf8ff;
+  padding: 8px 11px;
+  font-size: 10px;
+  line-height: 1.4;
+  text-transform: capitalize;
+  backdrop-filter: blur(12px);
+}
+
+.reference-part-hover[hidden] {
+  display: none;
 }
 
 @media (max-width: 1180px) {
@@ -797,6 +850,15 @@
 }
 
 @media (max-width: 900px) {
+  .reference-atlas-source {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reference-atlas-source nav {
+    flex-wrap: wrap;
+  }
+
   .reference-workbench-header {
     align-items: flex-start;
     flex-direction: column;

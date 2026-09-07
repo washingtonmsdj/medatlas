@@ -180,6 +180,7 @@ Referências recentes de validação:
 - [x] isolate/explode.
 - [x] modos `explorer`, `clinical` e `patient`.
 - [x] chunk loading no modo focado.
+- [x] paridade visual adicional com Human Atlas: anéis/plataforma, marcadores de inventário, hover por peça no inventário explodido e câmera com viewport reservado para painéis.
 - [x] cache de chunks.
 - [x] geometry-aware camera framing.
 - [x] licenças/atribuições visíveis e validadas.

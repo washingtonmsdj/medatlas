@@ -75,6 +75,12 @@ const requiredEngineFragments = [
   'controls.autoRotate',
   'loadChunkBuffer',
   'Array.from({ length: 3 }',
+  'RingGeometry',
+  'markerPositions',
+  'reference-part-hover',
+  'findProjectedTarget',
+  'setViewOffset',
+  'markers.visible',
   'AtlasSceneAppearance',
   "'clinical' | 'explorer' | 'patient'",
   'atlasBounds',
@@ -113,6 +119,9 @@ const requiredExplorerFragments = [
   'INSPETOR ANATÔMICO',
   'Redefinir workspace',
   'appearance="explorer"',
+  'Fontes do Atlas 3D',
+  'https://github.com/ashemag/human-atlas',
+  'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
 ]
 
 for (const fragment of requiredExplorerFragments) {

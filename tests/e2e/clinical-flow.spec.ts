@@ -1162,3 +1162,30 @@ test('settings expose source-first clinic branding without enabling mutations', 
   ).toBeDisabled()
 })
 
+
+
+test('Atlas 3D exposes canonical source links in the explorer', async ({ page }) => {
+  await page.goto('/')
+
+  await page
+    .getByRole('button', { name: 'Atlas 3D', exact: true })
+    .click()
+
+  await expect(
+    page.getByRole('navigation', { name: 'Fontes do Atlas 3D' }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('link', { name: 'Human Atlas', exact: true }),
+  ).toHaveAttribute(
+    'href',
+    'https://github.com/ashemag/human-atlas',
+  )
+
+  await expect(
+    page.getByRole('link', { name: 'Licença BodyParts3D', exact: true }),
+  ).toHaveAttribute(
+    'href',
+    'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
+  )
+})

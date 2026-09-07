@@ -36,6 +36,7 @@ Hoje a geometria real BodyParts3D aparece em:
 - **Exames** — referência FMA ligada ao texto;
 - **Relatórios visuais** — Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
+  - mantém recursos do Human Atlas de referência como camadas, picking, explode, marcadores, hover por peça no inventário, vistas e enquadramento respeitando os painéis;
 - **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;
 - **link do paciente** — experiência simplificada com o mesmo engine.
 
