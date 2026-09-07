@@ -36,7 +36,8 @@ Hoje a geometria real BodyParts3D aparece em:
 - **Exames** — referência FMA ligada ao texto;
 - **Relatórios visuais** — Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
-- **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;\n- **link do paciente** — experiência simplificada com o mesmo engine.
+- **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;
+- **link do paciente** — experiência simplificada com o mesmo engine.
 
 `Equipe`, `Analytics` e `Configurações` não recebem canvas 3D por decoração: nessas telas não existe uma tarefa anatômica.
 
