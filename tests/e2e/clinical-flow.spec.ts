@@ -491,3 +491,63 @@ test('consultations module mirrors workflow progress without persistence', async
     page.getByLabel('Texto do laudo ou relatório'),
   ).toHaveValue('')
 })
+
+
+test('required anatomy attribution is visible in clinician and patient surfaces', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Configurações' }).click()
+
+  await expect(
+    page.getByText(
+      'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.',
+      { exact: false },
+    ),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('link', { name: 'Licença BodyParts3D' }),
+  ).toHaveAttribute(
+    'href',
+    'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
+  )
+
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+
+  const suggestion = page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+
+  await suggestion
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Aprovar e gerar link do paciente' })
+    .click()
+
+  const [patientPage] = await Promise.all([
+    page.waitForEvent('popup'),
+    page
+      .getByRole('button', { name: 'Abrir visão do paciente' })
+      .click(),
+  ])
+
+  await patientPage.waitForLoadState('domcontentloaded')
+
+  await expect(
+    patientPage.getByText(
+      'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.',
+      { exact: false },
+    ),
+  ).toBeVisible()
+})

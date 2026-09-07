@@ -11,6 +11,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Create frontend shell and product flow.
 - [x] Establish clinical-review safety boundary.
 - [x] Record Human Atlas and BodyParts3D license obligations.
+- [x] Surface BodyParts3D CC BY 4.0 + Human Atlas MIT attribution in clinician and patient UI.
+- [x] Add CI gate preventing required anatomy attribution from disappearing.
 - [x] Pin Human Atlas upstream commit and provenance.
 - [x] Resolve demo L4–L5 structure to real FMA concept `FMA16036`.
 - [x] Load real BodyParts3D geometry for the confirmed report structure.

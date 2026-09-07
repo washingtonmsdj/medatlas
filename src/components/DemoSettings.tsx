@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AttributionNotice } from './AttributionNotice'
 import {
   clearDemoShares,
   demoRepositoryDescriptor,
@@ -81,6 +82,8 @@ export function DemoSettings({ onNewReport }: Props) {
           </p>
         </article>
       </div>
+
+      <AttributionNotice />
 
       <div className="settings-actions">
         <button className="primary" type="button" onClick={onNewReport}>

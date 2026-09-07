@@ -42,6 +42,7 @@ O MVP já possui:
 - cache de chunks anatômicos;
 - 34,3 MB de assets anatômicos comprimidos vendorizados no próprio MedAtlas;
 - provenance + SHA-256 verificados no CI;
+- atribuição BodyParts3D CC BY 4.0 + Human Atlas MIT visível na UI clínica e na página do paciente;
 - Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
 - gate axe/WCAG para violações serious/critical;
 - piloto sintético guiado com critérios de aceite no dashboard;
@@ -87,6 +88,7 @@ npm run validate:security-contract
 npm run validate:ai-contract
 npm run validate:review-gate
 npm run validate:report-workflow
+npm run validate:license-attribution
 npm run check
 npm run build
 npm audit --omit=dev --audit-level=high

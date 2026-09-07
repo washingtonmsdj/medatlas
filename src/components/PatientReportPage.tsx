@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { appHomeUrl } from '../app-url'
 import type { VisualReport } from '../domain/types'
 import { HumanAtlasScene } from './HumanAtlasScene'
+import { AttributionNotice } from './AttributionNotice'
 
 interface Props {
   report: VisualReport
@@ -154,6 +155,8 @@ export function PatientReportPage({ report }: Props) {
           ))}
         </div>
       </section>
+
+      <AttributionNotice compact />
 
       <footer className="patient-footer">
         <span>MedAtlas · demonstração com dados fictícios · link local temporário</span>
