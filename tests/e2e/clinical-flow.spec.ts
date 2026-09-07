@@ -138,6 +138,11 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     patientPage.getByRole('button', { name: 'Imprimir / salvar PDF' }),
   ).toBeVisible()
   await expect(
+    patientPage.getByRole('navigation', {
+      name: 'Controles do modelo 3D do paciente',
+    }),
+  ).toBeVisible()
+  await expect(
     patientPage.getByRole('heading', {
       name: 'Perguntas úteis para levar ao profissional',
     }),
@@ -583,6 +588,14 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
   await expect(
     page.getByText(/peças · .* conceitos · BodyParts3D/),
   ).toBeVisible()
+
+  await expect(
+    page.getByText('INSPETOR ANATÔMICO'),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('button', { name: 'Redefinir workspace' }),
+  ).toBeVisible()
 })
 
 
@@ -595,5 +608,15 @@ test('clinical report uses the same Human Atlas reference engine in focused mode
     page.locator(
       '.human-atlas-scene .reference-atlas-scene',
     ).first(),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('navigation', {
+      name: 'Controles da visualização clínica 3D',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('button', { name: 'Vista frontal' }),
   ).toBeVisible()
 })
