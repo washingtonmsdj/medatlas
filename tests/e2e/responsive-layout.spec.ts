@@ -80,6 +80,11 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
       name: 'Visão geral do fluxo clínico visual.',
     }),
   ).toBeVisible()
+  await expect(
+    page
+      .locator('.continue-care-card')
+      .getByText('3D carregado', { exact: true }),
+  ).toBeVisible({ timeout: 60_000 })
   await capture(page, 'dashboard-1600')
 
   for (const module of MODULES) {
@@ -183,6 +188,12 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
     await dashboardMobile3dStage.boundingBox()
   expect(dashboardMobile3dStageBox).not.toBeNull()
   expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)
+
+  await expect(
+    page
+      .locator('.continue-care-card')
+      .getByText('3D carregado', { exact: true }),
+  ).toBeVisible({ timeout: 60_000 })
 
   await capture(page, 'dashboard-mobile-390')
 
