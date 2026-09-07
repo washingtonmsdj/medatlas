@@ -1,13 +1,31 @@
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 
-const migrationPath =
-  'supabase/migrations/202609070001_medatlas_core.sql'
-const sql = await readFile(migrationPath, 'utf8')
+const migrationsDir = 'supabase/migrations'
+const migrationNames = (await readdir(migrationsDir))
+  .filter((name) => name.endsWith('.sql'))
+  .sort()
+
+if (migrationNames.length === 0) {
+  throw new Error('No Supabase migrations found')
+}
+
+const migrationSources = await Promise.all(
+  migrationNames.map(async (name) => ({
+    name,
+    sql: await readFile(`${migrationsDir}/${name}`, 'utf8'),
+  })),
+)
+
+const sql = migrationSources
+  .map(({ name, sql: source }) => `-- ${name}\n${source}`)
+  .join('\n\n')
 
 const requiredTables = [
   'organizations',
   'organization_members',
   'professionals',
+  'organization_units',
+  'clinical_workspaces',
   'patients',
   'consultations',
   'visual_reports',
@@ -45,6 +63,21 @@ const invariants = [
   ['audit log', 'create table if not exists public.audit_events'],
   ['public share RPC', 'medatlas_resolve_report_share'],
   ['tenant helper', 'medatlas_is_org_member'],
+  ['organization admin helper', 'medatlas_is_org_admin'],
+  ['organization units', 'create table if not exists public.organization_units'],
+  ['clinical workspaces', 'create table if not exists public.clinical_workspaces'],
+  [
+    'workspace tenant-safe unit FK',
+    'foreign key (unit_id, organization_id)\n    references public.organization_units(id, organization_id)',
+  ],
+  [
+    'workspace admin write policy',
+    'create policy clinical_workspaces_admin_write',
+  ],
+  [
+    'unit admin write policy',
+    'create policy organization_units_admin_write',
+  ],
 ]
 
 for (const [label, marker] of invariants) {
@@ -84,5 +117,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables + secure patient share/storage invariants.`,
+  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/share/storage invariants.`,
 )
