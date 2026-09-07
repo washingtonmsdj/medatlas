@@ -304,6 +304,15 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     patientPage.locator('.patient-clinic').getByText('Clínica Horizonte', { exact: true }),
   ).toBeVisible()
 
+  const patientMobilePdf = patientPage.getByRole('button', {
+    name: 'Imprimir / salvar PDF',
+  })
+  await expect(patientMobilePdf).toBeVisible()
+  const patientMobilePdfBox = await patientMobilePdf.boundingBox()
+  expect(patientMobilePdfBox).not.toBeNull()
+  expect(patientMobilePdfBox!.width).toBeGreaterThanOrEqual(44)
+  expect(patientMobilePdfBox!.height).toBeGreaterThanOrEqual(44)
+
   const patientMobileStage = patientPage.locator('.patient-atlas-stage')
   const patientMobileStageBox = await patientMobileStage.boundingBox()
   expect(patientMobileStageBox).not.toBeNull()
