@@ -9,6 +9,7 @@ import type { VisualReport } from '../domain/types'
 const STORAGE_PREFIX = 'medatlas:demo:published:'
 const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'
 const DEMO_SHARE_TTL_MS = 30 * 60 * 1000
+const DEMO_VIEW_DEDUPE_MS = 1500
 const MAX_STORED_DEMO_SHARES = 10
 
 interface StoredDemoShare {
@@ -188,7 +189,18 @@ function persist(token: string, report: VisualReport) {
   }
 }
 
-function recordStoredView(entry: DemoShareEntry, now: number) {
+function shouldCountView(lastViewedAt: string | undefined, now: number) {
+  if (!lastViewedAt) return true
+
+  const previous = Date.parse(lastViewedAt)
+  return !Number.isFinite(previous) || now - previous > DEMO_VIEW_DEDUPE_MS
+}
+
+function recordStoredView(
+  entry: DemoShareEntry,
+  now: number,
+  countView: boolean,
+) {
   if (!entry.key) return
 
   const updated: StoredDemoShare = {
@@ -196,8 +208,10 @@ function recordStoredView(entry: DemoShareEntry, now: number) {
     createdAt: new Date(entry.createdAt).toISOString(),
     expiresAt: new Date(entry.expiresAt).toISOString(),
     report: entry.report,
-    viewCount: entry.viewCount + 1,
-    lastViewedAt: new Date(now).toISOString(),
+    viewCount: entry.viewCount + (countView ? 1 : 0),
+    lastViewedAt: countView
+      ? new Date(now).toISOString()
+      : entry.lastViewedAt,
   }
 
   try {
@@ -229,13 +243,18 @@ function read(token: string): VisualReport | null {
         return null
       }
 
-      const lastViewedAt = new Date(now).toISOString()
-      recordStoredView(stored, now)
+      const countView = shouldCountView(stored.lastViewedAt, now)
+      const lastViewedAt = countView
+        ? new Date(now).toISOString()
+        : stored.lastViewedAt
+      const viewCount = stored.viewCount + (countView ? 1 : 0)
+
+      recordStoredView(stored, now, countView)
       memoryShares.set(token, {
         createdAt: stored.createdAt,
         expiresAt: stored.expiresAt,
         report: stored.report,
-        viewCount: stored.viewCount + 1,
+        viewCount,
         lastViewedAt,
       })
 
@@ -253,8 +272,11 @@ function read(token: string): VisualReport | null {
     return null
   }
 
-  inMemory.viewCount += 1
-  inMemory.lastViewedAt = new Date(now).toISOString()
+  if (shouldCountView(inMemory.lastViewedAt, now)) {
+    inMemory.viewCount += 1
+    inMemory.lastViewedAt = new Date(now).toISOString()
+  }
+
   return inMemory.report
 }
 
