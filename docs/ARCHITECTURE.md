@@ -174,6 +174,9 @@ Domínios:
 - **organizations** — tenant;
 - **organization_members** — identidade + papel;
 - **professionals** — perfil clínico;
+- **organization_units** — unidades/locais pertencentes ao tenant;
+- **clinical_workspaces** — contextos clínicos/especialidades ligados a uma unidade;
+- **organization_branding** — identidade visual patient-safe da organização;
 - **patients** — paciente dentro do tenant;
 - **consultations** — contexto do atendimento;
 - **visual_reports** — conteúdo e estado aprovado;
@@ -184,6 +187,15 @@ Domínios:
 ## Segurança multi-tenant
 
 Todos os objetos clínicos pertencem a uma organização.
+
+A estrutura organizacional também é tenant-safe:
+
+- `organization_units` pertence diretamente à organização;
+- `clinical_workspaces` referencia unidade + organização por FK composta, impedindo vínculo cross-tenant também no schema;
+- leitura de unidades/workspaces/branding exige membership ativo;
+- escrita de estrutura organizacional e branding exige papel `admin`;
+- `admin` e `clinician` continuam sendo os papéis de escrita clínica;
+- `staff` permanece leitura clínica conforme as políticas atuais.
 
 RLS usa a identidade autenticada para resolver membership.
 
@@ -279,6 +291,9 @@ O campo `concept_id` precisa ser resolvido contra o atlas fixado antes de a resp
 - DemoClinicalRepository;
 - token aleatório;
 - persistência local;
+- organização, unidade, workspace, equipe e branding também sintéticos;
+- seletor de workspace altera somente o contexto local da interface;
+- ações de convite, alteração de papel, estrutura e branding permanecem bloqueadas;
 - sem alegação de privacidade clínica.
 
 ### Produção futura
