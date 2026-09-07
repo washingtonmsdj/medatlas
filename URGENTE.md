@@ -154,7 +154,7 @@ Referências recentes de validação:
 - [x] aproximadamente 2.234 peças no explorer completo.
 - [x] picking por peça.
 - [x] inspeção temporária de peça no modo focado, sem alterar a anatomia confirmada do relatório.
-- [x] destaque visual efêmero da peça inspecionada no mesmo shader/engine.
+- [x] destaque visual efêmero da peça inspecionada no mesmo shader/engine, com contraste âmbar pós-iluminação para não se confundir com o foco clínico ciano.
 - [x] linguagem de inspeção adaptada: workflow clínico para profissional; orientação de referência para paciente.
 - [x] sistemas anatômicos.
 - [x] aliases em português.

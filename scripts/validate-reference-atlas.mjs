@@ -64,6 +64,7 @@ const requiredEngineFragments = [
   'selectionTexture',
   'inspectionTexture',
   'partInspected',
+  'outgoingLight = mix(outgoingLight',
   'PointerTap',
   'createExplosionLayout',
   'raycaster.intersectObject',

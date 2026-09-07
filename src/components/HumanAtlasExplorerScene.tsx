@@ -249,7 +249,12 @@ export function HumanAtlasExplorerScene({
 
         shader.fragmentShader = shader.fragmentShader.replace(
           '#include <color_fragment>',
-          '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.18, 0.72, 0.92), partSelected * 0.78); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.67, 0.18), partInspected * 0.92);',
+          '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.18, 0.72, 0.92), partSelected * 0.78); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.56, 0.03), partInspected);',
+        )
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <opaque_fragment>',
+          'outgoingLight = mix(outgoingLight, vec3(1.0, 0.62, 0.05), partInspected * 0.86);\n#include <opaque_fragment>',
         )
       }
 
