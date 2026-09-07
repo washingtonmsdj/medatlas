@@ -73,7 +73,7 @@ export function TeamModule() {
             className="primary"
             type="button"
             disabled
-            title="Disponível somente após autenticação e backend de produção"
+            title="O contrato seguro está pronto; o envio depende de autenticação e backend ativos"
           >
             Convidar membro
           </button>
@@ -152,6 +152,69 @@ export function TeamModule() {
           </div>
         </aside>
       </div>
+
+      <section
+        className="team-invitation-contract"
+        aria-label="Contrato seguro de convites"
+      >
+        <header>
+          <div>
+            <span className="section-kicker">CONVITES · SOURCE READY</span>
+            <strong>Contrato seguro pronto; transporte ainda bloqueado</strong>
+          </div>
+          <span className="invitation-contract-status">backend necessário</span>
+        </header>
+
+        <div className="invitation-contract-grid">
+          <article>
+            <span aria-hidden="true">01</span>
+            <div>
+              <strong>Somente administrador</strong>
+              <p>
+                Criar e revogar convites exige o helper canônico de admin da
+                organização.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span aria-hidden="true">02</span>
+            <div>
+              <strong>Token não persistido</strong>
+              <p>
+                O token bruto é retornado uma vez; no banco fica apenas o
+                SHA-256.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span aria-hidden="true">03</span>
+            <div>
+              <strong>Aceite vinculado ao e-mail</strong>
+              <p>
+                O usuário autenticado só aceita um convite emitido para o
+                mesmo e-mail da sessão.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span aria-hidden="true">04</span>
+            <div>
+              <strong>Expira, revoga e audita</strong>
+              <p>
+                Criação, aceite e revogação produzem eventos auditáveis e não
+                habilitam acesso após expiração.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <footer>
+          <span>
+            Nenhum e-mail é enviado e nenhum membro é criado no modo demo.
+          </span>
+          <code>organization_invitations · migration 005</code>
+        </footer>
+      </section>
 
       <section className="organization-structure-card">
         <header>
