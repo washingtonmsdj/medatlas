@@ -108,13 +108,41 @@ function PatientRoute({ slug }: { slug: string }) {
 
   if (state.status === 'loading') {
     return (
-      <main className="invalid-share">
-        <div className="brand">
-          <span className="brand-mark">M</span>
-          <span>MedAtlas</span>
+      <main
+        className="patient-route-state patient-route-loading"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <div className="patient-route-state-card">
+          <div className="brand">
+            <span className="brand-mark">M</span>
+            <span>MedAtlas</span>
+          </div>
+
+          <div className="patient-route-state-visual" aria-hidden="true">
+            <span className="patient-route-spinner" />
+            <i />
+            <i />
+            <i />
+          </div>
+
+          <span className="section-kicker">LINK DO PACIENTE · VALIDAÇÃO SEGURA</span>
+          <h1>Preparando seu relatório visual…</h1>
+          <p>
+            Estamos verificando se este link ainda está válido antes de
+            carregar qualquer conteúdo.
+          </p>
+
+          <div className="patient-route-state-steps" aria-hidden="true">
+            <span className="active">Validar link</span>
+            <span>Carregar relatório</span>
+            <span>Preparar anatomia 3D</span>
+          </div>
+
+          <small>
+            Nenhum conteúdo é exibido enquanto a validação não terminar.
+          </small>
         </div>
-        <h1>Preparando seu relatório visual…</h1>
-        <p>Validando o link e carregando a experiência anatômica.</p>
       </main>
     )
   }
