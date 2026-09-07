@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medatlas.clinical-extraction/1",
+  "title": "MedAtlas structured clinical extraction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sourceExcerpt",
+    "candidateStructures",
+    "requiresClinicianReview",
+    "provenance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "medatlas.clinical-extraction/1"
+    },
+    "sourceExcerpt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "candidateStructures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conceptId",
+          "confidence",
+          "evidence"
+        ],
+        "properties": {
+          "conceptId": {
+            "type": "string",
+            "pattern": "^FMA[0-9]+$"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "patientExplanationDraft": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "requiresClinicianReview": {
+      "const": true
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model",
+        "promptVersion",
+        "generatedAt"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

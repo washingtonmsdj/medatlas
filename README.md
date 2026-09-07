@@ -127,7 +127,9 @@ Ele:
 5. retorna sugestões;
 6. exige confirmação explícita antes de alterar o relatório.
 
-A próxima camada de IA deverá obedecer à mesma fronteira: um modelo poderá sugerir candidatos, mas um ID que não exista no atlas nunca poderá chegar ao renderer como estrutura clínica aprovada.
+A próxima camada de IA já possui um contrato técnico estrito em `src/clinical/structured-extraction.schema.json` e `src/clinical/structured-extraction.ts`. Um modelo poderá sugerir candidatos, mas a resposta só é aceita se passar pelo schema/runtime validator, exigir revisão clínica e cada FMA existir como conceito renderizável no atlas fixado.
+
+O provedor remoto permanece explicitamente desativado enquanto o MVP não possui backend. Chaves de modelo não devem entrar no bundle Vite. Veja `docs/AI.md`.
 
 ## Dados e Supabase
 

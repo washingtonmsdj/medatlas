@@ -53,8 +53,9 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 
 - [x] Add deterministic report-text → known-atlas concept suggestions as a safe baseline.
 - [x] Keep text analysis advisory-only until explicit clinician confirmation.
-- [ ] Add structured AI extraction on top of the deterministic resolver.
-- [ ] Resolve AI output only to known atlas concepts.
+- [x] Define strict structured-AI extraction schema and runtime validator.
+- [x] Resolve any future AI output only to known renderable atlas concepts.
+- [x] Keep remote AI provider explicitly disabled until a backend integration exists.
 - [x] Add deterministic patient-language educational draft generator.
 - [x] Track draft provenance and clinician edits in the frontend model.
 - [x] Clear stale explanation when source text or confirmed anatomy changes.
@@ -64,7 +65,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Add CI contract proving each demo scenario resolves to its expected pinned FMA concept.
 - [ ] Add structured AI-generated patient-language draft.
 - [ ] Require clinician confirmation before publish.
-- [ ] Version prompts/model/output and preserve provenance.
+- [x] Define provider/model/promptVersion/generatedAt provenance contract.
+- [ ] Activate a real provider behind a backend and preserve production generation provenance.
 
 ## P3 — Product validation
 
