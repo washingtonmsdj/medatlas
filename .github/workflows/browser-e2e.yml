@@ -23,6 +23,10 @@ on:
       - 'public/atlas-assets/**'
   workflow_dispatch:
 
+concurrency:
+  group: medatlas-browser-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

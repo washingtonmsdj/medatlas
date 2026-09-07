@@ -268,6 +268,35 @@ test('real Human Atlas stays visible across core MVP context surfaces', async ({
   }
 })
 
+test('stale contextual 3D stays visible but explicitly requires reconfirmation', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Rim', exact: true }).click()
+
+  await expect(
+    page.getByText('Reconfirmação anatômica necessária').first(),
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Pacientes', exact: true }).click()
+
+  const stalePreview = page.locator(
+    '.patient-anatomy-live .anatomy-focus-preview',
+  )
+
+  await expect(stalePreview).toBeVisible()
+  await expect(
+    stalePreview.locator('.human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(
+    stalePreview.locator('.anatomy-focus-preview-review-banner'),
+  ).toContainText('Reconfirmação anatômica necessária')
+  await expect(
+    stalePreview.locator('.anatomy-focus-preview-review-banner'),
+  ).toContainText('Confirme novamente esta referência')
+})
+
 test('patient 3D preview requires a fresh explicit open after anatomy changes', async ({
   page,
 }) => {
