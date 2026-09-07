@@ -1,12 +1,17 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { loadConceptGeometries } from '../atlas/model'
+import { loadConceptScene } from '../atlas/model'
 import { findAtlasConcept, loadHumanAtlas } from '../atlas/source'
 
 interface Props {
   conceptId: string
-  onReady?: (label: string, partCount: number) => void
+  showContext: boolean
+  onReady?: (
+    label: string,
+    selectedPartCount: number,
+    contextPartCount: number,
+  ) => void
   onError?: (message: string) => void
 }
 
@@ -15,6 +20,7 @@ const SYSTEM_COLORS: Record<string, string> = {
   muscular: '#d66f72',
   nervous: '#e7c95b',
   arterial: '#d95d67',
+  cardiac: '#d8646a',
   venous: '#577fd1',
   digestive: '#d89b62',
   respiratory: '#86b9c9',
@@ -22,11 +28,14 @@ const SYSTEM_COLORS: Record<string, string> = {
   reproductive: '#d58fad',
   endocrine: '#d9bd62',
   lymphatic: '#7ab78a',
+  sensory: '#d8c177',
+  connective: '#9ab4b1',
   integumentary: '#aab8bc',
 }
 
 export function HumanAtlasScene({
   conceptId,
+  showContext,
   onReady,
   onError,
 }: Props) {
@@ -92,7 +101,7 @@ export function HumanAtlasScene({
       const radius = Math.max(size.x, size.y, size.z) * 0.5
       const verticalFov = THREE.MathUtils.degToRad(camera.fov)
       const distance = Math.max(
-        radius / Math.tan(verticalFov / 2) * 1.45,
+        radius / Math.tan(verticalFov / 2) * 1.4,
         0.07,
       )
 
@@ -136,10 +145,11 @@ export function HumanAtlasScene({
       try {
         const atlas = await loadHumanAtlas()
         const concept = findAtlasConcept(atlas, conceptId)
-        const loaded = await loadConceptGeometries(
+        const loaded = await loadConceptScene(
           atlas,
           concept,
           abort.signal,
+          showContext ? 10 : 0,
         )
 
         if (disposed) {
@@ -147,31 +157,42 @@ export function HumanAtlasScene({
           return
         }
 
-        const conceptBounds = new THREE.Box3()
+        const visibleBounds = new THREE.Box3()
+        let selectedCount = 0
+        let contextCount = 0
 
-        for (const { part, geometry } of loaded) {
+        for (const { part, geometry, selected } of loaded) {
           geometries.push(geometry)
-          conceptBounds.union(
+          visibleBounds.union(
             new THREE.Box3(
               new THREE.Vector3().fromArray(part.bounds[0]),
               new THREE.Vector3().fromArray(part.bounds[1]),
             ),
           )
 
+          if (selected) selectedCount += 1
+          else contextCount += 1
+
           const material = new THREE.MeshStandardMaterial({
-            color: SYSTEM_COLORS[part.system] ?? '#54c7ff',
-            roughness: 0.46,
-            metalness: 0.06,
+            color: selected
+              ? SYSTEM_COLORS[part.system] ?? '#54c7ff'
+              : '#7890a4',
+            roughness: selected ? 0.46 : 0.72,
+            metalness: selected ? 0.06 : 0,
             side: THREE.DoubleSide,
+            transparent: !selected,
+            opacity: selected ? 1 : 0.16,
+            depthWrite: selected,
           })
           materials.push(material)
 
           const mesh = new THREE.Mesh(geometry, material)
+          mesh.renderOrder = selected ? 2 : 1
           anatomyGroup.add(mesh)
         }
 
-        fit(conceptBounds)
-        onReady?.(concept.name, loaded.length)
+        fit(visibleBounds)
+        onReady?.(concept.name, selectedCount, contextCount)
       } catch (error) {
         if (!disposed && !abort.signal.aborted) {
           onError?.(
@@ -194,7 +215,7 @@ export function HumanAtlasScene({
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [conceptId, onError, onReady])
+  }, [conceptId, onError, onReady, showContext])
 
   return <div className="human-atlas-scene" ref={host} />
 }

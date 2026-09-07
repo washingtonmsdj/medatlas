@@ -189,3 +189,42 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   .atlas-actions .confirm-anatomy{width:100%;margin-left:0}
   .topbar{align-items:flex-start}
 }
+
+
+.context-legend {
+  position:absolute;
+  left:20px;
+  bottom:18px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 10px;
+  border:1px solid #2c435b;
+  border-radius:10px;
+  background:#071522d9;
+  backdrop-filter:blur(12px);
+  color:#8095aa;
+  font-size:9px;
+  pointer-events:none;
+}
+.context-legend b { font-weight:600; }
+.legend-selected,.legend-context {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+}
+.legend-selected {
+  background:#7fd7ff;
+  box-shadow:0 0 9px #56c8ff;
+}
+.legend-context {
+  background:#7890a4;
+  opacity:.45;
+}
+.atlas-actions button.active-context {
+  cursor:pointer;
+  border-color:#3d6685;
+  color:#d3e8f7;
+  background:#10263a;
+}

@@ -29,7 +29,9 @@ export function AtlasViewport({
 }: Props) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [sourceLabel, setSourceLabel] = useState('')
-  const [partCount, setPartCount] = useState(0)
+  const [selectedPartCount, setSelectedPartCount] = useState(0)
+  const [contextPartCount, setContextPartCount] = useState(0)
+  const [showContext, setShowContext] = useState(true)
   const [error, setError] = useState('')
   const [atlas, setAtlas] = useState<HumanAtlas | null>(null)
   const [query, setQuery] = useState('')
@@ -66,19 +68,24 @@ export function AtlasViewport({
     setStatus('loading')
     setError('')
     setSourceLabel('')
-    setPartCount(0)
-  }, [activeConceptId])
+    setSelectedPartCount(0)
+    setContextPartCount(0)
+  }, [activeConceptId, showContext])
 
   const results = useMemo(
     () => (atlas ? searchAtlasConcepts(atlas, query) : []),
     [atlas, query],
   )
 
-  const ready = useCallback((label: string, count: number) => {
-    setSourceLabel(label)
-    setPartCount(count)
-    setStatus('ready')
-  }, [])
+  const ready = useCallback(
+    (label: string, selectedCount: number, contextCount: number) => {
+      setSourceLabel(label)
+      setSelectedPartCount(selectedCount)
+      setContextPartCount(contextCount)
+      setStatus('ready')
+    },
+    [],
+  )
 
   const failed = useCallback((message: string) => {
     setError(message)
@@ -158,6 +165,7 @@ export function AtlasViewport({
       <div className="atlas-stage real-stage">
         <HumanAtlasScene
           conceptId={activeConceptId}
+          showContext={showContext}
           onReady={ready}
           onError={failed}
         />
@@ -166,12 +174,21 @@ export function AtlasViewport({
           <strong>{activeLabel}</strong>
           <span>
             {status === 'ready'
-              ? `${sourceLabel} · ${partCount} peça${partCount === 1 ? '' : 's'}`
+              ? `${sourceLabel} · ${selectedPartCount} selecionada${selectedPartCount === 1 ? '' : 's'}${contextPartCount ? ` + ${contextPartCount} de contexto` : ''}`
               : status === 'error'
                 ? 'falha ao carregar a referência'
                 : 'carregando geometria de referência…'}
           </span>
         </div>
+
+        {showContext && status === 'ready' && contextPartCount > 0 && (
+          <div className="context-legend">
+            <span className="legend-selected" />
+            <b>Estrutura</b>
+            <span className="legend-context" />
+            <b>Contexto próximo</b>
+          </div>
+        )}
 
         {status === 'error' && (
           <div className="atlas-error" role="alert">
@@ -184,6 +201,13 @@ export function AtlasViewport({
       <div className="atlas-actions">
         <button type="button">Arraste para girar</button>
         <button type="button">Role para aproximar</button>
+        <button
+          className={showContext ? 'active-context' : ''}
+          type="button"
+          onClick={() => setShowContext((current) => !current)}
+        >
+          {showContext ? 'Isolar estrutura' : 'Mostrar contexto'}
+        </button>
 
         {preview && preview.id !== conceptId && (
           <button
@@ -197,9 +221,9 @@ export function AtlasViewport({
       </div>
 
       <p className="integration-note">
-        Explorar outra estrutura não altera o relatório. A mudança só acontece
-        após confirmação explícita do profissional. Anatomia de referência
-        BodyParts3D — não representa o corpo individual do paciente.
+        O contexto usa peças vizinhas já presentes nos mesmos chunks carregados,
+        sem downloads anatômicos extras. Explorar não altera o relatório; a
+        mudança só acontece após confirmação explícita do profissional.
       </p>
     </section>
   )

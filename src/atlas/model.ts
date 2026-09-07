@@ -16,6 +16,7 @@ import type {
 export interface LoadedAtlasPart {
   part: AtlasPart
   geometry: THREE.BufferGeometry
+  selected: boolean
 }
 
 async function decodeModelResponse(
@@ -101,42 +102,87 @@ function geometryFromPart(
   return geometry
 }
 
-export async function loadConceptGeometries(
+function partCenter(part: AtlasPart) {
+  return new THREE.Vector3()
+    .fromArray(part.bounds[0])
+    .add(new THREE.Vector3().fromArray(part.bounds[1]))
+    .multiplyScalar(0.5)
+}
+
+export async function loadConceptScene(
   atlas: HumanAtlas,
   concept: AtlasConcept,
   signal?: AbortSignal,
+  contextLimit = 10,
 ): Promise<LoadedAtlasPart[]> {
-  const elementIds = new Set(concept.elements)
-  const parts = atlas.parts.filter((part) => elementIds.has(part.id))
+  const selectedIds = new Set(concept.elements)
+  const selectedParts = atlas.parts.filter((part) => selectedIds.has(part.id))
 
-  if (parts.length === 0) {
+  if (selectedParts.length === 0) {
     throw new Error('A estrutura selecionada não possui geometria renderizável.')
   }
 
-  const partsByChunk = new Map<number, AtlasPart[]>()
+  const selectedChunks = new Set(selectedParts.map((part) => part.chunk))
+  const selectedSystems = new Set(selectedParts.map((part) => part.system))
+  const selectedBounds = new THREE.Box3()
 
-  for (const part of parts) {
-    const chunkParts = partsByChunk.get(part.chunk) ?? []
-    chunkParts.push(part)
-    partsByChunk.set(part.chunk, chunkParts)
+  for (const part of selectedParts) {
+    selectedBounds.union(
+      new THREE.Box3(
+        new THREE.Vector3().fromArray(part.bounds[0]),
+        new THREE.Vector3().fromArray(part.bounds[1]),
+      ),
+    )
   }
 
-  const groups = await Promise.all(
-    [...partsByChunk.entries()].map(async ([chunkIndex, chunkParts]) => {
-      const chunk = atlas.chunks[chunkIndex]
+  const selectedCenter = selectedBounds.getCenter(new THREE.Vector3())
 
-      if (!chunk) {
-        throw new Error('O atlas referencia um bloco de geometria inexistente.')
-      }
+  const contextParts = atlas.parts
+    .filter(
+      (part) =>
+        !selectedIds.has(part.id) &&
+        selectedChunks.has(part.chunk) &&
+        selectedSystems.has(part.system),
+    )
+    .map((part) => ({
+      part,
+      distance: partCenter(part).distanceToSquared(selectedCenter),
+    }))
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, contextLimit)
+    .map(({ part }) => part)
 
-      const buffer = await loadChunkBuffer(chunk, signal)
+  const allParts = [...selectedParts, ...contextParts]
+  const neededChunks = new Set(allParts.map((part) => part.chunk))
 
-      return chunkParts.map((part) => ({
-        part,
-        geometry: geometryFromPart(part, buffer),
-      }))
-    }),
+  const chunkBuffers = new Map<number, ArrayBuffer>(
+    await Promise.all(
+      [...neededChunks].map(async (chunkIndex) => {
+        const chunk = atlas.chunks[chunkIndex]
+
+        if (!chunk) {
+          throw new Error('O atlas referencia um bloco de geometria inexistente.')
+        }
+
+        return [
+          chunkIndex,
+          await loadChunkBuffer(chunk, signal),
+        ] as [number, ArrayBuffer]
+      }),
+    ),
   )
 
-  return groups.flat()
+  return allParts.map((part) => {
+    const buffer = chunkBuffers.get(part.chunk)
+
+    if (!buffer) {
+      throw new Error('Bloco anatômico carregado não pôde ser resolvido.')
+    }
+
+    return {
+      part,
+      geometry: geometryFromPart(part, buffer),
+      selected: selectedIds.has(part.id),
+    }
+  })
 }
