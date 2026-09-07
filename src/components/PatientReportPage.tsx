@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { appHomeUrl } from '../app-url'
 import type { VisualReport } from '../domain/types'
 import { HumanAtlasScene } from './HumanAtlasScene'
 
@@ -119,7 +120,7 @@ export function PatientReportPage({ report }: Props) {
 
       <footer className="patient-footer">
         <span>MedAtlas · experiência demonstrativa com dados fictícios</span>
-        <button type="button" onClick={() => (window.location.href = '/')}>
+        <button type="button" onClick={() => (window.location.href = appHomeUrl())}>
           Voltar ao ambiente clínico
         </button>
       </footer>
@@ -143,7 +144,7 @@ export function InvalidPatientLink() {
       <button
         className="primary"
         type="button"
-        onClick={() => (window.location.href = '/')}
+        onClick={() => (window.location.href = appHomeUrl())}
       >
         Ir para o ambiente clínico
       </button>

@@ -3,7 +3,8 @@ import type { AtlasConcept, HumanAtlas } from './types'
 export const HUMAN_ATLAS_UPSTREAM_SHA =
   '1c38bf35c254a891200d3cedecfd57abebe83d8d'
 
-export const HUMAN_ATLAS_ASSET_BASE = '/atlas-assets'
+export const HUMAN_ATLAS_ASSET_BASE =
+  import.meta.env.VITE_ATLAS_ASSET_BASE || '/atlas-assets'
 
 const PORTUGUESE_ALIASES: Record<string, string[]> = {
   'l4-l5': ['FMA16036'],

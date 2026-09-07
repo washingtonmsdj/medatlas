@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { patientShareUrl } from '../app-url'
 import type { VisualReport } from '../domain/types'
 
 interface Props {
@@ -18,7 +19,7 @@ export function ReportComposer({
 
   const shareUrl =
     report.status === 'published' && report.shareSlug
-      ? `${window.location.origin}/p/${report.shareSlug}`
+      ? patientShareUrl(report.shareSlug)
       : ''
 
   const copyLink = async () => {

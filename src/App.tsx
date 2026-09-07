@@ -202,10 +202,12 @@ function ClinicianApp() {
 }
 
 function App() {
+  const querySlug = new URLSearchParams(window.location.search).get('patient')
   const patientMatch = window.location.pathname.match(/^\/p\/([^/]+)\/?$/)
+  const patientSlug = querySlug ?? patientMatch?.[1] ?? null
 
-  if (patientMatch) {
-    return <PatientRoute slug={decodeURIComponent(patientMatch[1])} />
+  if (patientSlug) {
+    return <PatientRoute slug={decodeURIComponent(patientSlug)} />
   }
 
   return <ClinicianApp />
