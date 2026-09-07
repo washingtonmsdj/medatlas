@@ -141,6 +141,14 @@ const invariants = [
     "current_email <> invitation.email",
   ],
   [
+    'invitation inactive membership lock',
+    'select membership.active\n  into existing_member_active',
+  ],
+  [
+    'invitation membership reactivation',
+    'set\n      role = invitation.role,\n      active = true',
+  ],
+  [
     'invitation admin read policy',
     'create policy organization_invitations_admin_select',
   ],
