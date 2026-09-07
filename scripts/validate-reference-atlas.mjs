@@ -37,6 +37,10 @@ const requiredEngineFragments = [
   'Array.from({ length: 3 }',
   'AtlasSceneAppearance',
   "'clinical' | 'explorer' | 'patient'",
+  'atlasBounds',
+  'atlasCenter',
+  "appearance !== 'explorer'",
+  'surfacePadding',
 ]
 
 for (const fragment of requiredEngineFragments) {
