@@ -3191,3 +3191,17 @@ button:not(:disabled):active {
   font-size: 8px;
   line-height: 1.35;
 }
+
+
+/* AAA clinical studio accessibility hardening */
+.studio-panel-label > span {
+  color: #0757b5;
+}
+
+.report-source-column .intake-safety-badge {
+  color: #08624f;
+}
+
+.report-explanation-column .safety-box span {
+  color: #365f55;
+}
