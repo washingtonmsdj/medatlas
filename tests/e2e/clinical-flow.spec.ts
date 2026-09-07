@@ -68,6 +68,7 @@ async function inspectVisibleAnatomyPart(
   canvas: Locator,
 ) {
   await expect(canvas).toBeVisible({ timeout: 45_000 })
+  await canvas.scrollIntoViewIfNeeded()
   const box = await canvas.boundingBox()
   expect(box).not.toBeNull()
 
@@ -85,10 +86,13 @@ async function inspectVisibleAnatomyPart(
   )
 
   for (const [x, y] of candidatePoints) {
-    await page.mouse.click(
-      box!.x + box!.width * x,
-      box!.y + box!.height * y,
-    )
+    await canvas.click({
+      position: {
+        x: box!.width * x,
+        y: box!.height * y,
+      },
+      force: true,
+    })
     await page.waitForTimeout(180)
 
     if (await inspector.isVisible()) {
