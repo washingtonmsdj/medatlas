@@ -144,6 +144,18 @@ export const DEMO_ORGANIZATION_BRANDING: DemoOrganizationBranding = {
   patientFooterText: 'Clínica Horizonte · demonstração',
 }
 
+export const DEMO_CURRENT_MEMBER_ID = 'demo-member-carlos'
+
+export function getDemoCurrentMember() {
+  return (
+    DEMO_ORGANIZATION.members.find(
+      (member) => member.id === DEMO_CURRENT_MEMBER_ID && member.active,
+    ) ??
+    DEMO_ORGANIZATION.members.find((member) => member.active) ??
+    null
+  )
+}
+
 export const DEFAULT_DEMO_WORKSPACE_ID = 'demo-workspace-ortopedia'
 
 export function getDemoWorkspace(workspaceId: string) {
