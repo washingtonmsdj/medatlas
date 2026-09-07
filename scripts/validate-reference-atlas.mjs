@@ -38,6 +38,7 @@ const documents = await readFile(
   'utf8',
 )
 const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
+const styles = await readFile('src/styles.css', 'utf8')
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
@@ -222,6 +223,14 @@ for (const [surface, source, marker] of contextual3dSurfaces) {
 
 if (overview.includes('anatomy-preview-orbit')) {
   failures.push('dashboard still contains the legacy fake 3D orbit placeholder')
+}
+
+if (
+  styles.includes('.anatomy-preview-orbit') ||
+  styles.includes('.anatomy-preview-core') ||
+  styles.includes('@keyframes medatlas-orbit')
+) {
+  failures.push('legacy fake 3D orbit CSS is still present')
 }
 
 if (reportComposer.includes('<span aria-hidden="true">3D</span>')) {

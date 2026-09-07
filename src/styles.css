@@ -2421,61 +2421,6 @@ button:not(:disabled):active {
     linear-gradient(135deg, #f7fbff, #eef5fb);
 }
 
-.anatomy-preview-orbit {
-  position: relative;
-  min-height: 190px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 14px;
-  background:
-    linear-gradient(rgba(30, 111, 215, .06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(30, 111, 215, .06) 1px, transparent 1px),
-    radial-gradient(circle, rgba(50, 141, 255, .18), rgba(245, 250, 255, .4) 45%, transparent 68%);
-  background-size: 30px 30px, 30px 30px, auto;
-}
-
-.anatomy-preview-core {
-  position: relative;
-  z-index: 3;
-  width: 76px;
-  height: 122px;
-  display: grid;
-  place-items: center;
-  border-radius: 44% 44% 38% 38%;
-  color: #eaf7ff;
-  background:
-    radial-gradient(circle at 50% 34%, #4fc7ff, #1768da 58%, #0d356d 100%);
-  box-shadow:
-    0 0 0 12px rgba(42, 137, 245, .07),
-    0 25px 50px rgba(19, 83, 154, .25);
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.orbit {
-  position: absolute;
-  border: 1px solid rgba(31, 119, 225, .20);
-  border-radius: 50%;
-  animation: medatlas-orbit 12s linear infinite;
-}
-
-.orbit-one {
-  width: 180px;
-  height: 90px;
-  transform: rotate(-18deg);
-}
-
-.orbit-two {
-  width: 115px;
-  height: 165px;
-  animation-direction: reverse;
-  animation-duration: 16s;
-}
-
-@keyframes medatlas-orbit {
-  to { transform: rotate(342deg); }
-}
 
 .continue-care-copy {
   display: grid;
@@ -3168,10 +3113,6 @@ button:not(:disabled):active {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .orbit {
-    animation: none;
-  }
-
   button {
     transition: none;
   }
