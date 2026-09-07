@@ -10,6 +10,7 @@ import {
 } from './clinical/anatomy-suggestions'
 import { patientExplanationGenerator } from './clinical/patient-explanation'
 import { AtlasViewport } from './components/AtlasViewport'
+import { AnalyticsModule } from './components/AnalyticsModule'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
 import { TeamModule } from './components/TeamModule'
@@ -47,6 +48,7 @@ const nav = [
   'Exames',
   'Relatórios visuais',
   'Equipe',
+  'Analytics',
   'Configurações',
 ] as const
 
@@ -83,6 +85,10 @@ const moduleMeta: Record<
   Equipe: {
     eyebrow: 'ORGANIZAÇÃO',
     title: 'Papéis e permissões alinhados ao contrato de produção.',
+  },
+  Analytics: {
+    eyebrow: 'USO E COMPARTILHAMENTO',
+    title: 'Visualizações observadas nos relatórios compartilhados.',
   },
   Configurações: {
     eyebrow: 'ORGANIZAÇÃO',
@@ -554,6 +560,9 @@ function ClinicianApp() {
 
       case 'Equipe':
         return <TeamModule />
+
+      case 'Analytics':
+        return <AnalyticsModule repository={clinicalData.repository} />
 
       case 'Configurações':
         return <DemoSettings onNewReport={startNewReport} />
