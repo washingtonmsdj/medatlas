@@ -4,8 +4,17 @@ import type { AtlasConcept, HumanAtlas } from './types'
 export const HUMAN_ATLAS_UPSTREAM_SHA =
   '1c38bf35c254a891200d3cedecfd57abebe83d8d'
 
-export const HUMAN_ATLAS_ASSET_BASE =
-  import.meta.env.VITE_ATLAS_ASSET_BASE || '/atlas-assets'
+function withoutTrailingSlash(value: string) {
+  return value.length > 1 ? value.replace(/\/+$/, '') : value
+}
+
+const configuredAtlasAssetBase =
+  import.meta.env.VITE_ATLAS_ASSET_BASE?.trim()
+
+export const HUMAN_ATLAS_ASSET_BASE = withoutTrailingSlash(
+  configuredAtlasAssetBase ||
+    `${import.meta.env.BASE_URL}atlas-assets`,
+)
 
 export const PORTUGUESE_ALIASES =
   portugueseAnatomy.aliases as Record<string, string[]>

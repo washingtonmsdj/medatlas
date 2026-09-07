@@ -571,7 +571,9 @@ test('patients module reflects only the current synthetic report context', async
   await expect(
     page.getByText('Paciente demonstração', { exact: true }),
   ).toBeVisible()
-  await expect(page.getByText('FMA16036')).toBeVisible()
+  await expect(
+    page.getByText('FMA16036', { exact: true }),
+  ).toBeVisible()
 
   await page
     .getByRole('button', { name: 'Abrir relatório visual' })

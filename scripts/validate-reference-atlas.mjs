@@ -33,9 +33,23 @@ const documents = await readFile(
   'src/components/DocumentsModule.tsx',
   'utf8',
 )
+const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
+
+if (!atlasSource.includes('import.meta.env.BASE_URL')) {
+  failures.push(
+    'atlas asset base must inherit the Vite BASE_URL for subpath deployments',
+  )
+}
+
+if (!atlasSource.includes('${import.meta.env.BASE_URL}atlas-assets')) {
+  failures.push(
+    'atlas asset base must resolve atlas-assets relative to the deployed app base',
+  )
+}
+
 
 const requiredEngineFragments = [
   'RoomEnvironment',
