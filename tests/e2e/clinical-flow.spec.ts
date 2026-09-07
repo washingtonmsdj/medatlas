@@ -268,6 +268,55 @@ test('real Human Atlas stays visible across core MVP context surfaces', async ({
   }
 })
 
+test('patient 3D preview requires a fresh explicit open after anatomy changes', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+  await page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  await page
+    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Pré-visualizar experiência do paciente' })
+    .click()
+
+  await expect(
+    page.getByRole('region', { name: 'Preview do paciente' }),
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Rim', exact: true }).click()
+  await expect(
+    page.getByRole('region', { name: 'Preview do paciente' }),
+  ).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+  await page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7203' })
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .click()
+
+  await expect(
+    page.getByRole('region', { name: 'Preview do paciente' }),
+  ).toHaveCount(0)
+  await expect(
+    page.getByRole('button', {
+      name: 'Pré-visualizar experiência do paciente',
+    }),
+  ).toBeVisible()
+})
+
 test('mobile workspace keeps the main clinical flow usable', async ({
   page,
 }) => {

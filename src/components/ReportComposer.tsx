@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { patientShareUrl } from '../app-url'
 import type { VisualReport } from '../domain/types'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
@@ -44,6 +44,10 @@ export function ReportComposer({
 }: Props) {
   const [copied, setCopied] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
+
+  useEffect(() => {
+    setPreviewOpen(false)
+  }, [report.finding.atlasConceptId, report.finding.sourceText])
 
   const shareUrl =
     report.status === 'published' && report.shareSlug
