@@ -5142,6 +5142,94 @@ button:not(:disabled):active {
   line-height: 1.4;
 }
 
+
+.patient-preview-card-live {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  background: #f7fbfc;
+}
+
+.patient-preview-card-live > .patient-preview-live-heading {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  padding: 1px 1px 0;
+}
+
+.patient-preview-card-live > .patient-preview-live-heading > span {
+  width: auto;
+  height: auto;
+  display: inline;
+  place-items: initial;
+  border: 0;
+  border-radius: 0;
+  color: #b36f21;
+  background: transparent;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.patient-preview-card-live > .patient-preview-live-heading > strong {
+  color: #244663;
+  font-size: 10px;
+}
+
+.patient-preview-card-live > .patient-preview-live-heading > small {
+  color: #6d8295;
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.patient-preview-card-live > .anatomy-focus-preview {
+  min-width: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(29, 68, 83, .08);
+}
+
+.patient-preview-card-live > .anatomy-focus-preview .anatomy-focus-preview-header {
+  min-height: 58px;
+  padding: 10px 11px;
+}
+
+.patient-preview-card-live > .anatomy-focus-preview .anatomy-focus-preview-header strong {
+  font-size: 11px;
+}
+
+.patient-preview-card-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
+.patient-preview-card-live > .anatomy-focus-preview .human-atlas-scene,
+.patient-preview-card-live > .anatomy-focus-preview .focused-reference-loading {
+  min-height: 300px;
+}
+
+.patient-preview-card-live > .anatomy-focus-preview .anatomy-focus-preview-footer {
+  padding: 9px 10px;
+}
+
+.patient-preview-explanation {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 5px !important;
+  align-items: start !important;
+  padding: 10px !important;
+  border: 1px solid #dce8ee;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.patient-preview-explanation .label {
+  color: #477188;
+  font-size: 6px;
+}
+
+.patient-preview-explanation p {
+  max-height: 110px;
+  color: #49677a;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
 .publish-zone {
   display: grid;
   gap: 8px;

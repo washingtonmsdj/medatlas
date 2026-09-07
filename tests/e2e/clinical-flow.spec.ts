@@ -128,6 +128,12 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(patientPreview).toBeVisible()
   await expect(patientPreview).toContainText('Coração')
   await expect(patientPreview).toContainText('FMA7088')
+  await expect(
+    patientPreview.locator('.human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(
+    patientPreview.getByText('3D carregado', { exact: true }),
+  ).toBeVisible({ timeout: 45_000 })
 
   const publishBeforeReview = page.getByRole('button', {
     name: 'Revise a explicação antes de publicar',

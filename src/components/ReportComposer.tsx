@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { patientShareUrl } from '../app-url'
 import type { VisualReport } from '../domain/types'
+import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
   report: VisualReport
@@ -262,19 +263,38 @@ export function ReportComposer({
           </button>
 
           {previewOpen && (
-            <div className="patient-preview-card" role="region" aria-label="Preview do paciente">
-              <header>
+            <div
+              className="patient-preview-card patient-preview-card-live"
+              role="region"
+              aria-label="Preview do paciente"
+            >
+              <div className="patient-preview-live-heading">
                 <span>PREVIEW · NÃO PUBLICADO</span>
-                <strong>{report.finding.anatomicalStructure}</strong>
-                <small>{report.finding.atlasConceptId}</small>
-              </header>
-              <div>
-                <span aria-hidden="true">3D</span>
+                <strong>Experiência visual que o paciente receberá</strong>
+                <small>
+                  O mesmo Human Atlas do relatório, em uma interface simplificada.
+                </small>
+              </div>
+
+              <AnatomyFocusPreview
+                conceptId={report.finding.atlasConceptId || undefined}
+                label={report.finding.anatomicalStructure}
+                atlasRef={report.finding.atlasRef}
+                eyebrow="HUMAN ATLAS 3D · VISÃO DO PACIENTE"
+                appearance="patient"
+                contextMode="system"
+                compact
+                description="Prévia real do modelo anatômico que acompanha o link do paciente. Anatomia humana de referência, não reconstrução individual."
+              />
+
+              <div className="patient-preview-explanation">
+                <span className="label">EM LINGUAGEM MAIS SIMPLES</span>
                 <p>{report.finding.patientExplanation}</p>
               </div>
+
               <footer>
-                O portal final inclui o modelo 3D interativo, conteúdo revisado e
-                perguntas para a próxima conversa.
+                Esta prévia permanece local e não publicada. A versão compartilhada
+                só é liberada depois da revisão clínica explícita.
               </footer>
             </div>
           )}

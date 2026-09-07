@@ -19,6 +19,10 @@ const patient = await readFile(
   'src/components/PatientReportPage.tsx',
   'utf8',
 )
+const reportComposer = await readFile(
+  'src/components/ReportComposer.tsx',
+  'utf8',
+)
 const anatomyFocus = await readFile(
   'src/components/AnatomyFocusPreview.tsx',
   'utf8',
@@ -204,6 +208,7 @@ const contextual3dSurfaces = [
   ['patients', patients, 'PRÉVIA VISUAL DO PACIENTE · HUMAN ATLAS'],
   ['consultations', consultations, 'FOCO DA CONSULTA · HUMAN ATLAS'],
   ['documents', documents, 'REFERÊNCIA EXTRAÍDA · HUMAN ATLAS'],
+  ['patient-preview', reportComposer, 'HUMAN ATLAS 3D · VISÃO DO PACIENTE'],
 ]
 
 for (const [surface, source, marker] of contextual3dSurfaces) {
@@ -217,6 +222,10 @@ for (const [surface, source, marker] of contextual3dSurfaces) {
 
 if (overview.includes('anatomy-preview-orbit')) {
   failures.push('dashboard still contains the legacy fake 3D orbit placeholder')
+}
+
+if (reportComposer.includes('<span aria-hidden="true">3D</span>')) {
+  failures.push('patient report preview still contains the legacy fake 3D badge')
 }
 
 if (!model.includes('export function createFocusedAtlas')) {
