@@ -9,6 +9,8 @@ import {
   type AnatomySuggestion,
 } from './clinical/anatomy-suggestions'
 import { AtlasViewport } from './components/AtlasViewport'
+import { ModulePlaceholder } from './components/ModulePlaceholder'
+import { Overview } from './components/Overview'
 import {
   InvalidPatientLink,
   PatientReportPage,
@@ -27,7 +29,43 @@ const nav = [
   'Exames',
   'Relatórios',
   'Configurações',
-]
+] as const
+
+type ModuleName = (typeof nav)[number]
+
+const moduleMeta: Record<
+  ModuleName,
+  { eyebrow: string; title: string }
+> = {
+  'Visão geral': {
+    eyebrow: 'MEDATLAS',
+    title: 'Visão geral do fluxo clínico visual.',
+  },
+  'Atlas 3D': {
+    eyebrow: 'ANATOMIA INTERATIVA',
+    title: 'Explore e confirme estruturas de referência.',
+  },
+  Pacientes: {
+    eyebrow: 'PACIENTES',
+    title: 'Base clínica isolada por organização.',
+  },
+  Consultas: {
+    eyebrow: 'CONSULTAS',
+    title: 'Contexto dos atendimentos e relatórios visuais.',
+  },
+  Exames: {
+    eyebrow: 'DOCUMENTOS CLÍNICOS',
+    title: 'Origem segura para laudos e exames.',
+  },
+  Relatórios: {
+    eyebrow: 'CONSULTA VISUAL',
+    title: 'Transforme o laudo em uma explicação que o paciente entende.',
+  },
+  Configurações: {
+    eyebrow: 'ORGANIZAÇÃO',
+    title: 'Equipe, identidade e segurança do ambiente.',
+  },
+}
 
 const clinicalData = getClinicalRepository()
 
@@ -82,7 +120,7 @@ function PatientRoute({ slug }: { slug: string }) {
 
 function ClinicianApp() {
   const [report, setReport] = useState<VisualReport>(demoReport)
-  const [active, setActive] = useState('Relatórios')
+  const [active, setActive] = useState<ModuleName>('Visão geral')
   const [publishing, setPublishing] = useState(false)
   const [publishError, setPublishError] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
@@ -221,6 +259,180 @@ function ClinicianApp() {
     setPublishError('')
   }
 
+  const reportWorkflow = (
+    <>
+      <section className="workflow-strip" aria-label="Fluxo do relatório">
+        {[
+          'Importar laudo',
+          'Confirmar anatomia',
+          'Revisar explicação',
+          'Publicar ao paciente',
+        ].map((step, index) => (
+          <div
+            className={
+              index === 0 ||
+              (index === 1 && Boolean(report.finding.atlasConceptId)) ||
+              (!report.finding.explanationReviewRequired && index === 2) ||
+              report.status === 'published'
+                ? 'done'
+                : ''
+            }
+            key={step}
+          >
+            <span>{index + 1}</span>
+            <p>{step}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="content-grid">
+        <div className="left-stack">
+          <ReportIntake
+            sourceText={report.finding.sourceText}
+            analyzing={analyzing}
+            error={intakeError}
+            suggestions={suggestions}
+            onSourceTextChange={updateSourceText}
+            onAnalyze={analyzeSourceText}
+            onConfirmSuggestion={(suggestion) =>
+              confirmConcept(suggestion.concept)
+            }
+          />
+
+          <section className="finding-card">
+            <div>
+              <span className="section-kicker">2 · ANATOMIA CONFIRMADA</span>
+              <h2>{report.finding.anatomicalStructure}</h2>
+              <p>
+                Estrutura que será usada na visualização e no relatório do
+                paciente.
+              </p>
+            </div>
+
+            <div className="finding-match">
+              <span>Referência do atlas</span>
+              <strong>{report.finding.atlasConceptId}</strong>
+              <small>{report.finding.atlasRef}</small>
+            </div>
+          </section>
+
+          <AtlasViewport
+            selected={report.finding.anatomicalStructure}
+            conceptId={report.finding.atlasConceptId}
+            onConfirmConcept={confirmConcept}
+          />
+        </div>
+
+        <ReportComposer
+          report={report}
+          publishing={publishing}
+          publishError={publishError}
+          onPublish={publish}
+          onUpdateExplanation={updateExplanation}
+          onApproveExplanation={approveExplanation}
+        />
+      </section>
+    </>
+  )
+
+  const renderModule = () => {
+    switch (active) {
+      case 'Visão geral':
+        return (
+          <Overview
+            report={report}
+            onOpenReport={() => setActive('Relatórios')}
+            onOpenAtlas={() => setActive('Atlas 3D')}
+          />
+        )
+
+      case 'Atlas 3D':
+        return (
+          <section className="standalone-atlas">
+            <div className="module-intro-card">
+              <span className="section-kicker">EXPLORAÇÃO ANATÔMICA</span>
+              <h2>Atlas de referência conectado ao relatório.</h2>
+              <p>
+                Pesquise e pré-visualize conceitos BodyParts3D/FMA. Uma seleção
+                só altera o relatório quando o profissional usa
+                “Confirmar no relatório”.
+              </p>
+            </div>
+            <AtlasViewport
+              selected={report.finding.anatomicalStructure}
+              conceptId={report.finding.atlasConceptId}
+              onConfirmConcept={confirmConcept}
+            />
+          </section>
+        )
+
+      case 'Relatórios':
+        return reportWorkflow
+
+      case 'Pacientes':
+        return (
+          <ModulePlaceholder
+            title="Pacientes"
+            description="O domínio e as políticas multi-tenant já existem no contrato Supabase. A interface real será conectada somente depois dos testes de isolamento."
+            status="Aguardando backend dedicado"
+            items={[
+              'Cadastro mínimo e organização por tenant',
+              'Histórico de consultas e relatórios',
+              'Busca sem expor dados entre organizações',
+              'Acesso condicionado por papel e RLS',
+            ]}
+          />
+        )
+
+      case 'Consultas':
+        return (
+          <ModulePlaceholder
+            title="Consultas"
+            description="Cada consulta será o contexto clínico para documentos, anatomia confirmada e relatórios visuais."
+            status="Data model pronto"
+            items={[
+              'Vínculo profissional + paciente',
+              'Linha do tempo de relatórios',
+              'Estados de revisão e publicação',
+              'Auditoria dos eventos relevantes',
+            ]}
+          />
+        )
+
+      case 'Exames':
+        return (
+          <ModulePlaceholder
+            title="Exames e documentos"
+            description="O bucket privado e o contrato de integridade já estão definidos; uploads reais permanecem bloqueados até a prova de RLS do Storage."
+            status="Storage definido · ainda não ativado"
+            items={[
+              'PDF, JPEG, PNG e WebP privados',
+              'SHA-256 e tamanho do arquivo',
+              'Path prefixado pelo tenant',
+              'Triagem anatômica sobre conteúdo autorizado',
+            ]}
+          />
+        )
+
+      case 'Configurações':
+        return (
+          <ModulePlaceholder
+            title="Configurações da organização"
+            description="A área futura reunirá equipe, papéis, branding da clínica, política de compartilhamento e integrações."
+            status="Contrato de papéis pronto"
+            items={[
+              'Admin, clinician e staff',
+              'Identidade visual / white-label',
+              'Expiração padrão dos links',
+              'Auditoria e políticas da organização',
+            ]}
+          />
+        )
+    }
+  }
+
+  const meta = moduleMeta[active]
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -256,8 +468,8 @@ function ClinicianApp() {
       <section className="workspace">
         <header className="topbar">
           <div>
-            <span className="eyebrow">CONSULTA VISUAL</span>
-            <h1>Transforme o laudo em uma explicação que o paciente entende.</h1>
+            <span className="eyebrow">{meta.eyebrow}</span>
+            <h1>{meta.title}</h1>
           </div>
 
           <div className="doctor-chip">
@@ -269,77 +481,7 @@ function ClinicianApp() {
           </div>
         </header>
 
-        <section className="workflow-strip" aria-label="Fluxo do relatório">
-          {[
-            'Importar laudo',
-            'Confirmar anatomia',
-            'Revisar explicação',
-            'Publicar ao paciente',
-          ].map((step, index) => (
-            <div
-              className={
-                index === 0 ||
-                (index === 1 && Boolean(report.finding.atlasConceptId)) ||
-                (!report.finding.explanationReviewRequired && index === 2) ||
-                report.status === 'published'
-                  ? 'done'
-                  : ''
-              }
-              key={step}
-            >
-              <span>{index + 1}</span>
-              <p>{step}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="content-grid">
-          <div className="left-stack">
-            <ReportIntake
-              sourceText={report.finding.sourceText}
-              analyzing={analyzing}
-              error={intakeError}
-              suggestions={suggestions}
-              onSourceTextChange={updateSourceText}
-              onAnalyze={analyzeSourceText}
-              onConfirmSuggestion={(suggestion) =>
-                confirmConcept(suggestion.concept)
-              }
-            />
-
-            <section className="finding-card">
-              <div>
-                <span className="section-kicker">2 · ANATOMIA CONFIRMADA</span>
-                <h2>{report.finding.anatomicalStructure}</h2>
-                <p>
-                  Estrutura que será usada na visualização e no relatório do
-                  paciente.
-                </p>
-              </div>
-
-              <div className="finding-match">
-                <span>Referência do atlas</span>
-                <strong>{report.finding.atlasConceptId}</strong>
-                <small>{report.finding.atlasRef}</small>
-              </div>
-            </section>
-
-            <AtlasViewport
-              selected={report.finding.anatomicalStructure}
-              conceptId={report.finding.atlasConceptId}
-              onConfirmConcept={confirmConcept}
-            />
-          </div>
-
-          <ReportComposer
-            report={report}
-            publishing={publishing}
-            publishError={publishError}
-            onPublish={publish}
-            onUpdateExplanation={updateExplanation}
-            onApproveExplanation={approveExplanation}
-          />
-        </section>
+        {renderModule()}
       </section>
     </main>
   )
