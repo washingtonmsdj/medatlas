@@ -1,6 +1,8 @@
 import type {
+  ClinicalReportViewStat,
   ClinicalRepository,
   ClinicalRepositoryDescriptor,
+  ClinicalUsageSummary,
 } from './clinical-repository'
 import type { VisualReport } from '../domain/types'
 
@@ -14,12 +16,29 @@ interface StoredDemoShare {
   createdAt: string
   expiresAt: string
   report: VisualReport
+  viewCount?: number
+  lastViewedAt?: string
 }
 
-const memoryShares = new Map<
-  string,
-  { expiresAt: number; report: VisualReport }
->()
+interface MemoryDemoShare {
+  createdAt: number
+  expiresAt: number
+  report: VisualReport
+  viewCount: number
+  lastViewedAt?: string
+}
+
+interface DemoShareEntry {
+  token: string
+  key?: string
+  createdAt: number
+  expiresAt: number
+  report: VisualReport
+  viewCount: number
+  lastViewedAt?: string
+}
+
+const memoryShares = new Map<string, MemoryDemoShare>()
 
 export const demoRepositoryDescriptor: ClinicalRepositoryDescriptor = {
   mode: 'demo',
@@ -36,12 +55,48 @@ function randomToken(bytes = 32) {
   ).join('')
 }
 
+function parseStoredShare(
+  token: string,
+  key: string,
+  raw: string,
+): DemoShareEntry | null {
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredDemoShare>
+    const createdAt = Date.parse(parsed.createdAt ?? '')
+    const expiresAt = Date.parse(parsed.expiresAt ?? '')
+
+    if (
+      parsed.schema !== DEMO_SHARE_SCHEMA ||
+      !parsed.report ||
+      !Number.isFinite(createdAt) ||
+      !Number.isFinite(expiresAt)
+    ) {
+      return null
+    }
+
+    return {
+      token,
+      key,
+      createdAt,
+      expiresAt,
+      report: parsed.report,
+      viewCount:
+        typeof parsed.viewCount === 'number' && parsed.viewCount >= 0
+          ? parsed.viewCount
+          : 0,
+      lastViewedAt:
+        parsed.lastViewedAt &&
+        Number.isFinite(Date.parse(parsed.lastViewedAt))
+          ? parsed.lastViewedAt
+          : undefined,
+    }
+  } catch {
+    return null
+  }
+}
+
 function storageEntries() {
-  const entries: Array<{
-    key: string
-    createdAt: number
-    expiresAt: number
-  }> = []
+  const entries: DemoShareEntry[] = []
 
   try {
     for (let index = 0; index < window.localStorage.length; index += 1) {
@@ -51,24 +106,15 @@ function storageEntries() {
       const raw = window.localStorage.getItem(key)
       if (!raw) continue
 
-      try {
-        const parsed = JSON.parse(raw) as Partial<StoredDemoShare>
-        const createdAt = Date.parse(parsed.createdAt ?? '')
-        const expiresAt = Date.parse(parsed.expiresAt ?? '')
+      const token = key.slice(STORAGE_PREFIX.length)
+      const parsed = parseStoredShare(token, key, raw)
 
-        if (
-          parsed.schema !== DEMO_SHARE_SCHEMA ||
-          !Number.isFinite(createdAt) ||
-          !Number.isFinite(expiresAt)
-        ) {
-          window.localStorage.removeItem(key)
-          continue
-        }
-
-        entries.push({ key, createdAt, expiresAt })
-      } catch {
+      if (!parsed) {
         window.localStorage.removeItem(key)
+        continue
       }
+
+      entries.push(parsed)
     }
   } catch {
     return []
@@ -81,7 +127,7 @@ function pruneExpiredAndExcessShares(now = Date.now()) {
   const entries = storageEntries()
 
   for (const entry of entries) {
-    if (entry.expiresAt <= now) {
+    if (entry.expiresAt <= now && entry.key) {
       try {
         window.localStorage.removeItem(entry.key)
       } catch {
@@ -95,6 +141,8 @@ function pruneExpiredAndExcessShares(now = Date.now()) {
     .sort((a, b) => b.createdAt - a.createdAt)
 
   for (const entry of remaining.slice(MAX_STORED_DEMO_SHARES)) {
+    if (!entry.key) continue
+
     try {
       window.localStorage.removeItem(entry.key)
     } catch {
@@ -113,7 +161,12 @@ function persist(token: string, report: VisualReport) {
   const createdAt = Date.now()
   const expiresAt = createdAt + DEMO_SHARE_TTL_MS
 
-  memoryShares.set(token, { expiresAt, report })
+  memoryShares.set(token, {
+    createdAt,
+    expiresAt,
+    report,
+    viewCount: 0,
+  })
   pruneExpiredAndExcessShares(createdAt)
 
   const stored: StoredDemoShare = {
@@ -121,6 +174,7 @@ function persist(token: string, report: VisualReport) {
     createdAt: new Date(createdAt).toISOString(),
     expiresAt: new Date(expiresAt).toISOString(),
     report,
+    viewCount: 0,
   }
 
   try {
@@ -134,50 +188,104 @@ function persist(token: string, report: VisualReport) {
   }
 }
 
+function recordStoredView(entry: DemoShareEntry, now: number) {
+  if (!entry.key) return
+
+  const updated: StoredDemoShare = {
+    schema: DEMO_SHARE_SCHEMA,
+    createdAt: new Date(entry.createdAt).toISOString(),
+    expiresAt: new Date(entry.expiresAt).toISOString(),
+    report: entry.report,
+    viewCount: entry.viewCount + 1,
+    lastViewedAt: new Date(now).toISOString(),
+  }
+
+  try {
+    window.localStorage.setItem(entry.key, JSON.stringify(updated))
+  } catch {
+    // Memory analytics remains available when storage cannot be updated.
+  }
+}
+
 function read(token: string): VisualReport | null {
   const now = Date.now()
   pruneExpiredAndExcessShares(now)
-
-  const inMemory = memoryShares.get(token)
-  if (inMemory) {
-    if (inMemory.expiresAt > now) return inMemory.report
-    memoryShares.delete(token)
-  }
 
   try {
     const key = `${STORAGE_PREFIX}${token}`
     const raw = window.localStorage.getItem(key)
 
-    if (!raw) return null
+    if (raw) {
+      const stored = parseStoredShare(token, key, raw)
 
-    const stored = JSON.parse(raw) as Partial<StoredDemoShare>
+      if (
+        !stored ||
+        stored.expiresAt <= now ||
+        stored.report.status !== 'published' ||
+        stored.report.shareSlug !== token
+      ) {
+        window.localStorage.removeItem(key)
+        memoryShares.delete(token)
+        return null
+      }
 
-    if (
-      stored.schema !== DEMO_SHARE_SCHEMA ||
-      !stored.report ||
-      Date.parse(stored.expiresAt ?? '') <= now ||
-      stored.report.status !== 'published' ||
-      stored.report.shareSlug !== token
-    ) {
-      window.localStorage.removeItem(key)
-      return null
+      const lastViewedAt = new Date(now).toISOString()
+      recordStoredView(stored, now)
+      memoryShares.set(token, {
+        createdAt: stored.createdAt,
+        expiresAt: stored.expiresAt,
+        report: stored.report,
+        viewCount: stored.viewCount + 1,
+        lastViewedAt,
+      })
+
+      return stored.report
     }
-
-    const expiresAt = Date.parse(stored.expiresAt!)
-    memoryShares.set(token, {
-      expiresAt,
-      report: stored.report,
-    })
-
-    return stored.report
   } catch {
+    // Fall through to the in-memory share.
+  }
+
+  const inMemory = memoryShares.get(token)
+
+  if (!inMemory) return null
+  if (inMemory.expiresAt <= now) {
+    memoryShares.delete(token)
     return null
   }
+
+  inMemory.viewCount += 1
+  inMemory.lastViewedAt = new Date(now).toISOString()
+  return inMemory.report
+}
+
+function analyticsEntries() {
+  pruneExpiredAndExcessShares()
+  const entries = new Map<string, DemoShareEntry>()
+
+  for (const entry of storageEntries()) {
+    if (entry.expiresAt > Date.now()) {
+      entries.set(entry.token, entry)
+    }
+  }
+
+  for (const [token, memory] of memoryShares) {
+    if (memory.expiresAt <= Date.now() || entries.has(token)) continue
+
+    entries.set(token, {
+      token,
+      createdAt: memory.createdAt,
+      expiresAt: memory.expiresAt,
+      report: memory.report,
+      viewCount: memory.viewCount,
+      lastViewedAt: memory.lastViewedAt,
+    })
+  }
+
+  return [...entries.values()]
 }
 
 export function getStoredDemoShareCount() {
-  pruneExpiredAndExcessShares()
-  return storageEntries().length
+  return analyticsEntries().length
 }
 
 export function clearDemoShares() {
@@ -201,6 +309,81 @@ export function clearDemoShares() {
 
   memoryShares.clear()
   return removed
+}
+
+function demoUsageSummary(): ClinicalUsageSummary {
+  const entries = analyticsEntries()
+  const publishedReports = new Set(entries.map((entry) => entry.report.id))
+  const viewedReports = new Set(
+    entries
+      .filter((entry) => entry.viewCount > 0)
+      .map((entry) => entry.report.id),
+  )
+  const lastViewedAt = entries
+    .map((entry) => entry.lastViewedAt)
+    .filter((value): value is string => Boolean(value))
+    .sort((a, b) => Date.parse(b) - Date.parse(a))[0]
+
+  return {
+    publishedReports: publishedReports.size,
+    sharesCreated: entries.length,
+    activeShares: entries.length,
+    shareViews: entries.reduce(
+      (total, entry) => total + entry.viewCount,
+      0,
+    ),
+    viewedReports: viewedReports.size,
+    lastViewedAt,
+  }
+}
+
+function demoReportViewStats(): ClinicalReportViewStat[] {
+  const reportMap = new Map<
+    string,
+    {
+      reportTitle: string
+      sharesCreated: number
+      viewCount: number
+      lastViewedAt?: string
+    }
+  >()
+
+  for (const entry of analyticsEntries()) {
+    const current = reportMap.get(entry.report.id) ?? {
+      reportTitle: entry.report.title,
+      sharesCreated: 0,
+      viewCount: 0,
+      lastViewedAt: undefined,
+    }
+
+    current.sharesCreated += 1
+    current.viewCount += entry.viewCount
+
+    if (
+      entry.lastViewedAt &&
+      (!current.lastViewedAt ||
+        Date.parse(entry.lastViewedAt) > Date.parse(current.lastViewedAt))
+    ) {
+      current.lastViewedAt = entry.lastViewedAt
+    }
+
+    reportMap.set(entry.report.id, current)
+  }
+
+  return [...reportMap.entries()]
+    .map(([reportId, stat]) => ({
+      reportId,
+      reportTitle: stat.reportTitle,
+      reportVersion: 1,
+      sharesCreated: stat.sharesCreated,
+      viewCount: stat.viewCount,
+      lastViewedAt: stat.lastViewedAt,
+    }))
+    .sort(
+      (a, b) =>
+        Date.parse(b.lastViewedAt ?? '1970-01-01') -
+        Date.parse(a.lastViewedAt ?? '1970-01-01'),
+    )
 }
 
 export class DemoClinicalRepository implements ClinicalRepository {
@@ -249,6 +432,14 @@ export class DemoClinicalRepository implements ClinicalRepository {
     }
 
     return read(token)
+  }
+
+  async getUsageSummary(): Promise<ClinicalUsageSummary> {
+    return demoUsageSummary()
+  }
+
+  async getReportViewStats(): Promise<ClinicalReportViewStat[]> {
+    return demoReportViewStats()
   }
 }
 
