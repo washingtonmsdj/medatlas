@@ -114,6 +114,19 @@ clinician confirmation
 
 ### 5. Renderer
 
+Existe **um único engine 3D canônico**, derivado diretamente do Human Atlas.
+
+Modos:
+
+- **Explorer completo** — carrega o atlas integral para sistemas, picking por peça,
+  vistas, rotação, isolamento e explode;
+- **Focused clinical** — recorta semanticamente a estrutura confirmada + contexto,
+  remapeia somente os chunks necessários e executa o mesmo engine.
+
+O modo focado não mantém um segundo renderer simplificado. A diferença é somente
+a entrada de dados/estado e o orçamento de payload.
+
+
 O renderer usa Three.js e a geometria BodyParts3D empacotada pelo Human Atlas.
 
 Propriedades atuais:

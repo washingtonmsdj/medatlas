@@ -38,6 +38,7 @@ O MVP já possui:
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
 - explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
+- o relatório clínico e a página do paciente usam o mesmo engine 3D em modo focado, com recorte de anatomia e somente os chunks necessários;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;

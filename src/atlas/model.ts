@@ -15,12 +15,6 @@ import type {
 
 export type AtlasContextMode = 'none' | 'system' | 'region'
 
-export interface LoadedAtlasPart {
-  part: AtlasPart
-  geometry: THREE.BufferGeometry
-  selected: boolean
-}
-
 const chunkBufferCache = new Map<string, Promise<ArrayBuffer>>()
 
 export async function decodeModelResponse(
@@ -78,45 +72,6 @@ export async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
   return request
 }
 
-function geometryFromPart(
-  part: AtlasPart,
-  buffer: ArrayBuffer,
-): THREE.BufferGeometry {
-  const geometry = new THREE.BufferGeometry()
-
-  geometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(
-      new Float32Array(buffer, part.positions, part.vertexCount * 3),
-      3,
-    ),
-  )
-
-  geometry.setAttribute(
-    'normal',
-    new THREE.BufferAttribute(
-      new Int16Array(buffer, part.normals, part.vertexCount * 3),
-      3,
-      true,
-    ),
-  )
-
-  geometry.setIndex(
-    new THREE.BufferAttribute(
-      new Uint32Array(buffer, part.indices, part.indexCount),
-      1,
-    ),
-  )
-
-  geometry.boundingBox = new THREE.Box3(
-    new THREE.Vector3().fromArray(part.bounds[0]),
-    new THREE.Vector3().fromArray(part.bounds[1]),
-  )
-  geometry.computeBoundingSphere()
-
-  return geometry
-}
-
 function partCenter(part: AtlasPart) {
   return new THREE.Vector3()
     .fromArray(part.bounds[0])
@@ -124,12 +79,12 @@ function partCenter(part: AtlasPart) {
     .multiplyScalar(0.5)
 }
 
-export async function loadConceptScene(
+export function selectConceptSceneParts(
   atlas: HumanAtlas,
   concept: AtlasConcept,
   contextMode: AtlasContextMode = 'system',
   contextLimit = 10,
-): Promise<LoadedAtlasPart[]> {
+) {
   const selectedIds = new Set(concept.elements)
   const selectedParts = atlas.parts.filter((part) => selectedIds.has(part.id))
 
@@ -173,37 +128,65 @@ export async function loadConceptScene(
           .slice(0, effectiveLimit)
           .map(({ part }) => part)
 
-  const allParts = [...selectedParts, ...contextParts]
-  const neededChunks = new Set(allParts.map((part) => part.chunk))
+  return {
+    selectedIds,
+    selectedParts,
+    contextParts,
+    allParts: [...selectedParts, ...contextParts],
+  }
+}
 
-  const chunkBuffers = new Map<number, ArrayBuffer>(
-    await Promise.all(
-      [...neededChunks].map(async (chunkIndex) => {
-        const chunk = atlas.chunks[chunkIndex]
-
-        if (!chunk) {
-          throw new Error('O atlas referencia um bloco de geometria inexistente.')
-        }
-
-        return [
-          chunkIndex,
-          await loadChunkBuffer(chunk),
-        ] as [number, ArrayBuffer]
-      }),
-    ),
+export function createFocusedAtlas(
+  atlas: HumanAtlas,
+  concept: AtlasConcept,
+  contextMode: AtlasContextMode = 'system',
+  contextLimit = 10,
+): HumanAtlas {
+  const { allParts } = selectConceptSceneParts(
+    atlas,
+    concept,
+    contextMode,
+    contextLimit,
   )
 
-  return allParts.map((part) => {
-    const buffer = chunkBuffers.get(part.chunk)
+  const originalChunkIndexes = [
+    ...new Set(allParts.map((part) => part.chunk)),
+  ].sort((a, b) => a - b)
 
-    if (!buffer) {
-      throw new Error('Bloco anatômico carregado não pôde ser resolvido.')
+  const remappedChunkIndexes = new Map(
+    originalChunkIndexes.map((chunkIndex, nextIndex) => [
+      chunkIndex,
+      nextIndex,
+    ]),
+  )
+
+  const chunks = originalChunkIndexes.map((chunkIndex) => {
+    const chunk = atlas.chunks[chunkIndex]
+
+    if (!chunk) {
+      throw new Error('O atlas referencia um bloco de geometria inexistente.')
+    }
+
+    return chunk
+  })
+
+  const parts = allParts.map((part) => {
+    const chunk = remappedChunkIndexes.get(part.chunk)
+
+    if (chunk === undefined) {
+      throw new Error('Não foi possível remapear o bloco anatômico focado.')
     }
 
     return {
-      part,
-      geometry: geometryFromPart(part, buffer),
-      selected: selectedIds.has(part.id),
+      ...part,
+      chunk,
     }
   })
+
+  return {
+    ...atlas,
+    parts,
+    chunks,
+    concepts: [concept],
+  }
 }

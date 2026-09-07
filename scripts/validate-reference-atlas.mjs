@@ -10,6 +10,8 @@ const explorer = await readFile(
 )
 const systems = await readFile('src/atlas/systems.ts', 'utf8')
 const app = await readFile('src/App.tsx', 'utf8')
+const focused = await readFile('src/components/HumanAtlasScene.tsx', 'utf8')
+const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
 
@@ -81,6 +83,25 @@ if (!app.includes('<ReferenceAtlasExplorer')) {
   failures.push('Atlas 3D module is not using ReferenceAtlasExplorer')
 }
 
+const requiredFocusedFragments = [
+  'HumanAtlasExplorerScene',
+  'createFocusedAtlas',
+  'focusedAtlas',
+  "contextMode === 'none'",
+]
+
+for (const fragment of requiredFocusedFragments) {
+  if (!focused.includes(fragment)) {
+    failures.push(
+      'focused clinical atlas is not using the reference engine: ' + fragment,
+    )
+  }
+}
+
+if (!model.includes('export function createFocusedAtlas')) {
+  failures.push('atlas model does not expose focused reference-atlas slicing')
+}
+
 if (
   app.includes(
     '<section className="standalone-atlas">' +
@@ -97,5 +118,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas Human Atlas reference-engine contract PASS: full-system renderer uses merged geometry, GPU state textures, picking, explode layout, camera controls and direct report handoff.',
+  'MedAtlas Human Atlas reference-engine contract PASS: full-system and focused clinical modes share the reference engine, with merged geometry, GPU state textures, picking, explode layout, camera controls and chunk-bounded focused slicing.',
 )

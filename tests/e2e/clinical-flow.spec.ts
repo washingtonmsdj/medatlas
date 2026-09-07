@@ -584,3 +584,16 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
     page.getByText(/peças · .* conceitos · BodyParts3D/),
   ).toBeVisible()
 })
+
+
+test('clinical report uses the same Human Atlas reference engine in focused mode', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await expect(
+    page.locator(
+      '.human-atlas-scene .reference-atlas-scene',
+    ).first(),
+  ).toBeVisible()
+})
