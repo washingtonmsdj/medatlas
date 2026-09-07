@@ -543,7 +543,10 @@ function ClinicianApp() {
   const meta = moduleMeta[active]
 
   return (
-    <main className="app-shell">
+    <div className="app-shell">
+      <a className="skip-link" href="#clinical-workspace">
+        Ir para o conteúdo principal
+      </a>
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">M</span>
@@ -577,7 +580,7 @@ function ClinicianApp() {
         </div>
       </aside>
 
-      <section className="workspace">
+      <main className="workspace" id="clinical-workspace" tabIndex={-1}>
         <header className="topbar">
           <div>
             <span className="eyebrow">{meta.eyebrow}</span>
@@ -594,8 +597,8 @@ function ClinicianApp() {
         </header>
 
         {renderModule()}
-      </section>
-    </main>
+      </main>
+    </div>
   )
 }
 

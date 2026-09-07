@@ -83,7 +83,7 @@ export function PatientReportPage({ report }: Props) {
               onError={failed}
             />
 
-            <div className="patient-atlas-status">
+            <div className="patient-atlas-status" role="status" aria-live="polite">
               {atlasStatus === 'ready' && (
                 <>
                   <span className="live-dot" />

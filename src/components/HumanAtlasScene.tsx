@@ -74,6 +74,13 @@ export function HumanAtlasScene({
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.12
+    renderer.domElement.setAttribute('role', 'img')
+    renderer.domElement.setAttribute(
+      'aria-label',
+      `Visualização anatômica 3D de referência para ${conceptId}.`,
+    )
+    renderer.domElement.textContent =
+      'Visualização anatômica 3D. A estrutura selecionada e sua explicação também estão disponíveis em texto.'
     element.appendChild(renderer.domElement)
 
     const controls = new OrbitControls(camera, renderer.domElement)
@@ -147,6 +154,10 @@ export function HumanAtlasScene({
       try {
         const atlas = await loadHumanAtlas()
         const concept = findAtlasConcept(atlas, conceptId)
+        renderer.domElement.setAttribute(
+          'aria-label',
+          `Visualização anatômica 3D de referência: ${concept.name}.`,
+        )
         const loaded = await loadConceptScene(
           atlas,
           concept,

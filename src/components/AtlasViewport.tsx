@@ -194,7 +194,7 @@ export function AtlasViewport({
           onError={failed}
         />
 
-        <div className="structure-label real-label">
+        <div className="structure-label real-label" role="status" aria-live="polite">
           <strong>{activeLabel}</strong>
           <span>
             {status === 'ready'
@@ -229,7 +229,7 @@ export function AtlasViewport({
       </div>
 
       <div className="atlas-actions">
-        <div className="context-mode-group" aria-label="Contexto anatômico">
+        <div className="context-mode-group" role="group" aria-label="Contexto anatômico">
           {CONTEXT_OPTIONS.map((option) => (
             <button
               key={option.value}
