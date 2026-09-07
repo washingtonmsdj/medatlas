@@ -21,6 +21,7 @@ import {
   PatientReportPage,
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
+import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
 import type { ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
@@ -419,22 +420,12 @@ function ClinicianApp() {
 
       case 'Atlas 3D':
         return (
-          <section className="standalone-atlas">
-            <div className="module-intro-card">
-              <span className="section-kicker">EXPLORAÇÃO ANATÔMICA</span>
-              <h2>Atlas de referência conectado ao relatório.</h2>
-              <p>
-                Pesquise e pré-visualize conceitos BodyParts3D/FMA. Uma seleção
-                só altera o relatório quando o profissional usa
-                “Confirmar no relatório”.
-              </p>
-            </div>
-            <AtlasViewport
-              selected={report.finding.anatomicalStructure}
-              conceptId={report.finding.atlasConceptId}
-              onConfirmConcept={confirmConcept}
-            />
-          </section>
+          <ReferenceAtlasExplorer
+            initialConceptId={
+              report.finding.atlasConceptId || undefined
+            }
+            onConfirmConcept={confirmConcept}
+          />
         )
 
       case 'Relatórios':

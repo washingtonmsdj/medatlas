@@ -1,0 +1,627 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import '../reference-atlas.css'
+import {
+  conceptDisplayName,
+  findAtlasConcept,
+  loadHumanAtlas,
+  searchAtlasConcepts,
+} from '../atlas/source'
+import {
+  ATLAS_SYSTEMS,
+  DEFAULT_VISIBLE_SYSTEMS,
+  type AtlasExplorerSceneState,
+  type AtlasSystemId,
+  type AtlasView,
+} from '../atlas/systems'
+import type {
+  AtlasConcept,
+  AtlasPart,
+  HumanAtlas,
+} from '../atlas/types'
+import { HumanAtlasExplorerScene } from './HumanAtlasExplorerScene'
+
+interface Props {
+  initialConceptId?: string
+  onConfirmConcept: (concept: AtlasConcept) => void
+}
+
+const ORGAN_SYSTEMS: AtlasSystemId[] = [
+  'cardiac',
+  'respiratory',
+  'digestive',
+  'urinary',
+  'endocrine',
+  'reproductive',
+]
+
+const VIEW_OPTIONS: Array<{
+  id: AtlasView
+  label: string
+  short: string
+}> = [
+  { id: 'three-quarter', label: 'Vista 3/4', short: '¾' },
+  { id: 'front', label: 'Frente', short: 'F' },
+  { id: 'side', label: 'Lateral', short: 'L' },
+  { id: 'back', label: 'Costas', short: 'C' },
+]
+
+function initialState(): AtlasExplorerSceneState {
+  return {
+    explode: 0,
+    visible: DEFAULT_VISIBLE_SYSTEMS,
+    selected: [],
+    isolate: false,
+    view: 'three-quarter',
+    rotate: false,
+    reset: 0,
+  }
+}
+
+function partConcept(atlas: HumanAtlas, part: AtlasPart) {
+  return (
+    atlas.concepts.find(
+      (concept) => concept.id === part.conceptId,
+    ) ?? {
+      id: part.conceptId,
+      name: part.name,
+      elements: [part.id],
+    }
+  )
+}
+
+export function ReferenceAtlasExplorer({
+  initialConceptId,
+  onConfirmConcept,
+}: Props) {
+  const [atlas, setAtlas] = useState<HumanAtlas | null>(null)
+  const [state, setState] =
+    useState<AtlasExplorerSceneState>(initialState)
+  const [progress, setProgress] = useState(0)
+  const [error, setError] = useState('')
+  const [query, setQuery] = useState('')
+  const [chosen, setChosen] = useState<AtlasConcept | null>(null)
+
+  useEffect(() => {
+    let active = true
+
+    void loadHumanAtlas()
+      .then((loadedAtlas) => {
+        if (!active) return
+
+        setAtlas(loadedAtlas)
+
+        if (initialConceptId) {
+          try {
+            const concept = findAtlasConcept(
+              loadedAtlas,
+              initialConceptId,
+            )
+            setChosen(concept)
+            setState((current) => ({
+              ...current,
+              selected: concept.elements,
+            }))
+          } catch {
+            // Explorer still opens even if the current report has no concept.
+          }
+        }
+      })
+      .catch((reason) => {
+        if (!active) return
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : 'Não foi possível abrir o atlas anatômico.',
+        )
+      })
+
+    return () => {
+      active = false
+    }
+  }, [initialConceptId])
+
+  const partsById = useMemo(
+    () =>
+      new Map(
+        atlas?.parts.map((part) => [part.id, part]) ?? [],
+      ),
+    [atlas],
+  )
+
+  const counts = useMemo(() => {
+    if (!atlas) return new Map<string, number>()
+
+    const next = new Map<string, number>()
+
+    for (const part of atlas.parts) {
+      next.set(part.system, (next.get(part.system) ?? 0) + 1)
+    }
+
+    return next
+  }, [atlas])
+
+  const activeSystems = useMemo(
+    () =>
+      ATLAS_SYSTEMS.filter(
+        (system) => (counts.get(system.id) ?? 0) > 0,
+      ),
+    [counts],
+  )
+
+  const results = useMemo(
+    () => (atlas ? searchAtlasConcepts(atlas, query, 40) : []),
+    [atlas, query],
+  )
+
+  const selectedParts = useMemo(
+    () =>
+      state.selected
+        .map((id) => partsById.get(id))
+        .filter((part): part is AtlasPart => Boolean(part)),
+    [partsById, state.selected],
+  )
+
+  const selectedSystem = selectedParts[0]
+    ? ATLAS_SYSTEMS.find(
+        (system) => system.id === selectedParts[0].system,
+      )
+    : undefined
+
+  const visibleCount = useMemo(() => {
+    if (!atlas) return 0
+
+    const visible = new Set(state.visible)
+    const selected = new Set(state.selected)
+
+    return atlas.parts.filter((part) =>
+      state.isolate
+        ? selected.has(part.id)
+        : visible.has(part.system as AtlasSystemId) ||
+          selected.has(part.id),
+    ).length
+  }, [atlas, state.isolate, state.selected, state.visible])
+
+  const chooseConcept = (concept: AtlasConcept) => {
+    setChosen(concept)
+    setState((current) => ({
+      ...current,
+      selected: concept.elements,
+      isolate: false,
+      rotate: false,
+    }))
+    setQuery('')
+  }
+
+  const choosePart = useCallback(
+    (partId: string) => {
+      if (!atlas) return
+
+      const part = partsById.get(partId)
+      if (!part) return
+
+      const concept = partConcept(atlas, part)
+      setChosen(concept)
+      setState((current) => ({
+        ...current,
+        selected: [part.id],
+        isolate: false,
+        rotate: false,
+      }))
+    },
+    [atlas, partsById],
+  )
+
+  const toggleSystem = (systemId: AtlasSystemId) => {
+    setChosen(null)
+    setState((current) => ({
+      ...current,
+      selected: [],
+      isolate: false,
+      visible: current.visible.includes(systemId)
+        ? current.visible.filter((id) => id !== systemId)
+        : [...current.visible, systemId],
+    }))
+  }
+
+  const showOnlySystem = (systemId: AtlasSystemId) => {
+    setChosen(null)
+    setState((current) => ({
+      ...current,
+      selected: [],
+      isolate: false,
+      visible: [systemId],
+    }))
+  }
+
+  const reset = () => {
+    setChosen(null)
+    setQuery('')
+    setState((current) => ({
+      ...initialState(),
+      reset: current.reset + 1,
+    }))
+  }
+
+  const setView = (view: AtlasView) => {
+    setState((current) => ({
+      ...current,
+      view,
+      reset: current.reset + 1,
+      rotate: false,
+    }))
+  }
+
+  const onProgress = useCallback((value: number) => {
+    setProgress(value)
+  }, [])
+
+  const onError = useCallback((message: string) => {
+    setError(message)
+  }, [])
+
+  return (
+    <section
+      className="reference-atlas-explorer"
+      aria-label="Explorador Human Atlas adaptado"
+    >
+      <div className="reference-atlas-stage">
+        {atlas && (
+          <HumanAtlasExplorerScene
+            atlas={atlas}
+            state={state}
+            onSelect={choosePart}
+            onProgress={onProgress}
+            onError={onError}
+          />
+        )}
+
+        <div className="reference-atlas-identity">
+          <span className="section-kicker">
+            HUMAN ATLAS · MOTOR DE REFERÊNCIA
+          </span>
+          <h2>
+            Atlas humano <b>3D</b>
+          </h2>
+          <p>
+            {atlas
+              ? atlas.parts.length.toLocaleString('pt-BR') +
+                ' peças · ' +
+                atlas.concepts.length.toLocaleString('pt-BR') +
+                ' conceitos · BodyParts3D'
+              : 'Carregando catálogo anatômico…'}
+          </p>
+        </div>
+
+        <div className="reference-atlas-search">
+          <label htmlFor="reference-atlas-search">
+            Buscar anatomia
+          </label>
+          <input
+            id="reference-atlas-search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Coração, rim, fêmur, FMA7088…"
+          />
+
+          {query.trim().length >= 2 && (
+            <div className="reference-atlas-results">
+              {results.length > 0 ? (
+                results.map((concept) => (
+                  <button
+                    key={concept.id}
+                    type="button"
+                    onClick={() => chooseConcept(concept)}
+                  >
+                    <span>{conceptDisplayName(concept)}</span>
+                    <small>
+                      {concept.name} · {concept.id} ·{' '}
+                      {concept.elements.length} peça
+                      {concept.elements.length === 1 ? '' : 's'}
+                    </small>
+                  </button>
+                ))
+              ) : (
+                <p>Nenhuma estrutura encontrada.</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <aside
+          className="reference-atlas-systems"
+          aria-label="Sistemas anatômicos"
+        >
+          <div className="reference-panel-heading">
+            <strong>Sistemas</strong>
+            <span>{activeSystems.length}</span>
+          </div>
+
+          <div className="reference-presets">
+            <button
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  selected: [],
+                  isolate: false,
+                  visible: activeSystems.map(
+                    (system) => system.id,
+                  ),
+                }))
+              }
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  selected: [],
+                  isolate: false,
+                  visible: ['skeletal'],
+                }))
+              }
+            >
+              Esqueleto
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  selected: [],
+                  isolate: false,
+                  visible: ORGAN_SYSTEMS,
+                }))
+              }
+            >
+              Órgãos
+            </button>
+          </div>
+
+          <div className="reference-system-list">
+            {activeSystems.map((system) => {
+              const enabled = state.visible.includes(system.id)
+
+              return (
+                <div
+                  className={enabled ? 'enabled' : ''}
+                  key={system.id}
+                >
+                  <button
+                    type="button"
+                    className="reference-system-name"
+                    onClick={() => showOnlySystem(system.id)}
+                    title={'Mostrar somente ' + system.name}
+                  >
+                    <span
+                      className="reference-system-dot"
+                      style={{ background: system.color }}
+                    />
+                    <span>{system.name}</span>
+                    <small>
+                      {counts.get(system.id)?.toLocaleString(
+                        'pt-BR',
+                      )}
+                    </small>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={enabled}
+                    aria-label={'Mostrar ' + system.name}
+                    className="reference-system-switch"
+                    onClick={() => toggleSystem(system.id)}
+                  >
+                    <span />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="reference-panel-foot">
+            <span>{visibleCount.toLocaleString('pt-BR')} visíveis</span>
+            <button
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  selected: [],
+                  isolate: false,
+                  visible: [],
+                }))
+              }
+            >
+              Ocultar tudo
+            </button>
+          </div>
+        </aside>
+
+        <nav
+          className="reference-view-controls"
+          aria-label="Controles de câmera do Atlas 3D"
+        >
+          {VIEW_OPTIONS.map((view) => (
+            <button
+              key={view.id}
+              type="button"
+              className={state.view === view.id ? 'active' : ''}
+              aria-pressed={state.view === view.id}
+              title={view.label}
+              onClick={() => setView(view.id)}
+            >
+              {view.short}
+            </button>
+          ))}
+          <i />
+          <button
+            type="button"
+            className={state.rotate ? 'active' : ''}
+            aria-pressed={state.rotate}
+            aria-label={
+              state.rotate
+                ? 'Pausar rotação automática'
+                : 'Ativar rotação automática'
+            }
+            onClick={() =>
+              setState((current) => ({
+                ...current,
+                rotate: !current.rotate,
+              }))
+            }
+          >
+            ↻
+          </button>
+          <button
+            type="button"
+            aria-label="Resetar Atlas 3D"
+            onClick={reset}
+          >
+            ↺
+          </button>
+        </nav>
+
+        <div className="reference-explode-control">
+          <div>
+            <label htmlFor="reference-explode">
+              Separar anatomia
+            </label>
+            <output>{Math.round(state.explode * 100)}%</output>
+          </div>
+          <input
+            id="reference-explode"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={Math.round(state.explode * 100)}
+            onChange={(event) => {
+              const explode = Number(event.target.value) / 100
+              setState((current) => ({
+                ...current,
+                explode,
+                view: explode > 0.8 ? 'front' : current.view,
+                rotate: false,
+              }))
+            }}
+          />
+          <div className="reference-explode-labels">
+            <span>Montado</span>
+            <span>Peça por peça</span>
+          </div>
+        </div>
+
+        {chosen && (
+          <aside className="reference-structure-card">
+            <span
+              className="reference-structure-accent"
+              style={{ background: selectedSystem?.color }}
+            />
+            <span className="section-kicker">
+              {selectedSystem?.name ?? 'ANATOMIA'}
+            </span>
+            <h3>{conceptDisplayName(chosen)}</h3>
+            <p>{chosen.name}</p>
+
+            <div className="reference-structure-meta">
+              <span>
+                FMA
+                <strong>{chosen.id}</strong>
+              </span>
+              <span>
+                Peças
+                <strong>{state.selected.length}</strong>
+              </span>
+            </div>
+
+            <button
+              className="primary"
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  isolate: !current.isolate,
+                  explode: 0,
+                }))
+              }
+            >
+              {state.isolate
+                ? 'Mostrar anatomia ao redor'
+                : 'Isolar estrutura'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onConfirmConcept(chosen)}
+            >
+              Usar no relatório
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setChosen(null)
+                setState((current) => ({
+                  ...current,
+                  selected: [],
+                  isolate: false,
+                }))
+              }}
+            >
+              Limpar seleção
+            </button>
+          </aside>
+        )}
+
+        {progress < 100 && !error && (
+          <div className="reference-atlas-loading" role="status">
+            <strong>Preparando anatomia completa</strong>
+            <span>
+              {progress}% · carregando{' '}
+              {atlas?.parts.length.toLocaleString('pt-BR') ??
+                '2.234'}{' '}
+              peças
+            </span>
+            <div>
+              <i style={{ width: String(progress) + '%' }} />
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="reference-atlas-error" role="alert">
+            <strong>Atlas 3D indisponível</strong>
+            <span>{error}</span>
+          </div>
+        )}
+
+        <footer className="reference-atlas-caption">
+          <span>
+            {state.isolate
+              ? chosen
+                ? conceptDisplayName(chosen)
+                : 'ESTRUTURA SELECIONADA'
+              : state.explode > 0.95
+                ? 'INVENTÁRIO ANATÔMICO'
+                : state.explode > 0.05
+                  ? 'ESTRUTURAS SEPARADAS'
+                  : 'ADULTO · MASCULINO · REFERÊNCIA'}
+          </span>
+          <small>
+            Arraste para girar · zoom para aproximar · clique para
+            inspecionar
+          </small>
+        </footer>
+      </div>
+
+      <p className="reference-atlas-source">
+        Engine adaptado diretamente do Human Atlas fixado em{' '}
+        <code>1c38bf35</code>. Geometria BodyParts3D 4.0 vendorizada e
+        verificada pelo MedAtlas.
+      </p>
+    </section>
+  )
+}

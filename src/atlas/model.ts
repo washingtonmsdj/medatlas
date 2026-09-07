@@ -23,7 +23,7 @@ export interface LoadedAtlasPart {
 
 const chunkBufferCache = new Map<string, Promise<ArrayBuffer>>()
 
-async function decodeModelResponse(
+export async function decodeModelResponse(
   response: Response,
   expectedBytes: number,
   compressed: boolean,
@@ -58,7 +58,7 @@ async function decodeModelResponse(
   return buffer
 }
 
-async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
+export async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
   const compressed = Boolean(chunk.gzip)
   const url = assetUrl(chunk.gzip ?? chunk.url)
   const cached = chunkBufferCache.get(url)

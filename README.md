@@ -37,6 +37,7 @@ O MVP já possui:
 - sugestões limitadas a conceitos que realmente existem no atlas;
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
+- explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
@@ -89,6 +90,7 @@ npm run validate:ai-contract
 npm run validate:review-gate
 npm run validate:report-workflow
 npm run validate:license-attribution
+npm run validate:reference-atlas
 npm run check
 npm run build
 npm audit --omit=dev --audit-level=high

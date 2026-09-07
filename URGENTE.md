@@ -17,6 +17,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Resolve demo L4–L5 structure to real FMA concept `FMA16036`.
 - [x] Load real BodyParts3D geometry for the confirmed report structure.
 - [x] Generalize renderer to compound concepts and multiple structures.
+- [x] Port the full Human Atlas reference explorer into the Atlas 3D module: merged system geometry, GPU visibility/selection state, per-piece picking, full-system controls, views, rotation, isolate and explode.
+- [x] Keep the clinical report renderer focused during the first reference-engine migration checkpoint; unify focused mode with the same engine after full-explorer validation.
 - [x] Avoid duplicate downloads when many concept parts share one atlas chunk.
 - [x] Add anatomical search with Portuguese aliases + FMA/source-name lookup.
 - [x] Separate preview from explicit clinician confirmation.

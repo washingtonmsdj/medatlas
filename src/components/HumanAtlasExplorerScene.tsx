@@ -1,0 +1,748 @@
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { createExplosionLayout } from '../atlas/explosion-layout'
+import { loadChunkBuffer } from '../atlas/model'
+import { PointerTap } from '../atlas/pointer-tap'
+import {
+  ATLAS_SYSTEMS,
+  type AtlasExplorerSceneState,
+} from '../atlas/systems'
+import type { HumanAtlas } from '../atlas/types'
+
+interface Props {
+  atlas: HumanAtlas
+  state: AtlasExplorerSceneState
+  onSelect: (partId: string) => void
+  onProgress: (progress: number) => void
+  onError: (message: string) => void
+}
+
+export function HumanAtlasExplorerScene({
+  atlas,
+  state,
+  onSelect,
+  onProgress,
+  onError,
+}: Props) {
+  const host = useRef<HTMLDivElement>(null)
+  const latest = useRef(state)
+  const select = useRef(onSelect)
+
+  latest.current = state
+  select.current = onSelect
+
+  useEffect(() => {
+    const element = host.current
+    if (!element) return
+
+    let disposed = false
+    let frame = 0
+    let ready = false
+    let dirty = true
+    let lastState: AtlasExplorerSceneState | null = null
+    let lastView = ''
+    let lastReset = -1
+    let lastIsolate = ''
+    let layoutKey = ''
+    let amount = 0
+
+    let renderer: THREE.WebGLRenderer
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance',
+      })
+    } catch {
+      onError(
+        'Este navegador não conseguiu iniciar o visualizador 3D completo.',
+      )
+      return
+    }
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2),
+    )
+    renderer.setClearColor('#f2f3f3')
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.12
+    renderer.domElement.setAttribute(
+      'aria-label',
+      'Atlas anatômico humano interativo completo. Arraste para girar, use zoom e clique em uma estrutura para inspecionar.',
+    )
+    element.appendChild(renderer.domElement)
+
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.005, 100)
+    const controls = new OrbitControls(camera, renderer.domElement)
+
+    camera.position.set(1.4, 1.05, 3.6)
+    controls.target.set(0, 0.85, 0)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.085
+    controls.minDistance = 0.07
+    controls.maxDistance = 40
+    controls.maxPolarAngle = Math.PI * 0.96
+    controls.addEventListener('change', () => {
+      dirty = true
+    })
+
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    const room = new RoomEnvironment()
+    const environment = pmrem.fromScene(room, 0.04)
+    scene.environment = environment.texture
+    room.dispose()
+    pmrem.dispose()
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xa7acb2, 1.05))
+
+    const key = new THREE.DirectionalLight(0xfffaf4, 2.3)
+    key.position.set(-2, 4, 3)
+    scene.add(key)
+
+    const rim = new THREE.DirectionalLight(0xe9f0ff, 1.8)
+    rim.position.set(2, 2, -3)
+    scene.add(rim)
+
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(30, 96),
+      new THREE.MeshStandardMaterial({ color: 0xd5d9dc, roughness: 1 }),
+    )
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = -0.019
+    scene.add(ground)
+
+    const platform = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.68, 0.7, 0.028, 100),
+      new THREE.MeshStandardMaterial({
+        color: 0xeeeeec,
+        metalness: 0.12,
+        roughness: 0.67,
+      }),
+    )
+    platform.position.y = -0.016
+    scene.add(platform)
+
+    const width = THREE.MathUtils.ceilPowerOfTwo(atlas.parts.length)
+    const partStateData = new Float32Array(width * 4)
+    const partStateTexture = new THREE.DataTexture(
+      partStateData,
+      width,
+      1,
+      THREE.RGBAFormat,
+      THREE.FloatType,
+    )
+    partStateTexture.needsUpdate = true
+
+    const selectedData = new Uint8Array(width * 4)
+    const selectionTexture = new THREE.DataTexture(selectedData, width, 1)
+    selectionTexture.needsUpdate = true
+
+    const materials: THREE.Material[] = []
+    const geometries: THREE.BufferGeometry[] = []
+    const pickers: Array<THREE.Mesh | undefined> = []
+    const centers = atlas.parts.map((part) =>
+      new THREE.Vector3()
+        .fromArray(part.bounds[0])
+        .add(new THREE.Vector3().fromArray(part.bounds[1]))
+        .multiplyScalar(0.5),
+    )
+    const bounds = atlas.parts.map(
+      (part) =>
+        new THREE.Box3(
+          new THREE.Vector3().fromArray(part.bounds[0]),
+          new THREE.Vector3().fromArray(part.bounds[1]),
+        ),
+    )
+    const offsets: THREE.Vector3[] = []
+
+    const materialFor = (systemId: string) => {
+      const system = ATLAS_SYSTEMS.find(
+        (candidate) => candidate.id === systemId,
+      )
+      const isSurface = systemId === 'integumentary'
+
+      const material = new THREE.MeshStandardMaterial({
+        color: system?.color ?? '#aebbb8',
+        metalness: 0.08,
+        roughness: 0.53,
+        side: THREE.DoubleSide,
+        transparent: isSurface,
+        opacity: isSurface ? 0.1 : 1,
+        depthWrite: !isSurface,
+      })
+
+      material.onBeforeCompile = (shader) => {
+        shader.uniforms.partState = { value: partStateTexture }
+        shader.uniforms.selectionState = { value: selectionTexture }
+        shader.uniforms.stateWidth = { value: width }
+
+        shader.vertexShader =
+          'attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform float stateWidth; varying float partVisible; varying float partSelected;\n' +
+          shader.vertexShader
+
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          '#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partVisible = state.w; partSelected = texture2D(selectionState, stateUv).r;',
+        )
+
+        shader.fragmentShader =
+          'varying float partVisible; varying float partSelected;\n' +
+          shader.fragmentShader
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <clipping_planes_fragment>',
+          '#include <clipping_planes_fragment>\nif (partVisible < 0.5) discard;',
+        )
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <color_fragment>',
+          '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.18, 0.72, 0.92), partSelected * 0.78);',
+        )
+      }
+
+      materials.push(material)
+      return material
+    }
+
+    const materialBySystem = new Map(
+      ATLAS_SYSTEMS.map((system) => [
+        system.id,
+        materialFor(system.id),
+      ]),
+    )
+
+    let loadedChunks = 0
+
+    const loadChunk = async (chunkIndex: number) => {
+      const chunk = atlas.chunks[chunkIndex]
+      if (!chunk) return
+
+      const buffer = await loadChunkBuffer(chunk)
+      if (disposed) return
+
+      const groups = new Map<string, THREE.BufferGeometry[]>()
+
+      atlas.parts.forEach((part, partIndex) => {
+        if (part.chunk !== chunkIndex) return
+
+        const geometry = new THREE.BufferGeometry()
+        geometry.setAttribute(
+          'position',
+          new THREE.BufferAttribute(
+            new Float32Array(
+              buffer,
+              part.positions,
+              part.vertexCount * 3,
+            ),
+            3,
+          ),
+        )
+        geometry.setAttribute(
+          'normal',
+          new THREE.BufferAttribute(
+            new Int16Array(
+              buffer,
+              part.normals,
+              part.vertexCount * 3,
+            ),
+            3,
+            true,
+          ),
+        )
+        geometry.setIndex(
+          new THREE.BufferAttribute(
+            new Uint32Array(
+              buffer,
+              part.indices,
+              part.indexCount,
+            ),
+            1,
+          ),
+        )
+        geometry.boundingBox = bounds[partIndex].clone()
+        geometry.computeBoundingSphere()
+        geometry.setAttribute(
+          'partIndex',
+          new THREE.BufferAttribute(
+            new Float32Array(part.vertexCount).fill(partIndex),
+            1,
+          ),
+        )
+
+        const picker = new THREE.Mesh(geometry)
+        picker.matrixAutoUpdate = false
+        pickers[partIndex] = picker
+        geometries.push(geometry)
+
+        const list = groups.get(part.system) ?? []
+        list.push(geometry)
+        groups.set(part.system, list)
+      })
+
+      groups.forEach((group, systemId) => {
+        const merged = mergeGeometries(group, false)
+        if (!merged) {
+          throw new Error('Não foi possível montar a geometria anatômica.')
+        }
+
+        geometries.push(merged)
+
+        const material =
+          materialBySystem.get(systemId as never) ??
+          materialFor(systemId)
+        const mesh = new THREE.Mesh(merged, material)
+        mesh.frustumCulled = false
+        scene.add(mesh)
+      })
+
+      loadedChunks += 1
+      onProgress(
+        Math.round((loadedChunks / atlas.chunks.length) * 100),
+      )
+      lastState = null
+      dirty = true
+    }
+
+    void (async () => {
+      try {
+        let cursor = 0
+
+        await Promise.all(
+          Array.from({ length: 3 }, async () => {
+            while (cursor < atlas.chunks.length) {
+              const index = cursor
+              cursor += 1
+              await loadChunk(index)
+            }
+          }),
+        )
+
+        if (!disposed) {
+          ready = true
+          dirty = true
+        }
+      } catch (error) {
+        if (!disposed) {
+          onError(
+            error instanceof Error
+              ? error.message
+              : 'Não foi possível carregar o atlas completo.',
+          )
+        }
+      }
+    })()
+
+    let packingWidth = 1
+    let packingHeight = 1
+
+    const fit = (view: AtlasExplorerSceneState['view'], extent = 0) => {
+      const mobile = element.clientWidth < 768
+      const normalDistance = mobile ? 4.8 : 4
+      const reservedHeight = mobile ? 300 : 220
+      const availableAspect = Math.max(
+        0.35,
+        (element.clientWidth - (mobile ? 40 : 300)) /
+          Math.max(160, element.clientHeight - reservedHeight),
+      )
+      const atlasDistance =
+        (Math.max(packingHeight, packingWidth / availableAspect) /
+          (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)))) *
+        1.08
+      const distance = THREE.MathUtils.lerp(
+        normalDistance,
+        Math.max(0.2, atlasDistance),
+        extent,
+      )
+
+      const direction =
+        view === 'front'
+          ? new THREE.Vector3(0, 0.02, 1)
+          : view === 'back'
+            ? new THREE.Vector3(0, 0.02, -1)
+            : view === 'side'
+              ? new THREE.Vector3(1, 0.02, 0)
+              : new THREE.Vector3(0.35, 0.06, 1).normalize()
+
+      controls.target.set(
+        extent > 0.1 && !mobile ? -packingWidth * 0.12 : 0,
+        extent > 0.1 || mobile ? 0.85 : 0.68,
+        0,
+      )
+      camera.position
+        .copy(controls.target)
+        .addScaledVector(direction, distance)
+      controls.update()
+      dirty = true
+    }
+
+    const resize = () => {
+      layoutKey = ''
+      lastState = null
+      camera.aspect =
+        Math.max(1, element.clientWidth) /
+        Math.max(1, element.clientHeight)
+      camera.updateProjectionMatrix()
+      renderer.setSize(
+        Math.max(1, element.clientWidth),
+        Math.max(1, element.clientHeight),
+        false,
+      )
+      fit(latest.current.view, amount)
+    }
+
+    const observer = new ResizeObserver(resize)
+    observer.observe(element)
+    resize()
+
+    const raycaster = new THREE.Raycaster()
+    const pointer = new THREE.Vector2()
+    const tap = new PointerTap()
+    const worldBox = new THREE.Box3()
+    const hitPoint = new THREE.Vector3()
+
+    const pointerDown = (event: PointerEvent) => {
+      tap.down(
+        event.pointerId,
+        event.clientX,
+        event.clientY,
+        event.pointerType === 'touch' ? 12 : 5,
+      )
+    }
+
+    const pointerMove = (event: PointerEvent) => {
+      tap.move(event.pointerId, event.clientX, event.clientY)
+    }
+
+    const pointerCancel = (event: PointerEvent) => {
+      tap.cancel(event.pointerId)
+    }
+
+    const pointerUp = (event: PointerEvent) => {
+      const validTap = tap.up(
+        event.pointerId,
+        event.clientX,
+        event.clientY,
+      )
+
+      if (!validTap || !ready) return
+
+      const rect = renderer.domElement.getBoundingClientRect()
+      pointer.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      )
+      raycaster.setFromCamera(pointer, camera)
+
+      let nearest = Infinity
+      let found = -1
+
+      pickers.forEach((mesh, index) => {
+        if (!mesh || partStateData[index * 4 + 3] < 0.5) return
+
+        worldBox
+          .copy(bounds[index])
+          .translate(mesh.position)
+
+        if (!raycaster.ray.intersectBox(worldBox, hitPoint)) return
+
+        const hits = raycaster.intersectObject(mesh, false)
+        if (hits[0] && hits[0].distance < nearest) {
+          nearest = hits[0].distance
+          found = index
+        }
+      })
+
+      if (found >= 0) select.current(atlas.parts[found].id)
+    }
+
+    renderer.domElement.addEventListener('pointerdown', pointerDown)
+    renderer.domElement.addEventListener('pointermove', pointerMove)
+    renderer.domElement.addEventListener('pointerup', pointerUp)
+    renderer.domElement.addEventListener('pointercancel', pointerCancel)
+
+    const clock = new THREE.Clock()
+
+    const animate = () => {
+      if (disposed) return
+
+      frame = requestAnimationFrame(animate)
+      const delta = Math.min(clock.getDelta(), 0.05)
+      const current = latest.current
+
+      const stateChanged =
+        lastState?.visible !== current.visible ||
+        lastState?.selected !== current.selected ||
+        lastState?.isolate !== current.isolate
+
+      const moving = Math.abs(amount - current.explode) > 0.0001
+
+      if (moving) {
+        amount = THREE.MathUtils.damp(
+          amount,
+          current.explode,
+          8,
+          delta,
+        )
+        dirty = true
+      }
+
+      if (stateChanged || moving) {
+        const visible = new Set(current.visible)
+        const selection = new Set(current.selected)
+        const visibleParts = atlas.parts.filter((part) =>
+          current.isolate
+            ? selection.has(part.id)
+            : visible.has(part.system as never) ||
+              selection.has(part.id),
+        )
+
+        const nextLayoutKey =
+          visibleParts.map((part) => part.id).join(',') +
+          ':' +
+          camera.aspect.toFixed(3)
+
+        if (nextLayoutKey !== layoutKey) {
+          const layout = createExplosionLayout(
+            visibleParts,
+            camera.aspect,
+          )
+          packingWidth = layout.width
+          packingHeight = layout.height
+
+          atlas.parts.forEach((part, index) => {
+            const cell = layout.cells.get(part.id)
+            offsets[index] = cell
+              ? new THREE.Vector3(cell.x, cell.y + 0.85, 0)
+              : centers[index].clone()
+          })
+
+          layoutKey = nextLayoutKey
+        }
+
+        atlas.parts.forEach((part, index) => {
+          const center = centers[index]
+          const destination = offsets[index] ?? center
+
+          let dx = 0
+          let dy = 0
+          let dz = 0
+
+          if (amount <= 0.45) {
+            const t = amount / 0.45
+            const group = Math.max(
+              0,
+              ATLAS_SYSTEMS.findIndex(
+                (system) => system.id === part.system,
+              ),
+            )
+            const angle =
+              (group / ATLAS_SYSTEMS.length) * Math.PI * 2
+            dx = Math.sin(angle) * t * 0.48
+            dy = (center.y - 0.85) * t * 0.28
+            dz = Math.cos(angle) * t * 0.48
+          } else {
+            const t = (amount - 0.45) / 0.55
+            dx = THREE.MathUtils.lerp(
+              0,
+              destination.x - center.x,
+              t,
+            )
+            dy = THREE.MathUtils.lerp(
+              0,
+              destination.y - center.y,
+              t,
+            )
+            dz = THREE.MathUtils.lerp(
+              0,
+              -center.z,
+              t,
+            )
+          }
+
+          const selected = selection.has(part.id)
+          const isVisible = current.isolate
+            ? selected
+            : visible.has(part.system as never) || selected
+
+          partStateData.set(
+            [dx, dy, dz, isVisible ? 1 : 0],
+            index * 4,
+          )
+          selectedData[index * 4] = selected ? 255 : 0
+
+          const picker = pickers[index]
+          if (picker) {
+            picker.position.set(dx, dy, dz)
+            picker.updateMatrix()
+            picker.updateMatrixWorld(true)
+          }
+        })
+
+        partStateTexture.needsUpdate = true
+        selectionTexture.needsUpdate = true
+        lastState = current
+        dirty = true
+      }
+
+      if (
+        current.view !== lastView ||
+        current.reset !== lastReset
+      ) {
+        fit(current.view, amount)
+        lastView = current.view
+        lastReset = current.reset
+      }
+
+      const isolateKey = current.isolate
+        ? current.selected.join(',') +
+          ':' +
+          current.reset +
+          ':' +
+          camera.aspect
+        : ''
+
+      if (isolateKey !== lastIsolate) {
+        if (current.isolate && current.selected.length > 0) {
+          const box = new THREE.Box3()
+
+          atlas.parts.forEach((part, index) => {
+            if (!current.selected.includes(part.id)) return
+
+            box.union(
+              bounds[index]
+                .clone()
+                .translate(
+                  new THREE.Vector3(
+                    partStateData[index * 4],
+                    partStateData[index * 4 + 1],
+                    partStateData[index * 4 + 2],
+                  ),
+                ),
+            )
+          })
+
+          if (!box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3())
+            const size = box.getSize(new THREE.Vector3())
+            const radius = Math.max(size.x, size.y, size.z) * 0.5
+            const distance = Math.max(
+              radius /
+                Math.tan(
+                  THREE.MathUtils.degToRad(camera.fov / 2),
+                ) *
+                1.45,
+              0.08,
+            )
+
+            controls.target.copy(center)
+            camera.position
+              .copy(center)
+              .add(
+                new THREE.Vector3(0.2, 0.1, 1)
+                  .normalize()
+                  .multiplyScalar(distance),
+              )
+            controls.update()
+            dirty = true
+          }
+        } else if (lastIsolate) {
+          fit(current.view, amount)
+        }
+
+        lastIsolate = isolateKey
+      }
+
+      controls.enableRotate = amount < 0.8
+      controls.autoRotate =
+        current.rotate &&
+        !current.isolate &&
+        amount < 0.4
+      controls.autoRotateSpeed = 0.65
+      controls.update()
+
+      if (controls.autoRotate) dirty = true
+
+      ground.visible = platform.visible =
+        amount < 0.5 && !current.isolate
+
+      if (dirty) {
+        renderer.render(scene, camera)
+        dirty = false
+      }
+    }
+
+    animate()
+
+    const contextLost = (event: Event) => {
+      event.preventDefault()
+      onError(
+        'A sessão 3D foi pausada pelo dispositivo. Recarregue para continuar.',
+      )
+    }
+
+    renderer.domElement.addEventListener(
+      'webglcontextlost',
+      contextLost,
+    )
+
+    return () => {
+      disposed = true
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+      controls.dispose()
+
+      renderer.domElement.removeEventListener(
+        'pointerdown',
+        pointerDown,
+      )
+      renderer.domElement.removeEventListener(
+        'pointermove',
+        pointerMove,
+      )
+      renderer.domElement.removeEventListener(
+        'pointerup',
+        pointerUp,
+      )
+      renderer.domElement.removeEventListener(
+        'pointercancel',
+        pointerCancel,
+      )
+      renderer.domElement.removeEventListener(
+        'webglcontextlost',
+        contextLost,
+      )
+
+      geometries.forEach((geometry) => geometry.dispose())
+      materials.forEach((material) => material.dispose())
+      environment.dispose()
+      partStateTexture.dispose()
+      selectionTexture.dispose()
+
+      scene.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          !geometries.includes(object.geometry)
+        ) {
+          object.geometry.dispose()
+          const objectMaterials = Array.isArray(object.material)
+            ? object.material
+            : [object.material]
+          objectMaterials.forEach((material) =>
+            material.dispose(),
+          )
+        }
+      })
+
+      renderer.dispose()
+      renderer.domElement.remove()
+    }
+  }, [atlas, onError, onProgress])
+
+  return <div className="reference-atlas-scene" ref={host} />
+}

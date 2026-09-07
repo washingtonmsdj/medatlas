@@ -551,3 +551,36 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
     ),
   ).toBeVisible()
 })
+
+
+test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Atlas 3D' }).click()
+
+  await expect(
+    page.getByRole('heading', { name: 'Atlas humano 3D' }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText('HUMAN ATLAS · MOTOR DE REFERÊNCIA'),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByRole('navigation', {
+      name: 'Controles de câmera do Atlas 3D',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByLabel('Separar anatomia'),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText(/peças · .* conceitos · BodyParts3D/),
+  ).toBeVisible()
+})
