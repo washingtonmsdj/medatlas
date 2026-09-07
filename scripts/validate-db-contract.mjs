@@ -23,6 +23,7 @@ const sql = migrationSources
 const requiredTables = [
   'organizations',
   'organization_members',
+  'organization_invitations',
   'professionals',
   'organization_units',
   'clinical_workspaces',
@@ -119,6 +120,54 @@ const invariants = [
     'analytics from audit views',
     "event.event_type = 'report.share_viewed'",
   ],
+  [
+    'organization invitations',
+    'create table if not exists public.organization_invitations',
+  ],
+  [
+    'invitation raw token hashed',
+    "digest(raw_token, 'sha256')",
+  ],
+  [
+    'invitation hashed token lookup',
+    "candidate.token_hash = digest(p_token, 'sha256')",
+  ],
+  [
+    'invitation admin create gate',
+    'if not public.medatlas_is_org_admin(p_organization_id) then',
+  ],
+  [
+    'invitation authenticated email match',
+    "current_email <> invitation.email",
+  ],
+  [
+    'invitation admin read policy',
+    'create policy organization_invitations_admin_select',
+  ],
+  [
+    'invitation create RPC',
+    'create or replace function public.medatlas_create_organization_invitation',
+  ],
+  [
+    'invitation accept RPC',
+    'create or replace function public.medatlas_accept_organization_invitation',
+  ],
+  [
+    'invitation revoke RPC',
+    'create or replace function public.medatlas_revoke_organization_invitation',
+  ],
+  [
+    'invitation audit create',
+    "'organization.invitation_created'",
+  ],
+  [
+    'invitation audit accept',
+    "'organization.invitation_accepted'",
+  ],
+  [
+    'invitation audit revoke',
+    "'organization.invitation_revoked'",
+  ],
 ]
 
 for (const [label, marker] of invariants) {
@@ -129,7 +178,7 @@ for (const [label, marker] of invariants) {
 
 const tableDefinitions = [
   ...sql.matchAll(
-    /create table if not exists\s+public\\.[a-z0-9_]+\s*\\([\s\S]*?\n\\);/gi,
+    /create table if not exists\s+public\.[a-z0-9_]+\s*\([\s\S]*?\n\);/gi,
   ),
 ].map((match) => match[0])
 
@@ -138,7 +187,7 @@ if (
     /\braw_token\s+(text|varchar)\b/i.test(definition),
   )
 ) {
-  failures.push('A raw share token appears to be persisted as a table column')
+  failures.push('A raw share/invitation token appears to be persisted as a table column')
 }
 
 if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
@@ -153,6 +202,12 @@ if (
   failures.push('Anonymous access must be limited to the token resolver RPC')
 }
 
+if (
+  /grant execute on function public\.medatlas_(create|accept|revoke)_organization_invitation[\s\S]*?\bto\s+anon\b/i.test(sql)
+) {
+  failures.push('Organization invitation mutation RPC exposed to anon')
+}
+
 if (failures.length > 0) {
   console.error('MedAtlas database contract FAILED')
   for (const failure of failures) {
@@ -162,5 +217,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/branding/share/storage invariants.`,
+  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/branding/invitation/share/storage invariants.`,
 )
