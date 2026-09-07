@@ -266,6 +266,7 @@ export function AtlasViewport({
             <button
               key={item.id}
               type="button"
+              aria-label={'Pré-visualizar ' + item.label + ' no Atlas 3D'}
               onClick={() => chooseQuickConcept(item.id)}
             >
               {item.label}
