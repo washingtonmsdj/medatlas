@@ -6705,3 +6705,479 @@ button:not(:disabled):active {
 .pilot-card > .section-kicker {
   color: #65c8f2;
 }
+/* MEDATLAS_TEAM_MODULE_V1 */
+.team-module {
+  display: grid;
+  gap: 14px;
+}
+
+.team-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px;
+  border: 1px solid #dbe6ef;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(35, 131, 221, .09), transparent 36%),
+    linear-gradient(180deg, #ffffff, #f8fbfe);
+  box-shadow: 0 18px 44px rgba(45, 72, 102, .07);
+}
+
+.team-hero-summary {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-hero-summary > strong {
+  min-width: 54px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cae0ee;
+  border-radius: 14px;
+  color: #176ca7;
+  background: #eff8fd;
+  font-size: 18px;
+}
+
+.team-hero-summary > span {
+  display: grid;
+  gap: 2px;
+}
+
+.team-hero-summary b {
+  color: #34536d;
+  font-size: 8px;
+}
+
+.team-hero-summary small {
+  color: #6d8397;
+  font-size: 7px;
+}
+
+.team-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid #dce6ee;
+  border-radius: 13px;
+  background: #f9fbfd;
+}
+
+.team-toolbar > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.team-toolbar > div:first-child strong {
+  color: #294a65;
+  font-size: 10px;
+}
+
+.team-toolbar > div:first-child small {
+  color: #71879a;
+  font-size: 7px;
+}
+
+.team-toolbar-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.team-toolbar-actions button {
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid #d2dce4;
+  border-radius: 9px;
+  color: #708394;
+  background: #f3f5f7;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.team-toolbar-actions button.primary {
+  color: #738392;
+  border-color: #d4dde5;
+  background: #eaf0f4;
+  box-shadow: none;
+}
+
+.team-toolbar-actions button:disabled {
+  opacity: .72;
+  cursor: not-allowed;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+  gap: 12px;
+}
+
+.team-roster,
+.team-boundary-card,
+.permission-matrix,
+.team-production-note {
+  border: 1px solid #dce6ef;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .95);
+  box-shadow: 0 13px 35px rgba(47, 75, 103, .06);
+}
+
+.team-roster {
+  overflow: hidden;
+}
+
+.team-roster > header,
+.permission-matrix > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  border-bottom: 1px solid #e3eaf0;
+  background: #fafcfd;
+}
+
+.team-roster > header > div,
+.permission-matrix > header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.team-roster > header strong,
+.permission-matrix > header strong {
+  color: #34536d;
+  font-size: 9px;
+}
+
+.team-roster > header > span {
+  min-width: 25px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d4e2ec;
+  border-radius: 999px;
+  color: #39779e;
+  background: #eff7fb;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.team-member-list {
+  display: grid;
+}
+
+.team-member-list article {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) minmax(165px, .7fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.team-member-list article:last-child {
+  border-bottom: 0;
+}
+
+.team-avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cfe1ed;
+  border-radius: 12px;
+  color: #196ea7;
+  background: linear-gradient(145deg, #eaf6ff, #f8fcff);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.team-member-copy,
+.team-member-role {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.team-member-copy strong {
+  overflow: hidden;
+  color: #24445f;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-copy > span {
+  color: #60798e;
+  font-size: 8px;
+}
+
+.team-member-copy small {
+  color: #687f92;
+  font-size: 7px;
+}
+
+.team-member-role {
+  justify-items: end;
+  text-align: right;
+}
+
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 7px;
+  border: 1px solid #d7e1e8;
+  border-radius: 999px;
+  color: #566d7f;
+  background: #f3f6f8;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.role-chip.role-admin {
+  color: #1b6599;
+  border-color: #c7dfef;
+  background: #edf7fd;
+}
+
+.role-chip.role-clinician {
+  color: #176a58;
+  border-color: #c6e5db;
+  background: #effaf6;
+}
+
+.role-chip.role-staff {
+  color: #6d5b37;
+  border-color: #e7ddc4;
+  background: #fbf7ee;
+}
+
+.team-member-role small {
+  max-width: 170px;
+  color: #697f91;
+  font-size: 7px;
+  line-height: 1.35;
+}
+
+.team-boundary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(46, 130, 196, .06), transparent 38%),
+    #fbfdff;
+}
+
+.team-boundary-card h3 {
+  margin: 0;
+  color: #284861;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.team-boundary-card > p {
+  margin: 0;
+  color: #657d90;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.team-boundary-items {
+  display: grid;
+  gap: 5px;
+  margin-top: auto;
+}
+
+.team-boundary-items span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border: 1px solid #d8e8e1;
+  border-radius: 9px;
+  color: #3f6b61;
+  background: #f3faf7;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.team-boundary-items span.blocked {
+  color: #756846;
+  border-color: #e4ddca;
+  background: #faf7ef;
+}
+
+.team-boundary-items i {
+  font-style: normal;
+}
+
+.permission-matrix {
+  overflow: hidden;
+}
+
+.permission-matrix > header > small {
+  max-width: 530px;
+  color: #677f92;
+  font-size: 7px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.permission-table {
+  display: grid;
+}
+
+.permission-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.2fr) repeat(3, minmax(120px, 1fr));
+  min-width: 0;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.permission-row:last-child {
+  border-bottom: 0;
+}
+
+.permission-row > * {
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 8px;
+  border-right: 1px solid #edf1f4;
+  color: #4e687e;
+  font-size: 8px;
+  text-align: center;
+}
+
+.permission-row > *:last-child {
+  border-right: 0;
+}
+
+.permission-row > strong {
+  justify-items: start;
+  color: #2d4d67;
+  font-size: 8px;
+}
+
+.permission-head {
+  background: #f8fafc;
+}
+
+.permission-head > span {
+  color: #61798c;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.permission-granted {
+  color: #137159 !important;
+  background: #f4faf7;
+  font-size: 11px !important;
+  font-weight: 900;
+}
+
+.permission-denied {
+  color: #8b98a2 !important;
+  background: #fafbfc;
+}
+
+.team-production-note {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 12px 14px;
+  background: #f8fafc;
+}
+
+.team-production-note > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #3f718d;
+  background: #eaf3f8;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.team-production-note strong {
+  color: #3b566c;
+  font-size: 8px;
+}
+
+.team-production-note p {
+  margin: 3px 0 0;
+  color: #657b8e;
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-row {
+    grid-template-columns: minmax(130px, 1fr) repeat(3, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .team-hero,
+  .team-toolbar,
+  .permission-matrix > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .team-hero-summary {
+    align-self: stretch;
+  }
+
+  .team-toolbar-actions {
+    width: 100%;
+  }
+
+  .team-toolbar-actions button {
+    flex: 1;
+  }
+
+  .team-member-list article {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .team-member-role {
+    grid-column: 1 / -1;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .team-member-role small {
+    max-width: none;
+  }
+
+  .permission-matrix {
+    overflow-x: auto;
+  }
+
+  .permission-row {
+    min-width: 620px;
+  }
+
+  .permission-matrix > header > small {
+    max-width: none;
+    text-align: left;
+  }
+}
