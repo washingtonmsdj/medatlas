@@ -199,7 +199,15 @@ test('expired demo patient links fail closed', async ({ page }) => {
     .click()
 
   const shareUrl = await page.locator('.share-box code').innerText()
-  const token = new URL(shareUrl).searchParams.get('patient')
+  const parsedShareUrl = new URL(shareUrl)
+  const token =
+    parsedShareUrl.searchParams.get('patient') ??
+    parsedShareUrl.pathname.match(/\/p\/([^/]+)\/?$/)?.[1] ??
+    null
+
+  if (!token) {
+    throw new Error('Expected patient share token in canonical URL')
+  }
 
   expect(token).toMatch(/^[0-9a-f]{64}$/)
 
