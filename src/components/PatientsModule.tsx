@@ -1,4 +1,5 @@
 import type { VisualReport } from '../domain/types'
+import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
   report: VisualReport
@@ -167,6 +168,29 @@ export function PatientsModule({
           </div>
         </article>
       </div>
+
+      <section className="patient-anatomy-live">
+        <div className="patient-anatomy-live-copy">
+          <span className="section-kicker">DIFERENCIAL MEDATLAS · 3D REAL</span>
+          <h2>A anatomia ligada a este paciente, agora no próprio contexto.</h2>
+          <p>
+            Esta área usa o mesmo Human Atlas do relatório e do link do paciente.
+            Não é ilustração, thumbnail ou modelo genérico paralelo.
+          </p>
+        </div>
+
+        <AnatomyFocusPreview
+          conceptId={report.finding.atlasConceptId || undefined}
+          label={report.finding.anatomicalStructure}
+          atlasRef={report.finding.atlasRef}
+          eyebrow="PRÉVIA VISUAL DO PACIENTE · HUMAN ATLAS"
+          appearance="patient"
+          contextMode="system"
+          reviewRequired={report.finding.anatomyReviewRequired}
+          onOpenAtlas={onOpenAtlas}
+          description="A mesma referência anatômica acompanha o fluxo do profissional ao paciente. O modelo representa anatomia humana de referência, não uma reconstrução individual."
+        />
+      </section>
 
       <section className="patient-production-boundary patient-production-boundary-v2">
         <div>
