@@ -66,7 +66,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Make Portuguese anatomy aliases + demo scenarios canonical JSON SSOTs.
 - [x] Add CI contract proving each demo scenario resolves to its expected pinned FMA concept.
 - [ ] Add structured AI-generated patient-language draft.
-- [ ] Require clinician confirmation before publish.
+- [x] Require clinician confirmation before publish.
+- [x] Add permanent CI contract proving UI, demo repository, browser flow and production SQL all preserve the review gate.
 - [x] Define provider/model/promptVersion/generatedAt provenance contract.
 - [ ] Activate a real provider behind a backend and preserve production generation provenance.
 

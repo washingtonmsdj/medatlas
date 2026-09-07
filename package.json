@@ -14,7 +14,8 @@
     "validate:vendored-assets": "node scripts/validate-vendored-assets.mjs",
     "validate:performance-budget": "node scripts/validate-performance-budget.mjs",
     "validate:security-contract": "node scripts/validate-security-contract.mjs",
-    "validate:ai-contract": "node scripts/validate-ai-contract.mjs"
+    "validate:ai-contract": "node scripts/validate-ai-contract.mjs",
+    "validate:review-gate": "node scripts/validate-review-gate.mjs"
   },
   "dependencies": {
     "react": "19.2.6",
