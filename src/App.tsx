@@ -33,6 +33,8 @@ import type { VisualReport } from './domain/types'
 import {
   DEFAULT_DEMO_WORKSPACE_ID,
   DEMO_ORGANIZATION,
+  DEMO_ORGANIZATION_BRANDING,
+  getDemoCurrentMember,
   getDemoUnit,
   getDemoWorkspace,
 } from './organization/demo-organization'
@@ -561,6 +563,7 @@ function ClinicianApp() {
   const meta = moduleMeta[active]
   const activeWorkspace = getDemoWorkspace(activeWorkspaceId)
   const activeUnit = getDemoUnit(activeWorkspace?.unitId)
+  const currentMember = getDemoCurrentMember()
 
   return (
     <div className="app-shell">
@@ -592,10 +595,15 @@ function ClinicianApp() {
         </nav>
 
         <div className="clinic-card clinic-card-premium">
-          <div className="clinic-card-logo">CH</div>
+          <div
+            className="clinic-card-logo"
+            style={{ background: DEMO_ORGANIZATION_BRANDING.primaryColorHex }}
+          >
+            {DEMO_ORGANIZATION_BRANDING.markText}
+          </div>
           <div>
             <span className="eyebrow">ORGANIZAÇÃO ATIVA</span>
-            <strong>{DEMO_ORGANIZATION.name}</strong>
+            <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
             <small>
               {activeWorkspace?.name ?? 'Sem workspace'}
               {activeUnit ? ` · ${activeUnit.name}` : ''} · demonstração
@@ -632,10 +640,12 @@ function ClinicianApp() {
               <i />
             </button>
             <button className="doctor-chip doctor-chip-button" type="button" aria-label="Abrir menu do profissional">
-              <span>CM</span>
+              <span>{currentMember?.initials ?? 'MD'}</span>
               <div>
-                <strong>Dr. Carlos Mendes</strong>
-                <small>Ortopedia · demonstração</small>
+                <strong>{currentMember?.displayName ?? 'Profissional demo'}</strong>
+                <small>
+                  {currentMember?.professional?.specialty ?? 'Workspace clínico'} · demonstração
+                </small>
               </div>
               <b aria-hidden="true">⌄</b>
             </button>
