@@ -4,7 +4,7 @@
 > Atualize este checkpoint sempre que uma etapa relevante for concluída.
 >
 > Última revisão: **2026-09-07**
-> Código do redesign consolidado e validado até: **`4cd02467477f060b93bc3337fff4b0200c5e350e`**
+> Código 3D/AAA consolidado até: **`f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`** · Browser E2E da superfície em **`2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`**
 
 ## 0. Missão do produto
 
@@ -211,6 +211,31 @@ Não voltar ao layout antigo em que laudo + anatomia ficavam empilhados numa ún
 - [x] Clinical Report Studio reorganizado em 3 colunas.
 - [x] sistema visual responsivo inicial para desktop/tablet/mobile.
 
+### Concluído — redesign 3D AAA, lote 2
+
+- [x] Preservar **um único engine Human Atlas canônico** para todas as superfícies.
+- [x] Adicionar modos de apresentação `clinical`, `explorer` e `patient` sem criar renderer paralelo.
+- [x] Remover aparência cinza/pedestal do Human Atlas original nos modos clínico e paciente.
+- [x] Criar apresentação clínica escura com iluminação fria, HUD e identidade MedAtlas.
+- [x] Manter apresentação do paciente clara, calma e menos técnica.
+- [x] Transformar o 3D focado do relatório em **Clinical 3D Workbench**.
+- [x] Adicionar busca anatômica e atalhos com nomes acessíveis.
+- [x] Adicionar vistas 3/4, frontal, lateral e posterior.
+- [x] Adicionar rotação automática, reset e tela cheia no workspace clínico.
+- [x] Integrar **Isolado / Sistema / Região** diretamente ao palco 3D.
+- [x] Adicionar HUD com estrutura, peças selecionadas, peças de contexto e modo ativo.
+- [x] Redesenhar o Atlas completo como **MedAtlas Atlas Lab / Workbench**, sem aparência de upstream.
+- [x] Adicionar command palette, camadas anatômicas, inspetor permanente, dock de câmera, explode e HUD de seleção.
+- [x] Manter picking por peça e ação **Usar no relatório visual**.
+- [x] Adicionar controles simples de câmera na experiência do paciente.
+- [x] Corrigir enquadramento de estruturas focadas usando os **bounds reais da geometria**; estruturas como coração/rim não reutilizam mais a distância de câmera do corpo completo.
+- [x] Ocultar piso/pedestal nas superfícies focadas clinical/patient.
+- [x] Corrigir contraste e heranças visuais do cabeçalho/card anatômico do paciente.
+- [x] Endurecer `validate-reference-atlas` para impedir regressão dos três modos e do geometry-aware camera fit.
+- [x] Expandir Browser E2E para cobrir o workbench clínico, Atlas completo e controles 3D do paciente.
+- [x] CI completo PASS no contrato 3D até `f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`.
+- [x] Browser E2E **16/16 PASS** em `2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`.
+
 ---
 
 ## 4. P0 — agora: fechar o redesign AAA
@@ -219,8 +244,8 @@ Esta é a prioridade imediata. Não iniciar features grandes de backend antes de
 
 ### P0.1 Validar o lote atual
 
-- [x] Rodar CI/build/typecheck no novo HEAD — PASS em `4cd02467477f060b93bc3337fff4b0200c5e350e`.
-- [x] Rodar Browser E2E do fluxo clínico — PASS completo; 16/16 testes após correções de acessibilidade.
+- [x] Rodar CI/build/typecheck no novo HEAD — PASS completo até `f9f4a964282b596c9e31ba0ba1472a5d4e25d2da`.
+- [x] Rodar Browser E2E do fluxo clínico — PASS completo **16/16** em `2fdc38aaa1af84085edfeefb6bd1f6f64952b2a5`, incluindo as novas superfícies 3D.
 - [ ] Fazer captura visual desktop 1440/1600px.
 - [ ] Fazer captura mobile.
 - [x] Corrigir regressões de acessibilidade introduzidas pelo redesign: ARIA do progresso + contraste do dashboard + contraste do Clinical Report Studio.
@@ -235,7 +260,7 @@ Aplicar o mesmo design system premium, sem criar telas fake:
 - [ ] Pacientes.
 - [ ] Consultas.
 - [ ] Exames.
-- [ ] Atlas 3D.
+- [x] Atlas 3D — MedAtlas Atlas Lab/Workbench aplicado e validado.
 - [ ] Configurações.
 - [ ] experiência do paciente.
 - [ ] empty states.
@@ -249,8 +274,10 @@ Regra: módulo que ainda não tiver backend real pode operar em modo sintético,
 - [ ] Reduzir ruído textual no painel de laudo.
 - [ ] Transformar sugestões anatômicas em seleção visual mais compacta.
 - [ ] Adicionar status/confiança com semântica acessível.
-- [ ] Melhorar toolbar do 3D focado.
-- [ ] Mostrar modos Isolado / Sistema / Região com UI consistente.
+- [x] Melhorar toolbar do 3D focado — vistas, rotação, reset e tela cheia.
+- [x] Mostrar modos Isolado / Sistema / Região com UI consistente dentro do palco 3D.
+- [x] Enquadrar automaticamente anatomia focada pelos bounds reais da geometria.
+- [x] Diferenciar visualmente as superfícies clinical / explorer / patient sem duplicar o engine.
 - [ ] Criar transição visual ao confirmar anatomia.
 - [ ] Melhorar editor de explicação.
 - [ ] Destacar claramente "rascunho assistido" versus "conteúdo aprovado".
@@ -261,7 +288,7 @@ Regra: módulo que ainda não tiver backend real pode operar em modo sintético,
 ### P0.4 Portal do paciente AAA
 
 - [ ] Hero mais humano e menos técnico.
-- [ ] 3D central e responsivo.
+- [x] 3D central e responsivo, com controles simplificados para o paciente e geometry-aware framing.
 - [ ] abas ou narrativa: "o que foi encontrado / onde fica / explicação".
 - [ ] identidade/branding da clínica.
 - [ ] selo claro de conteúdo revisado.
@@ -402,13 +429,14 @@ As próximas IAs **não devem**:
 
 ## 11. Próxima ação exata
 
-1. Fazer visual QA em 1440/1600px do dashboard e do Clinical Report Studio.
-2. Ajustar spacing, densidade e responsividade sem reabrir a arquitetura.
-3. Aplicar o mesmo design system AAA à página do paciente.
-4. Rodar novamente Browser E2E + axe após o portal do paciente.
-5. Uniformizar Pacientes/Consultas/Exames/Atlas/Configurações.
+1. Fazer visual QA final em 1440/1600px do dashboard, Clinical Report Studio e **novo enquadramento 3D focado**.
+2. Concluir o redesign AAA do portal do paciente ao redor do novo 3D: hero, narrativa/abas, branding e hierarquia de conteúdo.
+3. Melhorar o painel de laudo e sugestões anatômicas do Clinical Report Studio, reduzindo densidade sem remover os gates.
+4. Melhorar editor, provenance visual, CTA de revisão/publicação e preview do paciente.
+5. Uniformizar Pacientes/Consultas/Exames/Configurações com o mesmo design system; Atlas 3D já está concluído.
 6. Criar o módulo Equipe apenas quando for funcional, sem placeholder.
-7. Só depois iniciar o Supabase dedicado.
+7. Rodar CI + Browser E2E + axe após cada lote.
+8. Só depois iniciar o Supabase dedicado.
 
 ---
 
