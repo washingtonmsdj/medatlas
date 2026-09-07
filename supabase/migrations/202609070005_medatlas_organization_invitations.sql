@@ -161,6 +161,7 @@ declare
   current_user_id uuid := auth.uid();
   current_email text := lower(coalesce(auth.jwt() ->> 'email', ''));
   invitation public.organization_invitations%rowtype;
+  existing_member_active boolean;
 begin
   if current_user_id is null then
     raise exception 'authentication_required';
@@ -188,28 +189,38 @@ begin
     raise exception 'invitation_email_mismatch';
   end if;
 
-  if exists (
-    select 1
-    from public.organization_members membership
-    where membership.organization_id = invitation.organization_id
-      and membership.user_id = current_user_id
-      and membership.active = true
-  ) then
-    raise exception 'user_already_member';
-  end if;
+  select membership.active
+  into existing_member_active
+  from public.organization_members membership
+  where membership.organization_id = invitation.organization_id
+    and membership.user_id = current_user_id
+  for update;
 
-  insert into public.organization_members (
-    organization_id,
-    user_id,
-    role,
-    active
-  )
-  values (
-    invitation.organization_id,
-    current_user_id,
-    invitation.role,
-    true
-  );
+  if found then
+    if existing_member_active then
+      raise exception 'user_already_member';
+    end if;
+
+    update public.organization_members
+    set
+      role = invitation.role,
+      active = true
+    where organization_id = invitation.organization_id
+      and user_id = current_user_id;
+  else
+    insert into public.organization_members (
+      organization_id,
+      user_id,
+      role,
+      active
+    )
+    values (
+      invitation.organization_id,
+      current_user_id,
+      invitation.role,
+      true
+    );
+  end if;
 
   update public.organization_invitations
   set accepted_at = now()
