@@ -1,15 +1,18 @@
 import type { VisualReport } from '../domain/types'
+import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
   report: VisualReport
   onOpenReport: () => void
   onNewReport: () => void
+  onOpenAtlas: () => void
 }
 
 export function ConsultationsModule({
   report,
   onOpenReport,
   onNewReport,
+  onOpenAtlas,
 }: Props) {
   const stages = [
     {
@@ -80,6 +83,27 @@ export function ConsultationsModule({
           </article>
         ))}
       </div>
+
+      <section className="consultation-anatomy-live">
+        <div className="consultation-anatomy-live-copy">
+          <span className="section-kicker">CONSULTA VISUAL · ANATOMIA AO VIVO</span>
+          <h2>O 3D acompanha a sessão, não fica escondido em outra página.</h2>
+          <p>
+            A estrutura confirmada permanece visível durante o workflow para
+            apoiar a explicação clínica sem transformar o MedAtlas em prontuário.
+          </p>
+        </div>
+
+        <AnatomyFocusPreview
+          conceptId={report.finding.atlasConceptId || undefined}
+          label={report.finding.anatomicalStructure}
+          atlasRef={report.finding.atlasRef}
+          eyebrow="FOCO DA CONSULTA · HUMAN ATLAS"
+          contextMode="system"
+          reviewRequired={report.finding.anatomyReviewRequired}
+          onOpenAtlas={onOpenAtlas}
+        />
+      </section>
 
       <div className="consultation-summary consultation-summary-v2">
         <article>
