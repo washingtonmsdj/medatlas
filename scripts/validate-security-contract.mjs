@@ -39,11 +39,16 @@ const envExample = await read('.env.example')
 const requiredDemoFragments = [
   "syntheticOnly: true",
   "const DEMO_SHARE_TTL_MS = 30 * 60 * 1000",
+  "const DEMO_VIEW_DEDUPE_MS = 1500",
   "const MAX_STORED_DEMO_SHARES = 10",
   'clearDemoShares',
   'getStoredDemoShareCount',
   "const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'",
   'expiresAt',
+  'viewCount',
+  'lastViewedAt',
+  'getUsageSummary',
+  'getReportViewStats',
   'pruneExpiredAndExcessShares',
 ]
 
@@ -59,6 +64,16 @@ if (!demoRepo.includes('crypto.getRandomValues')) {
 
 if (!demoRepo.includes('/^[0-9a-f]{64}$/')) {
   failures.push('demo patient token format is not fail-closed')
+}
+
+if (
+  /\bfetch\s*\(|navigator\.sendBeacon|new\s+XMLHttpRequest/i.test(
+    demoRepo,
+  )
+) {
+  failures.push(
+    'demo repository must not send share analytics to external telemetry',
+  )
 }
 
 const localImportInvariants = [
