@@ -12,12 +12,15 @@ import {
 } from '../atlas/systems'
 import type { HumanAtlas } from '../atlas/types'
 
+export type AtlasSceneAppearance = 'clinical' | 'explorer' | 'patient'
+
 interface Props {
   atlas: HumanAtlas
   state: AtlasExplorerSceneState
   onSelect: (partId: string) => void
   onProgress: (progress: number) => void
   onError: (message: string) => void
+  appearance?: AtlasSceneAppearance
 }
 
 export function HumanAtlasExplorerScene({
@@ -26,6 +29,7 @@ export function HumanAtlasExplorerScene({
   onSelect,
   onProgress,
   onError,
+  appearance = 'clinical',
 }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const latest = useRef(state)
@@ -67,10 +71,15 @@ export function HumanAtlasExplorerScene({
     renderer.setPixelRatio(
       Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2),
     )
-    renderer.setClearColor('#f2f3f3')
+    const isLightSurface = appearance === 'patient'
+    const clearColor = isLightSurface ? '#f1f5f8' : '#071522'
+    const groundColor = isLightSurface ? 0xdbe3e8 : 0x0a1b2e
+    const platformColor = isLightSurface ? 0xf2f4f5 : 0x102b49
+
+    renderer.setClearColor(clearColor)
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.12
+    renderer.toneMappingExposure = isLightSurface ? 1.1 : 1.22
     renderer.domElement.setAttribute(
       'aria-label',
       'Atlas anatômico humano interativo completo. Arraste para girar, use zoom e clique em uma estrutura para inspecionar.',
@@ -99,19 +108,41 @@ export function HumanAtlasExplorerScene({
     room.dispose()
     pmrem.dispose()
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xa7acb2, 1.05))
+    scene.add(
+      new THREE.HemisphereLight(
+        isLightSurface ? 0xffffff : 0xd9f2ff,
+        isLightSurface ? 0xa7acb2 : 0x07101c,
+        isLightSurface ? 1.05 : 1.32,
+      ),
+    )
 
-    const key = new THREE.DirectionalLight(0xfffaf4, 2.3)
-    key.position.set(-2, 4, 3)
+    const key = new THREE.DirectionalLight(
+      isLightSurface ? 0xfffaf4 : 0xccecff,
+      isLightSurface ? 2.3 : 2.65,
+    )
+    key.position.set(-2.2, 4.2, 3.4)
     scene.add(key)
 
-    const rim = new THREE.DirectionalLight(0xe9f0ff, 1.8)
-    rim.position.set(2, 2, -3)
+    const rim = new THREE.DirectionalLight(
+      isLightSurface ? 0xe9f0ff : 0x56a7ff,
+      isLightSurface ? 1.8 : 2.2,
+    )
+    rim.position.set(2.4, 2.1, -3.2)
     scene.add(rim)
+
+    if (!isLightSurface) {
+      const clinicalFill = new THREE.PointLight(0x39d8ff, 1.25, 8)
+      clinicalFill.position.set(-1.8, 1.4, 1.3)
+      scene.add(clinicalFill)
+    }
 
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(30, 96),
-      new THREE.MeshStandardMaterial({ color: 0xd5d9dc, roughness: 1 }),
+      new THREE.MeshStandardMaterial({
+        color: groundColor,
+        roughness: 1,
+        metalness: isLightSurface ? 0 : 0.08,
+      }),
     )
     ground.rotation.x = -Math.PI / 2
     ground.position.y = -0.019
@@ -120,9 +151,9 @@ export function HumanAtlasExplorerScene({
     const platform = new THREE.Mesh(
       new THREE.CylinderGeometry(0.68, 0.7, 0.028, 100),
       new THREE.MeshStandardMaterial({
-        color: 0xeeeeec,
-        metalness: 0.12,
-        roughness: 0.67,
+        color: platformColor,
+        metalness: isLightSurface ? 0.12 : 0.24,
+        roughness: isLightSurface ? 0.67 : 0.5,
       }),
     )
     platform.position.y = -0.016
@@ -742,7 +773,7 @@ export function HumanAtlasExplorerScene({
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [atlas, onError, onProgress])
+  }, [appearance, atlas, onError, onProgress])
 
   return <div className="reference-atlas-scene" ref={host} />
 }
