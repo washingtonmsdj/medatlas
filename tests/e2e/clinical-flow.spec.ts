@@ -710,3 +710,46 @@ test('team module mirrors source-first roles and keeps membership writes blocked
   ).toBeVisible()
 })
 
+test('organization switcher changes the active clinical workspace locally', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  const switcher = page.getByRole('button', {
+    name: 'Organização ativa: Clínica Horizonte, Ortopedia',
+  })
+
+  await expect(switcher).toBeVisible()
+  await switcher.click()
+
+  const dialog = page.getByRole('dialog', {
+    name: 'Selecionar unidade e workspace',
+  })
+
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toContainText('Unidade principal')
+  await expect(dialog).toContainText('Salvador · BA · BR')
+  await expect(dialog).toContainText('organization_units')
+  await expect(dialog).toContainText('clinical_workspaces')
+
+  const cardiology = dialog.getByRole('button', {
+    name: /Cardiologia/,
+  })
+  await expect(cardiology).toHaveAttribute('aria-pressed', 'false')
+  await cardiology.click()
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Organização ativa: Clínica Horizonte, Cardiologia',
+    }),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText(/CLÍNICA HORIZONTE · CARDIOLOGIA · UNIDADE PRINCIPAL/),
+  ).toBeVisible()
+
+  await expect(
+    page.getByText(/Cardiologia · Unidade principal · demonstração/),
+  ).toBeVisible()
+})
+
