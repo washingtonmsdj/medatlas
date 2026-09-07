@@ -2,6 +2,10 @@ import { useCallback, useState } from 'react'
 import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
 import type { VisualReport } from '../domain/types'
+import {
+  DEMO_ORGANIZATION_BRANDING,
+  getDemoCurrentMember,
+} from '../organization/demo-organization'
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
 
@@ -16,6 +20,7 @@ const QUESTIONS = [
 ]
 
 export function PatientReportPage({ report }: Props) {
+  const currentMember = getDemoCurrentMember()
   const [atlasStatus, setAtlasStatus] = useState<
     'loading' | 'ready' | 'error'
   >('loading')
@@ -45,7 +50,7 @@ export function PatientReportPage({ report }: Props) {
 
         <div className="patient-header-right">
           <div className="patient-clinic">
-            <span>Clínica Horizonte</span>
+            <span>{DEMO_ORGANIZATION_BRANDING.brandName}</span>
             <small>Demonstração · dados fictícios · link temporário</small>
           </div>
           <button
@@ -129,8 +134,10 @@ export function PatientReportPage({ report }: Props) {
             <span className="section-kicker">CONTEÚDO REVISADO</span>
             <strong>Preparado para comunicação com o paciente</strong>
             <p>
-              Dr. Carlos Mendes · Ortopedia<br />
-              Clínica Horizonte · demonstração
+              {currentMember?.displayName ?? 'Profissional demo'} ·{' '}
+              {currentMember?.professional?.specialty ?? 'Workspace clínico'}
+              <br />
+              {DEMO_ORGANIZATION_BRANDING.patientFooterText}
             </p>
           </div>
         </aside>
@@ -309,7 +316,9 @@ export function PatientReportPage({ report }: Props) {
       <AttributionNotice compact />
 
       <footer className="patient-footer">
-        <span>MedAtlas · demonstração com dados fictícios · link local temporário</span>
+        <span>
+          {DEMO_ORGANIZATION_BRANDING.patientFooterText} · MedAtlas · link local temporário
+        </span>
         <button type="button" onClick={() => (window.location.href = appHomeUrl())}>
           Voltar ao ambiente clínico
         </button>
