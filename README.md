@@ -150,6 +150,7 @@ O contrato de produção está em:
 - `supabase/migrations/202609070001_medatlas_core.sql`
 - `docs/SECURITY.md`
 - `docs/ARCHITECTURE.md`
+- `docs/RELEASE_READINESS.md`
 
 Ele define:
 
@@ -190,6 +191,10 @@ Veja `docs/SECURITY.md` e `docs/PILOT.md`.
 ### Vercel
 
 `vercel.json` está pronto e usa `npm ci`.
+
+O workflow manual `.github/workflows/preview-artifact.yml` gera um pacote
+estático de preview pequeno, sem duplicar os binários anatômicos. O checkpoint
+atual e as provas de deploy estão em `docs/RELEASE_READINESS.md`.
 
 ### GitHub Pages
 
