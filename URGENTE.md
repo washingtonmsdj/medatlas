@@ -58,6 +58,8 @@ Ship a safe, visually compelling MVP where a clinician can turn a report/exam no
 - [x] Clear stale explanation when source text or confirmed anatomy changes.
 - [x] Reopen anatomical confirmation whenever the source report text changes.
 - [x] Add synthetic multi-specialty demo scenarios (spine, kidney, heart, shoulder).
+- [x] Make Portuguese anatomy aliases + demo scenarios canonical JSON SSOTs.
+- [x] Add CI contract proving each demo scenario resolves to its expected pinned FMA concept.
 - [ ] Add structured AI-generated patient-language draft.
 - [ ] Require clinician confirmation before publish.
 - [ ] Version prompts/model/output and preserve provenance.

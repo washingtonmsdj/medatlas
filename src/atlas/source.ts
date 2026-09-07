@@ -1,3 +1,4 @@
+import portugueseAnatomy from './portuguese-anatomy.json'
 import type { AtlasConcept, HumanAtlas } from './types'
 
 export const HUMAN_ATLAS_UPSTREAM_SHA =
@@ -6,90 +7,11 @@ export const HUMAN_ATLAS_UPSTREAM_SHA =
 export const HUMAN_ATLAS_ASSET_BASE =
   import.meta.env.VITE_ATLAS_ASSET_BASE || '/atlas-assets'
 
-export const PORTUGUESE_ALIASES: Record<string, string[]> = {
-  'l1-l2': ['FMA16033'],
-  'l1 l2': ['FMA16033'],
-  'l2-l3': ['FMA16034'],
-  'l2 l3': ['FMA16034'],
-  'l3-l4': ['FMA16035'],
-  'l3 l4': ['FMA16035'],
-  'l4-l5': ['FMA16036'],
-  'l4 l5': ['FMA16036'],
-  'l5-s1': ['FMA16037'],
-  'l5 s1': ['FMA16037'],
-  'disco l4-l5': ['FMA16036'],
-  'disco intervertebral l4-l5': ['FMA16036'],
-  'coluna lombar': ['FMA16203'],
-  'vertebras lombares': ['FMA9921'],
-  'vértebras lombares': ['FMA9921'],
-  'coluna cervical': ['FMA24138'],
-  'vertebras cervicais': ['FMA9915'],
-  'vértebras cervicais': ['FMA9915'],
-  'medula espinhal': ['FMA7647'],
-  coração: ['FMA7088'],
-  coracao: ['FMA7088'],
-  rins: ['FMA7203'],
-  rim: ['FMA7203'],
-  fêmur: ['FMA9611'],
-  femur: ['FMA9611'],
-  patela: ['FMA24485'],
-  rótula: ['FMA24485'],
-  rotula: ['FMA24485'],
-  úmero: ['FMA13303'],
-  umero: ['FMA13303'],
-  fígado: ['FMA7197'],
-  figado: ['FMA7197'],
-  cérebro: ['FMA50801'],
-  cerebro: ['FMA50801'],
-  estômago: ['FMA7148'],
-  estomago: ['FMA7148'],
-  pâncreas: ['FMA7198'],
-  pancreas: ['FMA7198'],
-  baço: ['FMA7196'],
-  baco: ['FMA7196'],
-  bexiga: ['FMA15900'],
-  próstata: ['FMA9600'],
-  prostata: ['FMA9600'],
-  supraespinal: ['FMA9629'],
-  infraespinal: ['FMA32546'],
-  subescapular: ['FMA13413'],
-  'redondo menor': ['FMA32550'],
-  'manguito rotador': [
-    'FMA9629',
-    'FMA32546',
-    'FMA13413',
-    'FMA32550',
-  ],
-}
+export const PORTUGUESE_ALIASES =
+  portugueseAnatomy.aliases as Record<string, string[]>
 
-export const PORTUGUESE_LABELS: Record<string, string> = {
-  FMA16033: 'Disco intervertebral L1–L2',
-  FMA16034: 'Disco intervertebral L2–L3',
-  FMA16035: 'Disco intervertebral L3–L4',
-  FMA16036: 'Disco intervertebral L4–L5',
-  FMA16037: 'Disco intervertebral L5–S1',
-  FMA16203: 'Coluna lombar',
-  FMA9921: 'Vértebras lombares',
-  FMA24138: 'Coluna cervical',
-  FMA9915: 'Vértebras cervicais',
-  FMA7647: 'Medula espinhal',
-  FMA7088: 'Coração',
-  FMA7203: 'Rins',
-  FMA9611: 'Fêmures',
-  FMA24485: 'Patelas',
-  FMA13303: 'Úmeros',
-  FMA7197: 'Fígado',
-  FMA50801: 'Cérebro',
-  FMA7148: 'Estômago',
-  FMA7198: 'Pâncreas',
-  FMA7196: 'Baço',
-  FMA15900: 'Bexiga urinária',
-  FMA9600: 'Próstata',
-  FMA9629: 'Supraespinal',
-  FMA32546: 'Infraespinal',
-  FMA13413: 'Subescapular',
-  FMA32550: 'Redondo menor',
-}
+export const PORTUGUESE_LABELS =
+  portugueseAnatomy.labels as Record<string, string>
 
 let atlasPromise: Promise<HumanAtlas> | undefined
 

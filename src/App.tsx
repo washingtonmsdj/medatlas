@@ -17,10 +17,8 @@ import {
   PatientReportPage,
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
-import {
-  ReportIntake,
-  type ReportExample,
-} from './components/ReportIntake'
+import type { ReportExample } from './clinical/demo-scenarios'
+import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { demoReport } from './domain/demo'
 import type { VisualReport } from './domain/types'

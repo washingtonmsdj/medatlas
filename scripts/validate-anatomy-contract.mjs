@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises'
 
-const source = await readFile('src/atlas/source.ts', 'utf8')
+const anatomy = JSON.parse(
+  await readFile('src/atlas/portuguese-anatomy.json', 'utf8'),
+)
 const manifest = JSON.parse(
   await readFile(
     'third_party/human-atlas/CURATED_CONCEPTS.json',
@@ -19,21 +21,49 @@ if (manifest.upstream_commit !== expectedCommit) {
   )
 }
 
+if (anatomy.schema !== 'medatlas.portuguese-anatomy/1') {
+  failures.push(`unexpected Portuguese anatomy schema: ${anatomy.schema}`)
+}
+
 const manifestIds = new Set(
   manifest.concepts.map((concept) => concept.id),
 )
 
-const sourceIds = new Set(
-  [...source.matchAll(/['"](FMA\d+)['"]/g)].map(
-    (match) => match[1],
-  ),
-)
+const configuredIds = new Set([
+  ...Object.values(anatomy.aliases).flat(),
+  ...Object.keys(anatomy.labels),
+])
 
-for (const id of sourceIds) {
+for (const id of configuredIds) {
   if (!manifestIds.has(id)) {
     failures.push(
-      `${id} is referenced by curated UI aliases/labels but absent from the pinned concept manifest`,
+      `${id} is referenced by curated aliases/labels but absent from the pinned concept manifest`,
     )
+  }
+}
+
+for (const [alias, ids] of Object.entries(anatomy.aliases)) {
+  if (!alias.trim()) {
+    failures.push('blank Portuguese anatomy alias')
+  }
+
+  if (!Array.isArray(ids) || ids.length < 1) {
+    failures.push(`alias "${alias}" has no concept IDs`)
+  }
+
+  for (const id of ids) {
+    if (!/^FMA\d+$/.test(id)) {
+      failures.push(`alias "${alias}" contains invalid concept id ${id}`)
+    }
+  }
+}
+
+for (const [id, label] of Object.entries(anatomy.labels)) {
+  if (!/^FMA\d+$/.test(id)) {
+    failures.push(`invalid label concept id: ${id}`)
+  }
+  if (typeof label !== 'string' || label.trim().length < 2) {
+    failures.push(`empty Portuguese label for ${id}`)
   }
 }
 
@@ -59,14 +89,11 @@ for (const concept of manifest.concepts) {
   }
 }
 
-if (sourceIds.size !== manifestIds.size) {
-  const unused = [...manifestIds].filter((id) => !sourceIds.has(id))
-
-  if (unused.length > 0) {
-    failures.push(
-      `manifest has concepts no longer used by curated aliases/labels: ${unused.join(', ')}`,
-    )
-  }
+const unused = [...manifestIds].filter((id) => !configuredIds.has(id))
+if (unused.length > 0) {
+  failures.push(
+    `manifest has concepts no longer used by curated aliases/labels: ${unused.join(', ')}`,
+  )
 }
 
 if (failures.length > 0) {

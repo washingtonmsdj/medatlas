@@ -1,42 +1,8 @@
 import type { AnatomySuggestion } from '../clinical/anatomy-suggestions'
-
-export interface ReportExample {
-  id: string
-  label: string
-  title: string
-  sourceText: string
-}
-
-export const REPORT_EXAMPLES: ReportExample[] = [
-  {
-    id: 'spine-l4l5',
-    label: 'Coluna lombar',
-    title: 'Entenda seu exame — coluna lombar',
-    sourceText:
-      'Protusão discal posterior em L4–L5, com leve compressão do saco dural.',
-  },
-  {
-    id: 'kidney',
-    label: 'Rim',
-    title: 'Entenda seu exame — rim',
-    sourceText:
-      'Ultrassonografia abdominal: rim direito com discreta alteração descrita no relatório.',
-  },
-  {
-    id: 'heart',
-    label: 'Coração',
-    title: 'Entenda seu exame — coração',
-    sourceText:
-      'Relatório cardiológico: avaliação do coração com achado descrito pelo examinador.',
-  },
-  {
-    id: 'shoulder',
-    label: 'Ombro',
-    title: 'Entenda seu exame — ombro',
-    sourceText:
-      'Ressonância do ombro: alteração envolvendo o músculo supraespinal.',
-  },
-]
+import {
+  REPORT_EXAMPLES,
+  type ReportExample,
+} from '../clinical/demo-scenarios'
 
 interface Props {
   sourceText: string

@@ -1,0 +1,37 @@
+{
+  "schema": "medatlas.demo-scenarios/1",
+  "scenarios": [
+    {
+      "id": "spine-l4l5",
+      "label": "Coluna lombar",
+      "title": "Entenda seu exame — coluna lombar",
+      "sourceText": "Protusão discal posterior em L4–L5, com leve compressão do saco dural.",
+      "expectedConceptId": "FMA16036",
+      "expectedEvidence": "l4-l5"
+    },
+    {
+      "id": "kidney",
+      "label": "Rim",
+      "title": "Entenda seu exame — rim",
+      "sourceText": "Ultrassonografia abdominal: rim direito com discreta alteração descrita no relatório.",
+      "expectedConceptId": "FMA7203",
+      "expectedEvidence": "rim"
+    },
+    {
+      "id": "heart",
+      "label": "Coração",
+      "title": "Entenda seu exame — coração",
+      "sourceText": "Relatório cardiológico: avaliação do coração com achado descrito pelo examinador.",
+      "expectedConceptId": "FMA7088",
+      "expectedEvidence": "coração"
+    },
+    {
+      "id": "shoulder",
+      "label": "Ombro",
+      "title": "Entenda seu exame — ombro",
+      "sourceText": "Ressonância do ombro: alteração envolvendo o músculo supraespinal.",
+      "expectedConceptId": "FMA9629",
+      "expectedEvidence": "supraespinal"
+    }
+  ]
+}
