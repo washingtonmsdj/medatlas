@@ -1104,7 +1104,9 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   top:10px;
   left:10px;
   z-index:1000;
-  transform:translateY(-180%);
+  transform:translateY(calc(-100% - 24px));
+  opacity:0;
+  pointer-events:none;
   padding:9px 12px;
   border:1px solid #66c8f5;
   border-radius:9px;
@@ -1114,8 +1116,11 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
   font-size:11px;
   font-weight:700;
 }
-.skip-link:focus {
+.skip-link:focus,
+.skip-link:focus-visible {
   transform:translateY(0);
+  opacity:1;
+  pointer-events:auto;
 }
 :where(button,a,input,textarea,[tabindex]):focus-visible {
   outline:2px solid #7bd7ff;

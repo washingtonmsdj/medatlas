@@ -147,6 +147,7 @@ Hierarquia permanente:
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
 - [x] Atlas completo em 390 px é 3D-first: canvas ocupa o palco desde o início; Camadas e Inspector ficam fechados por padrão e abrem como overlays acionáveis, sem empurrar a anatomia para baixo.
+- [x] Skip-link permanece no accessibility tree e aparece por teclado, mas fica visualmente oculto sem foco para não sobrepor o workbench/capturas.
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
 - [x] workflow publica artifact de visual QA também em runs verdes.

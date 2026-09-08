@@ -58,8 +58,10 @@ test('overview and clinical report workspace have no serious axe violations', as
   const skipLink = page.getByRole('link', {
     name: 'Ir para o conteúdo principal',
   })
+  await expect(skipLink).toHaveCSS('opacity', '0')
   await page.keyboard.press('Tab')
   await expect(skipLink).toBeFocused()
+  await expect(skipLink).toHaveCSS('opacity', '1')
 
   await openReports(page)
   await expectNoBlockingViolations(page, 'Clinical report workspace')

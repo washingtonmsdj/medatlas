@@ -179,6 +179,11 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
     }),
   ).toBeVisible()
 
+  const skipLink = page.getByRole('link', {
+    name: 'Ir para o conteúdo principal',
+  })
+  await expect(skipLink).toHaveCSS('opacity', '0')
+
   const dashboardMobile3dStage = page.locator(
     '.continue-care-card .anatomy-focus-preview-stage',
   )
