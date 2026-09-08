@@ -66,11 +66,9 @@ export function ReportComposer({
     <aside className="report-card report-card-v2 report-composer-v3">
       <header className="report-composer-header">
         <div>
-          <span className="section-kicker">EXPLICAÇÃO AO PACIENTE</span>
-          <h2>{report.title}</h2>
-          <p className="muted">
-            {report.patient.displayName} · {report.patient.age} anos
-          </p>
+          <span className="section-kicker">EXPLICAÇÃO</span>
+          <h2>{report.patient.displayName}</h2>
+          <p className="muted">{report.title}</p>
         </div>
 
         <span
@@ -81,23 +79,11 @@ export function ReportComposer({
         </span>
       </header>
 
-      <div className="composer-progress" aria-label="Status da preparação">
-        {presentation.composerStages.map((item, index) => (
-          <div className={item.done ? 'done' : ''} key={item.id}>
-            <span>{item.done ? '✓' : index + 1}</span>
-            <div>
-              <strong>{item.label}</strong>
-              <small>{item.detail}</small>
-            </div>
-          </div>
-        ))}
-      </div>
-
       <details className="source-excerpt">
         <summary>
           <span>
-            <b>Trecho do laudo</b>
-            <small>fonte usada para esta explicação</small>
+            <b>Ver laudo</b>
+            <small>texto de origem</small>
           </span>
           <i aria-hidden="true">⌄</i>
         </summary>
@@ -129,11 +115,8 @@ export function ReportComposer({
 
         {report.finding.anatomyReviewRequired && (
           <div className="explanation-blocked-note">
-            <strong>Anatomia ainda não confirmada</strong>
-            <span>
-              Confirme a estrutura para o texto atual antes de preparar a
-              explicação.
-            </span>
+            <strong>Confirme a anatomia primeiro</strong>
+            <span>A explicação será liberada depois da confirmação.</span>
           </div>
         )}
 
@@ -149,11 +132,6 @@ export function ReportComposer({
           />
           <div className="explanation-editor-meta">
             <span>{presentation.explanation.detail}</span>
-            <span>
-              {report.finding.explanationReviewRequired
-                ? 'edição exige nova revisão'
-                : 'versão revisada'}
-            </span>
           </div>
         </div>
       </section>
@@ -163,11 +141,10 @@ export function ReportComposer({
           <div className="review-gate-heading">
             <span aria-hidden="true">!</span>
             <div>
-              <strong>Revisão necessária</strong>
+              <strong>Revise a explicação</strong>
               <small>Confirme antes de compartilhar</small>
             </div>
           </div>
-          <p>Revise a explicação antes de liberar o link.</p>
           <button
             type="button"
             onClick={onApproveExplanation}
@@ -180,8 +157,8 @@ export function ReportComposer({
         <section className="safety-box review-approved-v2">
           <span aria-hidden="true">✓</span>
           <div>
-            <strong>Revisão concluída</strong>
-            <p>{report.finding.clinicianNote}</p>
+            <strong>Explicação revisada</strong>
+            <p>Pronta para a visão do paciente.</p>
           </div>
         </section>
       )}
@@ -207,7 +184,7 @@ export function ReportComposer({
             <span aria-hidden="true">✓</span>
             <div>
               <strong>Link pronto</strong>
-              <small>Compartilhamento temporário</small>
+              <small>expira em {demoShareTtlLabel()}</small>
             </div>
           </div>
           <code>{shareUrl}</code>
@@ -224,7 +201,6 @@ export function ReportComposer({
               Abrir link
             </button>
           </div>
-          <small>Este link expira em {demoShareTtlLabel()}.</small>
         </section>
       ) : (
         <div className="publish-zone publish-zone-v3">
