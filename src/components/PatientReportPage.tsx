@@ -385,8 +385,6 @@ export function InvalidPatientLink() {
           O link pode ter expirado ou sido removido. Solicite um novo link à clínica.
         </p>
 
-        </div>
-
         <button
           className="primary"
           type="button"
