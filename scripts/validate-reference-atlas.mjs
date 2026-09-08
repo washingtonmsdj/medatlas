@@ -202,7 +202,7 @@ const requiredFocusedFragments = [
   'inspectedPartId={inspectedPart?.partId}',
   'focused-reference-inspector',
   'A anatomia confirmada do relatório não foi',
-  'Identificação visual de anatomia humana de referência',
+  'Referência visual. Não representa o corpo individual do paciente.',
 ]
 
 for (const fragment of requiredFocusedFragments) {
