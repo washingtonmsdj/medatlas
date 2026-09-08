@@ -66,7 +66,7 @@ export function PatientReportPage({
           <div className="patient-clinic">
             <span>{DEMO_ORGANIZATION_BRANDING.brandName}</span>
             <small>
-              {previewMode ? 'Prévia local · dados fictícios' : 'Relatório compartilhado'}
+              {previewMode ? 'Prévia · dados fictícios' : 'Relatório compartilhado'}
             </small>
           </div>
           <button
@@ -85,7 +85,7 @@ export function PatientReportPage({
             {previewMode ? 'VISÃO DO PACIENTE · PRÉVIA' : 'SEU RELATÓRIO VISUAL'}
           </span>
           <h1>{report.title}</h1>
-          <p>Veja a região do exame em 3D e leia a explicação do profissional.</p>
+          <p>Veja a região em 3D e leia a explicação revisada.</p>
 
           <div className="patient-report-chips" aria-label="Resumo do relatório">
             <span>
@@ -157,9 +157,7 @@ export function PatientReportPage({
             </strong>
             <p>
               {currentMember?.displayName ?? 'Profissional demo'} ·{' '}
-              {currentMember?.professional?.specialty ?? 'Workspace clínico'}
-              <br />
-              {DEMO_ORGANIZATION_BRANDING.patientFooterText}
+              {currentMember?.professional?.specialty ?? 'Clínica'}
             </p>
           </div>
         </aside>
@@ -169,7 +167,7 @@ export function PatientReportPage({
         <section className="patient-atlas-card" id="patient-anatomy">
           <div className="patient-card-heading">
             <div>
-              <span className="label">HUMAN ATLAS 3D · REGIÃO DESTACADA</span>
+              <span className="label">HUMAN ATLAS 3D</span>
               <h2>{report.finding.anatomicalStructure}</h2>
             </div>
             <span className="atlas-badge">
@@ -201,7 +199,7 @@ export function PatientReportPage({
               {atlasStatus === 'ready' && (
                 <>
                   <span className="live-dot" />
-                  <span>{sourceLabel} · anatomia de referência</span>
+                  <span>{sourceLabel}</span>
                 </>
               )}
               {atlasStatus === 'loading' && <span>Carregando anatomia 3D…</span>}
@@ -211,70 +209,74 @@ export function PatientReportPage({
               )}
             </div>
 
-            {hasAnatomy && <nav
-              className="patient-atlas-controls"
-              aria-label="Controles da anatomia 3D de referência"
-            >
-              {([
-                ['three-quarter', '3/4', 'Vista 3/4'],
-                ['front', 'Frente', 'Vista frontal'],
-                ['side', 'Lado', 'Vista lateral'],
-              ] as const).map(([nextView, label, ariaLabel]) => (
+            {hasAnatomy && (
+              <nav
+                className="patient-atlas-controls"
+                aria-label="Controles da anatomia 3D de referência"
+              >
+                {([
+                  ['three-quarter', '3/4', 'Vista 3/4'],
+                  ['front', 'Frente', 'Vista frontal'],
+                  ['side', 'Lado', 'Vista lateral'],
+                ] as const).map(([nextView, label, ariaLabel]) => (
+                  <button
+                    key={nextView}
+                    type="button"
+                    className={view === nextView ? 'active' : ''}
+                    aria-pressed={view === nextView}
+                    aria-label={ariaLabel}
+                    onClick={() => {
+                      setView(nextView)
+                      setRotate(false)
+                      setReset((current) => current + 1)
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
                 <button
-                  key={nextView}
                   type="button"
-                  className={view === nextView ? 'active' : ''}
-                  aria-pressed={view === nextView}
-                  aria-label={ariaLabel}
+                  className={rotate ? 'active' : ''}
+                  aria-pressed={rotate}
+                  aria-label={
+                    rotate
+                      ? 'Pausar rotação do modelo 3D'
+                      : 'Girar modelo 3D automaticamente'
+                  }
+                  onClick={() => setRotate((current) => !current)}
+                >
+                  ↻
+                </button>
+                <button
+                  type="button"
+                  aria-label="Redefinir modelo 3D"
                   onClick={() => {
-                    setView(nextView)
+                    setView('three-quarter')
                     setRotate(false)
                     setReset((current) => current + 1)
                   }}
                 >
-                  {label}
+                  ↺
                 </button>
-              ))}
-              <button
-                type="button"
-                className={rotate ? 'active' : ''}
-                aria-pressed={rotate}
-                aria-label={
-                  rotate
-                    ? 'Pausar rotação do modelo 3D'
-                    : 'Girar modelo 3D automaticamente'
-                }
-                onClick={() => setRotate((current) => !current)}
-              >
-                ↻
-              </button>
-              <button
-                type="button"
-                aria-label="Redefinir modelo 3D"
-                onClick={() => {
-                  setView('three-quarter')
-                  setRotate(false)
-                  setReset((current) => current + 1)
-                }}
-              >
-                ↺
-              </button>
-            </nav>}
+              </nav>
+            )}
           </div>
 
-          {hasAnatomy && <p className="patient-interaction-hint">
-            Arraste para girar · role ou pince para aproximar · toque/clique numa estrutura para identificar · geometria BodyParts3D de referência
-          </p>}
+          {hasAnatomy && (
+            <p className="patient-interaction-hint">
+              Arraste para girar · pince ou role para aproximar · toque para identificar
+            </p>
+          )}
         </section>
 
         <aside className="patient-explanation-card" id="patient-explanation">
-          <span className="section-kicker">O QUE O LAUDO MENCIONA</span>
+          <span className="section-kicker">LAUDO</span>
           <blockquote>
             {report.finding.sourceText || 'O texto do exame aparecerá aqui.'}
           </blockquote>
 
           <div className="patient-explanation-section">
-            <span className="label">EM LINGUAGEM MAIS SIMPLES</span>
+            <span className="label">EXPLICAÇÃO</span>
             <p>
               {report.finding.patientExplanation ||
                 'A explicação aparecerá aqui após a revisão profissional.'}
@@ -300,24 +302,16 @@ export function PatientReportPage({
           <div className="patient-safety-note">
             <strong>Importante</strong>
             <p>{report.finding.clinicianNote}</p>
-            <p>
-              O modelo 3D mostra anatomia humana de referência. Ele não é uma
-              reconstrução do seu corpo nem substitui a avaliação do
-              profissional de saúde.
-            </p>
+            <p>O 3D é uma referência anatômica e não substitui a avaliação profissional.</p>
           </div>
         </aside>
       </section>
 
       <section className="patient-next-step patient-next-step-v3" id="patient-questions">
         <div>
-          <span className="section-kicker">PARA SUA PRÓXIMA CONVERSA</span>
-          <h2>Perguntas úteis para levar ao profissional</h2>
-          <p>
-            Estas perguntas são gerais e não pressupõem diagnóstico ou
-            tratamento. Elas ajudam a transformar o relatório em uma conversa
-            mais clara.
-          </p>
+          <span className="section-kicker">PRÓXIMA CONVERSA</span>
+          <h2>Perguntas para levar ao profissional</h2>
+          <p>Use estas perguntas como apoio para conversar sobre o relatório.</p>
         </div>
 
         <div className="patient-question-list">
@@ -369,9 +363,7 @@ export function InvalidPatientLink() {
 
         <span className="section-kicker">LINK INDISPONÍVEL</span>
         <h1>Este link não está disponível.</h1>
-        <p>
-          O link pode ter expirado ou sido removido. Solicite um novo link à clínica.
-        </p>
+        <p>O link pode ter expirado ou sido removido. Solicite um novo link à clínica.</p>
 
         <button
           className="primary"
