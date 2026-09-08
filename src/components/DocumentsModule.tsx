@@ -1,4 +1,10 @@
 import type { VisualReport } from '../domain/types'
+import { deriveReportPresentation } from '../domain/report-presentation'
+import {
+  DEMO_CONSTRAINTS,
+  demoTextFormatLabel,
+  formatDemoTextLimit,
+} from '../product/constraints'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
@@ -12,75 +18,58 @@ export function DocumentsModule({
   onStartImport,
   onOpenAtlas,
 }: Props) {
-  const sourceLength = report.finding.sourceText.trim().length
-  const anatomyStatus = !report.finding.atlasConceptId
-    ? 'Não confirmada'
-    : report.finding.anatomyReviewRequired
-      ? 'Reconfirmação pendente'
-      : report.finding.anatomicalStructure
-
-  const pipeline = [
-    {
-      label: 'Entrada',
-      value: sourceLength > 0 ? 'Texto carregado' : 'Aguardando texto',
-      done: sourceLength > 0,
-    },
-    {
-      label: 'Triagem',
-      value: report.finding.atlasConceptId ? 'Referência encontrada' : 'Não executada',
-      done: Boolean(report.finding.atlasConceptId),
-    },
-    {
-      label: 'Confirmação',
-      value: anatomyStatus,
-      done:
-        Boolean(report.finding.atlasConceptId) &&
-        !report.finding.anatomyReviewRequired,
-    },
-  ]
+  const presentation = deriveReportPresentation(report)
+  const documentSteps = presentation.steps.slice(0, 2)
 
   return (
-    <section className="documents-module documents-module-v2">
-      <div className="documents-hero documents-hero-v2">
+    <section className="documents-module documents-module-v2 module-v3">
+      <div className="documents-hero documents-hero-v2 workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">DOCUMENTOS CLÍNICOS · ENTRADA LOCAL</span>
           <h2>Entrada local de laudos sintéticos</h2>
           <p>
-            Texto fictício é processado somente no navegador. Formatos que
-            exigem OCR ou pipeline documental seguro continuam bloqueados.
+            O navegador aceita apenas texto demonstrativo dentro do limite
+            definido pelo produto. OCR, PDF e imagem permanecem bloqueados até
+            existir pipeline seguro e auditável.
           </p>
         </div>
 
-        <button
-          className="primary"
-          type="button"
-          onClick={onStartImport}
-        >
+        <button className="primary" type="button" onClick={onStartImport}>
           Importar texto sintético
         </button>
       </div>
 
-      <section className="document-pipeline" aria-label="Pipeline do documento atual">
-        {pipeline.map((step, index) => (
-          <article className={step.done ? 'done' : ''} key={step.label}>
+      <section className="document-pipeline report-step-rail document-step-rail-v3" aria-label="Pipeline do documento atual">
+        {documentSteps.map((step, index) => (
+          <article className={step.state} key={step.id}>
             <span>{step.done ? '✓' : index + 1}</span>
             <div>
-              <strong>{step.label}</strong>
-              <small>{step.value}</small>
+              <strong>{step.id === 'source' ? 'Entrada' : 'Anatomia'}</strong>
+              <small>{step.detail}</small>
             </div>
           </article>
         ))}
       </section>
 
-      <section className="documents-anatomy-live">
-        <div className="documents-anatomy-live-copy">
+      <section className="documents-anatomy-live anatomy-showcase-v3">
+        <div className="documents-anatomy-live-copy anatomy-showcase-copy-v3">
           <span className="section-kicker">DOCUMENTO → ANATOMIA 3D</span>
-          <h2>A referência encontrada no texto já aparece em geometria real.</h2>
+          <h2>O conceito confirmado no texto aparece em geometria real.</h2>
           <p>
-            O documento continua sendo a fonte. O 3D mostra apenas o conceito
-            FMA/BodyParts3D atualmente associado e deixa explícito quando uma
-            reconfirmação é necessária.
+            O documento continua sendo a fonte clínica; o 3D representa apenas
+            a referência FMA/BodyParts3D confirmada para a versão atual do
+            texto.
           </p>
+          <div className="anatomy-context-meta-v3">
+            <span>
+              <small>Entrada</small>
+              <strong>{presentation.source.label}</strong>
+            </span>
+            <span>
+              <small>Anatomia</small>
+              <strong>{presentation.anatomy.label}</strong>
+            </span>
+          </div>
         </div>
 
         <AnatomyFocusPreview
@@ -94,17 +83,11 @@ export function DocumentsModule({
         />
       </section>
 
-      <div className="documents-grid documents-grid-v2">
+      <div className="documents-grid documents-grid-v2 document-capability-grid-v3">
         <article className="document-status-card">
           <span className="label">DOCUMENTO ATUAL</span>
-          <strong>
-            {sourceLength > 0
-              ? `${sourceLength.toLocaleString('pt-BR')} caracteres`
-              : 'Nenhum texto carregado'}
-          </strong>
-          <p>
-            Estado local do relatório em trabalho neste navegador.
-          </p>
+          <strong>{presentation.source.label}</strong>
+          <p>{presentation.source.detail}</p>
           <div className="document-card-meta">
             <span>Origem</span>
             <b>local / sintética</b>
@@ -113,23 +96,29 @@ export function DocumentsModule({
 
         <article className="document-status-card">
           <span className="label">ANATOMIA</span>
-          <strong>{anatomyStatus}</strong>
-          <p>
-            Alterar o texto reabre a confirmação anatômica antes da explicação.
-          </p>
+          <strong>{presentation.anatomy.label}</strong>
+          <p>{presentation.anatomy.detail}</p>
           <div className="document-card-meta">
-            <span>Referência</span>
-            <b>{report.finding.atlasConceptId || '—'}</b>
+            <span>Revisão</span>
+            <b>
+              {report.finding.anatomyReviewRequired
+                ? 'obrigatória'
+                : 'confirmada'}
+            </b>
           </div>
         </article>
 
         <article className="document-status-card">
           <span className="label">FORMATOS ATIVOS</span>
-          <strong>.txt · .md</strong>
-          <p>Leitura local, até 64 KB e somente conteúdo fictício.</p>
+          <strong>{demoTextFormatLabel()}</strong>
+          <p>
+            Leitura local até {formatDemoTextLimit()}, somente com conteúdo
+            fictício.
+          </p>
           <div className="document-format-list">
-            <span>TXT</span>
-            <span>MD</span>
+            {DEMO_CONSTRAINTS.localText.extensions.map((extension) => (
+              <span key={extension}>{extension.slice(1).toUpperCase()}</span>
+            ))}
           </div>
         </article>
 
@@ -140,8 +129,9 @@ export function DocumentsModule({
           </div>
           <strong>Ainda bloqueado</strong>
           <p>
-            OCR, PDF e imagem só entram quando houver pipeline seguro,
-            rastreável e testado. O MVP não simula esse processamento.
+            OCR, PDF e imagem entram apenas quando validação de formato,
+            segurança, rastreabilidade e revisão humana estiverem
+            implementadas.
           </p>
           <div className="document-format-list locked">
             <span>PDF</span>
@@ -151,14 +141,14 @@ export function DocumentsModule({
         </article>
       </div>
 
-      <section className="documents-boundary-note">
+      <section className="documents-boundary-note module-boundary-v3">
         <span aria-hidden="true">i</span>
         <div>
-          <strong>Por que manter PDF e imagem bloqueados agora?</strong>
+          <strong>Capacidade real, não interface simulada.</strong>
           <p>
-            Extrair conteúdo clínico de arquivos exige validação de formato,
-            limites, segurança, OCR e revisão humana. Ativar uma interface fake
-            esconderia riscos que ainda não foram implementados.
+            O módulo exibe apenas formatos que o runtime atual consegue ler e
+            validar com segurança. Capacidades futuras permanecem
+            explicitamente bloqueadas.
           </p>
         </div>
       </section>

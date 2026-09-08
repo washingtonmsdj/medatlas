@@ -1,4 +1,5 @@
 import type { VisualReport } from '../domain/types'
+import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
@@ -14,84 +15,67 @@ export function ConsultationsModule({
   onNewReport,
   onOpenAtlas,
 }: Props) {
-  const stages = [
-    {
-      label: 'Texto clínico',
-      detail: 'Fonte do relatório',
-      done: report.finding.sourceText.trim().length > 0,
-    },
-    {
-      label: 'Anatomia confirmada',
-      detail: report.finding.atlasConceptId || 'Referência FMA',
-      done:
-        Boolean(report.finding.atlasConceptId) &&
-        !report.finding.anatomyReviewRequired,
-    },
-    {
-      label: 'Explicação revisada',
-      detail: 'Gate profissional',
-      done:
-        Boolean(report.finding.patientExplanation.trim()) &&
-        !report.finding.explanationReviewRequired,
-    },
-    {
-      label: 'Handoff ao paciente',
-      detail: 'Link temporário',
-      done:
-        report.status === 'published' &&
-        Boolean(report.shareSlug),
-    },
-  ]
-  const completed = stages.filter((stage) => stage.done).length
-  const nextStage = stages.find((stage) => !stage.done)?.label ?? 'Fluxo concluído'
+  const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="consultations-module consultations-module-v2">
-      <div className="consultations-hero consultations-hero-v2">
+    <section className="consultations-module consultations-module-v2 module-v3">
+      <div className="consultations-hero consultations-hero-v2 workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">CONSULTA · WORKFLOW VISUAL</span>
           <h2>Sessão clínica visual em andamento</h2>
           <p>
-            Representa apenas o fluxo do relatório atual. Agenda, prontuário e
-            histórico persistente continuam fora deste MVP.
+            Esta superfície acompanha o relatório atual durante a conversa
+            clínica. Agenda, prontuário e histórico não são simulados enquanto
+            a persistência de produção estiver desativada.
           </p>
         </div>
 
-        <div className="consultation-progress-summary">
+        <div className="consultation-progress-summary workspace-hero-badge">
           <strong className="consultation-score">
-            {completed}/{stages.length}
+            {presentation.completed}/{presentation.total}
           </strong>
           <span>
             <small>Próxima etapa</small>
-            <b>{nextStage}</b>
+            <b>{presentation.currentStep?.label ?? 'Fluxo concluído'}</b>
           </span>
         </div>
       </div>
 
       <div
-        className="consultation-timeline consultation-timeline-v2"
+        className="consultation-timeline consultation-timeline-v2 report-step-rail consultation-step-rail-v3"
         aria-label="Progresso da consulta visual"
       >
-        {stages.map((stage, index) => (
-          <article key={stage.label} className={stage.done ? 'done' : ''}>
-            <span>{stage.done ? '✓' : index + 1}</span>
+        {presentation.steps.map((step, index) => (
+          <article key={step.id} className={step.state}>
+            <span>{step.done ? '✓' : index + 1}</span>
             <div>
-              <strong>{stage.label}</strong>
-              <p>{stage.done ? 'Concluído' : stage.detail}</p>
+              <strong>{step.shortLabel}</strong>
+              <p>{step.detail}</p>
             </div>
             <i aria-hidden="true" />
           </article>
         ))}
       </div>
 
-      <section className="consultation-anatomy-live">
-        <div className="consultation-anatomy-live-copy">
+      <section className="consultation-anatomy-live anatomy-showcase-v3">
+        <div className="consultation-anatomy-live-copy anatomy-showcase-copy-v3">
           <span className="section-kicker">CONSULTA VISUAL · ANATOMIA AO VIVO</span>
-          <h2>O 3D acompanha a sessão, não fica escondido em outra página.</h2>
+          <h2>O 3D permanece visível durante a sessão.</h2>
           <p>
-            A estrutura confirmada permanece visível durante o workflow para
-            apoiar a explicação clínica sem transformar o MedAtlas em prontuário.
+            A referência anatômica acompanha o workflow para apoiar a
+            explicação visual, sem alterar o relatório quando uma peça é apenas
+            inspecionada.
           </p>
+          <div className="anatomy-context-meta-v3">
+            <span>
+              <small>Paciente</small>
+              <strong>{report.patient.displayName}</strong>
+            </span>
+            <span>
+              <small>Próxima ação</small>
+              <strong>{presentation.currentStep?.shortLabel ?? 'Concluído'}</strong>
+            </span>
+          </div>
         </div>
 
         <AnatomyFocusPreview
@@ -105,7 +89,7 @@ export function ConsultationsModule({
         />
       </section>
 
-      <div className="consultation-summary consultation-summary-v2">
+      <div className="consultation-summary consultation-summary-v2 status-facts-v3">
         <article>
           <span className="label">PACIENTE</span>
           <strong>{report.patient.displayName}</strong>
@@ -114,34 +98,23 @@ export function ConsultationsModule({
 
         <article>
           <span className="label">ANATOMIA DE REFERÊNCIA</span>
-          <strong>
-            {report.finding.atlasConceptId
-              ? report.finding.anatomicalStructure
-              : 'Ainda não confirmada'}
-          </strong>
-          <p>{report.finding.atlasConceptId || 'sem FMA confirmado'}</p>
+          <strong>{presentation.anatomy.label}</strong>
+          <p>{presentation.anatomy.detail}</p>
         </article>
 
         <article>
           <span className="label">PUBLICAÇÃO</span>
-          <strong>
-            {report.status === 'published' ? 'Compartilhado' : 'Não publicado'}
-          </strong>
-          <p>
-            {report.status === 'published'
-              ? 'link demo temporário ativo'
-              : report.finding.explanationReviewRequired
-                ? 'revisão humana ainda necessária'
-                : 'pronto para handoff'}
-          </p>
+          <strong>{presentation.sharing.label}</strong>
+          <p>{presentation.sharing.detail}</p>
         </article>
       </div>
 
-      <div className="consultation-actions consultation-actions-v2">
+      <div className="consultation-actions consultation-actions-v2 module-action-bar-v3">
         <div>
           <strong>Continue exatamente de onde parou</strong>
           <span>
-            O estado atual do relatório é preservado localmente nesta sessão.
+            O estado exibido aqui é derivado do mesmo relatório usado pelo
+            Clinical Studio.
           </span>
         </div>
         <div>

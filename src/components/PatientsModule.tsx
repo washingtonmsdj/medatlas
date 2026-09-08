@@ -1,4 +1,5 @@
 import type { VisualReport } from '../domain/types'
+import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
@@ -7,12 +8,14 @@ interface Props {
   onOpenAtlas: () => void
 }
 
-function reportStatus(report: VisualReport) {
-  if (!report.finding.sourceText.trim()) return 'Novo relatório'
-  if (report.finding.anatomyReviewRequired) return 'Anatomia pendente'
-  if (report.finding.explanationReviewRequired) return 'Revisão pendente'
-  if (report.status === 'published') return 'Compartilhado'
-  return 'Pronto para publicar'
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 }
 
 export function PatientsModule({
@@ -20,49 +23,33 @@ export function PatientsModule({
   onOpenReport,
   onOpenAtlas,
 }: Props) {
-  const anatomy = report.finding.atlasConceptId
-    ? report.finding.anatomicalStructure
-    : 'Nenhuma estrutura confirmada'
-
-  const milestones = [
-    Boolean(report.finding.sourceText.trim()),
-    Boolean(report.finding.atlasConceptId) &&
-      !report.finding.anatomyReviewRequired,
-    Boolean(report.finding.patientExplanation.trim()) &&
-      !report.finding.explanationReviewRequired,
-    report.status === 'published',
-  ]
-  const completed = milestones.filter(Boolean).length
+  const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="patients-module patients-module-v2">
-      <div className="patients-hero patients-hero-v2">
+    <section className="patients-module patients-module-v2 module-v3">
+      <div className="patients-hero patients-hero-v2 workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">PACIENTES · CONTEXTO ATUAL</span>
           <h2>Contexto sintético do relatório atual</h2>
           <p>
-            Uma visão organizada do paciente fictício e do relatório em
-            andamento. Não é prontuário e não persiste cadastro real.
+            A tela reúne identidade demonstrativa, estado clínico visual e
+            anatomia de referência sem simular prontuário, busca ou histórico
+            que ainda dependem de backend seguro.
           </p>
         </div>
 
-        <div className="module-hero-status">
+        <div className="workspace-hero-badge">
           <span className="synthetic-chip">dados fictícios</span>
-          <strong>{completed}/4</strong>
-          <small>etapas do relatório concluídas</small>
+          <strong>{presentation.progressPercent}%</strong>
+          <small>{presentation.statusLabel}</small>
         </div>
       </div>
 
-      <div className="patient-workspace-grid patient-workspace-grid-v2">
-        <article className="patient-profile-card patient-profile-card-v2">
+      <div className="patient-workspace-grid patient-workspace-grid-v2 workspace-context-grid">
+        <article className="patient-profile-card patient-profile-card-v2 workspace-panel">
           <div className="patient-profile-heading">
             <span className="patient-avatar" aria-hidden="true">
-              {report.patient.displayName
-                .split(/\s+/)
-                .slice(0, 2)
-                .map((part) => part[0])
-                .join('')
-                .toUpperCase()}
+              {initials(report.patient.displayName)}
             </span>
             <div>
               <span className="label">PACIENTE DEMONSTRAÇÃO</span>
@@ -77,25 +64,26 @@ export function PatientsModule({
               <dd>Relatório atual</dd>
             </div>
             <div>
-              <dt>Persistência</dt>
-              <dd>Somente local</dd>
+              <dt>Estado</dt>
+              <dd>{presentation.statusLabel}</dd>
             </div>
             <div>
-              <dt>Dados reais</dt>
-              <dd>Bloqueados</dd>
+              <dt>Persistência</dt>
+              <dd>Somente local</dd>
             </div>
           </dl>
 
           <div className="patient-profile-note">
             <span aria-hidden="true">i</span>
             <p>
-              O módulo ganhará busca, histórico e cadastro somente quando o
-              backend clínico e o isolamento por organização estiverem ativos.
+              Nenhuma lista adicional é inventada no demo. Busca, histórico e
+              cadastro entram somente quando identidade, tenant e RLS estiverem
+              ativos.
             </p>
           </div>
         </article>
 
-        <article className="patient-current-report patient-current-report-v2">
+        <article className="patient-current-report patient-current-report-v2 workspace-panel">
           <header>
             <div>
               <span className="label">RELATÓRIO VISUAL ATUAL</span>
@@ -103,58 +91,39 @@ export function PatientsModule({
             </div>
             <span
               className={
-                report.status === 'published'
+                presentation.sharing.state === 'published'
                   ? 'report-state-chip published'
                   : 'report-state-chip'
               }
             >
-              {reportStatus(report)}
+              {presentation.statusLabel}
             </span>
           </header>
 
-          <div className="patient-report-progress" aria-label="Progresso do relatório">
-            {[
-              'Laudo',
-              'Anatomia',
-              'Explicação',
-              'Paciente',
-            ].map((label, index) => (
-              <span className={milestones[index] ? 'done' : ''} key={label}>
-                <i aria-hidden="true">{milestones[index] ? '✓' : index + 1}</i>
-                {label}
+          <div className="patient-report-progress report-step-rail" aria-label="Progresso do relatório">
+            {presentation.steps.map((step, index) => (
+              <span className={step.state} key={step.id}>
+                <i aria-hidden="true">{step.done ? '✓' : index + 1}</i>
+                {step.shortLabel}
               </span>
             ))}
           </div>
 
-          <div className="patient-report-facts patient-report-facts-v2">
+          <div className="patient-report-facts patient-report-facts-v2 status-facts-v3">
             <div>
               <span>Anatomia</span>
-              <b>{anatomy}</b>
-              <small>{report.finding.atlasConceptId || 'sem FMA confirmado'}</small>
+              <b>{presentation.anatomy.label}</b>
+              <small>{presentation.anatomy.detail}</small>
             </div>
             <div>
               <span>Explicação</span>
-              <b>
-                {report.finding.patientExplanation.trim()
-                  ? report.finding.explanationReviewRequired
-                    ? 'Revisão pendente'
-                    : 'Revisada'
-                  : 'Não criada'}
-              </b>
-              <small>
-                {report.finding.patientExplanation.trim()
-                  ? `${report.finding.patientExplanation.length.toLocaleString('pt-BR')} caracteres`
-                  : 'aguardando conteúdo'}
-              </small>
+              <b>{presentation.explanation.label}</b>
+              <small>{presentation.explanation.detail}</small>
             </div>
             <div>
               <span>Compartilhamento</span>
-              <b>{report.status === 'published' ? 'Ativo' : 'Não publicado'}</b>
-              <small>
-                {report.status === 'published'
-                  ? 'link demo temporário'
-                  : 'gate humano preservado'}
-              </small>
+              <b>{presentation.sharing.label}</b>
+              <small>{presentation.sharing.detail}</small>
             </div>
           </div>
 
@@ -169,14 +138,25 @@ export function PatientsModule({
         </article>
       </div>
 
-      <section className="patient-anatomy-live">
-        <div className="patient-anatomy-live-copy">
+      <section className="patient-anatomy-live anatomy-showcase-v3">
+        <div className="patient-anatomy-live-copy anatomy-showcase-copy-v3">
           <span className="section-kicker">DIFERENCIAL MEDATLAS · 3D REAL</span>
-          <h2>A anatomia ligada ao relatório deste paciente, agora no próprio contexto.</h2>
+          <h2>A anatomia do relatório acompanha o contexto do paciente.</h2>
           <p>
-            Esta área usa o mesmo Human Atlas do relatório e do link do paciente.
-            Não é ilustração, thumbnail ou modelo genérico paralelo.
+            O preview usa exatamente o mesmo engine e a mesma referência do
+            Clinical Studio e do link compartilhado, com apresentação adaptada
+            para o paciente.
           </p>
+          <div className="anatomy-context-meta-v3">
+            <span>
+              <small>Referência</small>
+              <strong>{presentation.anatomy.label}</strong>
+            </span>
+            <span>
+              <small>Estado</small>
+              <strong>{presentation.statusLabel}</strong>
+            </span>
+          </div>
         </div>
 
         <AnatomyFocusPreview
@@ -192,13 +172,13 @@ export function PatientsModule({
         />
       </section>
 
-      <section className="patient-production-boundary patient-production-boundary-v2">
+      <section className="patient-production-boundary patient-production-boundary-v2 module-boundary-v3">
         <div>
           <span className="section-kicker">FRONTEIRA DE PRODUÇÃO</span>
-          <strong>Recursos bloqueados até existir backend clínico real</strong>
+          <strong>Sem funcionalidades falsas antes do backend clínico.</strong>
           <p>
-            O MVP não simula funcionalidades que exigem identidade, persistência
-            ou autorização por organização.
+            O MVP expõe apenas o que consegue provar localmente e mantém
+            operações dependentes de identidade/persistência bloqueadas.
           </p>
         </div>
         <div className="production-boundary-list">

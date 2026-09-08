@@ -32,6 +32,7 @@ import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
 import { reportWorkflowReducer } from './domain/report-workflow'
+import { deriveReportPresentation } from './domain/report-presentation'
 import type { VisualReport } from './domain/types'
 import {
   DEFAULT_DEMO_WORKSPACE_ID,
@@ -354,43 +355,22 @@ function ClinicianApp() {
     setPublishError('')
   }
 
-  const reportStepCompletion = [
-    Boolean(report.finding.sourceText.trim()),
-    !report.finding.anatomyReviewRequired &&
-      Boolean(report.finding.atlasConceptId),
-    !report.finding.explanationReviewRequired &&
-      !report.finding.anatomyReviewRequired &&
-      Boolean(report.finding.patientExplanation.trim()),
-    report.status === 'published',
-  ]
-
-  const currentReportStep = reportStepCompletion.findIndex(
-    (completed) => !completed,
-  )
+  const reportPresentation = deriveReportPresentation(report)
 
   const reportWorkflow = (
     <>
       <section className="workflow-strip workflow-strip-premium" aria-label="Fluxo do relatório">
-        {[
-          'Importar laudo',
-          'Confirmar anatomia',
-          'Revisar explicação',
-          'Publicar ao paciente',
-        ].map((step, index) => {
-          const state = reportStepCompletion[index]
-            ? 'done'
-            : index === currentReportStep
-              ? 'current'
-              : 'pending'
-
-          return (
-            <div className={state} data-step-state={state} key={step}>
-              <span>{reportStepCompletion[index] ? '✓' : index + 1}</span>
-              <p>{step}</p>
-              {state === 'current' && <small>Em andamento</small>}
-            </div>
-          )
-        })}
+        {reportPresentation.steps.map((step, index) => (
+          <div
+            className={step.state}
+            data-step-state={step.state}
+            key={step.id}
+          >
+            <span>{step.done ? '✓' : index + 1}</span>
+            <p>{step.label}</p>
+            {step.state === 'current' && <small>Em andamento</small>}
+          </div>
+        ))}
       </section>
 
       <section className="clinical-report-studio" data-surface-priority="desktop-first">

@@ -4,9 +4,7 @@ import {
   REPORT_EXAMPLES,
   type ReportExample,
 } from '../clinical/demo-scenarios'
-
-const MAX_LOCAL_TEXT_BYTES = 64 * 1024
-const ALLOWED_TEXT_EXTENSIONS = ['.txt', '.md']
+import { DEMO_CONSTRAINTS, formatDemoTextLimit } from '../product/constraints'
 
 interface Props {
   sourceText: string
@@ -22,7 +20,7 @@ interface Props {
 
 function hasAllowedTextExtension(filename: string) {
   const normalized = filename.toLowerCase()
-  return ALLOWED_TEXT_EXTENSIONS.some((extension) =>
+  return DEMO_CONSTRAINTS.localText.extensions.some((extension) =>
     normalized.endsWith(extension),
   )
 }
@@ -91,9 +89,9 @@ export function ReportIntake({
       return
     }
 
-    if (file.size > MAX_LOCAL_TEXT_BYTES) {
+    if (file.size > DEMO_CONSTRAINTS.localText.maxBytes) {
       setFileError(
-        'Arquivo muito grande para a demonstração local. Limite: 64 KB.',
+        `Arquivo muito grande para a demonstração local. Limite: ${formatDemoTextLimit()}.`,
       )
       return
     }
@@ -193,7 +191,7 @@ export function ReportIntake({
             <i aria-hidden="true">◉</i>
             Processamento local · demonstração sintética
           </span>
-          <small>Máx. 64 KB em .txt/.md neste MVP</small>
+          <small>Máx. {formatDemoTextLimit()} em {DEMO_CONSTRAINTS.localText.extensions.join('/')} neste MVP</small>
         </div>
       </div>
 

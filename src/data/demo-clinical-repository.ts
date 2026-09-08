@@ -5,12 +5,13 @@ import type {
   ClinicalUsageSummary,
 } from './clinical-repository'
 import type { VisualReport } from '../domain/types'
+import { DEMO_CONSTRAINTS, demoShareTtlLabel } from '../product/constraints'
 
 const STORAGE_PREFIX = 'medatlas:demo:published:'
 const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'
-const DEMO_SHARE_TTL_MS = 30 * 60 * 1000
-const DEMO_VIEW_DEDUPE_MS = 1500
-const MAX_STORED_DEMO_SHARES = 10
+const DEMO_SHARE_TTL_MS = DEMO_CONSTRAINTS.shareTtlMinutes * 60 * 1000
+const DEMO_VIEW_DEDUPE_MS = DEMO_CONSTRAINTS.viewDedupeMilliseconds
+const MAX_STORED_DEMO_SHARES = DEMO_CONSTRAINTS.maxStoredShares
 
 interface StoredDemoShare {
   schema: typeof DEMO_SHARE_SCHEMA
@@ -43,7 +44,7 @@ const memoryShares = new Map<string, MemoryDemoShare>()
 
 export const demoRepositoryDescriptor: ClinicalRepositoryDescriptor = {
   mode: 'demo',
-  label: 'Demonstração local · expira em 30 min',
+  label: `Demonstração local · expira em ${demoShareTtlLabel()}`,
   syntheticOnly: true,
 }
 
