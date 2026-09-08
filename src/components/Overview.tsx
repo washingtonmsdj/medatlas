@@ -50,6 +50,13 @@ const activity = [
   ['Ana Souza', 'Ombro direito', 'Revisão necessária', 'há 1 h'],
 ] as const
 
+const atlasProofs = [
+  ['~2.234', 'peças anatômicas', 'inventário Human Atlas'],
+  ['FMA', 'conceitos reais', 'referência BodyParts3D'],
+  ['3D', 'interativo', 'girar, focar e identificar'],
+  ['1', 'engine canônico', 'clínica + paciente + explorer'],
+] as const
+
 export function Overview({
   report,
   organizationName,
@@ -88,7 +95,7 @@ export function Overview({
   ].filter(Boolean).length
 
   return (
-    <section className="overview-module overview-saas-v2">
+    <section className="overview-module overview-saas-v2 overview-3d-first">
       <div className="overview-welcome">
         <div>
           <span className="section-kicker">
@@ -97,8 +104,8 @@ export function Overview({
           </span>
           <h2>Bom dia, {professionalDisplayName}.</h2>
           <p>
-            Continue os atendimentos e transforme informação clínica em uma
-            explicação visual revisada para cada paciente.
+            Seu workspace clínico agora coloca a anatomia 3D no centro do
+            atendimento: visualize, confirme e explique sem sair do mesmo fluxo.
           </p>
         </div>
 
@@ -113,44 +120,47 @@ export function Overview({
         </div>
       </div>
 
-      <div className="overview-metrics premium-metrics" aria-label="Resumo sintético do dia">
-        {syntheticMetrics.map((metric) => (
-          <article className={`metric-card metric-${metric.tone}`} key={metric.label}>
-            <span className="metric-icon" aria-hidden="true">{metric.icon}</span>
-            <div>
-              <strong>{metric.value}</strong>
-              <span>{metric.label}</span>
-              <small>{metric.delta}</small>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <div className="overview-command-grid">
-        <article className="continue-care-card">
-          <div className="continue-care-heading">
-            <div>
-              <span className="section-kicker">CONTINUAR ATENDIMENTO</span>
-              <h2>{report.patient.displayName}</h2>
-              <p>{report.title}</p>
-            </div>
-            <span className="care-status">{reviewLabel}</span>
+      <article className="continue-care-card overview-3d-hero">
+        <div className="overview-3d-hero-heading">
+          <div>
+            <span className="overview-new-pill">
+              <span aria-hidden="true">✦</span>
+              NOVO · HUMAN ATLAS 3D
+            </span>
+            <span className="section-kicker">DIFERENCIAL MEDATLAS</span>
+            <h2>O laudo deixa de ser só texto.</h2>
+            <p>
+              O profissional conecta o achado a uma estrutura anatômica real,
+              revisa a explicação e entrega ao paciente uma experiência visual
+              compreensível e auditável.
+            </p>
           </div>
+          <span className="care-status">{reviewLabel}</span>
+        </div>
 
-          <div className="continue-care-body">
+        <div className="overview-3d-hero-grid">
+          <div className="overview-3d-stage-shell">
             <AnatomyFocusPreview
               conceptId={report.finding.atlasConceptId || undefined}
               label={report.finding.anatomicalStructure}
               atlasRef={report.finding.atlasRef}
-              eyebrow="3D DO ATENDIMENTO · HUMAN ATLAS"
+              eyebrow="HUMAN ATLAS · MODELO 3D DE REFERÊNCIA"
               contextMode="none"
               compact
               reviewRequired={report.finding.anatomyReviewRequired}
               onOpenAtlas={onOpenAtlas}
-              description="O atendimento abre com a anatomia confirmada em foco isolado. A geometria é de referência e continua dependente da confirmação profissional."
+              description="Geometria real do Human Atlas/BodyParts3D integrada ao atendimento. Anatomia de referência — não reconstrução específica do paciente."
             />
+          </div>
 
-            <div className="continue-care-copy">
+          <div className="overview-3d-story">
+            <div className="overview-3d-story-copy">
+              <span className="section-kicker">ATENDIMENTO EM FOCO</span>
+              <h3>{report.patient.displayName}</h3>
+              <p>{report.title}</p>
+            </div>
+
+            <div className="overview-3d-current-anatomy">
               <span>Anatomia do relatório</span>
               <strong>{anatomyLabel}</strong>
               <small>
@@ -158,7 +168,23 @@ export function Overview({
                   ? `${report.finding.atlasConceptId} · referência BodyParts3D`
                   : 'A confirmação humana continua obrigatória antes da publicação.'}
               </small>
+            </div>
 
+            <div className="overview-3d-proof-grid" aria-label="Diferenciais do Atlas 3D">
+              {atlasProofs.map(([value, label, detail]) => (
+                <div key={label}>
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                  <small>{detail}</small>
+                </div>
+              ))}
+            </div>
+
+            <div className="overview-3d-progress-copy">
+              <div>
+                <span>Progresso do relatório</span>
+                <strong>{completedSteps}/4 etapas concluídas</strong>
+              </div>
               <div
                 className="care-progress"
                 role="progressbar"
@@ -172,14 +198,72 @@ export function Overview({
                 <span className={!report.finding.explanationReviewRequired && hasAnatomy ? 'done' : ''} />
                 <span className={report.status === 'published' ? 'done' : ''} />
               </div>
+            </div>
 
+            <div className="overview-3d-hero-actions">
               <button className="primary" type="button" onClick={onOpenReport}>
                 Continuar relatório
                 <span aria-hidden="true">→</span>
               </button>
+              <button type="button" onClick={onOpenAtlas}>
+                Abrir Atlas completo
+              </button>
             </div>
+
+            <small className="overview-3d-safety">
+              Revisão clínica continua obrigatória antes de qualquer
+              compartilhamento com o paciente.
+            </small>
           </div>
-        </article>
+        </div>
+      </article>
+
+      <div className="overview-metrics premium-metrics" aria-label="Resumo sintético do dia">
+        {syntheticMetrics.map((metric) => (
+          <article className={`metric-card metric-${metric.tone}`} key={metric.label}>
+            <span className="metric-icon" aria-hidden="true">{metric.icon}</span>
+            <div>
+              <strong>{metric.value}</strong>
+              <span>{metric.label}</span>
+              <small>{metric.delta}</small>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="overview-command-grid overview-command-grid-v5">
+        <section className="premium-flow">
+          <div className="overview-flow-heading">
+            <div>
+              <span className="section-kicker">FLUXO VISUAL CLÍNICO</span>
+              <h2>Do laudo ao entendimento, em um único fluxo.</h2>
+              <p>
+                A automação prepara. O profissional confirma e continua sendo a
+                autoridade clínica de publicação.
+              </p>
+            </div>
+            <span className="overview-status">Human Atlas · engine canônico</span>
+          </div>
+
+          <div className="premium-flow-steps">
+            {[
+              ['01', 'Laudo', 'Importe ou cole o texto clínico.'],
+              ['02', 'Anatomia 3D', 'Localize e confirme estruturas reais.'],
+              ['03', 'Explicação', 'Edite um rascunho em linguagem clara.'],
+              ['04', 'Revisão', 'Aprove explicitamente o conteúdo.'],
+              ['05', 'Paciente', 'Compartilhe uma experiência visual segura.'],
+            ].map(([number, title, description], index) => (
+              <article key={number}>
+                <span>{number}</span>
+                <div>
+                  <strong>{title}</strong>
+                  <p>{description}</p>
+                </div>
+                {index < 4 && <b aria-hidden="true">→</b>}
+              </article>
+            ))}
+          </div>
+        </section>
 
         <aside className="work-queue-card">
           <div className="work-queue-heading">
@@ -214,40 +298,17 @@ export function Overview({
             </span>
             <b>→</b>
           </button>
-        </aside>
-      </div>
 
-      <div className="overview-flow premium-flow">
-        <div className="overview-flow-heading">
-          <div>
-            <span className="section-kicker">O MOMENTO WOW DO MEDATLAS</span>
-            <h2>Do laudo ao entendimento, em um único fluxo.</h2>
-            <p>
-              A automação prepara. O profissional confirma e continua sendo a
-              autoridade clínica de publicação.
-            </p>
+          <div className="queue-3d-note">
+            <span aria-hidden="true">3D</span>
+            <div>
+              <strong>Contexto anatômico sempre disponível</strong>
+              <small>
+                Abra o Atlas sem abandonar o fluxo clínico atual.
+              </small>
+            </div>
           </div>
-          <span className="overview-status">Human Atlas · engine canônico</span>
-        </div>
-
-        <div className="premium-flow-steps">
-          {[
-            ['01', 'Laudo', 'Importe ou cole o texto clínico.'],
-            ['02', 'Anatomia 3D', 'Localize e confirme estruturas reais.'],
-            ['03', 'Explicação', 'Edite um rascunho em linguagem clara.'],
-            ['04', 'Revisão', 'Aprove explicitamente o conteúdo.'],
-            ['05', 'Paciente', 'Compartilhe uma experiência visual segura.'],
-          ].map(([number, title, description], index) => (
-            <article key={number}>
-              <span>{number}</span>
-              <div>
-                <strong>{title}</strong>
-                <p>{description}</p>
-              </div>
-              {index < 4 && <b aria-hidden="true">→</b>}
-            </article>
-          ))}
-        </div>
+        </aside>
       </div>
 
       <div className="overview-lower-grid">
@@ -275,19 +336,24 @@ export function Overview({
           </div>
         </section>
 
-        <aside className="product-position-card">
+        <aside className="product-position-card product-position-card-v5">
           <span className="section-kicker">MEDATLAS PARA CLÍNICAS</span>
-          <h2>Uma plataforma. Diferentes papéis.</h2>
+          <h2>O 3D não é um módulo isolado. É a linguagem visual do produto.</h2>
           <p>
             Clínica, profissional, equipe e paciente usam experiências próprias
-            sobre a mesma organização e o mesmo registro clínico autorizado.
+            sobre a mesma organização, o mesmo relatório revisado e o mesmo
+            Human Atlas de referência.
           </p>
           <div>
-            <span>✓ organização multi-tenant</span>
-            <span>✓ workspace do profissional</span>
+            <span>✓ 3D integrado ao atendimento</span>
+            <span>✓ um único engine anatômico</span>
             <span>✓ experiência simplificada do paciente</span>
             <span>✓ revisão humana antes do compartilhamento</span>
           </div>
+          <button type="button" onClick={onOpenAtlas}>
+            Conhecer o Atlas 3D
+            <span aria-hidden="true">→</span>
+          </button>
         </aside>
       </div>
 

@@ -656,6 +656,20 @@ function ClinicianApp() {
         </div>
         <p className="brand-subtitle">Comunicação clínica visual</p>
 
+        <button
+          className="sidebar-3d-launcher"
+          type="button"
+          onClick={() => setActive('Atlas 3D')}
+          aria-label="Abrir Human Atlas 3D"
+        >
+          <span aria-hidden="true">3D</span>
+          <div>
+            <strong>Human Atlas</strong>
+            <small>Novo · anatomia interativa</small>
+          </div>
+          <b aria-hidden="true">→</b>
+        </button>
+
         <nav aria-label="Navegação principal">
           {nav.map((item) => (
             <button
