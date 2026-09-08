@@ -142,7 +142,7 @@ export function TopbarUtilityActions({
             </div>
 
             <button type="button" onClick={() => run(onOpenReports)}>
-              Abrir relatório
+              Abrir fluxo de relatório
               <b aria-hidden="true">→</b>
             </button>
           </section>
@@ -171,7 +171,7 @@ export function TopbarUtilityActions({
           >
             <header>
               <div>
-                <strong>Próximas ações</strong>
+                <strong>Ações pendentes</strong>
                 <small>{report.patient.displayName}</small>
               </div>
               <span className="topbar-popover-count">{pendingSteps.length}</span>
@@ -257,7 +257,7 @@ export function TopbarUtilityActions({
 
             <div className="profile-popover-actions">
               <button type="button" onClick={() => run(onOpenTeam)}>
-                Equipe
+                Equipe e permissões
               </button>
               <button type="button" onClick={() => run(onOpenSettings)}>
                 Configurações
