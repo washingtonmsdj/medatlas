@@ -355,11 +355,11 @@ test('frontend refinement keeps hierarchy explicit on desktop and mobile', async
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
-  const mobileBrand = page.locator('.sidebar .brand')
-  const mobileNav = page.locator('.sidebar nav')
+  const mobileBrand = page.locator('.clinical-sidebar-brand')
+  const mobileNav = page.locator('.clinical-sidebar nav')
 
   await expect(mobileBrand).toContainText('MedAtlas')
-  await expect(page.locator('.sidebar .clinic-card-premium')).toBeHidden()
+  await expect(page.locator('.clinical-sidebar-context')).toBeHidden()
 
   const [brandBox, navBox] = await Promise.all([
     mobileBrand.boundingBox(),

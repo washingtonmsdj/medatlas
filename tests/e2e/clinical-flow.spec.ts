@@ -62,7 +62,7 @@ async function expectRealContextual3D(
     preview.getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 45_000 })
   await expect(
-    preview.getByText(/clique numa peça para identificar/i),
+    preview.getByText(/clique para identificar/i),
   ).toBeVisible()
 }
 
@@ -287,7 +287,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   ).toBeVisible()
   await expect(
     patientPage.getByRole('heading', {
-      name: 'Perguntas úteis para levar ao profissional',
+      name: 'Perguntas para levar ao profissional',
     }),
   ).toBeVisible()
   await patientPage.screenshot({
@@ -435,10 +435,10 @@ test('stale contextual 3D stays visible but explicitly requires reconfirmation',
   ).toBeVisible({ timeout: 45_000 })
   await expect(
     stalePreview.locator('.anatomy-focus-preview-review-banner'),
-  ).toContainText('Reconfirmação anatômica necessária')
+  ).toContainText('Confirme novamente a anatomia')
   await expect(
     stalePreview.locator('.anatomy-focus-preview-review-banner'),
-  ).toContainText('Confirme novamente esta referência')
+  ).toContainText('O texto do relatório foi alterado.')
 })
 
 test('canonical patient view follows the current report state', async ({
@@ -607,7 +607,7 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
   await page.goto('/')
 
   await page
-    .getByRole('button', { name: 'Novo relatório' })
+    .locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' })
     .click()
 
   await expect(
@@ -674,7 +674,7 @@ test('dashboard progress follows the current report', async ({ page }) => {
   ).toBeVisible()
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
-  await page.getByRole('button', { name: 'Novo relatório' }).click()
+  await page.locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' }).click()
   await page.getByRole('button', { name: 'Visão geral' }).click()
 
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
@@ -725,7 +725,7 @@ test('demo settings can clear local patient shares', async ({ page }) => {
     .click()
 
   await expect(
-    page.getByText(/link\(s\) local\(is\) removido\(s\)/),
+    page.getByText(/link\(s\) removido\(s\)/),
   ).toBeVisible()
 
   await page.goto(shareUrl)
@@ -744,7 +744,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
   await page.goto('/')
 
   await page
-    .getByRole('button', { name: 'Novo relatório' })
+    .locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' })
     .click()
 
   await page
@@ -800,7 +800,7 @@ test('patients module reflects only the current synthetic report context', async
   ).toBeVisible({ timeout: 60_000 })
 
   await page
-    .getByRole('button', { name: 'Abrir relatório visual' })
+    .getByRole('button', { name: 'Abrir relatório' })
     .click()
 
   await expect(
@@ -818,15 +818,19 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 
   await page.getByRole('button', { name: 'Configurações' }).click()
 
+  const clinicianAttribution = page.locator('details.mvp-technical-details')
+  await expect(clinicianAttribution).toBeVisible()
+  await clinicianAttribution.locator('summary').click()
+
   await expect(
-    page.getByText(
+    clinicianAttribution.getByText(
       'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.',
       { exact: false },
     ),
   ).toBeVisible()
 
   await expect(
-    page.getByRole('link', { name: 'Licença BodyParts3D' }),
+    clinicianAttribution.getByRole('link', { name: 'Licença BodyParts3D' }),
   ).toHaveAttribute(
     'href',
     'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
