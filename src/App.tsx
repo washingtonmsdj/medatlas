@@ -351,6 +351,20 @@ function ClinicianApp() {
     setPublishError('')
   }
 
+  const reportStepCompletion = [
+    Boolean(report.finding.sourceText.trim()),
+    !report.finding.anatomyReviewRequired &&
+      Boolean(report.finding.atlasConceptId),
+    !report.finding.explanationReviewRequired &&
+      !report.finding.anatomyReviewRequired &&
+      Boolean(report.finding.patientExplanation.trim()),
+    report.status === 'published',
+  ]
+
+  const currentReportStep = reportStepCompletion.findIndex(
+    (completed) => !completed,
+  )
+
   const reportWorkflow = (
     <>
       <section className="workflow-strip workflow-strip-premium" aria-label="Fluxo do relatório">
@@ -359,24 +373,21 @@ function ClinicianApp() {
           'Confirmar anatomia',
           'Revisar explicação',
           'Publicar ao paciente',
-        ].map((step, index) => (
-          <div
-            className={
-              (index === 0 && Boolean(report.finding.sourceText.trim())) ||
-              (index === 1 && !report.finding.anatomyReviewRequired) ||
-              (!report.finding.explanationReviewRequired &&
-                !report.finding.anatomyReviewRequired &&
-                index === 2) ||
-              (report.status === 'published' && index === 3)
-                ? 'done'
-                : ''
-            }
-            key={step}
-          >
-            <span>{index + 1}</span>
-            <p>{step}</p>
-          </div>
-        ))}
+        ].map((step, index) => {
+          const state = reportStepCompletion[index]
+            ? 'done'
+            : index === currentReportStep
+              ? 'current'
+              : 'pending'
+
+          return (
+            <div className={state} data-step-state={state} key={step}>
+              <span>{reportStepCompletion[index] ? '✓' : index + 1}</span>
+              <p>{step}</p>
+              {state === 'current' && <small>Em andamento</small>}
+            </div>
+          )
+        })}
       </section>
 
       <section className="clinical-report-studio" data-surface-priority="desktop-first">

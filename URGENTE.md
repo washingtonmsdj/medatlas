@@ -150,6 +150,7 @@ Hierarquia permanente:
 - [x] Skip-link permanece no accessibility tree e aparece por teclado, mas fica visualmente oculto sem foco para não sobrepor o workbench/capturas.
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
+- [x] refinamento visual V4 orientado pelas capturas reais: 3D mais dominante no Dashboard/Studio, etapa atual explícita, KPIs com affordance e navegação mobile em duas linhas sem card redundante da clínica.
 - [x] workflow publica artifact de visual QA também em runs verdes.
 - [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 

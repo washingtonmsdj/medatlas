@@ -335,3 +335,54 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
 
   await capture(page, 'atlas-explorer-mobile-390')
 })
+
+
+test('frontend refinement keeps hierarchy explicit on desktop and mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 1000 })
+  await page.goto('/')
+
+  const metricIcons = page.locator('.premium-metrics .metric-icon')
+  await expect(metricIcons).toHaveCount(4)
+  for (let index = 0; index < 4; index += 1) {
+    await expect(metricIcons.nth(index)).not.toHaveText('')
+  }
+
+  const dashboardStage = page.locator(
+    '.continue-care-card .anatomy-focus-preview-stage',
+  )
+  await expect(dashboardStage).toBeVisible()
+  const dashboardStageBox = await dashboardStage.boundingBox()
+  expect(dashboardStageBox).not.toBeNull()
+  expect(dashboardStageBox!.height).toBeGreaterThanOrEqual(300)
+
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+
+  const currentStep = page.locator(
+    '.workflow-strip-premium [data-step-state="current"]',
+  )
+  await expect(currentStep).toHaveCount(1)
+  await expect(currentStep).toContainText('Publicar ao paciente')
+  await expect(currentStep).toContainText('Em andamento')
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const mobileBrand = page.locator('.sidebar .brand')
+  const mobileNav = page.locator('.sidebar nav')
+
+  await expect(mobileBrand).toContainText('MedAtlas')
+  await expect(page.locator('.sidebar .clinic-card-premium')).toBeHidden()
+
+  const [brandBox, navBox] = await Promise.all([
+    mobileBrand.boundingBox(),
+    mobileNav.boundingBox(),
+  ])
+
+  expect(brandBox).not.toBeNull()
+  expect(navBox).not.toBeNull()
+  expect(navBox!.y).toBeGreaterThan(brandBox!.y + brandBox!.height - 2)
+
+  await expectNoHorizontalOverflow(page)
+})

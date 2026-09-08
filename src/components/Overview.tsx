@@ -14,10 +14,34 @@ interface Props {
 }
 
 const syntheticMetrics = [
-  { value: '8', label: 'consultas hoje', delta: '+2 vs. ontem', tone: 'blue' },
-  { value: '3', label: 'relatórios para revisar', delta: 'prioridade clínica', tone: 'amber' },
-  { value: '12', label: 'links visualizados', delta: '+71% esta semana', tone: 'violet' },
-  { value: '2', label: 'novos exames', delta: 'aguardando triagem', tone: 'mint' },
+  {
+    value: '8',
+    label: 'consultas hoje',
+    delta: '+2 vs. ontem',
+    tone: 'blue',
+    icon: '＋',
+  },
+  {
+    value: '3',
+    label: 'relatórios para revisar',
+    delta: 'prioridade clínica',
+    tone: 'amber',
+    icon: '✓',
+  },
+  {
+    value: '12',
+    label: 'links visualizados',
+    delta: '+71% esta semana',
+    tone: 'violet',
+    icon: '↗',
+  },
+  {
+    value: '2',
+    label: 'novos exames',
+    delta: 'aguardando triagem',
+    tone: 'mint',
+    icon: '⌕',
+  },
 ] as const
 
 const activity = [
@@ -92,7 +116,7 @@ export function Overview({
       <div className="overview-metrics premium-metrics" aria-label="Resumo sintético do dia">
         {syntheticMetrics.map((metric) => (
           <article className={`metric-card metric-${metric.tone}`} key={metric.label}>
-            <span className="metric-icon" aria-hidden="true" />
+            <span className="metric-icon" aria-hidden="true">{metric.icon}</span>
             <div>
               <strong>{metric.value}</strong>
               <span>{metric.label}</span>
