@@ -67,6 +67,21 @@ if (!atlasSource.includes('atlasPromise = undefined')) {
 }
 
 
+for (const fragment of [
+  'isolatedHorizontalFov',
+  'isolatedFitHeight',
+  'isolatedFitWidth',
+  'isolatedPadding',
+  "current.view === 'front'",
+  '.addScaledVector(isolatedDirection, distance)',
+]) {
+  if (!scene.includes(fragment)) {
+    failures.push(
+      'isolated clinical camera fit contract missing: ' + fragment,
+    )
+  }
+}
+
 const requiredEngineFragments = [
   'RoomEnvironment',
   'mergeGeometries',

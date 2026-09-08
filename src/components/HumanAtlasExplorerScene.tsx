@@ -957,6 +957,8 @@ export function HumanAtlasExplorerScene({
       const isolateKey = current.isolate
         ? current.selected.join(',') +
           ':' +
+          current.view +
+          ':' +
           current.reset +
           ':' +
           camera.aspect
@@ -985,24 +987,55 @@ export function HumanAtlasExplorerScene({
           if (!box.isEmpty()) {
             const center = box.getCenter(new THREE.Vector3())
             const size = box.getSize(new THREE.Vector3())
-            const radius = Math.max(size.x, size.y, size.z) * 0.5
+            const isolatedVerticalFov = THREE.MathUtils.degToRad(camera.fov)
+            const isolatedHorizontalFov =
+              2 *
+              Math.atan(
+                Math.tan(isolatedVerticalFov / 2) *
+                  Math.max(camera.aspect, 0.35),
+              )
+            const isolatedFitHeight =
+              size.y /
+              Math.max(
+                0.001,
+                2 * Math.tan(isolatedVerticalFov / 2),
+              )
+            const isolatedFitWidth =
+              size.x /
+              Math.max(
+                0.001,
+                2 * Math.tan(isolatedHorizontalFov / 2),
+              )
+            const isolatedFitDepth = size.z * 0.52
+            const isolatedPadding =
+              appearance === 'explorer'
+                ? 1.45
+                : appearance === 'patient'
+                  ? 1.22
+                  : element.clientWidth < 768
+                    ? 1.18
+                    : 1.12
             const distance = Math.max(
-              radius /
-                Math.tan(
-                  THREE.MathUtils.degToRad(camera.fov / 2),
-                ) *
-                1.45,
+              (
+                Math.max(isolatedFitHeight, isolatedFitWidth) +
+                isolatedFitDepth
+              ) *
+                isolatedPadding,
               0.08,
             )
+            const isolatedDirection =
+              current.view === 'front'
+                ? new THREE.Vector3(0, 0.02, 1)
+                : current.view === 'back'
+                  ? new THREE.Vector3(0, 0.02, -1)
+                  : current.view === 'side'
+                    ? new THREE.Vector3(1, 0.02, 0)
+                    : new THREE.Vector3(0.2, 0.1, 1).normalize()
 
             controls.target.copy(center)
             camera.position
               .copy(center)
-              .add(
-                new THREE.Vector3(0.2, 0.1, 1)
-                  .normalize()
-                  .multiplyScalar(distance),
-              )
+              .addScaledVector(isolatedDirection, distance)
             controls.update()
             dirty = true
           }
