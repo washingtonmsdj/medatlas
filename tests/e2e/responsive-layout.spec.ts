@@ -508,7 +508,7 @@ test('professional and patient views are separated in the MVP', async ({
   await modeSwitcher.getByRole('button', { name: /Paciente/ }).click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
-  await expect(page.locator('.sidebar')).toHaveCount(0)
+  await expect(page.locator('.clinical-sidebar')).toHaveCount(0)
   await expect(
     page.getByText('VISÃO DO PACIENTE · PRÉVIA'),
   ).toBeVisible()
@@ -520,7 +520,7 @@ test('professional and patient views are separated in the MVP', async ({
     .getByRole('button', { name: /Profissional/ })
     .click()
 
-  await expect(page.locator('.sidebar')).toBeVisible()
+  await expect(page.locator('.clinical-sidebar')).toBeVisible()
   await expect(
     page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
   ).toBeVisible()
