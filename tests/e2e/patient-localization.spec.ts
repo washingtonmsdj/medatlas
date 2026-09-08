@@ -28,7 +28,7 @@ test('patient-facing focused 3D keeps the primary anatomy label in pt-BR', async
     '.anatomy-focus-preview-hud strong',
   )
 
-  await expect(hudLabel).toHaveText('Disco intervertebral L4-L5')
+  await expect(hudLabel).toHaveText('Disco intervertebral L4–L5')
   await expect(patientPreview).not.toContainText(
     'intervertebral disk of fourth lumbar vertebra',
   )
@@ -62,7 +62,7 @@ test('clinical focused 3D HUD also uses the localized concept label', async ({
     '.anatomy-focus-preview-hud strong',
   )
 
-  await expect(hudLabel).toHaveText('Disco intervertebral L4-L5')
+  await expect(hudLabel).toHaveText('Disco intervertebral L4–L5')
   await expect(documentsPreview).not.toContainText(
     'intervertebral disk of fourth lumbar vertebra',
   )
