@@ -199,7 +199,7 @@ export function TopbarUtilityActions({
             )}
 
             <footer>
-              Esta lista é derivada do relatório atual e não simula eventos de backend.
+              Etapas do relatório atual.
             </footer>
           </section>
         )}
@@ -217,7 +217,7 @@ export function TopbarUtilityActions({
           <span>{initials}</span>
           <div>
             <strong>{memberName}</strong>
-            <small>{specialty} · demonstração</small>
+            <small>{specialty}</small>
           </div>
           <b aria-hidden="true">⌄</b>
         </button>
@@ -227,7 +227,7 @@ export function TopbarUtilityActions({
             className="topbar-popover profile-popover"
             id="medatlas-profile-panel"
             role="dialog"
-            aria-label="Perfil demonstrativo do profissional"
+            aria-label="Perfil do profissional"
           >
             <header className="profile-popover-header">
               <span>{initials}</span>
@@ -248,7 +248,7 @@ export function TopbarUtilityActions({
               </div>
               <div>
                 <dt>Ambiente</dt>
-                <dd>Demo sintética</dd>
+                <dd>Demo</dd>
               </div>
             </dl>
 

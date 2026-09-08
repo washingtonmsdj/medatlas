@@ -379,23 +379,12 @@ export function InvalidPatientLink() {
           <span>×</span>
         </div>
 
-        <span className="section-kicker">LINK PROTEGIDO · ACESSO ENCERRADO</span>
-        <h1>Este link de demonstração não está disponível.</h1>
+        <span className="section-kicker">LINK INDISPONÍVEL</span>
+        <h1>Este link não está disponível.</h1>
         <p>
-          Ele pode ter expirado, sido removido ou não existir neste navegador.
-          O MedAtlas não tenta reconstruir nem exibir conteúdo quando a
-          validação do link falha.
+          O link pode ter expirado ou sido removido. Solicite um novo link à clínica.
         </p>
 
-        <div className="patient-route-safety-note">
-          <span aria-hidden="true">✓</span>
-          <div>
-            <strong>Falha segura preservada</strong>
-            <small>
-              Nenhum relatório, explicação ou anatomia clínica é exibido sem
-              uma referência de compartilhamento válida.
-            </small>
-          </div>
         </div>
 
         <button
@@ -403,7 +392,7 @@ export function InvalidPatientLink() {
           type="button"
           onClick={() => (window.location.href = appHomeUrl())}
         >
-          Ir para o ambiente clínico
+          Voltar ao MedAtlas
         </button>
       </div>
     </main>

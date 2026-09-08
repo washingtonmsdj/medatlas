@@ -61,7 +61,7 @@ export function TeamModule() {
         <aside className="team-boundary-card mvp-side-card">
           <span className="section-kicker">CONVITES</span>
           <h3>Adicionar membro</h3>
-          <p>Convites serão liberados quando o backend estiver conectado.</p>
+          <p>Convites estarão disponíveis em uma próxima versão.</p>
           <button className="primary" type="button" disabled>
             Convidar membro
           </button>

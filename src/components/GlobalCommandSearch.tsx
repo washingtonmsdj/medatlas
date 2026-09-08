@@ -198,8 +198,7 @@ export function GlobalCommandSearch({ actions }: Props) {
               ))
             ) : (
               <p className="global-command-empty">
-                Nenhuma correspondência local. A busca clínica real entra com o
-                backend dedicado.
+                Nenhum resultado encontrado.
               </p>
             )}
           </div>

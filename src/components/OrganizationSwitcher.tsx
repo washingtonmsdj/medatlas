@@ -82,7 +82,7 @@ export function OrganizationSwitcher({
               <span className="section-kicker">CONTEXTO ATIVO</span>
               <strong>{DEMO_ORGANIZATION.name}</strong>
               <small>
-                Seleção local de demonstração · sem persistência
+                Escolha a área de trabalho
               </small>
             </div>
             <button
@@ -143,11 +143,8 @@ export function OrganizationSwitcher({
           </div>
 
           <footer>
-            <span>
-              A estrutura espelha <code>organization_units</code> e{' '}
-              <code>clinical_workspaces</code>.
-            </span>
-            <small>Dados 100% fictícios</small>
+            <span>Ambiente demonstrativo</span>
+            <small>Dados fictícios</small>
           </footer>
         </section>
       )}

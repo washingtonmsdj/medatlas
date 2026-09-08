@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { AttributionNotice } from './AttributionNotice'
 import {
   clearDemoShares,
-  demoRepositoryDescriptor,
   getStoredDemoShareCount,
 } from '../data/demo-clinical-repository'
 import { DEMO_ORGANIZATION_BRANDING } from '../organization/demo-organization'
@@ -32,13 +31,13 @@ export function DemoSettings({ onNewReport }: Props) {
         <div className="module-hero-copy">
           <span className="section-kicker">CONFIGURAÇÕES</span>
           <h2>Configurações</h2>
-          <p>Preferências do ambiente de demonstração.</p>
+          <p>Preferências da clínica e dos links compartilhados.</p>
         </div>
         <div className="environment-badge workspace-hero-badge">
           <i aria-hidden="true" />
           <span>
-            <strong>Demo</strong>
-            <small>{demoRepositoryDescriptor.label}</small>
+            <strong>Ambiente demo</strong>
+            <small>somente dados fictícios</small>
           </span>
         </div>
       </div>
@@ -87,17 +86,6 @@ export function DemoSettings({ onNewReport }: Props) {
           {message && <small className="settings-message" role="status">{message}</small>}
         </article>
 
-        <article>
-          <div className="settings-card-heading">
-            <span className="settings-icon locked" aria-hidden="true">B</span>
-            <div>
-              <span className="label">BACKEND</span>
-              <strong>Não conectado</strong>
-            </div>
-          </div>
-          <p>Disponível após a etapa de produção.</p>
-          <span className="settings-card-state blocked">indisponível</span>
-        </article>
       </div>
 
       <details className="mvp-technical-details">

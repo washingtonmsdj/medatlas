@@ -579,11 +579,11 @@ test('expired demo patient links fail closed', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      name: 'Este link de demonstração não está disponível.',
+      name: 'Este link não está disponível.',
     }),
   ).toBeVisible()
   await expect(
-    page.getByText('Falha segura preservada'),
+    page.getByText('LINK INDISPONÍVEL'),
   ).toBeVisible()
 })
 
@@ -717,7 +717,7 @@ test('demo settings can clear local patient shares', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      name: 'Este link de demonstração não está disponível.',
+      name: 'Este link não está disponível.',
     }),
   ).toBeVisible()
 })

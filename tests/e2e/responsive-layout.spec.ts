@@ -474,7 +474,7 @@ test('topbar utility controls perform useful local demo actions', async ({
     .click()
 
   const profile = page.getByRole('dialog', {
-    name: 'Perfil demonstrativo do profissional',
+    name: 'Perfil do profissional',
   })
   await expect(profile).toBeVisible()
   await expect(profile).toContainText('Administrador')
