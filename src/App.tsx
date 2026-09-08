@@ -26,6 +26,7 @@ import {
 import { ReportComposer } from './components/ReportComposer'
 import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
 import { GlobalCommandSearch, type GlobalSearchAction } from './components/GlobalCommandSearch'
+import { TopbarUtilityActions } from './components/TopbarUtilityActions'
 import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
@@ -39,6 +40,7 @@ import {
   getDemoCurrentMember,
   getDemoUnit,
   getDemoWorkspace,
+  ROLE_LABELS,
 } from './organization/demo-organization'
 
 const nav = [
@@ -702,23 +704,28 @@ function ClinicianApp() {
 
           <GlobalCommandSearch actions={globalSearchActions} />
 
-          <div className="topbar-actions">
-            <button type="button" className="topbar-icon-button" aria-label="Ajuda">?</button>
-            <button type="button" className="topbar-icon-button notification-button" aria-label="Notificações">
-              <span aria-hidden="true">♢</span>
-              <i />
-            </button>
-            <button className="doctor-chip doctor-chip-button" type="button" aria-label="Abrir menu do profissional">
-              <span>{currentMember?.initials ?? 'MD'}</span>
-              <div>
-                <strong>{currentMember?.displayName ?? 'Profissional demo'}</strong>
-                <small>
-                  {currentMember?.professional?.specialty ?? 'Workspace clínico'} · demonstração
-                </small>
-              </div>
-              <b aria-hidden="true">⌄</b>
-            </button>
-          </div>
+          <TopbarUtilityActions
+            memberName={
+              currentMember?.displayName ?? 'Profissional demo'
+            }
+            initials={currentMember?.initials ?? 'MD'}
+            specialty={
+              currentMember?.professional?.specialty ??
+              'Workspace clínico'
+            }
+            roleLabel={
+              currentMember
+                ? ROLE_LABELS[currentMember.role]
+                : 'Profissional demonstrativo'
+            }
+            workspaceName={
+              activeWorkspace?.name ?? 'Workspace clínico'
+            }
+            onOpenReports={() => setActive('Relatórios visuais')}
+            onOpenExams={() => setActive('Exames')}
+            onOpenTeam={() => setActive('Equipe')}
+            onOpenSettings={() => setActive('Configurações')}
+          />
         </header>
 
         <section className="module-heading">

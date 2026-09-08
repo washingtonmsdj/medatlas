@@ -441,3 +441,66 @@ test('global command search navigates local MVP actions without backend', async 
 
   await expectNoHorizontalOverflow(page)
 })
+
+
+test('topbar utility controls perform useful local demo actions', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Ajuda' }).click()
+  const help = page.getByRole('dialog', {
+    name: 'Ajuda rápida do MedAtlas',
+  })
+  await expect(help).toBeVisible()
+  await expect(help).toContainText('Confirme a anatomia')
+  await expect(help).toContainText('Ctrl/⌘ K')
+
+  await help
+    .getByRole('button', { name: 'Abrir fluxo de relatório' })
+    .click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Notificações' }).click()
+  const notifications = page.getByRole('dialog', {
+    name: 'Notificações demonstrativas',
+  })
+  await expect(notifications).toBeVisible()
+  await expect(notifications).toContainText(
+    'Dados exclusivamente sintéticos',
+  )
+
+  await notifications
+    .getByRole('button', { name: /Novos exames sintéticos/ })
+    .click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'Entrada local de laudos sintéticos',
+    }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('button', { name: 'Abrir menu do profissional' })
+    .click()
+
+  const profile = page.getByRole('dialog', {
+    name: 'Perfil demonstrativo do profissional',
+  })
+  await expect(profile).toBeVisible()
+  await expect(profile).toContainText('Administrador')
+  await expect(profile).toContainText('Ortopedia')
+
+  await profile
+    .getByRole('button', { name: 'Equipe e permissões' })
+    .click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'Equipe e permissões da organização',
+    }),
+  ).toBeVisible()
+})

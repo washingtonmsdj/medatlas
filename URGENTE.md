@@ -152,6 +152,7 @@ Hierarquia permanente:
 - [x] capturas revisadas visualmente.
 - [x] refinamento visual V4 orientado pelas capturas reais: 3D mais dominante no Dashboard/Studio, etapa atual explícita, KPIs com affordance e navegação mobile em duas linhas sem card redundante da clínica.
 - [x] busca global deixou de ser decorativa: command search local com Ctrl/⌘ K, módulos, paciente demo, ações rápidas e cenários sintéticos, com teclado e E2E.
+- [x] controles do topbar deixaram de ser decorativos: Ajuda, Notificações e Perfil possuem popovers locais úteis e navegam para fluxos reais do MVP, sem fingir backend.
 - [x] workflow publica artifact de visual QA também em runs verdes.
 - [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 
