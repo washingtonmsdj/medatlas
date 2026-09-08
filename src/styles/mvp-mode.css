@@ -199,7 +199,6 @@
   }
 }
 
-
 .sidebar-nav-group {
   display: grid;
   gap: 4px;
@@ -230,7 +229,6 @@
   }
 }
 
-
 .sidebar nav .atlas-nav-item {
   position: relative;
 }
@@ -244,4 +242,52 @@
 .sidebar nav .atlas-nav-item.active .nav-dot {
   background: #70dce0;
   box-shadow: 0 0 14px rgba(89, 218, 222, .34);
+}
+
+/* Product-facing provenance disclosure: licensing stays accessible without
+   competing with the Atlas task surface. */
+.reference-atlas-explorer details.reference-atlas-source {
+  display: block;
+  border: 1px solid #1f3548;
+  border-radius: 12px;
+  padding: 0;
+  background: #081824;
+}
+
+.reference-atlas-explorer details.reference-atlas-source > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 9px 12px;
+  color: #83aecb;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.reference-atlas-explorer details.reference-atlas-source > summary::-webkit-details-marker {
+  display: none;
+}
+
+.reference-atlas-explorer details.reference-atlas-source[open] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 0 12px 10px;
+}
+
+.reference-atlas-explorer details.reference-atlas-source[open] > summary {
+  grid-column: 1 / -1;
+  margin-inline: -12px;
+  padding-inline: 12px;
+  border-bottom: 1px solid #1f3548;
+}
+
+@media (max-width: 620px) {
+  .reference-atlas-explorer details.reference-atlas-source[open] {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-atlas-explorer details.reference-atlas-source nav {
+    flex-wrap: wrap;
+  }
 }
