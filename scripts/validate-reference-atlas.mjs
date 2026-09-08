@@ -39,6 +39,7 @@ const documents = await readFile(
 )
 const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
 const styles = await readFile('src/styles.css', 'utf8')
+const referenceStyles = await readFile('src/reference-atlas.css', 'utf8')
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
 const failures = []
@@ -127,6 +128,10 @@ const requiredExplorerFragments = [
   'Fontes do Atlas 3D',
   'https://github.com/ashemag/human-atlas',
   'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
+  'Ferramentas do Atlas no celular',
+  'reference-mobile-tools',
+  'mobilePanel',
+  'reference-mobile-panel-close',
 ]
 
 for (const fragment of requiredExplorerFragments) {
@@ -135,6 +140,28 @@ for (const fragment of requiredExplorerFragments) {
       'reference explorer missing interaction: ' + fragment,
     )
   }
+}
+
+const requiredMobileExplorerCss = [
+  '.reference-mobile-tools',
+  '.reference-atlas-systems.mobile-open',
+  '.reference-inspector-card.mobile-open',
+  '.reference-atlas-stage > .reference-atlas-scene',
+  'min-height: 790px',
+]
+
+for (const fragment of requiredMobileExplorerCss) {
+  if (!referenceStyles.includes(fragment)) {
+    failures.push(
+      'mobile 3D-first explorer CSS missing: ' + fragment,
+    )
+  }
+}
+
+if (referenceStyles.includes('top: 646px')) {
+  failures.push(
+    'mobile explorer must not push the canonical 3D scene below stacked panels',
+  )
 }
 
 const expectedSystems = [

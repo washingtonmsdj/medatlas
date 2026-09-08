@@ -270,7 +270,18 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
 
   const mobileStageBox = await stage.boundingBox()
   expect(mobileStageBox).not.toBeNull()
-  expect(mobileStageBox!.height).toBeGreaterThan(900)
+  expect(mobileStageBox!.height).toBeGreaterThanOrEqual(740)
+
+  const mobileSceneBox = await stage
+    .locator('.reference-atlas-scene')
+    .boundingBox()
+  expect(mobileSceneBox).not.toBeNull()
+  expect(
+    Math.abs(mobileSceneBox!.y - mobileStageBox!.y),
+  ).toBeLessThan(4)
+  expect(mobileSceneBox!.height).toBeGreaterThanOrEqual(
+    mobileStageBox!.height - 4,
+  )
 
   const mobileControls = page.locator('.reference-view-controls')
   const mobileControlsBox = await mobileControls.boundingBox()
@@ -278,25 +289,44 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   expect(mobileControlsBox!.width).toBeGreaterThan(300)
   expect(mobileControlsBox!.height).toBeLessThan(70)
 
+  const mobileTools = page.getByRole('navigation', {
+    name: 'Ferramentas do Atlas no celular',
+  })
+  await expect(mobileTools).toBeVisible()
+  const mobileToolsBox = await mobileTools.boundingBox()
+  expect(mobileToolsBox).not.toBeNull()
+  expect(mobileToolsBox!.width).toBeGreaterThan(300)
+
   const mobileSystems = page.getByRole('complementary', {
     name: 'Sistemas anatômicos',
   })
+  const mobileInspector = page.locator('.reference-inspector-card')
+
+  await expect(mobileSystems).toBeHidden()
+  await expect(mobileInspector).toBeHidden()
+
+  await mobileTools
+    .getByRole('button', { name: /Camadas/ })
+    .click()
+  await expect(mobileSystems).toBeVisible()
   const mobileSystemsBox = await mobileSystems.boundingBox()
   expect(mobileSystemsBox).not.toBeNull()
   expect(mobileSystemsBox!.width).toBeGreaterThan(300)
 
-  const mobileInspector = page.locator('.reference-inspector-card')
-  const mobileInspectorBox = await mobileInspector.boundingBox()
-  const mobileSceneBox = await stage
-    .locator('.reference-atlas-scene')
-    .boundingBox()
+  await page
+    .getByRole('button', { name: 'Fechar camadas anatômicas' })
+    .click()
+  await expect(mobileSystems).toBeHidden()
 
-  expect(mobileInspectorBox).not.toBeNull()
-  expect(mobileSceneBox).not.toBeNull()
-  expect(mobileSceneBox!.height).toBeGreaterThan(480)
-  expect(mobileSceneBox!.y).toBeGreaterThanOrEqual(
-    mobileInspectorBox!.y + mobileInspectorBox!.height + 8,
-  )
+  await mobileTools
+    .getByRole('button', { name: /Estrutura/ })
+    .click()
+  await expect(mobileInspector).toBeVisible()
+
+  await page
+    .getByRole('button', { name: 'Fechar inspetor anatômico' })
+    .click()
+  await expect(mobileInspector).toBeHidden()
 
   await capture(page, 'atlas-explorer-mobile-390')
 })

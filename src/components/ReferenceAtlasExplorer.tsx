@@ -83,6 +83,9 @@ export function ReferenceAtlasExplorer({
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [chosen, setChosen] = useState<AtlasConcept | null>(null)
+  const [mobilePanel, setMobilePanel] = useState<
+    'layers' | 'inspector' | null
+  >(null)
 
   useEffect(() => {
     let active = true
@@ -186,6 +189,7 @@ export function ReferenceAtlasExplorer({
 
   const chooseConcept = (concept: AtlasConcept) => {
     setChosen(concept)
+    setMobilePanel('inspector')
     setState((current) => ({
       ...current,
       selected: concept.elements,
@@ -206,6 +210,7 @@ export function ReferenceAtlasExplorer({
 
       const concept = partConcept(atlas, part)
       setChosen(concept)
+      setMobilePanel('inspector')
       setState((current) => ({
         ...current,
         selected: [part.id],
@@ -256,6 +261,7 @@ export function ReferenceAtlasExplorer({
   const reset = () => {
     setChosen(null)
     setQuery('')
+    setMobilePanel(null)
     setState((current) => ({
       ...initialState(),
       reset: current.reset + 1,
@@ -384,8 +390,44 @@ export function ReferenceAtlasExplorer({
           )}
         </div>
 
+        <nav
+          className="reference-mobile-tools"
+          aria-label="Ferramentas do Atlas no celular"
+        >
+          <button
+            type="button"
+            aria-expanded={mobilePanel === 'layers'}
+            aria-controls="reference-atlas-layers"
+            onClick={() =>
+              setMobilePanel((current) =>
+                current === 'layers' ? null : 'layers',
+              )
+            }
+          >
+            Camadas
+            <span>{visibleCount.toLocaleString('pt-BR')}</span>
+          </button>
+          <button
+            type="button"
+            aria-expanded={mobilePanel === 'inspector'}
+            aria-controls="reference-atlas-inspector"
+            onClick={() =>
+              setMobilePanel((current) =>
+                current === 'inspector' ? null : 'inspector',
+              )
+            }
+          >
+            Estrutura
+            <span>{chosen ? '1' : '—'}</span>
+          </button>
+        </nav>
+
         <aside
-          className="reference-atlas-systems"
+          id="reference-atlas-layers"
+          className={
+            'reference-atlas-systems ' +
+            (mobilePanel === 'layers' ? 'mobile-open' : '')
+          }
           aria-label="Sistemas anatômicos"
         >
           <div className="reference-panel-heading">
@@ -394,6 +436,14 @@ export function ReferenceAtlasExplorer({
               <strong>Camadas anatômicas</strong>
             </div>
             <span>{activeSystems.length}</span>
+            <button
+              type="button"
+              className="reference-mobile-panel-close"
+              aria-label="Fechar camadas anatômicas"
+              onClick={() => setMobilePanel(null)}
+            >
+              ×
+            </button>
           </div>
 
           <div className="reference-presets">
@@ -474,7 +524,21 @@ export function ReferenceAtlasExplorer({
           </div>
         </aside>
 
-        <aside className="reference-structure-card reference-inspector-card">
+        <aside
+          id="reference-atlas-inspector"
+          className={
+            'reference-structure-card reference-inspector-card ' +
+            (mobilePanel === 'inspector' ? 'mobile-open' : '')
+          }
+        >
+          <button
+            type="button"
+            className="reference-mobile-panel-close reference-mobile-inspector-close"
+            aria-label="Fechar inspetor anatômico"
+            onClick={() => setMobilePanel(null)}
+          >
+            ×
+          </button>
           {chosen ? (
             <>
               <span

@@ -146,6 +146,7 @@ Hierarquia permanente:
 - [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
+- [x] Atlas completo em 390 px é 3D-first: canvas ocupa o palco desde o início; Camadas e Inspector ficam fechados por padrão e abrem como overlays acionáveis, sem empurrar a anatomia para baixo.
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
 - [x] workflow publica artifact de visual QA também em runs verdes.
