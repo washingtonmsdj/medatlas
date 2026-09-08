@@ -506,8 +506,11 @@ test('canonical patient view follows the current report state', async ({
   await page.getByRole('button', { name: 'Ver como paciente' }).click()
 
   await expect(
-    page.locator('#patient-anatomy').getByText('FMA7203', { exact: true }),
+    page
+      .locator('#patient-anatomy')
+      .getByRole('heading', { name: 'Rins', exact: true }),
   ).toBeVisible()
+  await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7203')
 })
 
 test('mobile workspace keeps the main clinical flow usable', async ({
