@@ -1059,8 +1059,8 @@ test('organization switcher changes the active clinical workspace locally', asyn
   await expect(dialog).toBeVisible()
   await expect(dialog).toContainText('Unidade principal')
   await expect(dialog).toContainText('Salvador · BA · BR')
-  await expect(dialog).toContainText('organization_units')
-  await expect(dialog).toContainText('clinical_workspaces')
+  await expect(dialog).toContainText('Ambiente demonstrativo')
+  await expect(dialog).toContainText('Dados fictícios')
 
   const cardiology = dialog.getByRole('button', {
     name: /Cardiologia/,
@@ -1100,7 +1100,9 @@ test('settings expose source-first clinic branding without enabling mutations', 
   await expect(
     page.getByText('Clínica Horizonte', { exact: true }).first(),
   ).toBeVisible()
-  await expect(page.getByText('#1769AA')).toBeVisible()
+  await expect(
+    page.getByText('Identidade usada na visão do paciente.'),
+  ).toBeVisible()
 
   await expect(
     page.getByRole('button', { name: 'Editar identidade' }),
