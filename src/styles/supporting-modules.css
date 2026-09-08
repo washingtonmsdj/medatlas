@@ -835,15 +835,3 @@
     animation: none;
   }
 }
-/* MEDATLAS_VISUAL_QA_POLISH_V1 */
-.pilot-card .pilot-heading h2 {
-  color: #f1f7ff;
-}
-
-.pilot-card .pilot-heading p {
-  color: #a8b8c8;
-}
-
-.pilot-card > .section-kicker {
-  color: #65c8f2;
-}

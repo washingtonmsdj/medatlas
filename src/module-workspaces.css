@@ -1104,14 +1104,3 @@
 }
 
 
-.pilot-card-v3 {
-  border-color: #dce8ef;
-  background: linear-gradient(135deg, #ffffff, #f8fbfd);
-  box-shadow: 0 16px 38px rgba(44, 76, 104, .055);
-}
-
-.pilot-card-v3 .pilot-score {
-  color: #176f98;
-  background: #edf8fc;
-  border-color: #cce7f1;
-}
