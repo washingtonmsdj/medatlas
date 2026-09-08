@@ -34,7 +34,7 @@ const STEP_META: Record<
     shortLabel: 'Explicação',
   },
   share: {
-    label: 'Compartilhar',
+    label: 'Publicar ao paciente',
     shortLabel: 'Paciente',
   },
 }
