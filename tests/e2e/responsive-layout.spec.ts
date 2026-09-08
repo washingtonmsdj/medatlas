@@ -8,19 +8,11 @@ const MODULES = [
   },
   {
     button: 'Relatórios',
-    heading: 'Localizar anatomia mencionada',
+    heading: 'Adicionar laudo',
   },
   {
     button: 'Pacientes',
     heading: 'Paciente atual',
-  },
-  {
-    button: 'Consultas',
-    heading: 'Consulta atual',
-  },
-  {
-    button: 'Exames',
-    heading: 'Exames',
   },
   {
     button: 'Equipe',
@@ -77,7 +69,7 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
-      name: 'Visão geral do fluxo clínico visual.',
+      name: 'Seu fluxo clínico visual',
     }),
   ).toBeVisible()
   await expect(
@@ -94,8 +86,6 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
       Relatórios: 'clinical-studio-1600',
       Pacientes: 'patients-3d-1600',
-      Consultas: 'consultations-3d-1600',
-      Exames: 'documents-3d-1600',
     }
 
     const captureName = captureNames[module.button]
@@ -113,8 +103,6 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
       Relatórios: 'clinical-studio-1440',
       Pacientes: 'patients-3d-1440',
-      Consultas: 'consultations-3d-1440',
-      Exames: 'documents-3d-1440',
     }
 
     const captureName = captureNames[module.button]
@@ -175,7 +163,7 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
-      name: 'Visão geral do fluxo clínico visual.',
+      name: 'Seu fluxo clínico visual',
     }),
   ).toBeVisible()
 
@@ -225,12 +213,10 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  await page
-    .getByRole('button', { name: 'Atlas 3D', exact: true })
-    .click()
+  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
 
   await expect(
-    page.getByRole('heading', { name: 'Atlas humano 3D' }),
+    page.getByRole('heading', { name: 'Atlas 3D' }),
   ).toBeVisible()
 
   const atlasStatus = page.locator(
@@ -238,11 +224,11 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   )
   await expect(atlasStatus).toBeVisible({ timeout: 20_000 })
   await expect(atlasStatus).toContainText(
-    /Preparando atlas|Atlas pronto/,
+    /Carregando|Pronto/,
   )
 
   await expect(
-    page.getByText('Atlas pronto', { exact: true }),
+    page.getByText('Pronto', { exact: true }),
   ).toBeVisible({ timeout: 100_000 })
 
   const stage = page.locator('.reference-atlas-stage')
@@ -418,7 +404,7 @@ test('global command search navigates local MVP actions without backend', async 
 
   await expect(
     page.getByRole('heading', {
-      name: 'Localizar anatomia mencionada',
+      name: 'Adicionar laudo',
     }),
   ).toBeVisible()
   await expect(
@@ -462,7 +448,7 @@ test('topbar utility controls perform useful local demo actions', async ({
     .click()
   await expect(
     page.getByRole('heading', {
-      name: 'Localizar anatomia mencionada',
+      name: 'Adicionar laudo',
     }),
   ).toBeVisible()
 
@@ -479,7 +465,7 @@ test('topbar utility controls perform useful local demo actions', async ({
     .click()
   await expect(
     page.getByRole('heading', {
-      name: 'Localizar anatomia mencionada',
+      name: 'Adicionar laudo',
     }),
   ).toBeVisible()
 

@@ -198,3 +198,34 @@
     width: 100%;
   }
 }
+
+
+.sidebar-nav-group {
+  display: grid;
+  gap: 4px;
+}
+
+.sidebar-nav-group + .sidebar-nav-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(118, 160, 188, .10);
+}
+
+.sidebar-nav-label {
+  padding: 2px 10px 4px;
+  color: #66869a;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .sidebar-nav-group {
+    display: contents;
+  }
+
+  .sidebar-nav-label {
+    display: none;
+  }
+}

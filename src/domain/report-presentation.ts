@@ -161,12 +161,12 @@ export function deriveReportPresentation(report: VisualReport) {
           ? 'O relatório já foi compartilhado.'
           : 'Todos os gates estão concluídos.',
     buttonLabel: !completion.anatomy
-      ? 'Confirme a anatomia antes de publicar'
+      ? 'Confirme a anatomia'
       : !completion.explanation
-        ? 'Revise a explicação antes de publicar'
+        ? 'Revise a explicação'
         : completion.share
-          ? 'Relatório compartilhado'
-          : 'Aprovar e gerar link do paciente',
+          ? 'Compartilhado'
+          : 'Compartilhar com paciente',
   }
 
   const anatomyLabel = report.finding.atlasConceptId

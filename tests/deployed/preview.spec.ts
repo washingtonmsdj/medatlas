@@ -7,7 +7,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   await expect(
     page.getByRole('heading', {
-      name: 'Visão geral do fluxo clínico visual.',
+      name: 'Seu fluxo clínico visual',
     }),
   ).toBeVisible()
 
@@ -21,14 +21,6 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
     {
       button: 'Pacientes',
       selector: '.patient-anatomy-live .anatomy-focus-preview',
-    },
-    {
-      button: 'Consultas',
-      selector: '.consultation-anatomy-live .anatomy-focus-preview',
-    },
-    {
-      button: 'Exames',
-      selector: '.documents-anatomy-live .anatomy-focus-preview',
     },
   ]
 
@@ -49,11 +41,11 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   await page.getByRole('button', { name: 'Relatórios' }).click()
   await expect(
-    page.getByRole('heading', { name: 'Localizar anatomia mencionada' }),
+    page.getByRole('heading', { name: 'Adicionar laudo' }),
   ).toBeVisible()
 
   await page.getByRole('button', { name: 'Coração', exact: true }).click()
-  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+  await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
 
   const heartSuggestion = page
     .locator('.suggestion-item')
@@ -85,7 +77,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   ).toBeVisible({ timeout: 45_000 })
 
   const draftButton = page.getByRole('button', {
-    name: 'Gerar rascunho educacional',
+    name: 'Gerar explicação',
   })
   await expect(draftButton).toBeEnabled()
   await draftButton.click()
@@ -95,7 +87,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   )
 
   await page
-    .getByRole('button', { name: 'Pré-visualizar experiência do paciente' })
+    .getByRole('button', { name: 'Ver como paciente' })
     .click()
 
   const unpublishedPatientPreview = page.getByRole('region', {
@@ -109,25 +101,25 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   ).toBeVisible({ timeout: 45_000 })
 
   await page
-    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .getByRole('button', { name: 'Marcar como revisada' })
     .click()
 
   const publish = page.getByRole('button', {
-    name: 'Aprovar e gerar link do paciente',
+    name: 'Compartilhar com paciente',
   })
   await expect(publish).toBeEnabled()
   await publish.click()
 
-  await expect(page.getByText('Link de demonstração gerado')).toBeVisible()
+  await expect(page.getByText('Link pronto')).toBeVisible()
 
   const [patientPage] = await Promise.all([
     page.waitForEvent('popup'),
-    page.getByRole('button', { name: 'Abrir visão do paciente' }).click(),
+    page.getByRole('button', { name: 'Abrir link' }).click(),
   ])
 
   await patientPage.waitForLoadState('domcontentloaded')
   await expect(
-    patientPage.getByText('SEU EXAME, EXPLICADO VISUALMENTE'),
+    patientPage.getByText('SEU RELATÓRIO VISUAL'),
   ).toBeVisible()
   await expect(
     patientPage.getByRole('heading', { name: 'Entenda seu exame — coração' }),
@@ -146,16 +138,14 @@ test('published full Atlas keeps the real 3D viewport primary on mobile', async 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./')
 
-  await page
-    .getByRole('button', { name: 'Atlas 3D', exact: true })
-    .click()
+  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
 
   await expect(
-    page.getByRole('heading', { name: 'Atlas humano 3D' }),
+    page.getByRole('heading', { name: 'Atlas 3D' }),
   ).toBeVisible()
 
   await expect(
-    page.getByText('Atlas pronto', { exact: true }),
+    page.getByText('Pronto', { exact: true }),
   ).toBeVisible({ timeout: 100_000 })
 
   const stage = page.locator('.reference-atlas-stage')

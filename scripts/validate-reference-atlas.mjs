@@ -29,14 +29,6 @@ const anatomyFocus = await readFile(
 )
 const overview = await readFile('src/components/Overview.tsx', 'utf8')
 const patients = await readFile('src/components/PatientsModule.tsx', 'utf8')
-const consultations = await readFile(
-  'src/components/ConsultationsModule.tsx',
-  'utf8',
-)
-const documents = await readFile(
-  'src/components/DocumentsModule.tsx',
-  'utf8',
-)
 const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
 const styles = (
   await Promise.all(
@@ -135,10 +127,8 @@ const requiredExplorerFragments = [
   'Usar no relatório',
   'Isolar estrutura',
   'searchAtlasConcepts',
-  'Atlas humano',
   'Camadas anatômicas',
   'INSPETOR ANATÔMICO',
-  'Redefinir workspace',
   'appearance="explorer"',
   'Fontes do Atlas 3D',
   'https://github.com/ashemag/human-atlas',
@@ -309,16 +299,6 @@ const contextual3dSurfaces = [
       'appearance="patient"',
       'contextMode="system"',
     ],
-  },
-  {
-    surface: 'consultations',
-    source: consultations,
-    required: ['<AnatomyFocusPreview', 'contextMode="system"'],
-  },
-  {
-    surface: 'documents',
-    source: documents,
-    required: ['<AnatomyFocusPreview', 'contextMode="system"'],
   },
   {
     surface: 'patient-preview',

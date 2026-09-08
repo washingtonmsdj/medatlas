@@ -43,7 +43,7 @@ async function openReports(page: Page) {
   await page.getByRole('button', { name: 'Relatórios' }).click()
   await expect(
     page.getByRole('heading', {
-      name: 'Localizar anatomia mencionada',
+      name: 'Adicionar laudo',
     }),
   ).toBeVisible()
 }
@@ -71,7 +71,7 @@ test('patient handoff has no serious axe violations', async ({ page }) => {
   await openReports(page)
 
   await page.getByRole('button', { name: 'Coração', exact: true }).click()
-  await page.getByRole('button', { name: 'Sugerir estruturas' }).click()
+  await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
 
   const heartSuggestion = page
     .locator('.suggestion-item')
@@ -82,27 +82,27 @@ test('patient handoff has no serious axe violations', async ({ page }) => {
     .click()
 
   await page
-    .getByRole('button', { name: 'Gerar rascunho educacional' })
+    .getByRole('button', { name: 'Gerar explicação' })
     .click()
 
   await page
-    .getByRole('button', { name: 'Confirmar explicação revisada' })
+    .getByRole('button', { name: 'Marcar como revisada' })
     .click()
 
   await page
-    .getByRole('button', { name: 'Aprovar e gerar link do paciente' })
+    .getByRole('button', { name: 'Compartilhar com paciente' })
     .click()
 
   const [patientPage] = await Promise.all([
     page.waitForEvent('popup'),
     page
-      .getByRole('button', { name: 'Abrir visão do paciente' })
+      .getByRole('button', { name: 'Abrir link' })
       .click(),
   ])
 
   await patientPage.waitForLoadState('domcontentloaded')
   await expect(
-    patientPage.getByText('SEU EXAME, EXPLICADO VISUALMENTE'),
+    patientPage.getByText('SEU RELATÓRIO VISUAL'),
   ).toBeVisible()
 
   await expectNoBlockingViolations(patientPage, 'Patient report')

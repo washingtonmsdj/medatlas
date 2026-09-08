@@ -101,7 +101,7 @@ export function TopbarUtilityActions({
               <span className="topbar-popover-icon" aria-hidden="true">?</span>
               <div>
                 <strong>Ajuda rápida</strong>
-                <small>Fluxo clínico visual do MVP</small>
+                <small>Fluxo do relatório</small>
               </div>
             </header>
 
@@ -109,8 +109,8 @@ export function TopbarUtilityActions({
               <li>
                 <span>01</span>
                 <div>
-                  <strong>Importe o texto</strong>
-                  <small>Cole ou abra um arquivo sintético permitido.</small>
+                  <strong>Adicione o laudo</strong>
+                  <small>Cole o texto ou importe um arquivo.</small>
                 </div>
               </li>
               <li>
@@ -124,7 +124,7 @@ export function TopbarUtilityActions({
                 <span>03</span>
                 <div>
                   <strong>Revise e compartilhe</strong>
-                  <small>O profissional continua sendo a autoridade.</small>
+                  <small>Confira a explicação e libere o link.</small>
                 </div>
               </li>
             </ol>

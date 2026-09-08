@@ -293,18 +293,15 @@ export function ReferenceAtlasExplorer({
       <header className="reference-workbench-header">
         <div>
           <span className="section-kicker">
-            HUMAN ATLAS · MOTOR DE REFERÊNCIA
+            HUMAN ATLAS
           </span>
           <h2>
-            Atlas humano <b>3D</b>
+            Atlas <b>3D</b>
           </h2>
           <p>
             {atlas
-              ? atlas.parts.length.toLocaleString('pt-BR') +
-                ' peças · ' +
-                atlas.concepts.length.toLocaleString('pt-BR') +
-                ' conceitos · BodyParts3D'
-              : 'Carregando catálogo anatômico…'}
+              ? 'Explore estruturas e sistemas do corpo humano.'
+              : 'Carregando anatomia…'}
           </p>
         </div>
 
@@ -314,33 +311,15 @@ export function ReferenceAtlasExplorer({
             {error
               ? '3D indisponível'
               : progress === 100
-                ? 'Atlas pronto'
-                : 'Preparando atlas'}
+                ? 'Pronto'
+                : 'Carregando'}
           </span>
           <button type="button" onClick={reset}>
-            Redefinir workspace
+            Redefinir
           </button>
         </div>
       </header>
 
-      <div className="reference-workbench-metrics" aria-label="Estado do Human Atlas">
-        <span>
-          <small>Peças carregáveis</small>
-          <strong>{atlas ? atlas.parts.length.toLocaleString('pt-BR') : '—'}</strong>
-        </span>
-        <span>
-          <small>Conceitos FMA</small>
-          <strong>{atlas ? atlas.concepts.length.toLocaleString('pt-BR') : '—'}</strong>
-        </span>
-        <span>
-          <small>Visíveis agora</small>
-          <strong>{atlas ? visibleCount.toLocaleString('pt-BR') : '—'}</strong>
-        </span>
-        <span>
-          <small>Seleção</small>
-          <strong>{chosen ? conceptDisplayName(chosen) : 'Exploração livre'}</strong>
-        </span>
-      </div>
 
       <div className="reference-atlas-stage">
         {atlas && (

@@ -14,9 +14,7 @@ import { AnalyticsModule } from './components/AnalyticsModule'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
 import { TeamModule } from './components/TeamModule'
-import { DocumentsModule } from './components/DocumentsModule'
 import { PatientsModule } from './components/PatientsModule'
-import { ConsultationsModule } from './components/ConsultationsModule'
 import { Overview } from './components/Overview'
 import { OrganizationSwitcher } from './components/OrganizationSwitcher'
 import {
@@ -47,24 +45,34 @@ import {
 
 const nav = [
   'Visão geral',
-  'Atlas 3D',
   'Pacientes',
-  'Consultas',
-  'Exames',
   'Relatórios visuais',
-  'Equipe',
+  'Atlas 3D',
   'Analytics',
+  'Equipe',
   'Configurações',
 ] as const
 
 type ModuleName = (typeof nav)[number]
 
+const navGroups: ReadonlyArray<{
+  label: string
+  items: readonly ModuleName[]
+}> = [
+  {
+    label: 'Clínica',
+    items: ['Visão geral', 'Pacientes', 'Relatórios visuais', 'Atlas 3D'],
+  },
+  {
+    label: 'Gestão',
+    items: ['Analytics', 'Equipe', 'Configurações'],
+  },
+]
+
 const moduleMeta: Record<ModuleName, { title: string }> = {
   'Visão geral': { title: 'Início' },
   'Atlas 3D': { title: 'Atlas 3D' },
   Pacientes: { title: 'Paciente atual' },
-  Consultas: { title: 'Consulta atual' },
-  Exames: { title: 'Exames' },
   'Relatórios visuais': { title: 'Relatório visual' },
   Equipe: { title: 'Equipe' },
   Analytics: { title: 'Analytics' },
@@ -510,25 +518,6 @@ function ClinicianApp() {
           />
         )
 
-      case 'Consultas':
-        return (
-          <ConsultationsModule
-            report={report}
-            onOpenReport={() => setActive('Relatórios visuais')}
-            onNewReport={startNewReport}
-            onOpenAtlas={() => setActive('Atlas 3D')}
-          />
-        )
-
-      case 'Exames':
-        return (
-          <DocumentsModule
-            report={report}
-            onStartImport={startNewReport}
-            onOpenAtlas={() => setActive('Atlas 3D')}
-          />
-        )
-
       case 'Equipe':
         return <TeamModule />
 
@@ -563,7 +552,7 @@ function ClinicianApp() {
     },
     {
       id: 'action-open-atlas',
-      label: 'Explorar Atlas 3D',
+      label: 'Abrir Atlas 3D',
       description: 'Abrir o Human Atlas completo.',
       group: 'Ação',
       keywords: 'anatomia corpo fma human atlas',
@@ -632,19 +621,24 @@ function ClinicianApp() {
         </button>
 
         <nav aria-label="Navegação principal">
-          {nav.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={active === item ? 'active' : ''}
-              aria-label={item}
-              aria-current={active === item ? 'page' : undefined}
-              title={item}
-              onClick={() => setActive(item)}
-            >
-              <span className="nav-dot" />
-              <span>{item}</span>
-            </button>
+          {navGroups.map((group) => (
+            <section className="sidebar-nav-group" key={group.label}>
+              <span className="sidebar-nav-label">{group.label}</span>
+              {group.items.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={active === item ? 'active' : ''}
+                  aria-label={item === 'Relatórios visuais' ? 'Relatórios' : item}
+                  aria-current={active === item ? 'page' : undefined}
+                  title={item}
+                  onClick={() => setActive(item)}
+                >
+                  <span className="nav-dot" />
+                  <span>{item === 'Relatórios visuais' ? 'Relatórios' : item}</span>
+                </button>
+              ))}
+            </section>
           ))}
         </nav>
 

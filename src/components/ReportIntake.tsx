@@ -43,7 +43,7 @@ export function ReportIntake({
     if (analyzing) {
       return {
         label: 'Analisando',
-        detail: 'Comparando o texto com conceitos anatômicos permitidos.',
+        detail: 'Procurando estruturas anatômicas.',
         tone: 'working',
       }
     }
@@ -51,7 +51,7 @@ export function ReportIntake({
     if (suggestions.length > 0) {
       return {
         label: `${suggestions.length} correspondência${suggestions.length === 1 ? '' : 's'}`,
-        detail: 'Sugestões prontas para confirmação humana.',
+        detail: 'Escolha a estrutura correta.',
         tone: 'ready',
       }
     }
@@ -59,14 +59,14 @@ export function ReportIntake({
     if (sourceText.trim().length >= 3) {
       return {
         label: 'Texto pronto',
-        detail: 'Nenhuma anatomia será aplicada sem confirmação.',
+        detail: 'Pronto para localizar a anatomia.',
         tone: 'ready',
       }
     }
 
     return {
       label: 'Aguardando laudo',
-      detail: 'Cole texto ou carregue um exemplo sintético.',
+      detail: 'Cole um texto ou use um exemplo.',
       tone: 'idle',
     }
   }, [analyzing, sourceText, suggestions.length])
@@ -84,14 +84,14 @@ export function ReportIntake({
 
     if (!hasAllowedTextExtension(file.name)) {
       setFileError(
-        'Formato não suportado neste MVP. Use somente arquivo sintético .txt ou .md.',
+        'Formato não suportado. Use um arquivo .txt ou .md.',
       )
       return
     }
 
     if (file.size > DEMO_CONSTRAINTS.localText.maxBytes) {
       setFileError(
-        `Arquivo muito grande para a demonstração local. Limite: ${formatDemoTextLimit()}.`,
+        `Arquivo acima do limite de ${formatDemoTextLimit()}.`,
       )
       return
     }
@@ -115,15 +115,13 @@ export function ReportIntake({
     <section className="intake-card intake-card-v2">
       <div className="intake-heading intake-heading-v2">
         <div>
-          <span className="section-kicker">FONTE CLÍNICA</span>
-          <h2>Localizar anatomia mencionada</h2>
-          <p>
-            Texto primeiro. Sugestão depois. Confirmação humana sempre.
-          </p>
+          <span className="section-kicker">LAUDO / EXAME</span>
+          <h2>Adicionar laudo</h2>
+          <p>Cole o texto ou importe um arquivo.</p>
         </div>
 
         <div className="intake-status-cluster">
-          <span className="intake-safety-badge">sem diagnóstico automático</span>
+          <span className="intake-safety-badge">revisão obrigatória</span>
           <span
             className={`intake-source-status ${sourceState.tone}`}
             role="status"
@@ -189,9 +187,9 @@ export function ReportIntake({
         <div className="intake-editor-foot">
           <span>
             <i aria-hidden="true">◉</i>
-            Processamento local · demonstração sintética
+            Processado localmente
           </span>
-          <small>Máx. {formatDemoTextLimit()} em {DEMO_CONSTRAINTS.localText.extensions.join('/')} neste MVP</small>
+          <small>Máx. {formatDemoTextLimit()} em {DEMO_CONSTRAINTS.localText.extensions.join('/')}</small>
         </div>
       </div>
 
@@ -212,11 +210,9 @@ export function ReportIntake({
           onClick={() => void onAnalyze()}
           disabled={analyzing || sourceText.trim().length < 3}
         >
-          {analyzing ? 'Analisando anatomia…' : 'Sugerir estruturas'}
+          {analyzing ? 'Analisando…' : 'Encontrar anatomia'}
         </button>
-        <span>
-          Nada é aplicado automaticamente ao relatório.
-        </span>
+        <span>Confirme uma estrutura para continuar.</span>
       </div>
 
       {(error || fileError) && (
@@ -229,8 +225,8 @@ export function ReportIntake({
         <div className="suggestion-list suggestion-list-v2">
           <div className="suggestion-list-heading">
             <div>
-              <span className="section-kicker">RESULTADO DA TRIAGEM</span>
-              <strong>Confirme a referência visual correta</strong>
+              <span className="section-kicker">ESTRUTURAS ENCONTRADAS</span>
+              <strong>Escolha a anatomia correta</strong>
             </div>
             <span>{suggestions.length} sugestão(ões)</span>
           </div>

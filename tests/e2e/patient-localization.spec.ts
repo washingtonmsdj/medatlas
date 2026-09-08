@@ -40,30 +40,20 @@ test('clinical focused 3D HUD also uses the localized concept label', async ({
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  await page
-    .getByRole('button', { name: 'Exames', exact: true })
-    .first()
-    .click()
+  await page.getByRole('button', { name: 'Relatórios' }).click()
 
   await expect(
-    page.getByRole('heading', {
-      name: 'Entrada local de laudos sintéticos',
-    }),
+    page.getByRole('heading', { name: 'Adicionar laudo' }),
   ).toBeVisible()
 
-  const documentsPreview = page.locator('.documents-anatomy-live')
-  await expect(documentsPreview).toBeVisible()
+  const clinicalAtlas = page.locator('.clinical-atlas-stage')
+  await expect(clinicalAtlas.locator('canvas')).toBeVisible({
+    timeout: 60_000,
+  })
 
-  await expect(
-    documentsPreview.getByText('3D carregado', { exact: true }),
-  ).toBeVisible({ timeout: 60_000 })
-
-  const hudLabel = documentsPreview.locator(
-    '.anatomy-focus-preview-hud strong',
-  )
-
+  const hudLabel = page.locator('.clinical-atlas-focus strong')
   await expect(hudLabel).toHaveText('Disco intervertebral L4–L5')
-  await expect(documentsPreview).not.toContainText(
+  await expect(page.locator('.clinical-atlas-card')).not.toContainText(
     'intervertebral disk of fourth lumbar vertebra',
   )
 })

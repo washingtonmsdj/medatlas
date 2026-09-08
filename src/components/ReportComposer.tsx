@@ -133,7 +133,7 @@ export function ReportComposer({
               !report.finding.sourceText.trim()
             }
           >
-            {generatingDraft ? 'Gerando…' : 'Gerar rascunho educacional'}
+            {generatingDraft ? 'Gerando…' : 'Gerar explicação'}
           </button>
         </div>
 
@@ -157,7 +157,7 @@ export function ReportComposer({
               onUpdateExplanation(event.target.value)
             }}
             rows={9}
-            placeholder="Gere um rascunho educacional ou escreva a explicação manualmente."
+            placeholder="Escreva ou gere uma explicação para o paciente."
             disabled={!canWorkOnExplanation}
           />
           <div className="explanation-editor-meta">
@@ -190,14 +190,11 @@ export function ReportComposer({
           <div className="review-gate-heading">
             <span aria-hidden="true">!</span>
             <div>
-              <strong>Revisão clínica obrigatória</strong>
-              <small>Gate humano antes de qualquer compartilhamento</small>
+              <strong>Revisão necessária</strong>
+              <small>Confirme antes de compartilhar</small>
             </div>
           </div>
-          <p>
-            Confirme que a anatomia e a explicação correspondem ao que você
-            pretende comunicar ao paciente.
-          </p>
+          <p>Revise a explicação antes de liberar o link.</p>
           <button
             type="button"
             onClick={onApproveExplanation}
@@ -225,8 +222,8 @@ export function ReportComposer({
           >
             <span aria-hidden="true">◫</span>
             {previewOpen
-              ? 'Fechar preview do paciente'
-              : 'Pré-visualizar experiência do paciente'}
+              ? 'Fechar visão do paciente'
+              : 'Ver como paciente'}
           </button>
 
           {previewOpen && (
@@ -279,7 +276,7 @@ export function ReportComposer({
           <div className="share-ready-heading">
             <span aria-hidden="true">✓</span>
             <div>
-              <strong>Link de demonstração gerado</strong>
+              <strong>Link pronto</strong>
               <small>Compartilhamento sintético temporário</small>
             </div>
           </div>
@@ -294,14 +291,10 @@ export function ReportComposer({
                 window.open(shareUrl, '_blank', 'noopener,noreferrer')
               }
             >
-              Abrir visão do paciente
+              Abrir link
             </button>
           </div>
-          <small>
-            MVP sem backend: token opaco aleatório, armazenamento local
-            exclusivamente sintético e expiração automática em{' '}
-            {demoShareTtlLabel()}.
-          </small>
+          <small>Este link expira em {demoShareTtlLabel()}.</small>
         </section>
       ) : (
         <div className="publish-zone publish-zone-v3">

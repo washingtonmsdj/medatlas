@@ -60,12 +60,12 @@ const invariants = [
   [
     'browser test verifies publish disabled before review',
     files.e2e,
-    'Revise a explicação antes de publicar',
+    'publishBeforeReview',
   ],
   [
     'browser test performs explicit clinician review',
     files.e2e,
-    'Confirmar explicação revisada',
+    'Marcar como revisada',
   ],
 ]
 
