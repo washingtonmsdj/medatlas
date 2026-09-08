@@ -38,7 +38,23 @@ const documents = await readFile(
   'utf8',
 )
 const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
-const styles = await readFile('src/styles.css', 'utf8')
+const styles = (
+  await Promise.all(
+    [
+      'src/styles.css',
+      'src/styles/clinical-shell.css',
+      'src/styles/supporting-modules.css',
+      'src/styles/organization-analytics.css',
+      'src/styles/anatomy-responsive.css',
+      'src/styles/interaction-polish.css',
+      'src/styles/mvp-mode.css',
+      'src/module-workspaces.css',
+      'src/experience-surfaces.css',
+      'src/reference-atlas.css',
+      'src/team-invitations.css',
+    ].map((file) => readFile(file, 'utf8')),
+  )
+).join('\n')
 const referenceStyles = await readFile('src/reference-atlas.css', 'utf8')
 const model = await readFile('src/atlas/model.ts', 'utf8')
 
@@ -280,25 +296,50 @@ for (const fragment of requiredFocusPreviewFragments) {
 }
 
 const contextual3dSurfaces = [
-  ['dashboard', overview, '3D DO ATENDIMENTO · HUMAN ATLAS'],
-  ['patients', patients, 'PRÉVIA VISUAL DO PACIENTE · HUMAN ATLAS'],
-  ['consultations', consultations, 'FOCO DA CONSULTA · HUMAN ATLAS'],
-  ['documents', documents, 'REFERÊNCIA EXTRAÍDA · HUMAN ATLAS'],
-  ['patient-preview', reportComposer, 'HUMAN ATLAS 3D · VISÃO DO PACIENTE'],
+  {
+    surface: 'dashboard',
+    source: overview,
+    required: ['<AnatomyFocusPreview', 'contextMode="none"'],
+  },
+  {
+    surface: 'patients',
+    source: patients,
+    required: [
+      '<AnatomyFocusPreview',
+      'appearance="patient"',
+      'contextMode="system"',
+    ],
+  },
+  {
+    surface: 'consultations',
+    source: consultations,
+    required: ['<AnatomyFocusPreview', 'contextMode="system"'],
+  },
+  {
+    surface: 'documents',
+    source: documents,
+    required: ['<AnatomyFocusPreview', 'contextMode="system"'],
+  },
+  {
+    surface: 'patient-preview',
+    source: reportComposer,
+    required: [
+      '<AnatomyFocusPreview',
+      'appearance="patient"',
+      'contextMode="system"',
+    ],
+  },
 ]
 
-if (!overview.includes('contextMode="none"')) {
-  failures.push(
-    'dashboard contextual 3D must use isolated focus instead of broad system context',
-  )
-}
-
-for (const [surface, source, marker] of contextual3dSurfaces) {
-  if (!source.includes('<AnatomyFocusPreview')) {
-    failures.push(surface + ' surface is not using canonical AnatomyFocusPreview')
-  }
-  if (!source.includes(marker)) {
-    failures.push(surface + ' surface missing durable 3D-first marker: ' + marker)
+for (const { surface, source, required } of contextual3dSurfaces) {
+  for (const fragment of required) {
+    if (!source.includes(fragment)) {
+      failures.push(
+        surface +
+          ' surface missing canonical contextual 3D mechanism: ' +
+          fragment,
+      )
+    }
   }
 }
 

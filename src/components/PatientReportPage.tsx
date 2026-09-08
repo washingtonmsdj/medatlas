@@ -94,7 +94,7 @@ export function PatientReportPage({
             </span>
             <span>
               <small>Referência</small>
-              <strong>{report.finding.atlasConceptId}</strong>
+              <strong>{report.finding.atlasConceptId || '—'}</strong>
             </span>
             <span className="reviewed">
               <small>Status</small>
@@ -143,10 +143,18 @@ export function PatientReportPage({
         </div>
 
         <aside className="patient-review-summary">
-          <span className="patient-review-icon">✓</span>
+          <span className="patient-review-icon">
+            {presentation.completion.explanation ? '✓' : '•'}
+          </span>
           <div>
-            <span className="section-kicker">CONTEÚDO REVISADO</span>
-            <strong>Preparado para comunicação com o paciente</strong>
+            <span className="section-kicker">
+              {presentation.completion.explanation ? 'REVISADO' : 'PRÉVIA'}
+            </span>
+            <strong>
+              {presentation.completion.explanation
+                ? 'Pronto para o paciente'
+                : 'Relatório em edição'}
+            </strong>
             <p>
               {currentMember?.displayName ?? 'Profissional demo'} ·{' '}
               {currentMember?.professional?.specialty ?? 'Workspace clínico'}

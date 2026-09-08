@@ -405,7 +405,7 @@ test('global command search navigates local MVP actions without backend', async 
     name: 'Resultados da busca global',
   })
   await expect(results).toBeVisible()
-  await expect(results).toContainText('Novo relatório visual')
+  await expect(results).toContainText('Novo relatório')
 
   await search.fill('coração')
   await expect(results).toContainText('Coração')
@@ -499,7 +499,43 @@ test('topbar utility controls perform useful local demo actions', async ({
     .click()
   await expect(
     page.getByRole('heading', {
-      name: 'Equipe e permissões da organização',
+      name: 'Equipe',
     }),
+  ).toBeVisible()
+})
+
+
+test('professional and patient views are separated in the MVP', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.goto('/')
+
+  const modeSwitcher = page.getByRole('group', {
+    name: 'Alternar visão do MedAtlas',
+  })
+  await expect(modeSwitcher).toBeVisible()
+  await expect(
+    modeSwitcher.getByRole('button', { name: /Profissional/ }),
+  ).toHaveAttribute('aria-pressed', 'true')
+
+  await modeSwitcher.getByRole('button', { name: /Paciente/ }).click()
+
+  await expect(page.locator('.patient-shell')).toBeVisible()
+  await expect(page.locator('.sidebar')).toHaveCount(0)
+  await expect(
+    page.getByText('VISÃO DO PACIENTE · PRÉVIA'),
+  ).toBeVisible()
+
+  const patientModeSwitcher = page.getByRole('group', {
+    name: 'Alternar visão do MedAtlas',
+  })
+  await patientModeSwitcher
+    .getByRole('button', { name: /Profissional/ })
+    .click()
+
+  await expect(page.locator('.sidebar')).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
   ).toBeVisible()
 })

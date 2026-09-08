@@ -600,7 +600,7 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
   await page.goto('/')
 
   await page
-    .getByRole('button', { name: 'Novo relatório visual' })
+    .getByRole('button', { name: 'Novo relatório' })
     .click()
 
   await expect(
@@ -713,7 +713,7 @@ test('demo settings can clear local patient shares', async ({ page }) => {
 
   await page
     .getByRole('button', {
-      name: 'Limpar dados locais da demonstração',
+      name: 'Limpar links',
     })
     .click()
 
@@ -737,7 +737,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
   await page.goto('/')
 
   await page
-    .getByRole('button', { name: 'Novo relatório visual' })
+    .getByRole('button', { name: 'Novo relatório' })
     .click()
 
   await page

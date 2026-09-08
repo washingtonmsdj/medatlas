@@ -540,7 +540,6 @@ function ClinicianApp() {
     }
   }
 
-  const meta = moduleMeta[active]
   const activeWorkspace = getDemoWorkspace(activeWorkspaceId)
   const activeUnit = getDemoUnit(activeWorkspace?.unitId)
   const currentMember = getDemoCurrentMember()
@@ -548,8 +547,8 @@ function ClinicianApp() {
   const globalSearchActions: GlobalSearchAction[] = [
     {
       id: 'action-new-report',
-      label: 'Novo relatório visual',
-      description: 'Iniciar um relatório sintético vazio.',
+      label: 'Novo relatório',
+      description: 'Criar um relatório vazio.',
       group: 'Ação',
       keywords: 'novo laudo exame criar atendimento',
       onSelect: startNewReport,
