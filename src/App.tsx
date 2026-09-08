@@ -417,12 +417,12 @@ function ClinicianApp() {
                   ? 'Aguardando seleção'
                   : report.finding.anatomyReviewRequired
                     ? 'Revisar seleção'
-                    : report.finding.atlasConceptId}
+                    : 'Confirmada'}
               </strong>
               <small>
                 {report.finding.atlasConceptId
-                  ? `${report.finding.atlasRef} · ${report.finding.atlasConceptId}`
-                  : `${report.finding.atlasRef} · nenhuma referência confirmada`}
+                  ? 'Human Atlas 3D'
+                  : 'Selecione uma estrutura no Atlas'}
               </small>
             </div>
           </section>

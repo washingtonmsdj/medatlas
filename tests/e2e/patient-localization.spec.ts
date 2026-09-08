@@ -32,6 +32,8 @@ test('patient-facing focused 3D keeps the primary anatomy label in pt-BR', async
   await expect(patientPreview).not.toContainText(
     'intervertebral disk of fourth lumbar vertebra',
   )
+  await expect(patientPreview).not.toContainText('FMA16036')
+  await expect(patientPreview).not.toContainText('BodyParts3D')
 })
 
 test('clinical focused 3D HUD also uses the localized concept label', async ({

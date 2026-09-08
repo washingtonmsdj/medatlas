@@ -76,7 +76,6 @@ export function Overview({
             <AnatomyFocusPreview
               conceptId={report.finding.atlasConceptId || undefined}
               label={report.finding.anatomicalStructure}
-              atlasRef={report.finding.atlasRef}
               eyebrow="HUMAN ATLAS 3D"
               contextMode="none"
               compact

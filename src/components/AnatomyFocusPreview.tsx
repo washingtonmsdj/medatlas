@@ -7,7 +7,6 @@ import { HumanAtlasScene } from './HumanAtlasScene'
 interface Props {
   conceptId?: string
   label: string
-  atlasRef?: string
   eyebrow?: string
   description?: string
   contextMode?: AtlasContextMode
@@ -30,7 +29,6 @@ const VIEW_OPTIONS: Array<{
 export function AnatomyFocusPreview({
   conceptId,
   label,
-  atlasRef,
   eyebrow = 'HUMAN ATLAS 3D',
   description,
   contextMode = 'system',
@@ -91,7 +89,9 @@ export function AnatomyFocusPreview({
           <strong>{conceptId ? label : 'Anatomia ainda não confirmada'}</strong>
           <small>
             {conceptId
-              ? `${atlasRef || 'FMA'} · ${conceptId}`
+              ? appearance === 'patient'
+                ? 'Referência visual do relatório'
+                : 'Anatomia de referência'
               : 'Selecione uma estrutura para visualizar em 3D.'}
           </small>
         </div>

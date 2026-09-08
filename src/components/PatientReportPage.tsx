@@ -93,8 +93,8 @@ export function PatientReportPage({
               <strong>{report.finding.anatomicalStructure}</strong>
             </span>
             <span>
-              <small>Referência</small>
-              <strong>{report.finding.atlasConceptId || '—'}</strong>
+              <small>Visualização</small>
+              <strong>{hasAnatomy ? '3D disponível' : 'Aguardando'}</strong>
             </span>
             <span className="reviewed">
               <small>Status</small>
@@ -171,7 +171,7 @@ export function PatientReportPage({
               <h2>{report.finding.anatomicalStructure}</h2>
             </div>
             <span className="atlas-badge">
-              {report.finding.atlasConceptId || 'Aguardando'}
+              {hasAnatomy ? '3D' : 'Aguardando'}
             </span>
           </div>
 

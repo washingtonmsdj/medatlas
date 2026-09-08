@@ -146,6 +146,21 @@ if (sidebar.includes('clinic-card-chevron')) {
   failures.push('ClinicalSidebar must not imply a clickable workspace card without an action')
 }
 
+if (focusPreview.includes('atlasRef')) {
+  failures.push(
+    'Shared contextual 3D preview must not expose atlasRef/provenance copy in the primary MVP surface',
+  )
+}
+
+if (
+  patient.includes("atlasConceptId || '—'") ||
+  patient.includes("atlasConceptId || 'Aguardando'")
+) {
+  failures.push(
+    'Patient view must not expose internal anatomy concept identifiers as product copy',
+  )
+}
+
 if (failures.length > 0) {
   console.error('MedAtlas MVP UI contract FAILED')
   for (const failure of failures) console.error(`- ${failure}`)

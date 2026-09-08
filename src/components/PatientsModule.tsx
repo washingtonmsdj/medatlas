@@ -106,7 +106,6 @@ export function PatientsModule({
         <AnatomyFocusPreview
           conceptId={report.finding.atlasConceptId || undefined}
           label={report.finding.anatomicalStructure}
-          atlasRef={report.finding.atlasRef}
           eyebrow="HUMAN ATLAS 3D"
           appearance="patient"
           contextMode="system"

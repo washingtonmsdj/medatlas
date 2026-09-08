@@ -172,7 +172,9 @@ export function deriveReportPresentation(report: VisualReport) {
           : 'empty',
       label: anatomyLabel,
       detail: report.finding.atlasConceptId
-        ? `${report.finding.atlasRef} · ${report.finding.atlasConceptId}`
+        ? report.finding.anatomyReviewRequired
+          ? 'Confirmação pendente'
+          : 'Referência confirmada'
         : 'Aguardando seleção',
     },
     explanation: {
