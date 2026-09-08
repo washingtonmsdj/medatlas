@@ -249,8 +249,11 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(
     patientPage
       .locator('#patient-anatomy')
-      .getByText('FMA7088', { exact: true }),
+      .getByRole('heading', { name: 'Coração', exact: true }),
   ).toBeVisible()
+  await expect(
+    patientPage.locator('#patient-anatomy'),
+  ).not.toContainText('FMA7088')
   await expect(
     patientPage.getByRole('button', { name: 'Imprimir / salvar PDF' }),
   ).toBeVisible()
@@ -458,8 +461,11 @@ test('canonical patient view follows the current report state', async ({
 
   await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(
-    page.locator('#patient-anatomy').getByText('FMA7088', { exact: true }),
+    page
+      .locator('#patient-anatomy')
+      .getByRole('heading', { name: 'Coração', exact: true }),
   ).toBeVisible()
+  await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7088')
 
   await page
     .getByRole('group', { name: 'Alternar visão do MedAtlas' })
@@ -479,8 +485,11 @@ test('canonical patient view follows the current report state', async ({
   await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(page.getByText('Pendente', { exact: true })).toBeVisible()
   await expect(
-    page.locator('#patient-anatomy').getByText('FMA7088', { exact: true }),
+    page
+      .locator('#patient-anatomy')
+      .getByRole('heading', { name: 'Coração', exact: true }),
   ).toBeVisible()
+  await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7088')
 
   await page
     .getByRole('group', { name: 'Alternar visão do MedAtlas' })
@@ -961,9 +970,12 @@ test('focused Human Atlas picking identifies a real part without changing the re
     /clique em uma estrutura para inspecionar/i,
   )
 
-  await expect(
-    page.locator('.finding-card-studio.anatomy-confirmed'),
-  ).toContainText('FMA7088')
+  const confirmedFinding = page.locator(
+    '.finding-card-studio.anatomy-confirmed',
+  )
+  await expect(confirmedFinding).toContainText('Coração')
+  await expect(confirmedFinding).toContainText('Confirmada')
+  await expect(confirmedFinding).not.toContainText('FMA7088')
 })
 
 test('clinical report uses the same Human Atlas reference engine in focused mode', async ({
