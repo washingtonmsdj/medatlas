@@ -13,13 +13,6 @@ interface Props {
   onOpenAtlas: () => void
 }
 
-const metricIconByStep = {
-  source: 'T',
-  anatomy: '3D',
-  explanation: '✓',
-  share: '↗',
-} as const
-
 export function Overview({
   report,
   organizationName,
@@ -31,10 +24,11 @@ export function Overview({
   onOpenAtlas,
 }: Props) {
   const presentation = deriveReportPresentation(report)
+  const currentStep = presentation.currentStep
 
   return (
-    <section className="overview-module overview-saas-v2 overview-3d-first module-v3 mvp-surface">
-      <div className="overview-welcome workspace-hero-v3 mvp-page-hero">
+    <section className="overview-module overview-saas-v2 overview-3d-first module-v3 mvp-surface overview-mvp-v8">
+      <div className="overview-welcome workspace-hero-v3 mvp-page-hero overview-compact-hero">
         <div>
           <span className="section-kicker">
             {organizationName.toUpperCase()} · {workspaceName.toUpperCase()}
@@ -42,8 +36,8 @@ export function Overview({
           </span>
           <h2>Seu fluxo clínico visual</h2>
           <p>
-            Olá, {professionalDisplayName}. Crie o relatório, confirme a
-            anatomia e compartilhe com o paciente.
+            Olá, {professionalDisplayName}. Continue o relatório atual ou
+            comece um novo atendimento.
           </p>
         </div>
 
@@ -51,9 +45,6 @@ export function Overview({
           <button className="primary" type="button" onClick={onNewReport}>
             <span aria-hidden="true">＋</span>
             Novo relatório
-          </button>
-          <button type="button" onClick={onOpenAtlas}>
-            Atlas 3D
           </button>
         </div>
       </div>
@@ -113,21 +104,22 @@ export function Overview({
               </div>
             </div>
 
-            <div className="overview-step-stack">
-              {presentation.steps.map((step, index) => (
-                <div className={step.state} key={step.id}>
-                  <span>{step.done ? '✓' : String(index + 1).padStart(2, '0')}</span>
-                  <div>
-                    <strong>{step.shortLabel}</strong>
-                    <small>{step.detail}</small>
-                  </div>
-                </div>
-              ))}
+            <div className="overview-current-action">
+              <span className="section-kicker">
+                {currentStep ? 'PRÓXIMA ETAPA' : 'RELATÓRIO'}
+              </span>
+              <strong>
+                {currentStep?.label ?? 'Relatório concluído'}
+              </strong>
+              <small>
+                {currentStep?.detail ??
+                  'Todas as etapas do relatório atual foram concluídas.'}
+              </small>
             </div>
 
             <div className="overview-3d-hero-actions">
               <button className="primary" type="button" onClick={onOpenReport}>
-                Continuar relatório
+                {currentStep ? 'Continuar relatório' : 'Abrir relatório'}
                 <span aria-hidden="true">→</span>
               </button>
               <button type="button" onClick={onOpenAtlas}>
@@ -137,43 +129,6 @@ export function Overview({
           </div>
         </div>
       </article>
-
-      <div className="overview-metrics premium-metrics overview-derived-metrics" aria-label="Etapas do relatório">
-        {presentation.steps.map((step) => (
-          <article className={`metric-card report-step-${step.state}`} key={step.id}>
-            <span className="metric-icon" aria-hidden="true">
-              {metricIconByStep[step.id]}
-            </span>
-            <div>
-              <strong>{step.done ? 'Concluído' : step.state === 'current' ? 'Agora' : 'Depois'}</strong>
-              <span>{step.shortLabel}</span>
-              <small>{step.detail}</small>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <section className="mvp-next-step-card">
-        <div>
-          <span className="section-kicker">PRÓXIMO PASSO</span>
-          <h2>{presentation.currentStep?.label ?? 'Relatório concluído'}</h2>
-          <p>
-            {presentation.currentStep?.detail ??
-              'O relatório atual já passou por todas as etapas.'}
-          </p>
-        </div>
-        <button
-          className="primary"
-          type="button"
-          onClick={
-            presentation.currentStep?.id === 'anatomy'
-              ? onOpenAtlas
-              : onOpenReport
-          }
-        >
-          {presentation.currentStep ? 'Continuar' : 'Abrir relatório'}
-        </button>
-      </section>
     </section>
   )
 }

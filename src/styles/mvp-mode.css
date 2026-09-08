@@ -63,41 +63,6 @@
   max-width: 640px;
 }
 
-.mvp-next-step-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 20px 22px;
-  border: 1px solid #dce7ef;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 14px 34px rgba(46, 78, 107, .055);
-}
-
-.mvp-next-step-card > div {
-  display: grid;
-  gap: 4px;
-}
-
-.mvp-next-step-card h2,
-.mvp-next-step-card p {
-  margin: 0;
-}
-
-.mvp-next-step-card h2 {
-  color: #17354c;
-  font-size: 22px;
-}
-
-.mvp-next-step-card p {
-  color: #4d687c;
-}
-
-.mvp-next-step-card .section-kicker {
-  color: #2c6f96;
-}
-
 .demo-privacy-banner-mvp {
   width: fit-content;
   max-width: 100%;

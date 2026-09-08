@@ -419,11 +419,16 @@ test('frontend refinement keeps hierarchy explicit on desktop and mobile', async
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  const metricIcons = page.locator('.premium-metrics .metric-icon')
-  await expect(metricIcons).toHaveCount(4)
-  for (let index = 0; index < 4; index += 1) {
-    await expect(metricIcons.nth(index)).not.toHaveText('')
-  }
+  await expect(page.locator('.premium-metrics')).toHaveCount(0)
+  await expect(page.locator('.mvp-next-step-card')).toHaveCount(0)
+
+  const dashboardProgress = page.locator(
+    '.continue-care-card .care-progress',
+  )
+  await expect(dashboardProgress).toHaveAttribute('aria-valuenow', '3')
+  await expect(
+    page.locator('.continue-care-card .overview-current-action'),
+  ).toContainText('Publicar ao paciente')
 
   const dashboardStage = page.locator(
     '.continue-care-card .anatomy-focus-preview-stage',

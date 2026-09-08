@@ -26,22 +26,17 @@ export function PatientsModule({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="patients-module patients-module-v2 module-v3 mvp-surface">
-      <div className="patients-hero patients-hero-v2 workspace-hero-v3 mvp-page-hero">
+    <section className="patients-module patients-module-v2 module-v3 mvp-surface patients-mvp-v8">
+      <div className="patients-hero patients-hero-v2 workspace-hero-v3 mvp-page-hero patients-compact-hero">
         <div className="module-hero-copy">
           <span className="section-kicker">PACIENTE</span>
           <h2>Paciente atual</h2>
-          <p>Acompanhe o relatório e a anatomia em um só lugar.</p>
-        </div>
-
-        <div className="workspace-hero-badge">
-          <strong>{presentation.progressPercent}%</strong>
-          <small>{presentation.statusLabel}</small>
+          <p>Relatório e anatomia no mesmo contexto.</p>
         </div>
       </div>
 
-      <div className="patient-workspace-grid patient-workspace-grid-v2 workspace-context-grid">
-        <article className="patient-profile-card patient-profile-card-v2 workspace-panel">
+      <article className="patient-current-report patient-current-report-v2 workspace-panel patient-summary-card-mvp">
+        <header className="patient-summary-heading-mvp">
           <div className="patient-profile-heading">
             <span className="patient-avatar" aria-hidden="true">
               {initials(report.patient.displayName)}
@@ -53,48 +48,46 @@ export function PatientsModule({
             </div>
           </div>
 
-          <dl className="patient-profile-meta">
-            <div>
-              <dt>Status</dt>
-              <dd>{presentation.statusLabel}</dd>
-            </div>
-            <div>
-              <dt>Relatório</dt>
-              <dd>{report.title}</dd>
-            </div>
-          </dl>
-        </article>
+          <span
+            className={
+              presentation.completion.share
+                ? 'report-state-chip published'
+                : 'report-state-chip'
+            }
+          >
+            {presentation.statusLabel}
+          </span>
+        </header>
 
-        <article className="patient-current-report patient-current-report-v2 workspace-panel">
-          <header>
-            <div>
-              <span className="label">RELATÓRIO ATUAL</span>
-              <strong>{report.title}</strong>
-            </div>
-            <span className={presentation.completion.share ? 'report-state-chip published' : 'report-state-chip'}>
-              {presentation.statusLabel}
+        <div className="patient-summary-report-mvp">
+          <span className="label">RELATÓRIO ATUAL</span>
+          <strong>{report.title}</strong>
+          <small>
+            {presentation.completed}/{presentation.total} etapas concluídas
+          </small>
+        </div>
+
+        <div
+          className="patient-report-progress report-step-rail"
+          aria-label="Progresso do relatório"
+        >
+          {presentation.steps.map((step, index) => (
+            <span className={step.state} key={step.id}>
+              <i aria-hidden="true">{step.done ? '✓' : index + 1}</i>
+              {step.shortLabel}
             </span>
-          </header>
+          ))}
+        </div>
 
-          <div className="patient-report-progress report-step-rail" aria-label="Progresso do relatório">
-            {presentation.steps.map((step, index) => (
-              <span className={step.state} key={step.id}>
-                <i aria-hidden="true">{step.done ? '✓' : index + 1}</i>
-                {step.shortLabel}
-              </span>
-            ))}
-          </div>
-
-          <div className="patient-workspace-actions">
-            <button className="primary" type="button" onClick={onOpenReport}>
-              Abrir relatório
-            </button>
-            <button type="button" onClick={onOpenAtlas}>
-              Abrir Atlas
-            </button>
-          </div>
-        </article>
-      </div>
+        <div className="patient-workspace-actions">
+          <button className="primary" type="button" onClick={onOpenReport}>
+            Abrir relatório
+          </button>
+          <button type="button" onClick={onOpenAtlas}>
+            Abrir Atlas
+          </button>
+        </div>
+      </article>
 
       <section className="patient-anatomy-live anatomy-showcase-v3">
         <div className="patient-anatomy-live-copy anatomy-showcase-copy-v3">

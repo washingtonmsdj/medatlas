@@ -178,230 +178,94 @@
   background: linear-gradient(135deg, #fbfdff, #f6fafc);
 }
 
-.overview-step-stack {
+
+.overview-current-action {
   display: grid;
-  gap: 6px;
-}
-
-.overview-step-stack > div {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  gap: 9px;
-  align-items: center;
-  padding: 8px 9px;
-  border: 1px solid rgba(122, 179, 209, .13);
-  border-radius: 10px;
-  background: rgba(7, 29, 45, .38);
-}
-
-.overview-step-stack > div > span {
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border-radius: 9px;
-  color: #83b8cf;
-  background: rgba(43, 119, 151, .14);
-  font-size: 7px;
-  font-weight: 900;
-}
-
-.overview-step-stack > div.done > span {
-  color: #9ee8d6;
-  background: rgba(38, 147, 116, .17);
-}
-
-.overview-step-stack > div.current {
-  border-color: rgba(80, 194, 225, .29);
-  background: rgba(16, 65, 84, .55);
-}
-
-.overview-step-stack > div > div {
-  display: grid;
-  gap: 2px;
-}
-
-.overview-step-stack strong {
-  color: #dcebf3;
-  font-size: 8px;
-}
-
-.overview-step-stack small {
-  color: #7894a6;
-  font-size: 6px;
-  line-height: 1.35;
-}
-
-.overview-derived-metrics .metric-card {
-  min-height: 102px;
-}
-
-.overview-derived-metrics .metric-card > div {
-  min-width: 0;
-}
-
-.overview-derived-metrics .metric-card strong {
-  font-size: 14px !important;
-}
-
-.overview-derived-metrics .metric-card small {
-  overflow: hidden;
-  max-width: 100%;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.overview-derived-metrics .report-step-current {
-  border-color: #9dd7ea;
-  box-shadow: 0 16px 34px rgba(33, 128, 175, .10);
-}
-
-.overview-derived-metrics .report-step-done .metric-icon {
-  color: #14745d;
-  background: #e4f5ef;
-}
-
-.overview-derived-metrics .report-step-current .metric-icon {
-  color: #0d6d9c;
-  background: #e4f4fb;
-}
-
-.overview-derived-metrics .report-step-pending {
-  opacity: .74;
-}
-
-.overview-current-state .premium-flow-steps article.current {
-  border-color: #9dd6eb;
-  background: #f0f9fd;
-}
-
-.overview-next-actions .queue-item {
-  width: 100%;
-}
-
-.queue-complete-state {
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid #cbe8dc;
+  gap: 4px;
+  padding: 12px 13px;
+  border: 1px solid rgba(93, 185, 219, .18);
   border-radius: 12px;
-  background: #f1faf7;
+  background: rgba(8, 35, 52, .54);
 }
 
-.queue-complete-state > span {
-  width: 38px;
-  height: 38px;
+.overview-current-action strong {
+  color: #e9f5fb;
+  font-size: 12px;
+}
+
+.overview-current-action small {
+  color: #7f9bad;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.patient-summary-card-mvp {
   display: grid;
-  place-items: center;
-  border-radius: 11px;
-  color: #16765f;
-  background: #dcf3ea;
-  font-weight: 900;
+  gap: 14px;
 }
 
-.queue-complete-state > div {
+.patient-summary-heading-mvp {
+  align-items: center;
+}
+
+.patient-summary-report-mvp {
   display: grid;
-  gap: 2px;
+  gap: 3px;
+  padding: 12px 0;
+  border-top: 1px solid #e2ebf1;
+  border-bottom: 1px solid #e2ebf1;
 }
 
-.queue-complete-state strong {
-  color: #245d4e;
+.patient-summary-report-mvp strong {
+  color: #1a4058;
+  font-size: 16px;
+}
+
+.patient-summary-report-mvp small {
+  color: #708899;
   font-size: 9px;
 }
 
-.queue-complete-state small {
-  color: #67897d;
-  font-size: 7px;
-}
-
-.overview-product-contract {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr) auto;
-  gap: 20px;
-  align-items: center;
-}
-
-
-@media (max-width: 1180px) {
-  .anatomy-showcase-v3 {
-    grid-template-columns: minmax(220px, .55fr) minmax(460px, 1.45fr);
+@media (min-width: 901px) {
+  .overview-compact-hero {
+    min-height: 96px;
   }
 
-  .overview-product-contract {
-    grid-template-columns: 1fr 1fr;
+  .patients-compact-hero {
+    min-height: 92px;
   }
 
-  .overview-product-contract button {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 900px) {
-  .workspace-hero-v3 {
-    min-height: 0;
+  .patient-summary-card-mvp {
+    grid-template-columns: minmax(250px, .72fr) minmax(280px, 1fr);
+    align-items: center;
   }
 
-  .anatomy-showcase-v3 {
-    grid-template-columns: 1fr;
+  .patient-summary-heading-mvp {
+    grid-row: 1 / span 2;
   }
 
-  .anatomy-showcase-copy-v3 {
-    padding: 7px 3px 2px;
+  .patient-summary-report-mvp {
+    grid-column: 2;
   }
 
-  .overview-product-contract {
-    grid-template-columns: 1fr;
-  }
-
-  .overview-product-contract button {
-    grid-column: auto;
+  .patient-summary-card-mvp .patient-report-progress,
+  .patient-summary-card-mvp .patient-workspace-actions {
+    grid-column: 2;
   }
 }
 
 @media (max-width: 620px) {
-  .module-v3 {
-    gap: 12px;
+  .overview-current-action {
+    padding: 10px 11px;
   }
 
-  .workspace-hero-v3 {
-    padding: 18px 16px;
-    border-radius: 16px;
+  .patient-summary-heading-mvp {
+    align-items: flex-start;
+    gap: 10px;
   }
 
-  .workspace-hero-v3 .module-hero-copy h2 {
-    font-size: 27px;
-  }
-
-  .workspace-hero-badge {
-    width: 100%;
-    min-width: 0;
-    justify-items: start;
-  }
-
-  .anatomy-showcase-v3 {
-    padding: 9px;
-    border-radius: 16px;
-  }
-
-  .anatomy-showcase-v3 .anatomy-focus-preview-stage,
-  .anatomy-showcase-v3 .human-atlas-scene,
-  .anatomy-showcase-v3 .focused-reference-loading,
-  .anatomy-showcase-v3 .renderer-module-loading {
-    min-height: 440px;
-  }
-
-  .overview-derived-metrics .metric-card {
-    min-height: 92px;
-  }
-
-  .overview-product-contract {
-    gap: 12px;
-  }
-
-  .document-step-rail-v3 {
-    grid-template-columns: 1fr;
+  .patient-summary-heading-mvp .report-state-chip {
+    flex: 0 0 auto;
   }
 }
 
