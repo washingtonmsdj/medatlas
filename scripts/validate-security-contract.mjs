@@ -32,15 +32,16 @@ async function collectTextFiles(root) {
 
 const demoRepo = await read('src/data/demo-clinical-repository.ts')
 const reportIntake = await read('src/components/ReportIntake.tsx')
+const productConstraints = await read('src/product/constraints.ts')
 const indexHtml = await read('index.html')
 const vercel = await read('vercel.json')
 const envExample = await read('.env.example')
 
 const requiredDemoFragments = [
   "syntheticOnly: true",
-  "const DEMO_SHARE_TTL_MS = 30 * 60 * 1000",
-  "const DEMO_VIEW_DEDUPE_MS = 1500",
-  "const MAX_STORED_DEMO_SHARES = 10",
+  "DEMO_CONSTRAINTS.shareTtlMinutes",
+  "DEMO_CONSTRAINTS.viewDedupeMilliseconds",
+  "DEMO_CONSTRAINTS.maxStoredShares",
   'clearDemoShares',
   'getStoredDemoShareCount',
   "const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'",
@@ -77,8 +78,8 @@ if (
 }
 
 const localImportInvariants = [
-  'const MAX_LOCAL_TEXT_BYTES = 64 * 1024',
-  "const ALLOWED_TEXT_EXTENSIONS = ['.txt', '.md']",
+  'DEMO_CONSTRAINTS.localText.maxBytes',
+  'DEMO_CONSTRAINTS.localText.extensions',
   'await file.text()',
   'Importar laudo de texto sintético',
 ]
@@ -89,6 +90,35 @@ for (const fragment of localImportInvariants) {
       `local synthetic report import missing invariant: ${fragment}`,
     )
   }
+}
+
+
+const requiredConstraintFragments = [
+  'shareTtlMinutes: 30',
+  'maxStoredShares: 10',
+  'viewDedupeMilliseconds: 1500',
+  'maxBytes: 64 * 1024',
+  "extensions: ['.txt', '.md'] as const",
+]
+
+for (const fragment of requiredConstraintFragments) {
+  if (!productConstraints.includes(fragment)) {
+    failures.push(
+      `central product constraint missing safety invariant: ${fragment}`,
+    )
+  }
+}
+
+if (!demoRepo.includes("from '../product/constraints'")) {
+  failures.push(
+    'demo repository must source retention/security limits from the central product constraints',
+  )
+}
+
+if (!reportIntake.includes("from '../product/constraints'")) {
+  failures.push(
+    'local report intake must source file limits from the central product constraints',
+  )
 }
 
 const requiredMetaCsp = [
