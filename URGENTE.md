@@ -407,7 +407,7 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 Se continuar **sem Supabase ativo**:
 
 1. preservar o baseline funcional `947f1e8…` — CI `34155102125` PASS, Browser E2E `34155102100` PASS, GitHub Pages Preview `34155102051` PASS;
-2. manter CI, Browser E2E e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34155102100` (`10030771560`);
+2. manter CI, Browser E2E e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34189680315` (`10041842621`) — refinamento V4 revisado em desktop/mobile.
 3. executar **piloto manual sintético completo** no preview externo;
 4. registrar somente bugs/UX observados por navegação humana e corrigi-los;
 5. não iniciar billing, IA remota ou Supabase sem autorização.

@@ -111,10 +111,10 @@ Evidências:
 - HEAD de prova: `419d8e7c9bf8f80fc8ba1f216c20d44690633412`;
 - produção correspondente: `770d4f6fc2700f660bd4e1547a867cfb2ffd5752`;
 - CI `34117852517` — PASS;
-- Browser E2E `34117852477` — **27/27 PASS em 2,7 min**;
+- Browser E2E `34189680315` — **PASS** após refinamento frontend V4;
 - Pages/Chromium remoto `34117434772` — PASS;
 - Explorer completo responsivo — PASS em **28,3 s** no runner;
-- artifact `visual-qa-34117852477` — **19 screenshots revisados**;
+- artifact `visual-qa-34189680315` (`10041842621`) — **19 screenshots revisados**;
 - portal do paciente validado em 390 px com canvas real, controles horizontais, picking e ausência de overflow;
 - inspeção focada validada com destaque de alto contraste sem alterar a anatomia confirmada;
 - JS inicial ~324,35 kB e renderer lazy ~496,01 kB sob gate de bundle.
@@ -204,3 +204,17 @@ Permanece bloqueada até:
 - definição formal do escopo do piloto.
 
 Essa fase não está concluída e não deve ser simulada no produto.
+
+
+## Frontend V4 — visual QA 2026-09-08
+
+Baseline aprovado no artifact `visual-qa-34189680315`:
+
+- Dashboard desktop: 3D do atendimento ampliado e KPIs com affordance visual;
+- Dashboard 390 px: KPIs em grade 2×2, reduzindo comprimento da página sem remover informação;
+- navegação mobile: marca e rail de módulos em duas linhas, sem card redundante da organização;
+- Clinical Studio desktop: Human Atlas mais dominante sem perder as três colunas;
+- workflow clínico: etapa atual distinguível de etapas concluídas e futuras;
+- Clinical Studio 390 px: fluxo permanece funcional e sem overflow horizontal.
+
+Gates do HEAD: CI, Browser E2E e GitHub Pages Preview — PASS.
