@@ -254,7 +254,62 @@
   }
 }
 
+@media (max-width: 1180px) {
+  .anatomy-showcase-v3 {
+    grid-template-columns: minmax(220px, .55fr) minmax(460px, 1.45fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace-hero-v3 {
+    min-height: 0;
+  }
+
+  .anatomy-showcase-v3 {
+    grid-template-columns: 1fr;
+  }
+
+  .anatomy-showcase-copy-v3 {
+    padding: 7px 3px 2px;
+  }
+}
+
 @media (max-width: 620px) {
+  .module-v3 {
+    gap: 12px;
+  }
+
+  .workspace-hero-v3 {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .workspace-hero-v3 .module-hero-copy h2 {
+    font-size: 27px;
+  }
+
+  .workspace-hero-badge {
+    width: 100%;
+    min-width: 0;
+    justify-items: start;
+  }
+
+  .anatomy-showcase-v3 {
+    padding: 9px;
+    border-radius: 16px;
+  }
+
+  .anatomy-showcase-v3 .anatomy-focus-preview-stage,
+  .anatomy-showcase-v3 .human-atlas-scene,
+  .anatomy-showcase-v3 .focused-reference-loading,
+  .anatomy-showcase-v3 .renderer-module-loading {
+    min-height: 440px;
+  }
+
+  .document-step-rail-v3 {
+    grid-template-columns: 1fr;
+  }
+
   .overview-current-action {
     padding: 10px 11px;
   }
