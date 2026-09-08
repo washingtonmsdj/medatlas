@@ -100,8 +100,8 @@ export function TopbarUtilityActions({
             <header>
               <span className="topbar-popover-icon" aria-hidden="true">?</span>
               <div>
-                <strong>Ajuda rápida</strong>
-                <small>Fluxo do relatório</small>
+                <strong>Como funciona</strong>
+                <small>4 passos</small>
               </div>
             </header>
 
@@ -117,25 +117,32 @@ export function TopbarUtilityActions({
                 <span>02</span>
                 <div>
                   <strong>Confirme a anatomia</strong>
-                  <small>Use Human Atlas/FMA como referência visual.</small>
+                  <small>Use o Atlas 3D para localizar a estrutura.</small>
                 </div>
               </li>
               <li>
                 <span>03</span>
                 <div>
-                  <strong>Revise e compartilhe</strong>
-                  <small>Confira a explicação e libere o link.</small>
+                  <strong>Revise a explicação</strong>
+                  <small>Confira o texto que será mostrado ao paciente.</small>
+                </div>
+              </li>
+              <li>
+                <span>04</span>
+                <div>
+                  <strong>Compartilhe</strong>
+                  <small>Gere o link do paciente.</small>
                 </div>
               </li>
             </ol>
 
             <div className="topbar-shortcuts">
-              <span><kbd>Ctrl/⌘ K</kbd> busca global</span>
-              <span><kbd>Esc</kbd> fechar painéis</span>
+              <span><kbd>Ctrl/⌘ K</kbd> buscar</span>
+              <span><kbd>Esc</kbd> fechar</span>
             </div>
 
             <button type="button" onClick={() => run(onOpenReports)}>
-              Abrir fluxo de relatório
+              Abrir relatório
               <b aria-hidden="true">→</b>
             </button>
           </section>
@@ -164,8 +171,8 @@ export function TopbarUtilityActions({
           >
             <header>
               <div>
-                <strong>Ações pendentes</strong>
-                <small>{report.title}</small>
+                <strong>Próximas ações</strong>
+                <small>{report.patient.displayName}</small>
               </div>
               <span className="topbar-popover-count">{pendingSteps.length}</span>
             </header>
@@ -192,15 +199,11 @@ export function TopbarUtilityActions({
               <div className="task-center-complete">
                 <span aria-hidden="true">✓</span>
                 <div>
-                  <strong>Nenhuma ação pendente</strong>
-                  <small>Todos os gates do relatório atual foram concluídos.</small>
+                  <strong>Relatório concluído</strong>
+                  <small>Nenhuma ação pendente.</small>
                 </div>
               </div>
             )}
-
-            <footer>
-              Etapas do relatório atual.
-            </footer>
           </section>
         )}
       </div>
@@ -243,7 +246,7 @@ export function TopbarUtilityActions({
                 <dd>{roleLabel}</dd>
               </div>
               <div>
-                <dt>Workspace</dt>
+                <dt>Área</dt>
                 <dd>{workspaceName}</dd>
               </div>
               <div>
@@ -254,7 +257,7 @@ export function TopbarUtilityActions({
 
             <div className="profile-popover-actions">
               <button type="button" onClick={() => run(onOpenTeam)}>
-                Equipe e permissões
+                Equipe
               </button>
               <button type="button" onClick={() => run(onOpenSettings)}>
                 Configurações
