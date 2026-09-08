@@ -264,6 +264,60 @@
 }
 
 @media (max-width:620px) {
+  .topbar-saas {
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:7px;
+    padding:8px 10px 9px;
+  }
+
+  .organization-switcher-shell {
+    min-width:0;
+  }
+
+  .org-switcher {
+    min-height:38px;
+    gap:7px;
+    padding:4px 7px;
+    border-radius:10px;
+    box-shadow:none;
+  }
+
+  .org-switcher-mark {
+    width:28px;
+    height:28px;
+    border-radius:8px;
+    font-size:8px;
+  }
+
+  .org-switcher strong {
+    font-size:9px;
+  }
+
+  .org-switcher small {
+    margin-top:1px;
+    font-size:7px;
+  }
+
+  .org-switcher b {
+    font-size:9px;
+  }
+
+  .global-search {
+    height:36px;
+    gap:7px;
+    padding:0 9px;
+    border-radius:10px;
+    box-shadow:none;
+  }
+
+  .global-search > span {
+    font-size:16px;
+  }
+
+  .global-search input {
+    font-size:10px;
+  }
+
   .topbar-actions {
     display:none;
   }

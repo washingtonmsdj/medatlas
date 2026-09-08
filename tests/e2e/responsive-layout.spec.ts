@@ -215,6 +215,38 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   }
 })
 
+test('mobile clinical shell stays compact without hiding core controls', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const organization = page.locator('.organization-switcher-shell')
+  const search = page.locator('.global-command-search')
+  const modeSwitcher = page.getByRole('group', {
+    name: 'Alternar visão do MedAtlas',
+  })
+
+  await expect(organization).toBeVisible()
+  await expect(search).toBeVisible()
+  await expect(modeSwitcher).toBeVisible()
+
+  const heights = await page.evaluate(() => {
+    const sidebar = document.querySelector<HTMLElement>('.clinical-sidebar')
+    const topbar = document.querySelector<HTMLElement>('.topbar-saas')
+
+    return {
+      sidebar: sidebar?.getBoundingClientRect().height ?? Number.POSITIVE_INFINITY,
+      topbar: topbar?.getBoundingClientRect().height ?? Number.POSITIVE_INFINITY,
+    }
+  })
+
+  expect(heights.sidebar).toBeLessThanOrEqual(105)
+  expect(heights.topbar).toBeLessThanOrEqual(105)
+  expect(heights.sidebar + heights.topbar).toBeLessThanOrEqual(210)
+  await expectNoHorizontalOverflow(page)
+})
+
 test('management modules stay readable without internal horizontal scroll on mobile', async ({
   page,
 }) => {
