@@ -195,12 +195,14 @@ export function HumanAtlasScene({
       if (progress !== 100 || !prepared) return
 
       onReady?.(
-        prepared.concept.name,
+        appearance === 'patient'
+          ? conceptDisplayName(prepared.concept)
+          : prepared.concept.name,
         prepared.selectedPartCount,
         prepared.contextPartCount,
       )
     },
-    [onReady, prepared],
+    [appearance, onReady, prepared],
   )
 
   const handleError = useCallback(
