@@ -143,7 +143,7 @@ test('published full Atlas keeps the real 3D viewport primary on mobile', async 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./')
 
-  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
+  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
 
   await expect(
     page.getByRole('heading', { name: 'Atlas 3D' }),

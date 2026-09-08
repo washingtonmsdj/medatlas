@@ -117,7 +117,7 @@ export function ClinicalSidebar({
   onNewReport,
 }: Props) {
   return (
-    <aside className="sidebar clinical-sidebar" aria-label="Navegação clínica">
+    <aside className="clinical-sidebar" aria-label="Navegação clínica">
       <button
         className="clinical-sidebar-brand"
         type="button"

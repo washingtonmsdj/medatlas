@@ -213,7 +213,7 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
+  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
 
   await expect(
     page.getByRole('heading', { name: 'Atlas 3D' }),

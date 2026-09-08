@@ -886,7 +886,7 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) => {
   await page.goto('/')
 
-  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D', exact: true }).click()
+  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D', exact: true }).click()
 
   await expect(
     page.getByRole('heading', { name: 'Atlas 3D' }),
@@ -1117,7 +1117,7 @@ test('Atlas 3D exposes canonical source links in the explorer', async ({ page })
   await page.goto('/')
 
   await page
-    .locator('.sidebar nav')
+    .locator('.clinical-sidebar nav')
     .getByRole('button', { name: 'Atlas 3D', exact: true })
     .click()
 
