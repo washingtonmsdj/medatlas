@@ -323,18 +323,6 @@
   align-items: center;
 }
 
-.document-step-rail-v3 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.document-capability-grid-v3 {
-  align-items: stretch;
-}
-
-.consultation-step-rail-v3 article p {
-  max-width: 220px;
-}
 
 @media (max-width: 1180px) {
   .anatomy-showcase-v3 {

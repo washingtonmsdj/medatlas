@@ -429,9 +429,7 @@
   align-self: stretch;
 }
 
-.patient-anatomy-live,
-.consultation-anatomy-live,
-.documents-anatomy-live {
+.patient-anatomy-live {
   display: grid;
   grid-template-columns: minmax(230px, .55fr) minmax(0, 1.45fr);
   gap: 16px;
@@ -443,25 +441,19 @@
   box-shadow: 0 12px 30px rgba(31, 64, 84, .06);
 }
 
-.patient-anatomy-live-copy,
-.consultation-anatomy-live-copy,
-.documents-anatomy-live-copy {
+.patient-anatomy-live-copy {
   align-self: center;
   padding: 8px 6px;
 }
 
-.patient-anatomy-live-copy h2,
-.consultation-anatomy-live-copy h2,
-.documents-anatomy-live-copy h2 {
+.patient-anatomy-live-copy h2 {
   margin: 6px 0 7px;
   color: #183a50;
   font-size: 17px;
   line-height: 1.2;
 }
 
-.patient-anatomy-live-copy p,
-.consultation-anatomy-live-copy p,
-.documents-anatomy-live-copy p {
+.patient-anatomy-live-copy p {
   margin: 0;
   color: #61798a;
   font-size: 9px;
@@ -482,17 +474,6 @@
   min-height: 430px;
 }
 
-.consultation-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
-.documents-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage {
-  min-height: 380px;
-}
-
-.consultation-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
-.consultation-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
-.documents-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
-.documents-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
-  min-height: 380px;
-}
 
 @media (min-width: 1180px) {
   .patient-grid {
@@ -511,9 +492,7 @@
 }
 
 @media (max-width: 1050px) {
-  .patient-anatomy-live,
-  .consultation-anatomy-live,
-  .documents-anatomy-live {
+  .patient-anatomy-live {
     grid-template-columns: 1fr;
   }
 
@@ -538,13 +517,7 @@
   .anatomy-focus-preview-stage .focused-reference-loading,
   .patient-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
   .patient-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
-  .patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
-  .consultation-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
-  .consultation-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
-  .consultation-anatomy-live > .anatomy-focus-preview .focused-reference-loading,
-  .documents-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
-  .documents-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
-  .documents-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
+  .patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
     min-height: 340px;
   }
 
@@ -562,9 +535,7 @@
     max-width: none;
   }
 
-  .patient-anatomy-live,
-  .consultation-anatomy-live,
-  .documents-anatomy-live {
+  .patient-anatomy-live {
     padding: 10px;
   }
 }
