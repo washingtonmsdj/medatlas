@@ -159,20 +159,23 @@ Hierarquia permanente:
 - [x] `ClinicalSidebar` desacoplada da classe `.sidebar` legada; seletores antigos removidos de cinco stylesheets, eliminando **7.005 bytes** de CSS morto e dependência de cascade/import order.
 - [x] axe/WCAG voltou a PASS após correção de contraste específica no seletor de visão e próximo passo; gate não foi desabilitado.
 - [x] busca global deixou de ser decorativa: command search local com Ctrl/⌘ K, módulos, paciente demo, ações rápidas e cenários sintéticos, com teclado e E2E.
-- [x] controles do topbar deixaram de ser decorativos: Ajuda, Notificações e Perfil possuem popovers locais úteis e navegam para fluxos reais do MVP, sem fingir backend.
+- [x] topbar task-first: tutorial explicativo removido; permanecem **Ações pendentes** e **Perfil**, com navegação real do MVP; busca global alinhada ao escopo atual (paciente, relatório, anatomia, módulo).
+- [x] identificadores técnicos FMA/BodyParts3D foram removidos da copy principal e da visão Paciente; continuam disponíveis no Atlas/inspector profissional quando úteis.
+- [x] Human Atlas possui retry real e fail-safe: Promise rejeitada não fica cacheada; Dashboard/Pacientes, portal, Clinical Studio e Atlas completo podem tentar novamente usando o mesmo engine canônico, sem fallback fake.
+- [x] câmera de anatomia isolada usa fit por largura/altura/FOV e respeita a vista atual; Explorer completo preserva o próprio enquadramento.
 - [x] workflow publica artifact de visual QA também em runs verdes.
 - [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 
 Referências recentes de validação:
 
-- **Baseline atual de produto/frontend:** `208af541ce33a9444150c00671830211df40d20a`.
-- **CI:** run `34219763975` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
-- **Browser E2E:** run `34219763958` — PASS completo, incluindo axe/WCAG, 1600/1440/390 px, Clinical Studio, Atlas, Patient view e portal.
-- **GitHub Pages / Chromium remoto:** run `34219763889` — PASS contra `https://washingtonmsdj.github.io/medatlas/`; build, deploy e verificação 3D remota verdes.
-- **Bundle atual:** entry `307.972 bytes`; Human Atlas lazy chunk `502,80 kB` minificado / `128,66 kB gzip`; total JS `810.781 bytes`; CSS principal `181,23 kB` / `34,16 kB gzip`; budget PASS.
+- **Baseline atual de produto/frontend:** `54a5cf12015154a0163fa24dba58285d4448593f`.
+- **CI:** run `34230327671` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
+- **Browser E2E:** run `34230327626` — PASS completo, incluindo axe/WCAG, 1600/1440/390 px, Clinical Studio, Atlas, Patient view e portal.
+- **GitHub Pages / Chromium remoto:** run `34230327621` — PASS contra `https://washingtonmsdj.github.io/medatlas/`; build, deploy e verificação 3D remota verdes.
+- **Bundle atual:** entry `306.254 bytes`; Human Atlas lazy chunk `503,09 kB` minificado / `128,72 kB gzip`; total JS `809.350 bytes`; CSS principal `180,49 kB` / `34,04 kB gzip`; budget PASS.
 - **Runtime:** Node `>=22.13.0 <23`, impedindo upgrade automático de major sem permitir versões 22 abaixo do mínimo.
 - **3D canônico:** Explorer completo + superfícies focadas clinical/patient compartilham o mesmo engine derivado diretamente do Human Atlas fixado; não existe renderer simplificado paralelo.
-- **Visual QA:** artifact `visual-qa-34219763958` (`10053423093`) — **15 capturas** revisadas visualmente após a limpeza da sidebar/CSS legado: Dashboard, Clinical Studio, Atlas Explorer, Pacientes, inspeção focada, preview/portal do paciente e mobile 390 px.
+- **Visual QA:** artifact `visual-qa-34230327626` (`10057704634`) — **15 capturas** revisadas visualmente no baseline atual, incluindo Dashboard, Clinical Studio, Atlas Explorer, Pacientes, inspeção focada, preview/portal do paciente e mobile 390 px; comparação do camera-fit isolado revisada sem clipping/regressão.
 - **Preview público:** `https://washingtonmsdj.github.io/medatlas/`.
 - **Vercel:** deployment API já funciona e não é blocker de arquitetura; GitHub Pages permanece a preview canônica porque executa verificação 3D remota automaticamente.
 
@@ -399,8 +402,8 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34219763975` PASS, Browser E2E `34219763958` PASS e Pages/Playwright remoto `34219763889` PASS;
-3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34219763958` (`10053423093`), 15 capturas revisadas;
+2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34230327671` PASS, Browser E2E `34230327626` PASS e Pages/Playwright remoto `34230327621` PASS;
+3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34230327626` (`10057704634`), 15 capturas revisadas;
 4. [ ] executar piloto manual sintético no preview com navegação humana real;
 5. [ ] corrigir UX adicional encontrada no piloto manual;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;
@@ -415,8 +418,8 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 
 Se continuar **sem Supabase ativo**:
 
-1. preservar o baseline funcional `208af541…` — CI `34219763975` PASS, Browser E2E `34219763958` PASS, GitHub Pages Preview `34219763889` PASS;
-2. manter CI, Browser E2E, axe/WCAG e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34219763958` (`10053423093`) — 15 capturas revisadas em desktop/mobile.
+1. preservar o baseline funcional `54a5cf12…` — CI `34230327671` PASS, Browser E2E `34230327626` PASS, GitHub Pages Preview `34230327621` PASS;
+2. manter CI, Browser E2E, axe/WCAG e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34230327626` (`10057704634`) — 15 capturas revisadas em desktop/mobile.
 3. executar **piloto manual sintético completo** no preview externo;
 4. registrar somente bugs/UX observados por navegação humana e corrigi-los;
 5. não iniciar billing, IA remota ou Supabase sem autorização.
