@@ -100,9 +100,9 @@ export function AnalyticsModule({ repository }: Props) {
               <small>aberturas registradas</small>
             </article>
             <article>
-              <span className="label">ÚLTIMA ABERTURA</span>
+              <span className="label">RELATÓRIOS VISTOS</span>
               <strong>{summary.viewedReports}</strong>
-              <small>{formatDate(summary.lastViewedAt)}</small>
+              <small>Última abertura: {formatDate(summary.lastViewedAt)}</small>
             </article>
           </div>
 

@@ -215,6 +215,38 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   }
 })
 
+test('management modules stay readable without internal horizontal scroll on mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  await openModule(page, { button: 'Equipe', heading: 'Equipe' })
+
+  const matrix = page.locator('.permission-matrix')
+  await expect(matrix).toBeVisible()
+  const matrixSize = await matrix.evaluate((element) => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+  }))
+  expect(matrixSize.scrollWidth).toBeLessThanOrEqual(matrixSize.clientWidth + 1)
+  await expect(
+    page.getByRole('button', { name: 'Convites em breve' }),
+  ).toBeDisabled()
+
+  await openModule(page, { button: 'Analytics', heading: 'Analytics' })
+  await expect(page.getByText('RELATÓRIOS VISTOS', { exact: true })).toBeVisible()
+  await expect(page.getByText(/Última abertura:/)).toBeVisible()
+
+  await openModule(page, { button: 'Configurações', heading: 'Configurações' })
+  await expect(
+    page.locator('.settings-card-heading').getByText('Clínica Horizonte', {
+      exact: true,
+    }),
+  ).toBeVisible()
+  await expectNoHorizontalOverflow(page)
+})
+
 test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   page,
 }) => {

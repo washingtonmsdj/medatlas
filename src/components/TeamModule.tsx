@@ -63,7 +63,7 @@ export function TeamModule() {
           <h3>Adicionar membro</h3>
           <p>Convites estarão disponíveis em uma próxima versão.</p>
           <button className="primary" type="button" disabled>
-            Convidar membro
+            Convites em breve
           </button>
         </aside>
       </div>
@@ -98,7 +98,12 @@ export function TeamModule() {
                     key={capability.id}
                     aria-label={granted.has(capability.id) ? 'Permitido' : 'Não permitido'}
                   >
-                    {granted.has(capability.id) ? '✓' : '—'}
+                    <small className="permission-mobile-label">
+                      {capability.label}
+                    </small>
+                    <b aria-hidden="true">
+                      {granted.has(capability.id) ? '✓' : '—'}
+                    </b>
                   </span>
                 ))}
               </div>

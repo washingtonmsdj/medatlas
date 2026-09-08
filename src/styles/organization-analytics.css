@@ -384,6 +384,14 @@
   background: #fafbfc;
 }
 
+.permission-mobile-label {
+  display: none;
+}
+
+.permission-row [role='cell'] > b {
+  font: inherit;
+}
+
 .team-production-note {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
@@ -461,12 +469,70 @@
     max-width: none;
   }
 
-  .permission-matrix {
-    overflow-x: auto;
+  .team-hero-summary {
+    width: auto;
+    min-width: 122px;
+    align-self: flex-start;
   }
 
-  .permission-row {
-    min-width: 620px;
+  .team-boundary-card .primary:disabled {
+    color: #63798a;
+    border: 1px solid #d6e1e8;
+    background: #eef3f6;
+    box-shadow: none;
+    opacity: 1;
+  }
+
+  .permission-matrix {
+    overflow: hidden;
+  }
+
+  .permission-table {
+    gap: 10px;
+    padding: 10px;
+    background: #f8fbfd;
+  }
+
+  .permission-head {
+    display: none;
+  }
+
+  .permission-row:not(.permission-head) {
+    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid #dfe8ef;
+    border-radius: 12px;
+    background: white;
+  }
+
+  .permission-row:not(.permission-head) > strong {
+    grid-column: 1 / -1;
+    min-height: 40px;
+    padding: 9px 11px;
+    border-right: 0;
+    border-bottom: 1px solid #e8eef3;
+    background: #fbfdfe;
+  }
+
+  .permission-row:not(.permission-head) > [role='cell'] {
+    min-height: 62px;
+    align-content: center;
+    gap: 5px;
+    padding: 8px 5px;
+  }
+
+  .permission-mobile-label {
+    display: block;
+    color: #5c7487;
+    font-size: 6px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .permission-row [role='cell'] > b {
+    font-size: 12px;
+    line-height: 1;
   }
 
   .permission-matrix > header > small {
