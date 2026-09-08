@@ -9490,7 +9490,7 @@ button:not(:disabled):active {
   font-size:8px;
 }
 
-.global-command-results > button {
+.global-command-options > button {
   width:100%;
   display:grid;
   grid-template-columns:64px minmax(0,1fr) 18px;
@@ -9505,12 +9505,12 @@ button:not(:disabled):active {
   cursor:pointer;
 }
 
-.global-command-results > button:hover,
-.global-command-results > button.active {
+.global-command-options > button:hover,
+.global-command-options > button.active {
   background:linear-gradient(90deg,#f0f7ff,#f8fbfe);
 }
 
-.global-command-results > button.active {
+.global-command-options > button.active {
   box-shadow:inset 3px 0 0 #2489e8;
 }
 
@@ -9525,7 +9525,7 @@ button:not(:disabled):active {
   text-align:center;
 }
 
-.global-command-results > button > span:nth-child(2) {
+.global-command-options > button > span:nth-child(2) {
   min-width:0;
   display:grid;
   gap:2px;
@@ -9539,7 +9539,7 @@ button:not(:disabled):active {
   white-space:nowrap;
 }
 
-.global-command-results button small {
+.global-command-options button small {
   overflow:hidden;
   color:#7c8ea2;
   font-size:8px;
@@ -9547,7 +9547,7 @@ button:not(:disabled):active {
   white-space:nowrap;
 }
 
-.global-command-results button b {
+.global-command-options button b {
   color:#7da0bf;
   font-size:9px;
 }
@@ -9588,7 +9588,7 @@ button:not(:disabled):active {
     overflow:auto;
   }
 
-  .global-command-results > button {
+  .global-command-options > button {
     grid-template-columns:58px minmax(0,1fr) 16px;
     min-height:52px;
   }

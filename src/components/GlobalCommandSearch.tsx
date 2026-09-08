@@ -142,8 +142,13 @@ export function GlobalCommandSearch({ actions }: Props) {
         role="combobox"
         aria-label="Buscar paciente, exame, laudo ou módulo"
         aria-expanded={open}
-        aria-controls="medatlas-global-search-results"
+        aria-controls="medatlas-global-search-options"
         aria-autocomplete="list"
+        aria-activedescendant={
+          open && results[activeIndex]
+            ? 'global-command-option-' + results[activeIndex].id
+            : undefined
+        }
         value={query}
         onFocus={() => setOpen(true)}
         onChange={(event) => {
@@ -156,45 +161,48 @@ export function GlobalCommandSearch({ actions }: Props) {
       <kbd aria-hidden="true">⌘ K</kbd>
 
       {open && (
-        <div
-          className="global-command-results"
-          id="medatlas-global-search-results"
-          role="listbox"
-          aria-label="Resultados da busca global"
-        >
+        <div className="global-command-results">
           <div className="global-command-results-heading">
             <span>{query.trim() ? 'Resultados' : 'Ações rápidas'}</span>
             <small>{results.length}</small>
           </div>
 
-          {results.length > 0 ? (
-            results.map((action, index) => (
-              <button
-                key={action.id}
-                type="button"
-                role="option"
-                aria-selected={index === activeIndex}
-                className={index === activeIndex ? 'active' : ''}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => select(action)}
-              >
-                <span className="global-command-group">
-                  {action.group}
-                </span>
-                <span>
-                  <strong>{action.label}</strong>
-                  <small>{action.description}</small>
-                </span>
-                <b aria-hidden="true">↵</b>
-              </button>
-            ))
-          ) : (
-            <p className="global-command-empty">
-              Nenhuma correspondência local. A busca clínica real entra com o
-              backend dedicado.
-            </p>
-          )}
+          <div
+            className="global-command-options"
+            id="medatlas-global-search-options"
+            role="listbox"
+            aria-label="Resultados da busca global"
+          >
+            {results.length > 0 ? (
+              results.map((action, index) => (
+                <button
+                  key={action.id}
+                  id={'global-command-option-' + action.id}
+                  type="button"
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  className={index === activeIndex ? 'active' : ''}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => select(action)}
+                >
+                  <span className="global-command-group">
+                    {action.group}
+                  </span>
+                  <span>
+                    <strong>{action.label}</strong>
+                    <small>{action.description}</small>
+                  </span>
+                  <b aria-hidden="true">↵</b>
+                </button>
+              ))
+            ) : (
+              <p className="global-command-empty">
+                Nenhuma correspondência local. A busca clínica real entra com o
+                backend dedicado.
+              </p>
+            )}
+          </div>
 
           <footer>
             <span>↑↓ navegar</span>
