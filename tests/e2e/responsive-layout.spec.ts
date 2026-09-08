@@ -86,6 +86,9 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
       Relatórios: 'clinical-studio-1600',
       Pacientes: 'patients-3d-1600',
+      Analytics: 'analytics-1600',
+      Equipe: 'team-1600',
+      Configurações: 'settings-1600',
     }
 
     const captureName = captureNames[module.button]
@@ -103,6 +106,9 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
     const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
       Relatórios: 'clinical-studio-1440',
       Pacientes: 'patients-3d-1440',
+      Analytics: 'analytics-1440',
+      Equipe: 'team-1440',
+      Configurações: 'settings-1440',
     }
 
     const captureName = captureNames[module.button]
@@ -197,6 +203,9 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
     const captureNames: Partial<Record<(typeof MODULES)[number]['button'], string>> = {
       Relatórios: 'clinical-studio-mobile-390',
       Pacientes: 'patients-3d-mobile-390',
+      Analytics: 'analytics-mobile-390',
+      Equipe: 'team-mobile-390',
+      Configurações: 'settings-mobile-390',
     }
 
     const captureName = captureNames[module.button]
