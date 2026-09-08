@@ -1049,9 +1049,6 @@ test('team module presents roles and keeps unavailable membership writes blocked
   await expect(staffRow.getByRole('cell', { name: 'Não permitido', exact: true })).toHaveCount(2)
 
   await expect(
-    page.getByRole('button', { name: 'Convites em breve' }),
-  ).toBeDisabled()
-  await expect(
     page.getByText('Permissões por papel', { exact: true }),
   ).toBeVisible()
 })

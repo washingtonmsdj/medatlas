@@ -131,16 +131,6 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.mvp-side-card {
-  display: grid;
-  align-content: start;
-  gap: 9px;
-}
-
-.mvp-side-card button {
-  margin-top: 8px;
-}
-
 .mvp-settings-grid {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }

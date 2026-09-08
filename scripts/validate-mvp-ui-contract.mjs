@@ -71,6 +71,7 @@ const sidebar = sources.get('src/components/ClinicalSidebar.tsx')
 const focusPreview = sources.get('src/components/AnatomyFocusPreview.tsx')
 const globalSearch = sources.get('src/components/GlobalCommandSearch.tsx')
 const topbar = sources.get('src/components/TopbarUtilityActions.tsx')
+const team = sources.get('src/components/TeamModule.tsx')
 
 const requiredAppFragments = [
   "useState<MedAtlasViewMode>('professional')",
@@ -179,6 +180,27 @@ if (
   )
 }
 
+
+for (const forbidden of [
+  'Adicionar membro',
+  'Convites em breve',
+  'próxima versão',
+]) {
+  if (team.includes(forbidden)) {
+    failures.push(
+      `Team MVP must not expose unavailable future invitation UI: ${forbidden}`,
+    )
+  }
+}
+
+for (const required of [
+  'Membros da organização',
+  'Permissões por papel',
+]) {
+  if (!team.includes(required)) {
+    failures.push(`Team MVP is missing active functionality: ${required}`)
+  }
+}
 
 if (focusPreview.includes('atlasRef')) {
   failures.push(

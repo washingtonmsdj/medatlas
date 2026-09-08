@@ -27,46 +27,35 @@ export function TeamModule() {
         </div>
       </div>
 
-      <div className="team-grid team-grid-v3">
-        <section className="team-roster" aria-label="Membros da organização">
-          <header>
-            <div>
-              <span className="section-kicker">MEMBROS</span>
-              <strong>{DEMO_ORGANIZATION.name}</strong>
-            </div>
-            <span>{activeMembers.length}</span>
-          </header>
-
-          <div className="team-member-list">
-            {activeMembers.map((member) => (
-              <article key={member.id}>
-                <span className="team-avatar" aria-hidden="true">
-                  {member.initials}
-                </span>
-                <div className="team-member-copy">
-                  <strong>{member.displayName}</strong>
-                  <span>{member.professional?.specialty ?? 'Equipe'}</span>
-                </div>
-                <div className="team-member-role">
-                  <span className={`role-chip role-${member.role}`}>
-                    {ROLE_LABELS[member.role]}
-                  </span>
-                  <small>{ROLE_DESCRIPTIONS[member.role]}</small>
-                </div>
-              </article>
-            ))}
+      <section className="team-roster" aria-label="Membros da organização">
+        <header>
+          <div>
+            <span className="section-kicker">MEMBROS</span>
+            <strong>{DEMO_ORGANIZATION.name}</strong>
           </div>
-        </section>
+          <span>{activeMembers.length}</span>
+        </header>
 
-        <aside className="team-boundary-card mvp-side-card">
-          <span className="section-kicker">CONVITES</span>
-          <h3>Adicionar membro</h3>
-          <p>Convites estarão disponíveis em uma próxima versão.</p>
-          <button className="primary" type="button" disabled>
-            Convites em breve
-          </button>
-        </aside>
-      </div>
+        <div className="team-member-list">
+          {activeMembers.map((member) => (
+            <article key={member.id}>
+              <span className="team-avatar" aria-hidden="true">
+                {member.initials}
+              </span>
+              <div className="team-member-copy">
+                <strong>{member.displayName}</strong>
+                <span>{member.professional?.specialty ?? 'Equipe'}</span>
+              </div>
+              <div className="team-member-role">
+                <span className={`role-chip role-${member.role}`}>
+                  {ROLE_LABELS[member.role]}
+                </span>
+                <small>{ROLE_DESCRIPTIONS[member.role]}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="permission-matrix">
         <header>

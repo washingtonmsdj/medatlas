@@ -262,10 +262,6 @@ test('management modules stay readable without internal horizontal scroll on mob
     clientWidth: element.clientWidth,
   }))
   expect(matrixSize.scrollWidth).toBeLessThanOrEqual(matrixSize.clientWidth + 1)
-  await expect(
-    page.getByRole('button', { name: 'Convites em breve' }),
-  ).toBeDisabled()
-
   await openModule(page, { button: 'Analytics', heading: 'Analytics' })
   await expect(page.getByText('RELATÓRIOS VISTOS', { exact: true })).toBeVisible()
   await expect(page.getByText(/Última abertura:/)).toBeVisible()

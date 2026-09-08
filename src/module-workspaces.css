@@ -439,8 +439,6 @@
   background: linear-gradient(135deg, #f8fbfd, #f2f8fb);
 }
 
-.team-toolbar-v3,
-.team-grid-v3 > *,
 .analytics-report-card-v3,
 .settings-grid-v3 > article,
 .settings-governance-v3 {
@@ -448,11 +446,11 @@
   box-shadow: 0 15px 36px rgba(47, 79, 108, .055);
 }
 
-.team-grid-v3 .team-member-list article {
+.team-member-list article {
   transition: border-color .18s ease, background .18s ease;
 }
 
-.team-grid-v3 .team-member-list article:hover {
+.team-member-list article:hover {
   border-color: #c6dfea;
   background: #fbfdff;
 }
