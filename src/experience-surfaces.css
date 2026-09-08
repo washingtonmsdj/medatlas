@@ -70,3 +70,48 @@
     min-height: 520px;
   }
 }
+
+
+.atlas-retry-button {
+  min-height: 28px;
+  width: fit-content;
+  padding: 0 10px;
+  border: 1px solid rgba(113, 199, 232, .34);
+  border-radius: 8px;
+  color: #eaf9ff;
+  background: rgba(24, 105, 145, .72);
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.atlas-retry-button:hover,
+.atlas-retry-button:focus-visible {
+  border-color: rgba(142, 224, 252, .65);
+  background: rgba(29, 125, 168, .9);
+  outline: none;
+}
+
+.anatomy-focus-preview-hud.has-error {
+  pointer-events: auto;
+}
+
+.anatomy-focus-preview-hud.has-error > div {
+  gap: 5px;
+}
+
+.patient-shell .atlas-retry-button {
+  color: #245f74;
+  border-color: #bdd7df;
+  background: rgba(255, 255, 255, .92);
+}
+
+.patient-atlas-status .atlas-retry-button {
+  min-height: 24px;
+  padding-inline: 8px;
+}
+
+.reference-atlas-error .atlas-retry-button,
+.clinical-atlas-error .atlas-retry-button {
+  margin-top: 3px;
+}

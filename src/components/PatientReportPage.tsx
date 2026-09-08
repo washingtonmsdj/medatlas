@@ -30,20 +30,27 @@ export function PatientReportPage({
     'idle' | 'loading' | 'ready' | 'error'
   >(hasAnatomy ? 'loading' : 'idle')
   const [sourceLabel, setSourceLabel] = useState('')
-  const [error, setError] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
   const [reset, setReset] = useState(0)
+  const [sceneAttempt, setSceneAttempt] = useState(0)
 
   const ready = useCallback((label: string) => {
     setSourceLabel(label)
     setAtlasStatus('ready')
   }, [])
 
-  const failed = useCallback((message: string) => {
-    setError(message)
+  const failed = useCallback(() => {
     setAtlasStatus('error')
   }, [])
+
+  const retryAtlas = () => {
+    setAtlasStatus('loading')
+    setSourceLabel('')
+    setRotate(false)
+    setSceneAttempt((current) => current + 1)
+    setReset((current) => current + 1)
+  }
 
   return (
     <main className="patient-shell" data-surface-priority="mobile-first">
@@ -178,6 +185,7 @@ export function PatientReportPage({
           <div className="patient-atlas-stage">
             {hasAnatomy ? (
               <HumanAtlasScene
+                key={`${report.finding.atlasConceptId}-${sceneAttempt}`}
                 conceptId={report.finding.atlasConceptId}
                 contextMode="system"
                 view={view}
@@ -205,7 +213,16 @@ export function PatientReportPage({
               {atlasStatus === 'loading' && <span>Carregando anatomia 3D…</span>}
               {atlasStatus === 'idle' && <span>Aguardando anatomia</span>}
               {atlasStatus === 'error' && (
-                <span>3D indisponível: {error}</span>
+                <>
+                  <span>3D indisponível</span>
+                  <button
+                    className="atlas-retry-button"
+                    type="button"
+                    onClick={retryAtlas}
+                  >
+                    Tentar novamente
+                  </button>
+                </>
               )}
             </div>
 

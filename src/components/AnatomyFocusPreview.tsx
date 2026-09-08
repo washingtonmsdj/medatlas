@@ -41,15 +41,14 @@ export function AnatomyFocusPreview({
     conceptId ? 'loading' : 'idle',
   )
   const [sourceLabel, setSourceLabel] = useState('')
-  const [error, setError] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
   const [reset, setReset] = useState(0)
+  const [sceneAttempt, setSceneAttempt] = useState(0)
 
   useEffect(() => {
     setStatus(conceptId ? 'loading' : 'idle')
     setSourceLabel('')
-    setError('')
     setView('three-quarter')
     setRotate(false)
     setReset((current) => current + 1)
@@ -60,10 +59,17 @@ export function AnatomyFocusPreview({
     setStatus('ready')
   }, [])
 
-  const failed = useCallback((message: string) => {
-    setError(message)
+  const failed = useCallback(() => {
     setStatus('error')
   }, [])
+
+  const retryScene = () => {
+    setStatus('loading')
+    setSourceLabel('')
+    setRotate(false)
+    setSceneAttempt((current) => current + 1)
+    setReset((current) => current + 1)
+  }
 
   const chooseView = (nextView: AtlasView) => {
     setView(nextView)
@@ -127,6 +133,7 @@ export function AnatomyFocusPreview({
       <div className="anatomy-focus-preview-stage">
         {conceptId ? (
           <HumanAtlasScene
+            key={`${conceptId}-${contextMode}-${sceneAttempt}`}
             conceptId={conceptId}
             contextMode={contextMode}
             view={view}
@@ -145,7 +152,15 @@ export function AnatomyFocusPreview({
         )}
 
         {conceptId && (
-          <div className="anatomy-focus-preview-hud" role="status" aria-live="polite">
+          <div
+            className={
+              status === 'error'
+                ? 'anatomy-focus-preview-hud has-error'
+                : 'anatomy-focus-preview-hud'
+            }
+            role="status"
+            aria-live="polite"
+          >
             {status === 'ready' ? (
               <>
                 <span className="live-dot" aria-hidden="true" />
@@ -156,8 +171,15 @@ export function AnatomyFocusPreview({
               </>
             ) : status === 'error' ? (
               <div>
-                <strong>Não foi possível carregar o 3D</strong>
-                <small>{error}</small>
+                <strong>3D indisponível</strong>
+                <small>Tente novamente.</small>
+                <button
+                  className="atlas-retry-button"
+                  type="button"
+                  onClick={retryScene}
+                >
+                  Tentar novamente
+                </button>
               </div>
             ) : (
               <div>

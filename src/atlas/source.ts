@@ -35,15 +35,20 @@ export function normalizeAnatomyText(value: string) {
 }
 
 export function loadHumanAtlas(): Promise<HumanAtlas> {
-  atlasPromise ??= fetch(`${HUMAN_ATLAS_ASSET_BASE}/atlas.json`).then(
-    async (response) => {
-      if (!response.ok) {
-        throw new Error('Não foi possível carregar o catálogo anatômico.')
-      }
+  if (!atlasPromise) {
+    atlasPromise = fetch(`${HUMAN_ATLAS_ASSET_BASE}/atlas.json`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error('Não foi possível carregar o catálogo anatômico.')
+        }
 
-      return response.json() as Promise<HumanAtlas>
-    },
-  )
+        return response.json() as Promise<HumanAtlas>
+      })
+      .catch((error) => {
+        atlasPromise = undefined
+        throw error
+      })
+  }
 
   return atlasPromise
 }

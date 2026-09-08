@@ -74,6 +74,7 @@ export function AtlasViewport({
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
   const [reset, setReset] = useState(0)
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [error, setError] = useState('')
   const [atlas, setAtlas] = useState<HumanAtlas | null>(null)
@@ -82,6 +83,7 @@ export function AtlasViewport({
 
   useEffect(() => {
     let active = true
+    setError('')
 
     void loadHumanAtlas()
       .then((loadedAtlas) => {
@@ -109,7 +111,7 @@ export function AtlasViewport({
     return () => {
       active = false
     }
-  }, [conceptId])
+  }, [conceptId, loadAttempt])
 
   useEffect(() => {
     const syncFullscreen = () => {
@@ -122,6 +124,15 @@ export function AtlasViewport({
 
   const activeConceptId = preview?.id ?? conceptId
   const activeLabel = preview ? conceptDisplayName(preview) : selected
+
+  const retryAtlas = () => {
+    setError('')
+    setStatus(activeConceptId ? 'loading' : 'idle')
+    setAtlas(null)
+    setRotate(false)
+    setReset((current) => current + 1)
+    setLoadAttempt((current) => current + 1)
+  }
 
   useEffect(() => {
     if (!activeConceptId) {
@@ -276,6 +287,7 @@ export function AtlasViewport({
       >
         {activeConceptId ? (
           <HumanAtlasScene
+            key={`${activeConceptId}-${contextMode}-${loadAttempt}`}
             conceptId={activeConceptId}
             contextMode={contextMode}
             view={view}
@@ -423,7 +435,14 @@ export function AtlasViewport({
         {status === 'error' && (
           <div className="atlas-error clinical-atlas-error" role="alert">
             <strong>Atlas 3D indisponível</strong>
-            <span>{error}</span>
+            <span>Tente carregar novamente.</span>
+            <button
+              className="atlas-retry-button"
+              type="button"
+              onClick={retryAtlas}
+            >
+              Tentar novamente
+            </button>
           </div>
         )}
       </div>

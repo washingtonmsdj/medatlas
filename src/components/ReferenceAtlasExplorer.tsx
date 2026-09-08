@@ -80,6 +80,7 @@ export function ReferenceAtlasExplorer({
   const [state, setState] = useState<AtlasExplorerSceneState>(initialState)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const [query, setQuery] = useState('')
   const [chosen, setChosen] = useState<AtlasConcept | null>(null)
   const [mobilePanel, setMobilePanel] = useState<
@@ -88,6 +89,8 @@ export function ReferenceAtlasExplorer({
 
   useEffect(() => {
     let active = true
+    setError('')
+    setProgress(0)
 
     void loadHumanAtlas()
       .then((loadedAtlas) => {
@@ -119,7 +122,7 @@ export function ReferenceAtlasExplorer({
     return () => {
       active = false
     }
-  }, [initialConceptId])
+  }, [initialConceptId, loadAttempt])
 
   const partsById = useMemo(
     () => new Map(atlas?.parts.map((part) => [part.id, part]) ?? []),
@@ -253,6 +256,13 @@ export function ReferenceAtlasExplorer({
     }))
   }
 
+  const retryAtlas = () => {
+    setError('')
+    setProgress(0)
+    setAtlas(null)
+    setLoadAttempt((current) => current + 1)
+  }
+
   const setView = (view: AtlasView) => {
     setState((current) => ({
       ...current,
@@ -313,6 +323,7 @@ export function ReferenceAtlasExplorer({
             }
           >
             <HumanAtlasExplorerScene
+              key={loadAttempt}
               atlas={atlas}
               state={state}
               onSelect={choosePart}
@@ -658,7 +669,14 @@ export function ReferenceAtlasExplorer({
         {error && (
           <div className="reference-atlas-error" role="alert">
             <strong>Atlas 3D indisponível</strong>
-            <span>{error}</span>
+            <span>Tente carregar novamente.</span>
+            <button
+              className="atlas-retry-button"
+              type="button"
+              onClick={retryAtlas}
+            >
+              Tentar novamente
+            </button>
           </div>
         )}
 

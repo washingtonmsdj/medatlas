@@ -60,6 +60,13 @@ if (!atlasSource.includes('${import.meta.env.BASE_URL}atlas-assets')) {
   )
 }
 
+if (!atlasSource.includes('atlasPromise = undefined')) {
+  failures.push(
+    'rejected atlas loads must clear the cached Promise so retry can perform a real reload',
+  )
+}
+
+
 const requiredEngineFragments = [
   'RoomEnvironment',
   'mergeGeometries',
@@ -271,6 +278,22 @@ for (const fragment of requiredPatient3dFragments) {
     failures.push(
       'patient 3D surface missing simplified interaction: ' + fragment,
     )
+  }
+}
+
+
+for (const [surface, source] of [
+  ['contextual-preview', anatomyFocus],
+  ['patient-view', patient],
+  ['clinical-workbench', focusedViewport],
+  ['full-atlas', explorer],
+]) {
+  for (const fragment of ['Tentar novamente', 'atlas-retry-button']) {
+    if (!source.includes(fragment)) {
+      failures.push(
+        `3D retry contract missing on ${surface}: ${fragment}`,
+      )
+    }
   }
 }
 
