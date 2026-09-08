@@ -1,181 +1,152 @@
 # MedAtlas — MVP release readiness
 
-Checkpoint: **2026-09-07 — atualizado após paridade Human Atlas**
+Checkpoint: **2026-09-08**
 Canonical branch: `main`
-Verified product HEAD: `947f1e85caf407277021fe306eab97257f476bef`
+Verified product/frontend HEAD: `7db6aad14073049e7f392415364fe904e500fa9e`
 
 ## Current verdict
 
-The browser-only MedAtlas MVP is **published and verified in an external synthetic preview**. The canonical 3D engine now derives directly from Human Atlas in both full explorer and focused clinical modes.
-
-It is **not ready for real patient data** and is **not yet a production clinical
-system**. Supabase, authentication, tenant isolation proofs, private clinical
-Storage and the controlled clinical pilot remain deliberately blocked.
-
-## Current 3D baseline
-
-The current canonical Human Atlas baseline is:
-
-- HEAD: `947f1e85caf407277021fe306eab97257f476bef`;
-- CI: `34155102125` — PASS;
-- Browser E2E: `34155102100` — PASS;
-- GitHub Pages Preview: `34155102051` — PASS, including remote Chromium 3D flow;
-- visual QA artifact: `visual-qa-34155102100`;
-- artifact ID: `10030771560`.
-
-The Atlas 3D explorer and all focused clinical/patient surfaces share the same
-canonical renderer derived from the pinned Human Atlas engine. The full explorer
-also preserves/extends reference behaviors: merged system geometry, GPU state
-textures, per-piece picking, isolate/explode, camera views, auto-rotation,
-platform/rings, inventory markers, exploded-piece hover, and viewport framing
-that reserves space for MedAtlas panels.
-
-Current build budget at this checkpoint:
-
-- initial JavaScript entry: **324,796 bytes**;
-- lazy Human Atlas renderer chunk: **502.36 kB** minified / **128.53 kB gzip**;
-- total JavaScript: **827,160 bytes**;
-- bundle budget gate: PASS.
+The browser-only MedAtlas MVP is **published and verified in an external synthetic preview**.
 
 Public preview:
 
 `https://washingtonmsdj.github.io/medatlas/`
 
+The project is **not ready for real patient data** and is **not yet a production clinical system**. Supabase, authentication, real tenant-isolation proofs, private clinical Storage and the controlled clinical pilot remain deliberately blocked.
+
+## Canonical 3D architecture
+
+The original gap has been closed.
+
+Earlier MedAtlas iterations reused Human Atlas / BodyParts3D data while rendering some clinical surfaces through a simplified Three.js implementation.
+
+The current product has **one canonical Human Atlas engine**:
+
+- full Atlas 3D explorer — approximately 2,234 parts, systems/layers, GPU visibility/selection state, picking, isolate, explode, camera views and rotation;
+- focused clinical mode — the same engine fed by semantic atlas slicing and only the chunks required for the confirmed concept/context;
+- patient mode — the same focused engine with simplified, patient-safe controls/language;
+- temporary inspected-part highlighting remains separate from the clinically confirmed anatomy.
+
+No static image, fake orbit, thumbnail or second renderer is allowed to substitute for the real geometry on a 3D-first surface.
+
+Human Atlas upstream remains pinned to:
+
+`1c38bf35c254a891200d3cedecfd57abebe83d8d`
+
+BodyParts3D assets remain vendored, attributed and SHA-256 verified.
+
 ## Verified gates
 
-At the checkpoint above:
+Current verified runs:
 
-- CI: PASS;
-- TypeScript: PASS;
-- Vite production build: PASS;
-- production dependency audit: PASS at configured threshold;
-- database source contract: PASS;
-- anatomy/FMA contract: PASS;
-- canonical demo scenarios: PASS;
-- vendored anatomy SHA-256 closure: PASS;
-- anatomy payload budget: PASS;
-- synthetic privacy/security contract: PASS;
-- structured-AI safety contract: PASS;
-- clinician review gate: PASS;
-- report workflow state-machine test: PASS;
-- required BodyParts3D/Human Atlas attribution gate: PASS;
-- Browser E2E from the preceding product commit: PASS;
-- axe serious/critical accessibility gate: PASS;
-- desktop/mobile clinician → patient flow: PASS.
+- CI: `34197395606` — **PASS**;
+- Browser E2E: `34197395517` — **PASS**;
+- GitHub Pages Preview: `34197395475` — **PASS**;
+- deployed Pages URL: `https://washingtonmsdj.github.io/medatlas/`;
+- Pages shell/assets + atlas provenance/index: **PASS**;
+- deployed Chromium 3D tests: **2/2 PASS**.
 
-## Lightweight preview artifact
+The source-equivalent previous Browser E2E run `34196529069` also passed and produced visual QA artifact:
 
-Workflow:
+- name: `visual-qa-34196529069`;
+- artifact ID: `10044214674`;
+- 19 desktop/mobile screenshots.
 
-`.github/workflows/preview-artifact.yml`
+Representative visual QA reviewed in this checkpoint:
 
-Successful run:
+- `atlas-explorer-1600.png`;
+- `clinical-studio-1600.png`;
+- `patient-portal-real-3d.png`;
+- `focused-inspection-highlight.png`.
 
-`34090950791`
+## Frontend / bundle state
 
-Artifact:
+Current production build:
 
-- name: `medatlas-preview-static`;
-- artifact ID: `10006796553`;
-- ZIP size: **204,368 bytes**;
-- extracted size: **765,407 bytes**;
-- digest:
-  `sha256:632090a0dc36000f48af5a7585155d92f2ddca14fd3747dfe0ad25743248d32a`;
-- retention at this checkpoint: through **2026-09-10 06:28 UTC**.
+- CSS: approximately **173.38 kB** minified / **32.39 kB gzip**;
+- initial JS entry: **335,589 bytes** / approximately **96.45 kB gzip**;
+- lazy Human Atlas renderer: approximately **502.80 kB** / **128.66 kB gzip**;
+- total JavaScript: **838,398 bytes**;
+- bundle budget: **PASS**.
 
-Contents:
+The heavy 3D renderer is no longer part of the initial JavaScript entry.
 
-```text
-index.html
-assets/index-DlEwlJEB.js
-assets/index-D-s9lvOo.css
-vercel.json
-PREVIEW-PROVENANCE.json
-```
+Runtime range is constrained to:
 
-The artifact deliberately contains **no anatomy .bin/.bin.gz files**.
+`>=22.13.0 <23`
 
-For this external preview artifact only, anatomy is loaded from the immutable
-public GitHub URL corresponding to the same commit. The canonical application
-continues to vendor and verify its own anatomy assets in
-`public/atlas-assets/`.
+This preserves the tested Node 22 baseline and prevents an automatic future major upgrade.
 
-## Preview provenance
+## Preview/deployment state
 
-`PREVIEW-PROVENANCE.json` identifies:
+### GitHub Pages — canonical preview
 
-- repository: `washingtonmsdj/medatlas`;
-- commit: `119de599601b29b46c9dca7376598dd36c4147b2`;
-- clinical data mode: `synthetic-only`;
-- anatomy asset origin pinned to that exact commit.
+GitHub Pages is enabled and is the canonical public synthetic preview because its workflow:
 
-## Current external deployment blocker
+1. builds from `main`;
+2. publishes the vendored atlas assets;
+3. validates JS/CSS assets;
+4. validates atlas provenance/index;
+5. runs Chromium against the published site;
+6. requires real Human Atlas canvas in the deployed 3D flow.
 
-A direct Vercel preview deployment was attempted through the connected Vercel
-API after the source/asset strategy had been solved.
+### Vercel — secondary preview path
 
-Vercel rejected the deployment with:
+The Vercel API deployment path was successfully proven after the earlier free-tier quota reset.
 
-```text
-payment_required
-api-deployments-free-per-day
-total: 100
-remaining: 0
-```
+A direct preview deployment reached `READY`, so Vercel quota/integration is no longer an architectural blocker. GitHub Pages remains canonical for current MVP validation because it already executes deployed 3D verification automatically.
 
-The latest API response reports quota reset at approximately:
+Do not change the anatomy architecture merely to accommodate a hosting quota.
 
-**2026-09-08 03:58:37 (America/Bahia)**.
+## Security / data boundary
 
-This is an account quota blocker, not a build/application failure.
+Current public preview is **synthetic-only**.
 
-## Exact next action
-
-After the Vercel API deployment quota resets:
-
-1. use the successful `medatlas-preview-static` artifact, or rebuild it from
-   the current desired HEAD;
-2. deploy its five files to the existing Vercel `medatlas` project as a
-   preview;
-3. verify root page HTTP/rendering;
-4. verify navigation: Overview → Exams → Reports → Atlas;
-5. execute one canonical synthetic scenario;
-6. publish a synthetic patient share;
-7. verify `/p/<token>` rewrite and patient page;
-8. verify anatomy geometry loads from the pinned preview asset origin;
-9. inspect CSP/security headers;
-10. only then mark “Validate browser interaction against a deployed preview”
-    complete.
-
-## Production blockers that must remain closed
-
-Do not introduce real patient information until all of these exist and are
-proved:
+Do not introduce real patient information until all production blockers exist and are proved:
 
 - dedicated MedAtlas Supabase project;
 - authentication;
-- RLS cross-tenant denial tests;
-- private Storage cross-tenant denial tests;
+- cross-tenant RLS denial tests;
+- private Storage denial tests;
 - production share expiry/revocation;
 - audit verification;
 - retention/backup policy;
 - environment/secrets separation;
 - legal/privacy review for the intended jurisdiction/use;
-- controlled clinical pilot protocol and support/incident process.
+- controlled clinical pilot protocol and incident/support process.
+
+## Next action
+
+Without Supabase:
+
+1. keep CI, Browser E2E and deployed Pages 3D verification green;
+2. execute the documented **manual synthetic pilot** on the public preview;
+3. record only real UX/navigation problems observed by a human;
+4. correct those problems without reopening solved architecture;
+5. keep remote AI, billing and real clinical data blocked.
+
+When production/Supabase is explicitly authorized:
+
+1. create a dedicated MedAtlas Supabase project;
+2. apply canonical migrations;
+3. prove cross-tenant/RLS boundaries before auth UI;
+4. implement `SupabaseClinicalRepository`;
+5. activate auth/invitations only after those tests;
+6. continue prohibiting real data until security/compliance is validated.
 
 ## Do not repeat
 
-Unless source changes invalidate them, do not redo:
+Unless source changes invalidate the proof, do not redo:
 
-- Human Atlas licensing/provenance investigation;
-- L4-L5 Unicode dash root-cause investigation;
+- whether MedAtlas should use the Human Atlas reference engine — **it now does**;
+- Human Atlas / BodyParts3D licensing and provenance investigation;
+- L4-L5 Unicode dash/root-cause investigation;
 - vendored asset migration;
-- 34 MB runtime dependency removal from preview artifact;
+- 34 MB anatomy/runtime architecture investigation;
 - deterministic FMA scenario mapping;
 - blank-report fail-closed workflow;
 - demo-share expiry investigation;
 - accessibility contrast fixes already covered by axe;
 - report state-machine extraction;
-- Vercel “how to avoid uploading the 34 MB anatomy binaries” investigation.
-
-The current preview blocker is quota only. The full Human Atlas explorer and the focused clinical/patient renderer are already validated on the same canonical engine.
+- Vercel quota workaround investigation;
+- creation of a second/simplified 3D renderer.

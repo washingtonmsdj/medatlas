@@ -3,7 +3,7 @@
 > **Documento canônico de continuidade.** Leia antes de alterar o projeto.
 > O objetivo deste arquivo é registrar o estado **atual**, não preservar um diário de commits.
 >
-> Última consolidação: **2026-09-07**
+> Última consolidação: **2026-09-08**
 > Branch canônica: **`main`**
 > Repositório: **`washingtonmsdj/medatlas`**
 
@@ -158,14 +158,16 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
-- **Baseline funcional 3D-first atual:** código de produção em `770d4f6fc2700f660bd4e1547a867cfb2ffd5752`; HEAD de prova `419d8e7c9bf8f80fc8ba1f216c20d44690633412` altera somente o locator E2E final.
-- **CI:** run `34117852517` — PASS.
-- **Browser E2E:** run `34117852477` — **27/27 PASS em 2,7 min**, um worker WebGL no CI.
-- **GitHub Pages / Chromium remoto:** run `34117434772` — PASS contra `https://washingtonmsdj.github.io/medatlas/`.
-- **Atlas completo responsivo:** desktop → 1440 → 390 px, geometria real + estado `Atlas pronto`, PASS em **28,3 s** no runner headless.
-- **Bundle:** JS inicial ~**324,35 kB**; renderer canônico lazy ~**496,01 kB**; gate de bundle ativo.
-- **Artifact visual verde:** `visual-qa-34117852477` — **19 capturas** revisadas: Explorer completo, Clinical Studio, Dashboard, Pacientes, Consultas, Exames, picking focado, preview e portal do paciente em desktop/mobile.
-- **Correções fechadas nesta rodada:** asset base em subpath, fake 3D removido, preview pré-publicação com Human Atlas real, stale state fail-closed, picking sem mutar relatório, destaque de inspeção de alto contraste, dock clínico mobile, portal patient 390 px e isolamento do CSS do Explorer completo.
+- **Baseline atual de produto/frontend:** `7db6aad14073049e7f392415364fe904e500fa9e`.
+- **CI:** run `34197395606` — PASS completo.
+- **Browser E2E:** run `34197395517` — PASS completo.
+- **GitHub Pages / Chromium remoto:** run `34197395475` — PASS contra `https://washingtonmsdj.github.io/medatlas/`; shell/assets + atlas provenance/index validados e **2/2 testes 3D remotos PASS**.
+- **Bundle atual:** entry `335.589 bytes`; Human Atlas lazy chunk `502,80 kB` minificado / `128,66 kB gzip`; total JS `838.398 bytes`; budget PASS.
+- **Runtime:** Node `>=22.13.0 <23`, impedindo upgrade automático de major sem permitir versões 22 abaixo do mínimo.
+- **3D canônico:** Explorer completo + superfícies focadas clinical/patient compartilham o mesmo engine derivado diretamente do Human Atlas fixado; não existe renderer simplificado paralelo.
+- **Visual QA:** artifact `visual-qa-34196529069` (`10044214674`) — 19 capturas desktop/mobile do frontend atual revisadas nesta rodada, incluindo Atlas Explorer, Clinical Studio e portal do paciente.
+- **Preview público:** `https://washingtonmsdj.github.io/medatlas/`.
+- **Vercel:** deployment API já funciona e não é blocker de arquitetura; GitHub Pages permanece a preview canônica porque executa verificação 3D remota automaticamente.
 
 ---
 
@@ -392,7 +394,7 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34117852517` PASS, Browser E2E `34117852477` 27/27 PASS e Pages/Playwright remoto `34117434772` PASS;
+2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34197395606` PASS, Browser E2E `34197395517` PASS e Pages/Playwright remoto `34197395475` PASS;
 3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34117852477`, 19 capturas;
 4. [ ] executar piloto manual sintético no preview com navegação humana real;
 5. [ ] corrigir UX adicional encontrada no piloto manual;
@@ -408,7 +410,7 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 
 Se continuar **sem Supabase ativo**:
 
-1. preservar o baseline funcional `947f1e8…` — CI `34155102125` PASS, Browser E2E `34155102100` PASS, GitHub Pages Preview `34155102051` PASS;
+1. preservar o baseline funcional `7db6aad…` — CI `34197395606` PASS, Browser E2E `34197395517` PASS, GitHub Pages Preview `34197395475` PASS;
 2. manter CI, Browser E2E e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34189680315` (`10041842621`) — refinamento V4 revisado em desktop/mobile.
 3. executar **piloto manual sintético completo** no preview externo;
 4. registrar somente bugs/UX observados por navegação humana e corrigi-los;
