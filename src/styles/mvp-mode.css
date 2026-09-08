@@ -42,6 +42,10 @@
   box-shadow: 0 3px 10px rgba(35, 69, 94, .08);
 }
 
+.view-mode-switcher button.active small {
+  color: #4d687c;
+}
+
 .view-mode-switcher.compact button {
   min-width: 96px;
   padding: 8px 10px;
@@ -87,7 +91,11 @@
 }
 
 .mvp-next-step-card p {
-  color: #6a8294;
+  color: #4d687c;
+}
+
+.mvp-next-step-card .section-kicker {
+  color: #2c6f96;
 }
 
 .demo-privacy-banner-mvp {

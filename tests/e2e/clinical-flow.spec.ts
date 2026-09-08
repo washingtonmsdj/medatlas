@@ -675,7 +675,10 @@ test('dashboard progress follows the current report', async ({ page }) => {
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
   await page.locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' }).click()
-  await page.getByRole('button', { name: 'Visão geral' }).click()
+  await page
+    .locator('.clinical-sidebar nav')
+    .getByRole('button', { name: 'Visão geral', exact: true })
+    .click()
 
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
 })
