@@ -264,13 +264,14 @@ const requiredFocusPreviewFragments = [
   'HumanAtlasScene',
   'contextMode={contextMode}',
   'appearance={appearance}',
+  'onReady={ready}',
+  'onError={failed}',
+  'chooseView',
   '3D carregado',
-  'chunks necessários',
-  'Reconfirmação anatômica necessária',
   'anatomy-focus-preview-review-banner',
   'anatomy-focus-preview-interaction-hint',
   'INTERATIVO',
-  'clique numa peça para identificar',
+  'onOpenAtlas',
 ]
 
 for (const fragment of requiredFocusPreviewFragments) {
