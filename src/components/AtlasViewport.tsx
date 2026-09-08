@@ -32,17 +32,17 @@ const CONTEXT_OPTIONS: Array<{
   {
     value: 'none',
     label: 'Isolado',
-    description: 'somente a estrutura selecionada',
+    description: 'só a estrutura',
   },
   {
     value: 'system',
     label: 'Sistema',
-    description: 'estruturas próximas do mesmo sistema',
+    description: 'mesmo sistema',
   },
   {
     value: 'region',
     label: 'Região',
-    description: 'contexto local de vários sistemas',
+    description: 'anatomia próxima',
   },
 ]
 
@@ -101,7 +101,7 @@ export function AtlasViewport({
         setError(
           reason instanceof Error
             ? reason.message
-            : 'Não foi possível abrir o catálogo anatômico.',
+            : 'Não foi possível abrir o Atlas 3D.',
         )
         setStatus('error')
       })
@@ -196,7 +196,7 @@ export function AtlasViewport({
         await stage.requestFullscreen()
       }
     } catch {
-      // Fullscreen is optional; the 3D remains usable when the browser blocks it.
+      // Fullscreen is optional; the scene remains usable if blocked.
     }
   }
 
@@ -217,13 +217,12 @@ export function AtlasViewport({
           />
           <div>
             <span className="section-kicker">HUMAN ATLAS · FOCO CLÍNICO</span>
-            <strong>Visualização anatômica do relatório</strong>
+            <strong>Atlas 3D do relatório</strong>
           </div>
         </div>
 
         <div className="clinical-atlas-meta">
-          <span>BodyParts3D 4.0</span>
-          <code>{activeConceptId || 'sem conceito'}</code>
+          <code>{activeConceptId || 'sem seleção'}</code>
         </div>
       </header>
 
@@ -247,15 +246,11 @@ export function AtlasViewport({
                     onClick={() => chooseConcept(candidate)}
                   >
                     <span>{conceptDisplayName(candidate)}</span>
-                    <small>
-                      {candidate.name} · {candidate.id} ·{' '}
-                      {candidate.elements.length} peça
-                      {candidate.elements.length === 1 ? '' : 's'}
-                    </small>
+                    <small>{candidate.id}</small>
                   </button>
                 ))
               ) : (
-                <p>Nenhuma estrutura encontrada neste atlas.</p>
+                <p>Nenhuma estrutura encontrada.</p>
               )}
             </div>
           )}
@@ -294,10 +289,7 @@ export function AtlasViewport({
           <div className="atlas-empty-state clinical-atlas-empty">
             <span aria-hidden="true">3D</span>
             <strong>Nenhuma anatomia selecionada</strong>
-            <p>
-              Pesquise uma estrutura ou use um atalho. O MedAtlas carrega
-              somente a anatomia necessária depois de uma seleção válida.
-            </p>
+            <p>Pesquise uma estrutura ou use um atalho.</p>
           </div>
         )}
 
@@ -309,26 +301,26 @@ export function AtlasViewport({
           aria-live="polite"
         >
           <span className="section-kicker">
-            {status === 'ready' ? 'ESTRUTURA EM FOCO' : 'STATUS DO ATLAS'}
+            {status === 'ready' ? 'ESTRUTURA EM FOCO' : 'STATUS'}
           </span>
           <strong>
             {activeConceptId ? activeLabel : 'Aguardando seleção'}
           </strong>
           <small>
             {status === 'idle'
-              ? 'Selecione uma estrutura para iniciar.'
+              ? 'Selecione uma estrutura.'
               : status === 'ready'
-                ? `${sourceLabel} · ${selectedPartCount} estrutura${selectedPartCount === 1 ? '' : 's'} em destaque`
+                ? sourceLabel
                 : status === 'error'
-                  ? 'Falha ao carregar a referência anatômica.'
-                  : 'Preparando geometria de referência…'}
+                  ? 'Não foi possível carregar o 3D.'
+                  : 'Carregando anatomia 3D…'}
           </small>
 
           {status === 'ready' && (
             <div className="clinical-atlas-focus-metrics">
               <span>
                 <b>{selectedPartCount}</b>
-                selecionada{selectedPartCount === 1 ? '' : 's'}
+                foco
               </span>
               <span>
                 <b>{contextPartCount}</b>
@@ -438,12 +430,8 @@ export function AtlasViewport({
 
       <footer className="clinical-atlas-footer">
         <div>
-          <strong>Modelo anatômico de referência</strong>
-          <span>
-            Arraste para girar · role para aproximar · toque/clique para
-            identificar uma peça · use os modos de contexto para explicar a
-            região sem transformar o modelo em reconstrução do paciente.
-          </span>
+          <strong>Anatomia de referência</strong>
+          <span>Arraste para girar · role para aproximar · clique para identificar</span>
         </div>
 
         {preview && preview.id !== conceptId && (
