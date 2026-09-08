@@ -4,6 +4,7 @@ import type {
   ClinicalRepository,
   ClinicalUsageSummary,
 } from '../data/clinical-repository'
+import { demoShareTtlLabel } from '../product/constraints'
 
 interface Props {
   repository: ClinicalRepository
@@ -59,15 +60,15 @@ export function AnalyticsModule({ repository }: Props) {
   }, [load])
 
   return (
-    <section className="analytics-module">
-      <div className="analytics-hero">
+    <section className="analytics-module module-v3">
+      <div className="analytics-hero workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">ANALYTICS · USO OBSERVÁVEL</span>
           <h2>Visualizações dos relatórios compartilhados</h2>
           <p>
-            No demo, estes números vêm dos links realmente criados e abertos
-            neste navegador. Em produção, a mesma superfície será alimentada
-            por <code>report_shares</code> e <code>audit_events</code>.
+            Métricas vêm somente de compartilhamentos realmente criados e
+            abertos no repositório atual. A interface não inventa sessões,
+            pacientes ou eventos para preencher o dashboard.
           </p>
         </div>
 
@@ -82,33 +83,38 @@ export function AnalyticsModule({ repository }: Props) {
       </div>
 
       {status === 'error' ? (
-        <div className="analytics-error" role="alert">
-          <strong>Não foi possível carregar as métricas locais.</strong>
-          <span>
-            Nenhum dado clínico é inferido quando a leitura de analytics falha.
-          </span>
+        <div className="analytics-error analytics-error-v3" role="alert">
+          <div>
+            <strong>Não foi possível carregar as métricas locais.</strong>
+            <span>
+              Nenhum dado é inferido quando a leitura de analytics falha.
+            </span>
+          </div>
+          <button type="button" onClick={() => void load()}>
+            Tentar novamente
+          </button>
         </div>
       ) : (
         <>
           <div
-            className="analytics-metrics"
+            className={`analytics-metrics analytics-metrics-v3 ${status === 'loading' ? 'is-loading' : ''}`}
             aria-label="Resumo de visualizações do demo"
             aria-busy={status === 'loading'}
           >
             <article>
               <span className="label">RELATÓRIOS COMPARTILHADOS</span>
               <strong>{summary.publishedReports}</strong>
-              <small>relatórios únicos ainda presentes no demo</small>
+              <small>relatórios únicos presentes no repositório atual</small>
             </article>
             <article>
               <span className="label">LINKS ATIVOS</span>
               <strong>{summary.activeShares}</strong>
-              <small>expiram automaticamente em 30 minutos</small>
+              <small>expiração do demo: {demoShareTtlLabel()}</small>
             </article>
             <article>
               <span className="label">VISUALIZAÇÕES REAIS</span>
               <strong>{summary.shareViews}</strong>
-              <small>aberturas registradas pelos links locais</small>
+              <small>aberturas observadas pelos links locais</small>
             </article>
             <article>
               <span className="label">RELATÓRIOS VISUALIZADOS</span>
@@ -117,11 +123,11 @@ export function AnalyticsModule({ repository }: Props) {
             </article>
           </div>
 
-          <section className="analytics-report-card">
+          <section className="analytics-report-card analytics-report-card-v3">
             <header>
               <div>
                 <span className="section-kicker">POR RELATÓRIO</span>
-                <strong>Histórico de visualizações disponível agora</strong>
+                <strong>Histórico observável de compartilhamento</strong>
               </div>
               <span>{reports.length} relatório(s)</span>
             </header>
@@ -133,8 +139,7 @@ export function AnalyticsModule({ repository }: Props) {
                   <strong>Ainda não há compartilhamentos para medir.</strong>
                   <p>
                     Publique um relatório visual e abra o link do paciente.
-                    Esta tela passará a mostrar somente eventos realmente
-                    observados neste demo.
+                    Apenas eventos realmente observados aparecerão aqui.
                   </p>
                 </div>
               </div>
@@ -148,10 +153,7 @@ export function AnalyticsModule({ repository }: Props) {
                 </div>
 
                 {reports.map((report) => (
-                  <div
-                    className="analytics-report-row"
-                    key={report.reportId}
-                  >
+                  <div className="analytics-report-row" key={report.reportId}>
                     <div>
                       <strong>{report.reportTitle}</strong>
                       <small>versão {report.reportVersion}</small>
@@ -167,15 +169,14 @@ export function AnalyticsModule({ repository }: Props) {
             )}
           </section>
 
-          <section className="analytics-boundary">
+          <section className="analytics-boundary module-boundary-v3">
             <span aria-hidden="true">i</span>
             <div>
               <strong>Sem tracking paralelo</strong>
               <p>
-                O contrato de produção não cria uma tabela extra de analytics.
-                Visualizações são derivadas do evento auditável
-                <code> report.share_viewed </code>
-                e links de <code>report_shares</code>, sempre dentro do tenant.
+                Visualizações são derivadas da trilha de compartilhamento e
+                auditoria do repositório clínico. O frontend não envia
+                telemetria clínica para um sistema paralelo.
               </p>
             </div>
           </section>

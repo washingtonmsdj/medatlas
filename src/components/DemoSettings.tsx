@@ -6,6 +6,7 @@ import {
   getStoredDemoShareCount,
 } from '../data/demo-clinical-repository'
 import { DEMO_ORGANIZATION_BRANDING } from '../organization/demo-organization'
+import { demoShareTtlLabel } from '../product/constraints'
 
 interface Props {
   onNewReport: () => void
@@ -28,22 +29,23 @@ export function DemoSettings({ onNewReport }: Props) {
   }
 
   return (
-    <section className="settings-module settings-module-v2">
-      <div className="settings-hero settings-hero-v2">
+    <section className="settings-module settings-module-v2 module-v3">
+      <div className="settings-hero settings-hero-v2 workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">CONFIGURAÇÕES · AMBIENTE DEMO</span>
           <h2>Ambiente sintético e controles locais</h2>
           <p>
-            Este painel descreve o que está realmente ativo no MVP. Recursos de
-            produção permanecem visivelmente bloqueados em vez de simulados.
+            Este painel é um inventário do que está realmente ativo. Recursos
+            dependentes de produção aparecem como indisponíveis, sem botões
+            falsos nem estados simulados.
           </p>
         </div>
 
-        <div className="environment-badge">
+        <div className="environment-badge workspace-hero-badge">
           <i aria-hidden="true" />
           <span>
             <strong>Modo demonstração</strong>
-            <small>somente este navegador</small>
+            <small>{demoRepositoryDescriptor.label}</small>
           </span>
         </div>
       </div>
@@ -67,7 +69,7 @@ export function DemoSettings({ onNewReport }: Props) {
         </span>
       </section>
 
-      <div className="settings-grid settings-grid-v2">
+      <div className="settings-grid settings-grid-v2 settings-grid-v3">
         <article className="settings-branding-card">
           <div className="settings-card-heading">
             <span
@@ -83,8 +85,7 @@ export function DemoSettings({ onNewReport }: Props) {
             </div>
           </div>
           <p>
-            Identidade demonstrativa centralizada no mesmo contrato que será
-            administrado por organização em produção.
+            Identidade demonstrativa centralizada no contrato de organização.
           </p>
           <div className="settings-branding-preview">
             <span>
@@ -131,8 +132,8 @@ export function DemoSettings({ onNewReport }: Props) {
             </div>
           </div>
           <p>
-            Relatórios temporários neste navegador. Cada link expira
-            automaticamente em 30 minutos.
+            Relatórios temporários deste navegador. Cada link expira
+            automaticamente em {demoShareTtlLabel()}.
           </p>
           <button type="button" onClick={clear}>
             Limpar dados locais da demonstração
@@ -153,8 +154,8 @@ export function DemoSettings({ onNewReport }: Props) {
             </div>
           </div>
           <p>
-            Supabase, autenticação e dados clínicos reais entram somente depois
-            dos blockers de produção e do fechamento visual do MVP.
+            Persistência clínica e autenticação só entram após validação do
+            ambiente dedicado e dos testes de isolamento por organização.
           </p>
           <span className="settings-card-state blocked">não conectado</span>
         </article>
@@ -175,18 +176,19 @@ export function DemoSettings({ onNewReport }: Props) {
         </article>
       </div>
 
-      <section className="settings-governance">
+      <section className="settings-governance settings-governance-v3">
         <div>
           <span className="section-kicker">ATRIBUIÇÃO E GOVERNANÇA</span>
           <strong>Dependências anatômicas permanecem explícitas</strong>
           <p>
-            Licenças e proveniência não são escondidas atrás do visual premium.
+            Licenças e proveniência fazem parte do produto e não ficam
+            escondidas atrás da apresentação visual.
           </p>
         </div>
         <AttributionNotice />
       </section>
 
-      <div className="settings-actions settings-actions-v2">
+      <div className="settings-actions settings-actions-v2 module-action-bar-v3">
         <div>
           <strong>Reiniciar contexto clínico</strong>
           <span>

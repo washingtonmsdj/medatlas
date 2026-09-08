@@ -416,3 +416,117 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Report, team, analytics and settings refinements */
+
+.report-composer-v3 {
+  border-color: #dbe7f0;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  box-shadow: 0 18px 42px rgba(42, 73, 102, .07);
+}
+
+.report-composer-v3 .report-composer-header {
+  padding-bottom: 14px;
+  border-bottom-color: #e2ebf2;
+}
+
+.report-composer-v3 .composer-progress {
+  gap: 8px;
+}
+
+.report-composer-v3 .composer-progress > div {
+  border: 1px solid #e0e9f0;
+  border-radius: 12px;
+  background: #f8fbfd;
+}
+
+.report-composer-v3 .composer-progress > div.done {
+  border-color: #c7e7dc;
+  background: #f2faf7;
+}
+
+.publish-zone-v3 {
+  border-color: #dbe7ef;
+  background: linear-gradient(135deg, #f8fbfd, #f2f8fb);
+}
+
+.team-toolbar-v3,
+.team-grid-v3 > *,
+.analytics-report-card-v3,
+.settings-grid-v3 > article,
+.settings-governance-v3 {
+  border-color: #dce7ef;
+  box-shadow: 0 15px 36px rgba(47, 79, 108, .055);
+}
+
+.team-grid-v3 .team-member-list article {
+  transition: border-color .18s ease, background .18s ease;
+}
+
+.team-grid-v3 .team-member-list article:hover {
+  border-color: #c6dfea;
+  background: #fbfdff;
+}
+
+.analytics-metrics-v3 article {
+  min-height: 126px;
+  border-color: #dce7ef;
+  background: linear-gradient(180deg, #ffffff, #fafcfe);
+  box-shadow: 0 14px 34px rgba(47, 77, 106, .05);
+}
+
+.analytics-metrics-v3.is-loading article {
+  opacity: .72;
+}
+
+.analytics-error-v3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.analytics-error-v3 > div {
+  display: grid;
+  gap: 3px;
+}
+
+.analytics-error-v3 button {
+  flex: 0 0 auto;
+}
+
+.analytics-report-card-v3 .analytics-report-row:not(.analytics-report-head) {
+  transition: background .16s ease;
+}
+
+.analytics-report-card-v3 .analytics-report-row:not(.analytics-report-head):hover {
+  background: #f7fbfd;
+}
+
+.settings-grid-v3 {
+  align-items: stretch;
+}
+
+.settings-grid-v3 > article {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-grid-v3 > article > button,
+.settings-grid-v3 > article > .settings-card-state {
+  margin-top: auto;
+}
+
+.settings-governance-v3 {
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ffffff, #f8fbfd);
+}
+
+@media (max-width: 900px) {
+  .analytics-error-v3 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

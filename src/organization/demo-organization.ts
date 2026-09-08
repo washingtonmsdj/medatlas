@@ -212,3 +212,16 @@ export const CAPABILITIES: RoleCapability[] = [
     label: 'Gerenciar membros',
   },
 ]
+
+
+export const ROLE_ORDER: MedAtlasMemberRole[] = [
+  'admin',
+  'clinician',
+  'staff',
+]
+
+export const ROLE_DESCRIPTIONS: Record<MedAtlasMemberRole, string> = {
+  admin: 'Pode escrever dados clínicos e administrar membros.',
+  clinician: 'Pode ler e escrever dados clínicos da organização.',
+  staff: 'Pode consultar dados permitidos, sem escrita clínica.',
+}

@@ -114,6 +114,29 @@ export function deriveReportPresentation(report: VisualReport) {
   const completed = steps.filter((step) => step.done).length
   const currentStep = steps.find((step) => step.state === 'current') ?? null
 
+  const hasExplanation = Boolean(report.finding.patientExplanation.trim())
+
+  const composerStages = [
+    {
+      id: 'anatomy' as const,
+      label: 'Anatomia',
+      detail: completion.anatomy ? 'confirmada' : 'pendente',
+      done: completion.anatomy,
+    },
+    {
+      id: 'draft' as const,
+      label: 'Explicação',
+      detail: hasExplanation ? 'rascunho pronto' : 'aguardando',
+      done: hasExplanation,
+    },
+    {
+      id: 'review' as const,
+      label: 'Revisão',
+      detail: completion.explanation ? 'aprovada' : 'obrigatória',
+      done: completion.explanation,
+    },
+  ]
+
   const statusLabel = !completion.source
     ? 'Novo relatório'
     : !completion.anatomy
@@ -128,6 +151,24 @@ export function deriveReportPresentation(report: VisualReport) {
           ? 'Pronto para publicar'
           : 'Compartilhado'
 
+  const publication = {
+    canPublish: completion.explanation && !completion.share,
+    summary: !completion.anatomy
+      ? 'A anatomia precisa ser confirmada.'
+      : !completion.explanation
+        ? 'A explicação precisa de revisão explícita.'
+        : completion.share
+          ? 'O relatório já foi compartilhado.'
+          : 'Todos os gates estão concluídos.',
+    buttonLabel: !completion.anatomy
+      ? 'Confirme a anatomia antes de publicar'
+      : !completion.explanation
+        ? 'Revise a explicação antes de publicar'
+        : completion.share
+          ? 'Relatório compartilhado'
+          : 'Aprovar e gerar link do paciente',
+  }
+
   const anatomyLabel = report.finding.atlasConceptId
     ? report.finding.anatomicalStructure
     : 'Nenhuma estrutura confirmada'
@@ -140,6 +181,8 @@ export function deriveReportPresentation(report: VisualReport) {
     progressPercent: Math.round((completed / steps.length) * 100),
     currentStep,
     statusLabel,
+    composerStages,
+    publication,
     source: {
       state: completion.source ? 'ready' : 'empty',
       label: completion.source ? 'Texto carregado' : 'Aguardando texto',

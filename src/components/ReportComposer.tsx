@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { patientShareUrl } from '../app-url'
+import { deriveReportPresentation } from '../domain/report-presentation'
 import type { VisualReport } from '../domain/types'
+import { demoShareTtlLabel } from '../product/constraints'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
@@ -44,6 +46,7 @@ export function ReportComposer({
 }: Props) {
   const [copied, setCopied] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const presentation = deriveReportPresentation(report)
 
   useEffect(() => {
     setPreviewOpen(false)
@@ -54,39 +57,9 @@ export function ReportComposer({
       ? patientShareUrl(report.shareSlug)
       : ''
 
-  const canWorkOnExplanation =
-    !report.finding.anatomyReviewRequired &&
-    Boolean(report.finding.atlasConceptId)
-
-  const hasExplanation = Boolean(
-    report.finding.patientExplanation.trim(),
-  )
-
-  const reviewComplete =
-    canWorkOnExplanation &&
-    hasExplanation &&
-    !report.finding.explanationReviewRequired
-
-  const workflowState = useMemo(
-    () => [
-      {
-        label: 'Anatomia',
-        detail: canWorkOnExplanation ? 'confirmada' : 'pendente',
-        done: canWorkOnExplanation,
-      },
-      {
-        label: 'Explicação',
-        detail: hasExplanation ? 'rascunho pronto' : 'aguardando',
-        done: hasExplanation,
-      },
-      {
-        label: 'Revisão',
-        detail: reviewComplete ? 'aprovada' : 'obrigatória',
-        done: reviewComplete,
-      },
-    ],
-    [canWorkOnExplanation, hasExplanation, reviewComplete],
-  )
+  const canWorkOnExplanation = presentation.completion.anatomy
+  const hasExplanation = presentation.explanation.state !== 'empty'
+  const reviewComplete = presentation.completion.explanation
 
   const copyLink = async () => {
     if (!shareUrl) return
@@ -100,7 +73,7 @@ export function ReportComposer({
   }
 
   return (
-    <aside className="report-card report-card-v2">
+    <aside className="report-card report-card-v2 report-composer-v3">
       <header className="report-composer-header">
         <div>
           <span className="section-kicker">EXPLICAÇÃO AO PACIENTE</span>
@@ -114,17 +87,13 @@ export function ReportComposer({
           className={`composer-status ${reviewComplete ? 'approved' : 'pending'}`}
         >
           <i aria-hidden="true" />
-          {report.status === 'published'
-            ? 'Publicado'
-            : reviewComplete
-              ? 'Pronto para publicar'
-              : 'Revisão pendente'}
+          {presentation.statusLabel}
         </span>
       </header>
 
       <div className="composer-progress" aria-label="Status da preparação">
-        {workflowState.map((item, index) => (
-          <div className={item.done ? 'done' : ''} key={item.label}>
+        {presentation.composerStages.map((item, index) => (
+          <div className={item.done ? 'done' : ''} key={item.id}>
             <span>{item.done ? '✓' : index + 1}</span>
             <div>
               <strong>{item.label}</strong>
@@ -192,10 +161,7 @@ export function ReportComposer({
             disabled={!canWorkOnExplanation}
           />
           <div className="explanation-editor-meta">
-            <span>
-              {report.finding.patientExplanation.length.toLocaleString('pt-BR')}{' '}
-              caracteres
-            </span>
+            <span>{presentation.explanation.detail}</span>
             <span>
               {report.finding.explanationReviewRequired
                 ? 'edição exige nova revisão'
@@ -235,10 +201,7 @@ export function ReportComposer({
           <button
             type="button"
             onClick={onApproveExplanation}
-            disabled={
-              report.finding.anatomyReviewRequired ||
-              !report.finding.patientExplanation.trim()
-            }
+            disabled={!canWorkOnExplanation || !hasExplanation}
           >
             Confirmar explicação revisada
           </button>
@@ -297,8 +260,8 @@ export function ReportComposer({
               </div>
 
               <footer>
-                Esta prévia permanece local e não publicada. A versão compartilhada
-                só é liberada depois da revisão clínica explícita.
+                Esta prévia permanece local e não publicada. A versão
+                compartilhada só é liberada depois da revisão clínica explícita.
               </footer>
             </div>
           )}
@@ -311,7 +274,7 @@ export function ReportComposer({
         </div>
       )}
 
-      {report.status === 'published' && report.shareSlug ? (
+      {presentation.completion.share && shareUrl ? (
         <section className="share-box share-box-v2">
           <div className="share-ready-heading">
             <span aria-hidden="true">✓</span>
@@ -336,39 +299,23 @@ export function ReportComposer({
           </div>
           <small>
             MVP sem backend: token opaco aleatório, armazenamento local
-            exclusivamente sintético e expiração automática em 30 minutos.
+            exclusivamente sintético e expiração automática em{' '}
+            {demoShareTtlLabel()}.
           </small>
         </section>
       ) : (
-        <div className="publish-zone">
+        <div className="publish-zone publish-zone-v3">
           <div>
             <strong>Entrega ao paciente</strong>
-            <span>
-              {report.finding.anatomyReviewRequired
-                ? 'A anatomia precisa ser confirmada.'
-                : report.finding.explanationReviewRequired
-                  ? 'A explicação precisa de revisão explícita.'
-                  : 'Todos os gates estão concluídos.'}
-            </span>
+            <span>{presentation.publication.summary}</span>
           </div>
           <button
             className="primary full"
             type="button"
             onClick={() => void onPublish()}
-            disabled={
-              report.finding.anatomyReviewRequired ||
-              report.finding.explanationReviewRequired ||
-              publishing ||
-              !report.finding.patientExplanation.trim()
-            }
+            disabled={!presentation.publication.canPublish || publishing}
           >
-            {publishing
-              ? 'Gerando link…'
-              : report.finding.anatomyReviewRequired
-                ? 'Confirme a anatomia antes de publicar'
-                : report.finding.explanationReviewRequired
-                  ? 'Revise a explicação antes de publicar'
-                  : 'Aprovar e gerar link do paciente'}
+            {publishing ? 'Gerando link…' : presentation.publication.buttonLabel}
           </button>
         </div>
       )}

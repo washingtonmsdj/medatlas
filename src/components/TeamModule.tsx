@@ -2,50 +2,36 @@ import {
   CAPABILITIES,
   DEMO_ORGANIZATION,
   ROLE_CAPABILITIES,
+  ROLE_DESCRIPTIONS,
   ROLE_LABELS,
-  type MedAtlasMemberRole,
+  ROLE_ORDER,
 } from '../organization/demo-organization'
-
-const ROLE_ORDER: MedAtlasMemberRole[] = [
-  'admin',
-  'clinician',
-  'staff',
-]
-
-function roleDescription(role: MedAtlasMemberRole) {
-  if (role === 'admin') {
-    return 'Pode escrever dados clínicos e administrar membros.'
-  }
-
-  if (role === 'clinician') {
-    return 'Pode ler e escrever dados clínicos da organização.'
-  }
-
-  return 'Pode consultar dados permitidos, sem escrita clínica.'
-}
 
 export function TeamModule() {
   const activeMembers = DEMO_ORGANIZATION.members.filter(
     (member) => member.active,
   )
+  const activeUnits = DEMO_ORGANIZATION.units.filter((unit) => unit.active)
+  const activeWorkspaces = DEMO_ORGANIZATION.workspaces.filter(
+    (workspace) => workspace.active,
+  )
 
   return (
-    <section className="team-module">
-      <div className="team-hero">
+    <section className="team-module module-v3">
+      <div className="team-hero workspace-hero-v3">
         <div className="module-hero-copy">
           <span className="section-kicker">
-            EQUIPE · CONTRATO SOURCE-FIRST
+            EQUIPE · ORGANIZAÇÃO
           </span>
           <h2>Equipe e permissões da organização</h2>
           <p>
-            Visualização demonstrativa alinhada ao contrato de produção
-            <code> organization_members </code>
-            e aos papéis RLS canônicos. Nenhuma alteração é persistida neste
-            MVP.
+            Papéis, unidades e workspaces demonstrativos usam o mesmo modelo
+            organizacional preparado para produção. Operações de escrita
+            continuam indisponíveis sem autenticação e RLS ativos.
           </p>
         </div>
 
-        <div className="team-hero-summary">
+        <div className="team-hero-summary workspace-hero-badge">
           <strong>{activeMembers.length}</strong>
           <span>
             <b>membros ativos</b>
@@ -54,11 +40,13 @@ export function TeamModule() {
         </div>
       </div>
 
-      <section className="team-toolbar" aria-label="Controles da equipe">
+      <section className="team-toolbar team-toolbar-v3" aria-label="Controles da equipe">
         <div>
           <span className="label">ORGANIZAÇÃO ATIVA</span>
           <strong>{DEMO_ORGANIZATION.name}</strong>
-          <small>{DEMO_ORGANIZATION.slug}</small>
+          <small>
+            {activeUnits.length} unidade(s) · {activeWorkspaces.length} workspace(s)
+          </small>
         </div>
 
         <div className="team-toolbar-actions">
@@ -80,12 +68,12 @@ export function TeamModule() {
         </div>
       </section>
 
-      <div className="team-grid">
+      <div className="team-grid team-grid-v3">
         <section className="team-roster" aria-label="Membros da organização">
           <header>
             <div>
               <span className="section-kicker">MEMBROS ATIVOS</span>
-              <strong>Quem participa deste workspace</strong>
+              <strong>Quem participa deste ambiente</strong>
             </div>
             <span>{activeMembers.length}</span>
           </header>
@@ -116,26 +104,25 @@ export function TeamModule() {
                   <span className={`role-chip role-${member.role}`}>
                     {ROLE_LABELS[member.role]}
                   </span>
-                  <small>{roleDescription(member.role)}</small>
+                  <small>{ROLE_DESCRIPTIONS[member.role]}</small>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
-        <aside className="team-boundary-card">
+        <aside className="team-boundary-card module-boundary-v3">
           <span className="section-kicker">MODO DEMONSTRAÇÃO</span>
           <h3>Permissões visíveis; mutações bloqueadas.</h3>
           <p>
-            O frontend já usa os mesmos três papéis definidos na migration.
-            Convites, ativação, remoção e troca de papel só serão habilitados
-            quando houver usuário autenticado e RLS real.
+            O frontend mostra capacidades reais do modelo de papéis, mas não
+            finge convites, alteração de membership ou autenticação.
           </p>
 
           <div className="team-boundary-items">
             <span>
               <i aria-hidden="true">✓</i>
-              leitura do contrato de papéis
+              leitura de papéis e capacidades
             </span>
             <span>
               <i aria-hidden="true">✓</i>
@@ -166,53 +153,39 @@ export function TeamModule() {
         </header>
 
         <div className="invitation-contract-grid">
-          <article>
-            <span aria-hidden="true">01</span>
-            <div>
-              <strong>Somente administrador</strong>
-              <p>
-                Criar e revogar convites exige o helper canônico de admin da
-                organização.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span aria-hidden="true">02</span>
-            <div>
-              <strong>Token não persistido</strong>
-              <p>
-                O token bruto é retornado uma vez; no banco fica apenas o
-                SHA-256.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span aria-hidden="true">03</span>
-            <div>
-              <strong>Aceite vinculado ao e-mail</strong>
-              <p>
-                O usuário autenticado só aceita um convite emitido para o
-                mesmo e-mail da sessão.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span aria-hidden="true">04</span>
-            <div>
-              <strong>Expira, revoga e audita</strong>
-              <p>
-                Criação, aceite e revogação produzem eventos auditáveis e não
-                habilitam acesso após expiração.
-              </p>
-            </div>
-          </article>
+          {[
+            [
+              'Somente administrador',
+              'Criar e revogar convites exige autoridade administrativa na organização.',
+            ],
+            [
+              'Token protegido',
+              'O segredo bruto é entregue uma única vez; a persistência usa somente hash.',
+            ],
+            [
+              'Aceite vinculado à identidade',
+              'O usuário autenticado só aceita convite compatível com sua sessão.',
+            ],
+            [
+              'Expiração e auditoria',
+              'Criação, aceite e revogação mantêm estado verificável e fail-closed.',
+            ],
+          ].map(([title, description], index) => (
+            <article key={title}>
+              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <strong>{title}</strong>
+                <p>{description}</p>
+              </div>
+            </article>
+          ))}
         </div>
 
         <footer>
           <span>
             Nenhum e-mail é enviado e nenhum membro é criado no modo demo.
           </span>
-          <code>organization_invitations · migration 005</code>
+          <code>organization_invitations</code>
         </footer>
       </section>
 
@@ -222,60 +195,54 @@ export function TeamModule() {
             <span className="section-kicker">ESTRUTURA DA ORGANIZAÇÃO</span>
             <strong>Unidades e workspaces clínicos</strong>
           </div>
-          <small>
-            Fonte: contrato <code>organization_units</code> +{' '}
-            <code>clinical_workspaces</code>
-          </small>
+          <small>Estrutura demonstrativa source-first</small>
         </header>
 
         <div className="organization-structure-tree">
-          {DEMO_ORGANIZATION.units
-            .filter((unit) => unit.active)
-            .map((unit) => {
-              const workspaces = DEMO_ORGANIZATION.workspaces.filter(
-                (workspace) =>
-                  workspace.active && workspace.unitId === unit.id,
-              )
+          {activeUnits.map((unit) => {
+            const workspaces = activeWorkspaces.filter(
+              (workspace) => workspace.unitId === unit.id,
+            )
 
-              return (
-                <article key={unit.id}>
-                  <div className="organization-structure-unit">
-                    <span aria-hidden="true">U</span>
-                    <div>
-                      <strong>{unit.name}</strong>
-                      <small>
-                        {[unit.city, unit.region, unit.countryCode]
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </small>
-                    </div>
-                    <b>{workspaces.length} workspaces</b>
+            return (
+              <article key={unit.id}>
+                <div className="organization-structure-unit">
+                  <span aria-hidden="true">U</span>
+                  <div>
+                    <strong>{unit.name}</strong>
+                    <small>
+                      {[unit.city, unit.region, unit.countryCode]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </small>
                   </div>
+                  <b>{workspaces.length} workspaces</b>
+                </div>
 
-                  <div className="organization-structure-workspaces">
-                    {workspaces.map((workspace) => (
-                      <span key={workspace.id}>
-                        <i aria-hidden="true">
-                          {workspace.name.slice(0, 2).toUpperCase()}
-                        </i>
-                        <span>
-                          <strong>{workspace.name}</strong>
-                          <small>
-                            {workspace.specialty ?? 'Workspace clínico'}
-                          </small>
-                        </span>
+                <div className="organization-structure-workspaces">
+                  {workspaces.map((workspace) => (
+                    <span key={workspace.id}>
+                      <i aria-hidden="true">
+                        {workspace.name.slice(0, 2).toUpperCase()}
+                      </i>
+                      <span>
+                        <strong>{workspace.name}</strong>
+                        <small>
+                          {workspace.specialty ?? 'Workspace clínico'}
+                        </small>
                       </span>
-                    ))}
-                  </div>
-                </article>
-              )
-            })}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            )
+          })}
         </div>
 
         <footer>
           <span>
-            Inclusão, edição e remoção são operações de administrador no
-            contrato de produção.
+            Inclusão, edição e remoção só serão habilitadas com autoridade
+            administrativa real.
           </span>
           <button
             type="button"
@@ -290,14 +257,10 @@ export function TeamModule() {
       <section className="permission-matrix">
         <header>
           <div>
-            <span className="section-kicker">MATRIZ RLS</span>
+            <span className="section-kicker">MATRIZ DE ACESSO</span>
             <strong>Capacidades por papel</strong>
           </div>
-          <small>
-            Espelha <code>medatlas_is_org_member</code>,{' '}
-            <code>medatlas_can_write_clinical</code> e a policy admin de
-            membership.
-          </small>
+          <small>Contrato visual alinhado às políticas de produção.</small>
         </header>
 
         <div className="permission-table" role="table" aria-label="Matriz de permissões da equipe">
@@ -340,14 +303,14 @@ export function TeamModule() {
         </div>
       </section>
 
-      <section className="team-production-note">
+      <section className="team-production-note module-boundary-v3">
         <span aria-hidden="true">i</span>
         <div>
           <strong>Próximo passo de produção</strong>
           <p>
-            Conectar esta mesma superfície ao Supabase dedicado, carregar
-            membership do usuário autenticado e provar isolamento entre
-            organizações antes de habilitar qualquer botão de escrita.
+            Conectar esta mesma superfície ao backend dedicado e provar
+            isolamento entre organizações antes de habilitar qualquer ação de
+            escrita.
           </p>
         </div>
       </section>
