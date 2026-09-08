@@ -177,7 +177,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   const explanation = page.getByLabel('Explicação para o paciente')
   await expect(explanation).toContainText('tórax')
   await expect(
-    page.getByText('Rascunho educacional MedAtlas'),
+    page.getByText('Gerado pelo MedAtlas'),
   ).toBeVisible()
 
   const previewButton = page.getByRole('button', {
@@ -205,7 +205,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   })
 
   const publishBeforeReview = page.getByRole('button', {
-    name: 'Revise a explicação antes de publicar',
+    name: 'Revise a explicação',
   })
   await expect(publishBeforeReview).toBeDisabled()
 
@@ -279,7 +279,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     }),
   ).toBeVisible()
   await expect(
-    patientPage.getByText('CONTEÚDO REVISADO', { exact: true }),
+    patientPage.getByText('REVISADO', { exact: true }),
   ).toBeVisible()
   await expect(
     patientPage.getByRole('heading', {
@@ -627,7 +627,7 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 
   await expect(
     page.getByRole('button', {
-      name: 'Confirme a anatomia antes de publicar',
+      name: 'Confirme a anatomia',
     }),
   ).toBeDisabled()
 

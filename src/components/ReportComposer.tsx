@@ -17,21 +17,15 @@ interface Props {
 }
 
 function provenanceLabel(report: VisualReport) {
-  const provenance = report.finding.explanationProvenance
-
-  if (provenance.origin === 'deterministic') {
-    return provenance.clinicianEdited
-      ? 'Rascunho MedAtlas editado pelo profissional'
-      : 'Rascunho educacional MedAtlas'
+  if (report.finding.explanationProvenance.clinicianEdited) {
+    return 'Editado pelo profissional'
   }
 
-  if (provenance.origin === 'ai') {
-    return provenance.clinicianEdited
-      ? 'Rascunho de IA editado pelo profissional'
-      : 'Rascunho de IA · revisão obrigatória'
+  if (report.finding.explanationProvenance.origin === 'manual') {
+    return 'Escrito pelo profissional'
   }
 
-  return 'Texto manual do profissional'
+  return 'Gerado pelo MedAtlas'
 }
 
 export function ReportComposer({
@@ -170,19 +164,6 @@ export function ReportComposer({
           </div>
         </div>
 
-        <div className="provenance-panel">
-          <span aria-hidden="true">↳</span>
-          <div>
-            <strong>Origem e responsabilidade</strong>
-            <p>
-              {report.finding.explanationProvenance.origin === 'deterministic'
-                ? `Gerador ${report.finding.explanationProvenance.generatorId} · v${report.finding.explanationProvenance.generatorVersion}. `
-                : ''}
-              O conteúdo só pode ser compartilhado depois da aprovação explícita
-              do profissional.
-            </p>
-          </div>
-        </div>
       </section>
 
       {report.finding.explanationReviewRequired ? (
@@ -200,7 +181,7 @@ export function ReportComposer({
             onClick={onApproveExplanation}
             disabled={!canWorkOnExplanation || !hasExplanation}
           >
-            Confirmar explicação revisada
+            Marcar como revisada
           </button>
         </section>
       ) : (
@@ -233,11 +214,9 @@ export function ReportComposer({
               aria-label="Preview do paciente"
             >
               <div className="patient-preview-live-heading">
-                <span>PREVIEW · NÃO PUBLICADO</span>
-                <strong>Experiência visual que o paciente receberá</strong>
-                <small>
-                  O mesmo Human Atlas do relatório, em uma interface simplificada.
-                </small>
+                <span>VISÃO DO PACIENTE</span>
+                <strong>Prévia do relatório</strong>
+                <small>Ainda não compartilhada.</small>
               </div>
 
               <AnatomyFocusPreview
@@ -257,8 +236,7 @@ export function ReportComposer({
               </div>
 
               <footer>
-                Esta prévia permanece local e não publicada. A versão
-                compartilhada só é liberada depois da revisão clínica explícita.
+                Prévia local · ainda não compartilhada.
               </footer>
             </div>
           )}
@@ -299,7 +277,7 @@ export function ReportComposer({
       ) : (
         <div className="publish-zone publish-zone-v3">
           <div>
-            <strong>Entrega ao paciente</strong>
+            <strong>Compartilhar</strong>
             <span>{presentation.publication.summary}</span>
           </div>
           <button
