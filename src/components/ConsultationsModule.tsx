@@ -18,16 +18,12 @@ export function ConsultationsModule({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="consultations-module consultations-module-v2 module-v3">
-      <div className="consultations-hero consultations-hero-v2 workspace-hero-v3">
+    <section className="consultations-module consultations-module-v2 module-v3 mvp-surface">
+      <div className="consultations-hero consultations-hero-v2 workspace-hero-v3 mvp-page-hero">
         <div className="module-hero-copy">
-          <span className="section-kicker">CONSULTA · WORKFLOW VISUAL</span>
-          <h2>Sessão clínica visual em andamento</h2>
-          <p>
-            Esta superfície acompanha o relatório atual durante a conversa
-            clínica. Agenda, prontuário e histórico não são simulados enquanto
-            a persistência de produção estiver desativada.
-          </p>
+          <span className="section-kicker">CONSULTA</span>
+          <h2>Consulta atual</h2>
+          <p>Use o 3D enquanto revisa o relatório do paciente.</p>
         </div>
 
         <div className="consultation-progress-summary workspace-hero-badge">
@@ -35,8 +31,8 @@ export function ConsultationsModule({
             {presentation.completed}/{presentation.total}
           </strong>
           <span>
-            <small>Próxima etapa</small>
-            <b>{presentation.currentStep?.label ?? 'Fluxo concluído'}</b>
+            <small>Próximo</small>
+            <b>{presentation.currentStep?.shortLabel ?? 'Concluído'}</b>
           </span>
         </div>
       </div>
@@ -59,70 +55,33 @@ export function ConsultationsModule({
 
       <section className="consultation-anatomy-live anatomy-showcase-v3">
         <div className="consultation-anatomy-live-copy anatomy-showcase-copy-v3">
-          <span className="section-kicker">CONSULTA VISUAL · ANATOMIA AO VIVO</span>
-          <h2>O 3D permanece visível durante a sessão.</h2>
-          <p>
-            A referência anatômica acompanha o workflow para apoiar a
-            explicação visual, sem alterar o relatório quando uma peça é apenas
-            inspecionada.
-          </p>
-          <div className="anatomy-context-meta-v3">
-            <span>
-              <small>Paciente</small>
-              <strong>{report.patient.displayName}</strong>
-            </span>
-            <span>
-              <small>Próxima ação</small>
-              <strong>{presentation.currentStep?.shortLabel ?? 'Concluído'}</strong>
-            </span>
-          </div>
+          <span className="section-kicker">ANATOMIA 3D</span>
+          <h2>{presentation.anatomy.label}</h2>
+          <p>Referência visual do relatório atual.</p>
         </div>
 
         <AnatomyFocusPreview
           conceptId={report.finding.atlasConceptId || undefined}
           label={report.finding.anatomicalStructure}
           atlasRef={report.finding.atlasRef}
-          eyebrow="FOCO DA CONSULTA · HUMAN ATLAS"
+          eyebrow="HUMAN ATLAS 3D"
           contextMode="system"
           reviewRequired={report.finding.anatomyReviewRequired}
           onOpenAtlas={onOpenAtlas}
         />
       </section>
 
-      <div className="consultation-summary consultation-summary-v2 status-facts-v3">
-        <article>
-          <span className="label">PACIENTE</span>
-          <strong>{report.patient.displayName}</strong>
-          <p>{report.patient.age} anos · contexto fictício</p>
-        </article>
-
-        <article>
-          <span className="label">ANATOMIA DE REFERÊNCIA</span>
-          <strong>{presentation.anatomy.label}</strong>
-          <p>{presentation.anatomy.detail}</p>
-        </article>
-
-        <article>
-          <span className="label">PUBLICAÇÃO</span>
-          <strong>{presentation.sharing.label}</strong>
-          <p>{presentation.sharing.detail}</p>
-        </article>
-      </div>
-
       <div className="consultation-actions consultation-actions-v2 module-action-bar-v3">
         <div>
-          <strong>Continue exatamente de onde parou</strong>
-          <span>
-            O estado exibido aqui é derivado do mesmo relatório usado pelo
-            Clinical Studio.
-          </span>
+          <strong>{report.patient.displayName}</strong>
+          <span>{presentation.statusLabel}</span>
         </div>
         <div>
           <button className="primary" type="button" onClick={onOpenReport}>
-            Continuar relatório atual
+            Continuar relatório
           </button>
           <button type="button" onClick={onNewReport}>
-            Iniciar nova sessão sintética
+            Nova consulta
           </button>
         </div>
       </div>

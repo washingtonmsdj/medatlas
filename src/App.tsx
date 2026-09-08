@@ -27,6 +27,7 @@ import { ReportComposer } from './components/ReportComposer'
 import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
 import { GlobalCommandSearch, type GlobalSearchAction } from './components/GlobalCommandSearch'
 import { TopbarUtilityActions } from './components/TopbarUtilityActions'
+import { ViewModeSwitcher, type MedAtlasViewMode } from './components/ViewModeSwitcher'
 import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
@@ -58,46 +59,16 @@ const nav = [
 
 type ModuleName = (typeof nav)[number]
 
-const moduleMeta: Record<
-  ModuleName,
-  { eyebrow: string; title: string }
-> = {
-  'Visão geral': {
-    eyebrow: 'MEDATLAS',
-    title: 'Visão geral do fluxo clínico visual.',
-  },
-  'Atlas 3D': {
-    eyebrow: 'ANATOMIA INTERATIVA',
-    title: 'Explore e confirme estruturas de referência.',
-  },
-  Pacientes: {
-    eyebrow: 'PACIENTES',
-    title: 'Paciente, relatório e anatomia 3D no mesmo contexto.',
-  },
-  Consultas: {
-    eyebrow: 'CONSULTAS',
-    title: 'Acompanhe a sessão com a anatomia 3D sempre em contexto.',
-  },
-  Exames: {
-    eyebrow: 'DOCUMENTOS CLÍNICOS',
-    title: 'Do documento sintético à referência anatômica 3D.',
-  },
-  'Relatórios visuais': {
-    eyebrow: 'CONSULTA VISUAL',
-    title: 'Transforme o laudo em uma explicação que o paciente entende.',
-  },
-  Equipe: {
-    eyebrow: 'ORGANIZAÇÃO',
-    title: 'Papéis e permissões alinhados ao contrato de produção.',
-  },
-  Analytics: {
-    eyebrow: 'USO E COMPARTILHAMENTO',
-    title: 'Visualizações observadas nos relatórios compartilhados.',
-  },
-  Configurações: {
-    eyebrow: 'ORGANIZAÇÃO',
-    title: 'Estado real do ambiente demo, segurança e governança.',
-  },
+const moduleMeta: Record<ModuleName, { title: string }> = {
+  'Visão geral': { title: 'Início' },
+  'Atlas 3D': { title: 'Atlas 3D' },
+  Pacientes: { title: 'Paciente atual' },
+  Consultas: { title: 'Consulta atual' },
+  Exames: { title: 'Exames' },
+  'Relatórios visuais': { title: 'Relatório visual' },
+  Equipe: { title: 'Equipe' },
+  Analytics: { title: 'Analytics' },
+  Configurações: { title: 'Configurações' },
 }
 
 const clinicalData = getClinicalRepository()
@@ -185,6 +156,7 @@ function ClinicianApp() {
     demoReport,
   )
   const [active, setActive] = useState<ModuleName>('Visão geral')
+  const [viewMode, setViewMode] = useState<MedAtlasViewMode>('professional')
   const [activeWorkspaceId, setActiveWorkspaceId] = useState(
     DEFAULT_DEMO_WORKSPACE_ID,
   )
@@ -601,7 +573,7 @@ function ClinicianApp() {
     {
       id: 'patient-demo',
       label: report.patient.displayName,
-      description: 'Abrir o contexto sintético do paciente atual.',
+      description: 'Abrir o paciente atual.',
       group: 'Paciente',
       keywords: report.title,
       onSelect: () => setActive('Pacientes'),
@@ -611,7 +583,7 @@ function ClinicianApp() {
       label: item,
       description: moduleMeta[item].title,
       group: 'Módulo' as const,
-      keywords: moduleMeta[item].eyebrow,
+      keywords: item,
       onSelect: () => setActive(item),
     })),
     ...REPORT_EXAMPLES.map((example) => ({
@@ -623,6 +595,16 @@ function ClinicianApp() {
       onSelect: () => loadExample(example),
     })),
   ]
+
+  if (viewMode === 'patient') {
+    return (
+      <PatientReportPage
+        report={report}
+        previewMode
+        onSwitchToProfessional={() => setViewMode('professional')}
+      />
+    )
+  }
 
   return (
     <div className="app-shell">
@@ -696,6 +678,8 @@ function ClinicianApp() {
             onWorkspaceChange={setActiveWorkspaceId}
           />
 
+          <ViewModeSwitcher mode={viewMode} onChange={setViewMode} />
+
           <GlobalCommandSearch actions={globalSearchActions} />
 
           <TopbarUtilityActions
@@ -722,14 +706,6 @@ function ClinicianApp() {
             onOpenSettings={() => setActive('Configurações')}
           />
         </header>
-
-        <section className="module-heading">
-          <div>
-            <span className="eyebrow">{meta.eyebrow}</span>
-            <h1>{meta.title}</h1>
-          </div>
-          <span className="synthetic-badge">DEMO · DADOS SINTÉTICOS</span>
-        </section>
 
         <DemoPrivacyBanner />
 

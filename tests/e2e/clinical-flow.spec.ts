@@ -366,7 +366,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await page.getByRole('button', { name: 'Analytics' }).click()
   await expect(
     page.getByRole('heading', {
-      name: 'Visualizações dos relatórios compartilhados',
+      name: 'Analytics',
     }),
   ).toBeVisible()
 
@@ -659,24 +659,18 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 })
 
 
-test('synthetic pilot checklist reflects report progress', async ({ page }) => {
+test('dashboard progress follows the current report', async ({ page }) => {
   await page.goto('/')
 
   await expect(
-    page.getByRole('heading', {
-      name: 'Critérios de aceite do fluxo',
-    }),
+    page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
   ).toBeVisible()
+  await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
-  await expect(page.locator('.pilot-score')).toContainText('4/5')
-
-  await page
-    .getByRole('button', { name: 'Novo relatório visual' })
-    .click()
-
+  await page.getByRole('button', { name: 'Novo relatório' }).click()
   await page.getByRole('button', { name: 'Visão geral' }).click()
 
-  await expect(page.locator('.pilot-score')).toContainText('0/5')
+  await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
 })
 
 
@@ -709,7 +703,7 @@ test('demo settings can clear local patient shares', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      name: 'Ambiente sintético e controles locais',
+      name: 'Configurações',
     }),
   ).toBeVisible()
 
@@ -782,7 +776,7 @@ test('documents hub opens a blank local-only intake flow', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      name: 'Entrada local de laudos sintéticos',
+      name: 'Exames',
     }),
   ).toBeVisible()
 
@@ -817,7 +811,7 @@ test('patients module reflects only the current synthetic report context', async
 
   await expect(
     page.getByRole('heading', {
-      name: 'Contexto sintético do relatório atual',
+      name: 'Paciente atual',
     }),
   ).toBeVisible()
 
@@ -847,7 +841,7 @@ test('consultations module mirrors workflow progress without persistence', async
 
   await expect(
     page.getByRole('heading', {
-      name: 'Sessão clínica visual em andamento',
+      name: 'Consulta atual',
     }),
   ).toBeVisible()
 
@@ -1037,7 +1031,7 @@ test('team module mirrors source-first roles and keeps membership writes blocked
 
   await expect(
     page.getByRole('heading', {
-      name: 'Equipe e permissões da organização',
+      name: 'Equipe',
     }),
   ).toBeVisible()
 
@@ -1147,7 +1141,7 @@ test('settings expose source-first clinic branding without enabling mutations', 
 
   await expect(
     page.getByRole('heading', {
-      name: 'Ambiente sintético e controles locais',
+      name: 'Configurações',
     }),
   ).toBeVisible()
 

@@ -1,7 +1,6 @@
 import type { VisualReport } from '../domain/types'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
-import { PilotChecklist } from './PilotChecklist'
 
 interface Props {
   report: VisualReport
@@ -34,27 +33,27 @@ export function Overview({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="overview-module overview-saas-v2 overview-3d-first module-v3">
-      <div className="overview-welcome workspace-hero-v3">
+    <section className="overview-module overview-saas-v2 overview-3d-first module-v3 mvp-surface">
+      <div className="overview-welcome workspace-hero-v3 mvp-page-hero">
         <div>
           <span className="section-kicker">
             {organizationName.toUpperCase()} · {workspaceName.toUpperCase()}
             {unitName ? ` · ${unitName.toUpperCase()}` : ''}
           </span>
-          <h2>Bom dia, {professionalDisplayName}.</h2>
+          <h2>Seu fluxo clínico visual</h2>
           <p>
-            Um único fluxo conecta texto clínico, anatomia 3D, revisão e
-            comunicação com o paciente sem duplicar contexto.
+            Olá, {professionalDisplayName}. Crie o relatório, confirme a
+            anatomia e compartilhe com o paciente.
           </p>
         </div>
 
         <div className="overview-actions overview-actions-premium">
           <button className="primary" type="button" onClick={onNewReport}>
             <span aria-hidden="true">＋</span>
-            Novo relatório visual
+            Novo relatório
           </button>
           <button type="button" onClick={onOpenAtlas}>
-            Explorar Atlas 3D
+            Atlas 3D
           </button>
         </div>
       </div>
@@ -66,13 +65,8 @@ export function Overview({
               <span aria-hidden="true">✦</span>
               HUMAN ATLAS 3D
             </span>
-            <span className="section-kicker">DIFERENCIAL MEDATLAS</span>
-            <h2>O laudo deixa de ser só texto.</h2>
-            <p>
-              O profissional associa o achado a uma referência anatômica real,
-              revisa a explicação e entrega uma experiência visual clara sem
-              transformar o atlas em diagnóstico ou reconstrução do paciente.
-            </p>
+            <h2>Anatomia do relatório</h2>
+            <p>{report.title}</p>
           </div>
           <span className="care-status">{presentation.statusLabel}</span>
         </div>
@@ -83,33 +77,27 @@ export function Overview({
               conceptId={report.finding.atlasConceptId || undefined}
               label={report.finding.anatomicalStructure}
               atlasRef={report.finding.atlasRef}
-              eyebrow="3D DO ATENDIMENTO · HUMAN ATLAS · MODELO DE REFERÊNCIA"
+              eyebrow="HUMAN ATLAS 3D"
               contextMode="none"
               compact
               reviewRequired={report.finding.anatomyReviewRequired}
               onOpenAtlas={onOpenAtlas}
-              description="Geometria real do Human Atlas/BodyParts3D integrada ao atendimento. Anatomia de referência — não reconstrução específica do paciente."
+              description="Anatomia humana de referência ligada ao relatório atual."
             />
           </div>
 
           <div className="overview-3d-story">
             <div className="overview-3d-story-copy">
-              <span className="section-kicker">RELATÓRIO EM FOCO</span>
+              <span className="section-kicker">PACIENTE</span>
               <h3>{report.patient.displayName}</h3>
-              <p>{report.title}</p>
-            </div>
-
-            <div className="overview-3d-current-anatomy">
-              <span>Anatomia do relatório</span>
-              <strong>{presentation.anatomy.label}</strong>
-              <small>{presentation.anatomy.detail}</small>
+              <p>{presentation.anatomy.label}</p>
             </div>
 
             <div className="overview-3d-progress-copy">
               <div>
-                <span>Progresso do relatório</span>
+                <span>Progresso</span>
                 <strong>
-                  {presentation.completed}/{presentation.total} etapas concluídas
+                  {presentation.completed}/{presentation.total} etapas
                 </strong>
               </div>
               <div
@@ -144,19 +132,14 @@ export function Overview({
                 <span aria-hidden="true">→</span>
               </button>
               <button type="button" onClick={onOpenAtlas}>
-                Abrir Atlas completo
+                Abrir Atlas
               </button>
             </div>
-
-            <small className="overview-3d-safety">
-              Revisão clínica explícita continua obrigatória antes do
-              compartilhamento com o paciente.
-            </small>
           </div>
         </div>
       </article>
 
-      <div className="overview-metrics premium-metrics overview-derived-metrics" aria-label="Estado do relatório atual">
+      <div className="overview-metrics premium-metrics overview-derived-metrics" aria-label="Etapas do relatório">
         {presentation.steps.map((step) => (
           <article className={`metric-card report-step-${step.state}`} key={step.id}>
             <span className="metric-icon" aria-hidden="true">
@@ -171,111 +154,27 @@ export function Overview({
         ))}
       </div>
 
-      <div className="overview-command-grid overview-command-grid-v5">
-        <section className="premium-flow overview-current-state">
-          <div className="overview-flow-heading">
-            <div>
-              <span className="section-kicker">FLUXO VISUAL CLÍNICO</span>
-              <h2>Uma fonte de verdade para todas as telas.</h2>
-              <p>
-                O mesmo estado do relatório orienta Dashboard, Pacientes,
-                Consultas, Exames e Relatórios visuais.
-              </p>
-            </div>
-            <span className="overview-status">
-              {presentation.progressPercent}% concluído
-            </span>
-          </div>
-
-          <div className="premium-flow-steps">
-            {presentation.steps.map((step, index) => (
-              <article className={step.state} key={step.id}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <div>
-                  <strong>{step.label}</strong>
-                  <p>{step.detail}</p>
-                </div>
-                {index < presentation.steps.length - 1 && <b aria-hidden="true">→</b>}
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <aside className="work-queue-card overview-next-actions">
-          <div className="work-queue-heading">
-            <div>
-              <span className="section-kicker">PRÓXIMA AÇÃO</span>
-              <h2>
-                {presentation.currentStep?.label ?? 'Fluxo concluído'}
-              </h2>
-            </div>
-            <span className="queue-count">
-              {presentation.total - presentation.completed}
-            </span>
-          </div>
-
-          {presentation.steps
-            .filter((step) => !step.done)
-            .map((step, index) => (
-              <button
-                type="button"
-                className="queue-item"
-                key={step.id}
-                onClick={step.id === 'anatomy' ? onOpenAtlas : onOpenReport}
-              >
-                <span className="queue-avatar">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <span>
-                  <strong>{step.label}</strong>
-                  <small>{step.detail}</small>
-                </span>
-                <b>→</b>
-              </button>
-            ))}
-
-          {presentation.completed === presentation.total && (
-            <div className="queue-complete-state">
-              <span aria-hidden="true">✓</span>
-              <div>
-                <strong>Relatório compartilhado</strong>
-                <small>Todos os gates do fluxo atual foram concluídos.</small>
-              </div>
-            </div>
-          )}
-
-          <div className="queue-3d-note">
-            <span aria-hidden="true">3D</span>
-            <div>
-              <strong>Human Atlas permanece no mesmo contexto</strong>
-              <small>Abra o atlas sem perder o relatório em andamento.</small>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <section className="product-position-card product-position-card-v5 overview-product-contract">
+      <section className="mvp-next-step-card">
         <div>
-          <span className="section-kicker">CONTRATO DO PRODUTO</span>
-          <h2>3D como linguagem clínica visual, não como decoração.</h2>
+          <span className="section-kicker">PRÓXIMO PASSO</span>
+          <h2>{presentation.currentStep?.label ?? 'Relatório concluído'}</h2>
           <p>
-            O Human Atlas aparece onde existe uma tarefa anatômica real. Áreas
-            administrativas permanecem leves e sem canvas desnecessário.
+            {presentation.currentStep?.detail ??
+              'O relatório atual já passou por todas as etapas.'}
           </p>
         </div>
-        <div>
-          <span>✓ mesmo engine em todas as superfícies anatômicas</span>
-          <span>✓ inspeção visual separada da confirmação clínica</span>
-          <span>✓ paciente recebe linguagem e controles simplificados</span>
-          <span>✓ nenhuma publicação automática</span>
-        </div>
-        <button type="button" onClick={onOpenAtlas}>
-          Conhecer o Atlas 3D
-          <span aria-hidden="true">→</span>
+        <button
+          className="primary"
+          type="button"
+          onClick={
+            presentation.currentStep?.id === 'anatomy'
+              ? onOpenAtlas
+              : onOpenReport
+          }
+        >
+          {presentation.currentStep ? 'Continuar' : 'Abrir relatório'}
         </button>
       </section>
-
-      <PilotChecklist report={report} />
     </section>
   )
 }

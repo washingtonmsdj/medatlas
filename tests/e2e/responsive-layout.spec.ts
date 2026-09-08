@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
 const MODULES = [
   {
     button: 'Visão geral',
-    heading: 'Visão geral do fluxo clínico visual.',
+    heading: 'Seu fluxo clínico visual',
   },
   {
     button: 'Relatórios',
@@ -12,27 +12,27 @@ const MODULES = [
   },
   {
     button: 'Pacientes',
-    heading: 'Contexto sintético do relatório atual',
+    heading: 'Paciente atual',
   },
   {
     button: 'Consultas',
-    heading: 'Sessão clínica visual em andamento',
+    heading: 'Consulta atual',
   },
   {
     button: 'Exames',
-    heading: 'Entrada local de laudos sintéticos',
+    heading: 'Exames',
   },
   {
     button: 'Equipe',
-    heading: 'Equipe e permissões da organização',
+    heading: 'Equipe',
   },
   {
     button: 'Analytics',
-    heading: 'Visualizações dos relatórios compartilhados',
+    heading: 'Analytics',
   },
   {
     button: 'Configurações',
-    heading: 'Ambiente sintético e controles locais',
+    heading: 'Configurações',
   },
 ] as const
 

@@ -13,7 +13,7 @@ test('patient-facing focused 3D keeps the primary anatomy label in pt-BR', async
 
   await expect(
     page.getByRole('heading', {
-      name: 'Contexto sintético do relatório atual',
+      name: 'Paciente atual',
     }),
   ).toBeVisible()
 

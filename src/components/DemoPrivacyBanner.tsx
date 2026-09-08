@@ -2,12 +2,14 @@ import { demoShareTtlLabel } from '../product/constraints'
 
 export function DemoPrivacyBanner() {
   return (
-    <section className="demo-privacy-banner" role="note" aria-label="Aviso de privacidade do ambiente demonstrativo">
-      <strong>Ambiente demonstrativo — use somente dados fictícios.</strong>
+    <section
+      className="demo-privacy-banner demo-privacy-banner-mvp"
+      role="note"
+      aria-label="Aviso do ambiente demonstrativo"
+    >
+      <strong>Demo</strong>
       <span>
-        Não insira nome real, CPF, telefone, endereço, número de prontuário ou
-        outro dado identificável de paciente. Links locais expiram em{' '}
-        {demoShareTtlLabel()} e existem apenas para validar o fluxo do MVP.
+        Use apenas dados fictícios · links expiram em {demoShareTtlLabel()}.
       </span>
     </section>
   )

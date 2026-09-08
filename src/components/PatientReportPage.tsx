@@ -10,17 +10,25 @@ import {
 } from '../organization/demo-organization'
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
+import { ViewModeSwitcher } from './ViewModeSwitcher'
 
 interface Props {
   report: VisualReport
+  previewMode?: boolean
+  onSwitchToProfessional?: () => void
 }
 
-export function PatientReportPage({ report }: Props) {
+export function PatientReportPage({
+  report,
+  previewMode = false,
+  onSwitchToProfessional,
+}: Props) {
   const currentMember = getDemoCurrentMember()
   const presentation = deriveReportPresentation(report)
+  const hasAnatomy = Boolean(report.finding.atlasConceptId)
   const [atlasStatus, setAtlasStatus] = useState<
-    'loading' | 'ready' | 'error'
-  >('loading')
+    'idle' | 'loading' | 'ready' | 'error'
+  >(hasAnatomy ? 'loading' : 'idle')
   const [sourceLabel, setSourceLabel] = useState('')
   const [error, setError] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
@@ -46,9 +54,20 @@ export function PatientReportPage({ report }: Props) {
         </div>
 
         <div className="patient-header-right">
+          {previewMode && onSwitchToProfessional && (
+            <ViewModeSwitcher
+              mode="patient"
+              compact
+              onChange={(mode) => {
+                if (mode === 'professional') onSwitchToProfessional()
+              }}
+            />
+          )}
           <div className="patient-clinic">
             <span>{DEMO_ORGANIZATION_BRANDING.brandName}</span>
-            <small>Demonstração · dados fictícios · link temporário</small>
+            <small>
+              {previewMode ? 'Prévia local · dados fictícios' : 'Relatório compartilhado'}
+            </small>
           </div>
           <button
             className="patient-print-button"
@@ -62,13 +81,11 @@ export function PatientReportPage({ report }: Props) {
 
       <section className="patient-hero patient-hero-premium patient-hero-v3">
         <div className="patient-hero-copy">
-          <span className="section-kicker">SEU EXAME, EXPLICADO VISUALMENTE</span>
+          <span className="section-kicker">
+            {previewMode ? 'VISÃO DO PACIENTE · PRÉVIA' : 'SEU RELATÓRIO VISUAL'}
+          </span>
           <h1>{report.title}</h1>
-          <p>
-            Veja onde fica a região mencionada, entenda a explicação revisada
-            pelo profissional e leve perguntas mais claras para a próxima
-            conversa.
-          </p>
+          <p>Veja a região do exame em 3D e leia a explicação do profissional.</p>
 
           <div className="patient-report-chips" aria-label="Resumo do relatório">
             <span>
@@ -148,21 +165,29 @@ export function PatientReportPage({ report }: Props) {
               <h2>{report.finding.anatomicalStructure}</h2>
             </div>
             <span className="atlas-badge">
-              {report.finding.atlasConceptId}
+              {report.finding.atlasConceptId || 'Aguardando'}
             </span>
           </div>
 
           <div className="patient-atlas-stage">
-            <HumanAtlasScene
-              conceptId={report.finding.atlasConceptId}
-              contextMode="system"
-              view={view}
-              rotate={rotate}
-              reset={reset}
-              appearance="patient"
-              onReady={ready}
-              onError={failed}
-            />
+            {hasAnatomy ? (
+              <HumanAtlasScene
+                conceptId={report.finding.atlasConceptId}
+                contextMode="system"
+                view={view}
+                rotate={rotate}
+                reset={reset}
+                appearance="patient"
+                onReady={ready}
+                onError={failed}
+              />
+            ) : (
+              <div className="patient-atlas-empty">
+                <span aria-hidden="true">3D</span>
+                <strong>Anatomia ainda não selecionada</strong>
+                <p>Confirme uma estrutura na visão profissional.</p>
+              </div>
+            )}
 
             <div className="patient-atlas-status" role="status" aria-live="polite">
               {atlasStatus === 'ready' && (
@@ -172,12 +197,13 @@ export function PatientReportPage({ report }: Props) {
                 </>
               )}
               {atlasStatus === 'loading' && <span>Carregando anatomia 3D…</span>}
+              {atlasStatus === 'idle' && <span>Aguardando anatomia</span>}
               {atlasStatus === 'error' && (
                 <span>3D indisponível: {error}</span>
               )}
             </div>
 
-            <nav
+            {hasAnatomy && <nav
               className="patient-atlas-controls"
               aria-label="Controles da anatomia 3D de referência"
             >
@@ -225,30 +251,40 @@ export function PatientReportPage({ report }: Props) {
               >
                 ↺
               </button>
-            </nav>
+            </nav>}
           </div>
 
-          <p className="patient-interaction-hint">
+          {hasAnatomy && <p className="patient-interaction-hint">
             Arraste para girar · role ou pince para aproximar · toque/clique numa estrutura para identificar · geometria BodyParts3D de referência
-          </p>
+          </p>}
         </section>
 
         <aside className="patient-explanation-card" id="patient-explanation">
           <span className="section-kicker">O QUE O LAUDO MENCIONA</span>
-          <blockquote>{report.finding.sourceText}</blockquote>
+          <blockquote>
+            {report.finding.sourceText || 'O texto do exame aparecerá aqui.'}
+          </blockquote>
 
           <div className="patient-explanation-section">
             <span className="label">EM LINGUAGEM MAIS SIMPLES</span>
-            <p>{report.finding.patientExplanation}</p>
+            <p>
+              {report.finding.patientExplanation ||
+                'A explicação aparecerá aqui após a revisão profissional.'}
+            </p>
           </div>
 
           <div className="patient-review-stamp">
             <span>✓</span>
             <div>
-              <strong>Conteúdo revisado antes do compartilhamento</strong>
+              <strong>
+                {presentation.completion.explanation
+                  ? 'Explicação revisada'
+                  : 'Prévia em edição'}
+              </strong>
               <small>
-                O MedAtlas separa o rascunho assistido da versão aprovada pelo
-                profissional.
+                {presentation.completion.explanation
+                  ? 'Pronta para o paciente.'
+                  : 'Ainda não compartilhada.'}
               </small>
             </div>
           </div>
@@ -302,10 +338,20 @@ export function PatientReportPage({ report }: Props) {
 
       <footer className="patient-footer">
         <span>
-          {DEMO_ORGANIZATION_BRANDING.patientFooterText} · MedAtlas · link local temporário
+          {DEMO_ORGANIZATION_BRANDING.patientFooterText} · MedAtlas
+          {previewMode ? ' · prévia' : ''}
         </span>
-        <button type="button" onClick={() => (window.location.href = appHomeUrl())}>
-          Voltar ao ambiente clínico
+        <button
+          type="button"
+          onClick={() => {
+            if (previewMode && onSwitchToProfessional) {
+              onSwitchToProfessional()
+              return
+            }
+            window.location.href = appHomeUrl()
+          }}
+        >
+          {previewMode ? 'Voltar para visão profissional' : 'Voltar ao MedAtlas'}
         </button>
       </footer>
     </main>

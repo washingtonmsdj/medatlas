@@ -13,9 +13,7 @@ interface Props {
 }
 
 export function DemoSettings({ onNewReport }: Props) {
-  const [shareCount, setShareCount] = useState(() =>
-    getStoredDemoShareCount(),
-  )
+  const [shareCount, setShareCount] = useState(() => getStoredDemoShareCount())
   const [message, setMessage] = useState('')
 
   const clear = () => {
@@ -23,53 +21,29 @@ export function DemoSettings({ onNewReport }: Props) {
     setShareCount(0)
     setMessage(
       removed > 0
-        ? `${removed} link(s) local(is) removido(s).`
-        : 'Não havia links locais armazenados.',
+        ? `${removed} link(s) removido(s).`
+        : 'Nenhum link para remover.',
     )
   }
 
   return (
-    <section className="settings-module settings-module-v2 module-v3">
-      <div className="settings-hero settings-hero-v2 workspace-hero-v3">
+    <section className="settings-module settings-module-v2 module-v3 mvp-surface">
+      <div className="settings-hero settings-hero-v2 workspace-hero-v3 mvp-page-hero">
         <div className="module-hero-copy">
-          <span className="section-kicker">CONFIGURAÇÕES · AMBIENTE DEMO</span>
-          <h2>Ambiente sintético e controles locais</h2>
-          <p>
-            Este painel é um inventário do que está realmente ativo. Recursos
-            dependentes de produção aparecem como indisponíveis, sem botões
-            falsos nem estados simulados.
-          </p>
+          <span className="section-kicker">CONFIGURAÇÕES</span>
+          <h2>Configurações</h2>
+          <p>Preferências do ambiente de demonstração.</p>
         </div>
-
         <div className="environment-badge workspace-hero-badge">
           <i aria-hidden="true" />
           <span>
-            <strong>Modo demonstração</strong>
+            <strong>Demo</strong>
             <small>{demoRepositoryDescriptor.label}</small>
           </span>
         </div>
       </div>
 
-      <section className="settings-status-strip" aria-label="Estado do ambiente">
-        <span className="active">
-          <i aria-hidden="true">✓</i>
-          Dados sintéticos
-        </span>
-        <span className="active">
-          <i aria-hidden="true">✓</i>
-          Atlas local
-        </span>
-        <span>
-          <i aria-hidden="true">—</i>
-          Backend adiado
-        </span>
-        <span>
-          <i aria-hidden="true">—</i>
-          IA remota desativada
-        </span>
-      </section>
-
-      <div className="settings-grid settings-grid-v2 settings-grid-v3">
+      <div className="settings-grid settings-grid-v2 settings-grid-v3 mvp-settings-grid">
         <article className="settings-branding-card">
           <div className="settings-card-heading">
             <span
@@ -80,69 +54,37 @@ export function DemoSettings({ onNewReport }: Props) {
               {DEMO_ORGANIZATION_BRANDING.markText}
             </span>
             <div>
-              <span className="label">BRANDING DA CLÍNICA</span>
+              <span className="label">CLÍNICA</span>
               <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
             </div>
           </div>
-          <p>
-            Identidade demonstrativa centralizada no contrato de organização.
-          </p>
-          <div className="settings-branding-preview">
-            <span>
-              <i
-                aria-hidden="true"
-                style={{
-                  background: DEMO_ORGANIZATION_BRANDING.primaryColorHex,
-                }}
-              />
-              Cor primária
-            </span>
-            <code>{DEMO_ORGANIZATION_BRANDING.primaryColorHex}</code>
-          </div>
-          <button
-            type="button"
-            disabled
-            title="Disponível somente após autenticação e backend de produção"
-          >
-            Editar identidade visual
-          </button>
+          <p>Identidade usada na visão do paciente.</p>
+          <button type="button" disabled>Editar identidade</button>
         </article>
 
         <article>
           <div className="settings-card-heading">
             <span className="settings-icon safe" aria-hidden="true">S</span>
             <div>
-              <span className="label">MODO DE DADOS</span>
+              <span className="label">DADOS</span>
               <strong>Somente fictícios</strong>
             </div>
           </div>
-          <p>
-            {demoRepositoryDescriptor.label}. Dados reais de pacientes
-            continuam proibidos neste MVP.
-          </p>
-          <span className="settings-card-state enabled">ativo e fail-closed</span>
+          <p>Nenhum dado real deve ser usado nesta versão.</p>
+          <span className="settings-card-state enabled">ativo</span>
         </article>
 
         <article>
           <div className="settings-card-heading">
             <span className="settings-icon links" aria-hidden="true">L</span>
             <div>
-              <span className="label">LINKS LOCAIS</span>
+              <span className="label">LINKS</span>
               <strong>{shareCount}</strong>
             </div>
           </div>
-          <p>
-            Relatórios temporários deste navegador. Cada link expira
-            automaticamente em {demoShareTtlLabel()}.
-          </p>
-          <button type="button" onClick={clear}>
-            Limpar dados locais da demonstração
-          </button>
-          {message && (
-            <small className="settings-message" role="status" aria-live="polite">
-              {message}
-            </small>
-          )}
+          <p>Expiram em {demoShareTtlLabel()}.</p>
+          <button type="button" onClick={clear}>Limpar links</button>
+          {message && <small className="settings-message" role="status">{message}</small>}
         </article>
 
         <article>
@@ -150,53 +92,26 @@ export function DemoSettings({ onNewReport }: Props) {
             <span className="settings-icon locked" aria-hidden="true">B</span>
             <div>
               <span className="label">BACKEND</span>
-              <strong>Adiado</strong>
+              <strong>Não conectado</strong>
             </div>
           </div>
-          <p>
-            Persistência clínica e autenticação só entram após validação do
-            ambiente dedicado e dos testes de isolamento por organização.
-          </p>
-          <span className="settings-card-state blocked">não conectado</span>
-        </article>
-
-        <article>
-          <div className="settings-card-heading">
-            <span className="settings-icon locked" aria-hidden="true">IA</span>
-            <div>
-              <span className="label">IA REMOTA</span>
-              <strong>Desativada</strong>
-            </div>
-          </div>
-          <p>
-            Schema, validador e review gate existem, mas nenhum provedor remoto
-            recebe conteúdo no navegador atual.
-          </p>
-          <span className="settings-card-state blocked">provider disabled</span>
+          <p>Disponível após a etapa de produção.</p>
+          <span className="settings-card-state blocked">indisponível</span>
         </article>
       </div>
 
-      <section className="settings-governance settings-governance-v3">
-        <div>
-          <span className="section-kicker">ATRIBUIÇÃO E GOVERNANÇA</span>
-          <strong>Dependências anatômicas permanecem explícitas</strong>
-          <p>
-            Licenças e proveniência fazem parte do produto e não ficam
-            escondidas atrás da apresentação visual.
-          </p>
-        </div>
+      <details className="mvp-technical-details">
+        <summary>Licenças e atribuições do Atlas</summary>
         <AttributionNotice />
-      </section>
+      </details>
 
       <div className="settings-actions settings-actions-v2 module-action-bar-v3">
         <div>
-          <strong>Reiniciar contexto clínico</strong>
-          <span>
-            Cria um relatório vazio sem preservar os dados do relatório atual.
-          </span>
+          <strong>Novo relatório</strong>
+          <span>Reinicia o fluxo atual.</span>
         </div>
         <button className="primary" type="button" onClick={onNewReport}>
-          Iniciar novo relatório vazio
+          Criar relatório
         </button>
       </div>
     </section>
