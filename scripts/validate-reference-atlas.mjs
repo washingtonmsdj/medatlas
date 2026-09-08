@@ -56,7 +56,6 @@ if (!atlasSource.includes('${import.meta.env.BASE_URL}atlas-assets')) {
   )
 }
 
-
 const requiredEngineFragments = [
   'RoomEnvironment',
   'mergeGeometries',
@@ -212,6 +211,23 @@ for (const fragment of requiredFocusedFragments) {
   }
 }
 
+const requiredPatientInspectionLanguage = [
+  'PORTUGUESE_LABELS',
+  "PATIENT_INSPECTION_FALLBACK = 'Estrutura anatômica selecionada'",
+  'patientPartLabels',
+  "appearance === 'patient'",
+  'Referência técnica:',
+  'technicalLabel',
+]
+
+for (const fragment of requiredPatientInspectionLanguage) {
+  if (!focused.includes(fragment)) {
+    failures.push(
+      'patient anatomy inspection language contract missing: ' + fragment,
+    )
+  }
+}
+
 const requiredClinicalWorkbenchFragments = [
   'Controles da visualização clínica 3D',
   'Abrir 3D em tela cheia',
@@ -241,7 +257,6 @@ for (const fragment of requiredPatient3dFragments) {
     )
   }
 }
-
 
 const requiredFocusPreviewFragments = [
   'HumanAtlasScene',
@@ -323,5 +338,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas Human Atlas reference-engine contract PASS: full-system, clinical and patient surfaces share one engine while preserving MedAtlas-specific presentation modes, picking, explode layout, camera controls and chunk-bounded focused slicing.',
+  'MedAtlas Human Atlas reference-engine contract PASS: full-system, clinical and patient surfaces share one engine while preserving MedAtlas-specific presentation modes, picking, patient-safe inspection language, explode layout, camera controls and chunk-bounded focused slicing.',
 )
