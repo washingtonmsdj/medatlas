@@ -468,19 +468,18 @@ test('topbar utility controls perform useful local demo actions', async ({
 
   await page.getByRole('button', { name: 'Notificações' }).click()
   const notifications = page.getByRole('dialog', {
-    name: 'Notificações demonstrativas',
+    name: 'Ações pendentes do relatório',
   })
   await expect(notifications).toBeVisible()
-  await expect(notifications).toContainText(
-    'Dados exclusivamente sintéticos',
-  )
+  await expect(notifications).toContainText('Ações pendentes')
+  await expect(notifications).toContainText('Publicar ao paciente')
 
   await notifications
-    .getByRole('button', { name: /Novos exames sintéticos/ })
+    .getByRole('button', { name: /Publicar ao paciente/ })
     .click()
   await expect(
     page.getByRole('heading', {
-      name: 'Entrada local de laudos sintéticos',
+      name: 'Localizar anatomia mencionada',
     }),
   ).toBeVisible()
 

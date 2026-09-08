@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { deriveReportPresentation } from '../domain/report-presentation'
+import type { VisualReport } from '../domain/types'
 
 type PanelName = 'help' | 'notifications' | 'profile' | null
 
@@ -8,8 +10,9 @@ interface Props {
   specialty: string
   roleLabel: string
   workspaceName: string
+  report: VisualReport
   onOpenReports: () => void
-  onOpenExams: () => void
+  onOpenAtlas: () => void
   onOpenTeam: () => void
   onOpenSettings: () => void
 }
@@ -20,13 +23,16 @@ export function TopbarUtilityActions({
   specialty,
   roleLabel,
   workspaceName,
+  report,
   onOpenReports,
-  onOpenExams,
+  onOpenAtlas,
   onOpenTeam,
   onOpenSettings,
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [panel, setPanel] = useState<PanelName>(null)
+  const presentation = deriveReportPresentation(report)
+  const pendingSteps = presentation.steps.filter((step) => !step.done)
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -59,6 +65,15 @@ export function TopbarUtilityActions({
   const run = (action: () => void) => {
     setPanel(null)
     action()
+  }
+
+  const runStep = (stepId: string) => {
+    if (stepId === 'anatomy') {
+      run(onOpenAtlas)
+      return
+    }
+
+    run(onOpenReports)
   }
 
   return (
@@ -95,7 +110,7 @@ export function TopbarUtilityActions({
                 <span>01</span>
                 <div>
                   <strong>Importe o texto</strong>
-                  <small>Cole ou abra um .txt/.md sintético.</small>
+                  <small>Cole ou abra um arquivo sintético permitido.</small>
                 </div>
               </li>
               <li>
@@ -119,10 +134,7 @@ export function TopbarUtilityActions({
               <span><kbd>Esc</kbd> fechar painéis</span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => run(onOpenReports)}
-            >
+            <button type="button" onClick={() => run(onOpenReports)}>
               Abrir fluxo de relatório
               <b aria-hidden="true">→</b>
             </button>
@@ -140,52 +152,54 @@ export function TopbarUtilityActions({
           onClick={() => toggle('notifications')}
         >
           <span aria-hidden="true">♢</span>
-          <i />
+          {pendingSteps.length > 0 && <i />}
         </button>
 
         {panel === 'notifications' && (
           <section
-            className="topbar-popover notifications-popover"
+            className="topbar-popover notifications-popover task-center-popover"
             id="medatlas-notifications-panel"
             role="dialog"
-            aria-label="Notificações demonstrativas"
+            aria-label="Ações pendentes do relatório"
           >
             <header>
               <div>
-                <strong>Precisa da sua atenção</strong>
-                <small>Dados exclusivamente sintéticos</small>
+                <strong>Ações pendentes</strong>
+                <small>{report.title}</small>
               </div>
-              <span className="topbar-popover-count">2</span>
+              <span className="topbar-popover-count">{pendingSteps.length}</span>
             </header>
 
-            <button
-              className="notification-item urgent"
-              type="button"
-              onClick={() => run(onOpenReports)}
-            >
-              <span aria-hidden="true">!</span>
-              <div>
-                <strong>Relatório atual pronto para revisão</strong>
-                <small>Confirme a etapa clínica antes de compartilhar.</small>
+            {pendingSteps.length > 0 ? (
+              pendingSteps.map((step, index) => (
+                <button
+                  className={`notification-item ${index === 0 ? 'urgent' : ''}`}
+                  type="button"
+                  key={step.id}
+                  onClick={() => runStep(step.id)}
+                >
+                  <span aria-hidden="true">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <strong>{step.label}</strong>
+                    <small>{step.detail}</small>
+                  </div>
+                  <b aria-hidden="true">→</b>
+                </button>
+              ))
+            ) : (
+              <div className="task-center-complete">
+                <span aria-hidden="true">✓</span>
+                <div>
+                  <strong>Nenhuma ação pendente</strong>
+                  <small>Todos os gates do relatório atual foram concluídos.</small>
+                </div>
               </div>
-              <b aria-hidden="true">→</b>
-            </button>
-
-            <button
-              className="notification-item"
-              type="button"
-              onClick={() => run(onOpenExams)}
-            >
-              <span aria-hidden="true">2</span>
-              <div>
-                <strong>Novos exames sintéticos</strong>
-                <small>Aguardando triagem no módulo Exames.</small>
-              </div>
-              <b aria-hidden="true">→</b>
-            </button>
+            )}
 
             <footer>
-              Nenhuma notificação é persistida neste MVP.
+              Esta lista é derivada do relatório atual e não simula eventos de backend.
             </footer>
           </section>
         )}

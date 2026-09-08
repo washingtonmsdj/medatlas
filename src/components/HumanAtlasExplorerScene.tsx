@@ -542,11 +542,11 @@ export function HumanAtlasExplorerScene({
         const surfacePadding =
           appearance === 'patient'
             ? mobile
-              ? 1.38
-              : 1.28
+              ? 1.25
+              : 1.18
             : mobile
-              ? 1.52
-              : 1.42
+              ? 1.32
+              : 1.22
         const distance = Math.max(
           0.16,
           (Math.max(fitHeight, fitWidth) + fitDepth) * surfacePadding,

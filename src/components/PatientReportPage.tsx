@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react'
+import { deriveReportPresentation } from '../domain/report-presentation'
 import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
 import type { VisualReport } from '../domain/types'
+import { PATIENT_CLARITY_STEPS, PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
 import {
   DEMO_ORGANIZATION_BRANDING,
   getDemoCurrentMember,
@@ -13,14 +15,9 @@ interface Props {
   report: VisualReport
 }
 
-const QUESTIONS = [
-  'Qual é a importância deste achado no meu caso?',
-  'Este achado pode ter relação com meus sintomas?',
-  'Preciso de acompanhamento, novos exames ou alguma mudança de rotina?',
-]
-
 export function PatientReportPage({ report }: Props) {
   const currentMember = getDemoCurrentMember()
+  const presentation = deriveReportPresentation(report)
   const [atlasStatus, setAtlasStatus] = useState<
     'loading' | 'ready' | 'error'
   >('loading')
@@ -63,7 +60,7 @@ export function PatientReportPage({ report }: Props) {
         </div>
       </header>
 
-      <section className="patient-hero patient-hero-premium">
+      <section className="patient-hero patient-hero-premium patient-hero-v3">
         <div className="patient-hero-copy">
           <span className="section-kicker">SEU EXAME, EXPLICADO VISUALMENTE</span>
           <h1>{report.title}</h1>
@@ -84,7 +81,7 @@ export function PatientReportPage({ report }: Props) {
             </span>
             <span className="reviewed">
               <small>Status</small>
-              <strong>Revisado</strong>
+              <strong>{presentation.completion.explanation ? 'Revisado' : 'Pendente'}</strong>
             </span>
           </div>
 
@@ -143,7 +140,7 @@ export function PatientReportPage({ report }: Props) {
         </aside>
       </section>
 
-      <section className="patient-grid">
+      <section className="patient-grid patient-grid-v3">
         <section className="patient-atlas-card" id="patient-anatomy">
           <div className="patient-card-heading">
             <div>
@@ -269,30 +266,18 @@ export function PatientReportPage({ report }: Props) {
       </section>
 
       <section className="patient-clarity-strip" aria-label="Como usar o relatório visual">
-        <article>
-          <span>01</span>
-          <div>
-            <strong>Localize</strong>
-            <p>Use o 3D para reconhecer a região mencionada no relatório.</p>
-          </div>
-        </article>
-        <article>
-          <span>02</span>
-          <div>
-            <strong>Entenda</strong>
-            <p>Leia a explicação que foi revisada antes do compartilhamento.</p>
-          </div>
-        </article>
-        <article>
-          <span>03</span>
-          <div>
-            <strong>Converse</strong>
-            <p>Leve suas dúvidas ao profissional; o MedAtlas não substitui a consulta.</p>
-          </div>
-        </article>
+        {PATIENT_CLARITY_STEPS.map((step, index) => (
+          <article key={step.id}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <strong>{step.title}</strong>
+              <p>{step.description}</p>
+            </div>
+          </article>
+        ))}
       </section>
 
-      <section className="patient-next-step" id="patient-questions">
+      <section className="patient-next-step patient-next-step-v3" id="patient-questions">
         <div>
           <span className="section-kicker">PARA SUA PRÓXIMA CONVERSA</span>
           <h2>Perguntas úteis para levar ao profissional</h2>
@@ -304,7 +289,7 @@ export function PatientReportPage({ report }: Props) {
         </div>
 
         <div className="patient-question-list">
-          {QUESTIONS.map((question, index) => (
+          {PATIENT_CONVERSATION_QUESTIONS.map((question, index) => (
             <article key={question}>
               <span>{String(index + 1).padStart(2, '0')}</span>
               <p>{question}</p>

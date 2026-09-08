@@ -699,6 +699,7 @@ function ClinicianApp() {
           <GlobalCommandSearch actions={globalSearchActions} />
 
           <TopbarUtilityActions
+            report={report}
             memberName={
               currentMember?.displayName ?? 'Profissional demo'
             }
@@ -716,7 +717,7 @@ function ClinicianApp() {
               activeWorkspace?.name ?? 'Workspace clínico'
             }
             onOpenReports={() => setActive('Relatórios visuais')}
-            onOpenExams={() => setActive('Exames')}
+            onOpenAtlas={() => setActive('Atlas 3D')}
             onOpenTeam={() => setActive('Equipe')}
             onOpenSettings={() => setActive('Configurações')}
           />

@@ -323,6 +323,25 @@ export function ReferenceAtlasExplorer({
         </div>
       </header>
 
+      <div className="reference-workbench-metrics" aria-label="Estado do Human Atlas">
+        <span>
+          <small>Peças carregáveis</small>
+          <strong>{atlas ? atlas.parts.length.toLocaleString('pt-BR') : '—'}</strong>
+        </span>
+        <span>
+          <small>Conceitos FMA</small>
+          <strong>{atlas ? atlas.concepts.length.toLocaleString('pt-BR') : '—'}</strong>
+        </span>
+        <span>
+          <small>Visíveis agora</small>
+          <strong>{atlas ? visibleCount.toLocaleString('pt-BR') : '—'}</strong>
+        </span>
+        <span>
+          <small>Seleção</small>
+          <strong>{chosen ? conceptDisplayName(chosen) : 'Exploração livre'}</strong>
+        </span>
+      </div>
+
       <div className="reference-atlas-stage">
         {atlas && (
           <Suspense
