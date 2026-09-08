@@ -31,7 +31,7 @@ export function AnatomyFocusPreview({
   conceptId,
   label,
   atlasRef,
-  eyebrow = 'HUMAN ATLAS · 3D REAL',
+  eyebrow = 'HUMAN ATLAS 3D',
   description,
   contextMode = 'system',
   appearance = 'clinical',
@@ -43,8 +43,6 @@ export function AnatomyFocusPreview({
     conceptId ? 'loading' : 'idle',
   )
   const [sourceLabel, setSourceLabel] = useState('')
-  const [selectedPartCount, setSelectedPartCount] = useState(0)
-  const [contextPartCount, setContextPartCount] = useState(0)
   const [error, setError] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
@@ -53,27 +51,16 @@ export function AnatomyFocusPreview({
   useEffect(() => {
     setStatus(conceptId ? 'loading' : 'idle')
     setSourceLabel('')
-    setSelectedPartCount(0)
-    setContextPartCount(0)
     setError('')
     setView('three-quarter')
     setRotate(false)
     setReset((current) => current + 1)
   }, [conceptId, contextMode])
 
-  const ready = useCallback(
-    (
-      nextLabel: string,
-      nextSelectedPartCount: number,
-      nextContextPartCount: number,
-    ) => {
-      setSourceLabel(nextLabel)
-      setSelectedPartCount(nextSelectedPartCount)
-      setContextPartCount(nextContextPartCount)
-      setStatus('ready')
-    },
-    [],
-  )
+  const ready = useCallback((nextLabel: string) => {
+    setSourceLabel(nextLabel)
+    setStatus('ready')
+  }, [])
 
   const failed = useCallback((message: string) => {
     setError(message)
@@ -96,7 +83,7 @@ export function AnatomyFocusPreview({
       ]
         .filter(Boolean)
         .join(' ')}
-      aria-label={conceptId ? `Anatomia 3D real: ${label}` : 'Anatomia 3D ainda não selecionada'}
+      aria-label={conceptId ? `Anatomia 3D: ${label}` : 'Anatomia 3D ainda não selecionada'}
     >
       <header className="anatomy-focus-preview-header">
         <div>
@@ -104,8 +91,8 @@ export function AnatomyFocusPreview({
           <strong>{conceptId ? label : 'Anatomia ainda não confirmada'}</strong>
           <small>
             {conceptId
-              ? `${atlasRef || 'BodyParts3D 4.0 / FMA'} · ${conceptId}`
-              : 'Confirme uma estrutura do atlas para carregar a geometria real.'}
+              ? `${atlasRef || 'FMA'} · ${conceptId}`
+              : 'Selecione uma estrutura para visualizar em 3D.'}
           </small>
         </div>
 
@@ -131,11 +118,8 @@ export function AnatomyFocusPreview({
         >
           <span aria-hidden="true">!</span>
           <div>
-            <strong>Reconfirmação anatômica necessária</strong>
-            <small>
-              O texto do relatório mudou. Confirme novamente esta referência
-              antes de usá-la na explicação ou publicação.
-            </small>
+            <strong>Confirme novamente a anatomia</strong>
+            <small>O texto do relatório foi alterado.</small>
           </div>
         </div>
       )}
@@ -155,11 +139,8 @@ export function AnatomyFocusPreview({
         ) : (
           <div className="anatomy-focus-preview-empty">
             <span aria-hidden="true">3D</span>
-            <strong>Sem referência anatômica</strong>
-            <p>
-              O MedAtlas não inventa um modelo. A cena só é criada quando existe
-              um conceito FMA/BodyParts3D válido.
-            </p>
+            <strong>Nenhuma estrutura selecionada</strong>
+            <p>Escolha uma estrutura para abrir a anatomia 3D.</p>
           </div>
         )}
 
@@ -170,9 +151,7 @@ export function AnatomyFocusPreview({
                 <span className="live-dot" aria-hidden="true" />
                 <div>
                   <strong>{sourceLabel || label}</strong>
-                  <small>
-                    {selectedPartCount} foco · {contextPartCount} contexto · modelo de referência
-                  </small>
+                  <small>Anatomia de referência</small>
                 </div>
               </>
             ) : status === 'error' ? (
@@ -182,8 +161,8 @@ export function AnatomyFocusPreview({
               </div>
             ) : (
               <div>
-                <strong>Preparando geometria real</strong>
-                <small>Carregando somente os chunks necessários.</small>
+                <strong>Carregando anatomia 3D</strong>
+                <small>Preparando visualização.</small>
               </div>
             )}
           </div>
@@ -232,14 +211,11 @@ export function AnatomyFocusPreview({
 
       <footer className="anatomy-focus-preview-footer">
         <div className="anatomy-focus-preview-footer-copy">
-          <p>
-            {description ||
-              'Geometria real do Human Atlas/BodyParts3D. É anatomia humana de referência, não reconstrução específica do paciente.'}
-          </p>
+          <p>{description || 'Anatomia humana de referência.'}</p>
           {conceptId && status === 'ready' && (
             <span className="anatomy-focus-preview-interaction-hint">
               <b>INTERATIVO</b>
-              Arraste para girar · clique numa peça para identificar
+              Arraste para girar · clique para identificar
             </span>
           )}
         </div>
