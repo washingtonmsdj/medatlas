@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { patientShareUrl } from '../app-url'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import type { VisualReport } from '../domain/types'
 import { demoShareTtlLabel } from '../product/constraints'
-import { AnatomyFocusPreview } from './AnatomyFocusPreview'
 
 interface Props {
   report: VisualReport
@@ -14,6 +13,7 @@ interface Props {
   onGenerateDraft: () => void | Promise<void>
   onUpdateExplanation: (value: string) => void
   onApproveExplanation: () => void
+  onPreviewPatient: () => void
 }
 
 function provenanceLabel(report: VisualReport) {
@@ -37,14 +37,10 @@ export function ReportComposer({
   onGenerateDraft,
   onUpdateExplanation,
   onApproveExplanation,
+  onPreviewPatient,
 }: Props) {
   const [copied, setCopied] = useState(false)
-  const [previewOpen, setPreviewOpen] = useState(false)
   const presentation = deriveReportPresentation(report)
-
-  useEffect(() => {
-    setPreviewOpen(false)
-  }, [report.finding.atlasConceptId, report.finding.sourceText])
 
   const shareUrl =
     report.status === 'published' && report.shareSlug
@@ -146,10 +142,7 @@ export function ReportComposer({
             className="explanation-editor"
             aria-label="Explicação para o paciente"
             value={report.finding.patientExplanation}
-            onChange={(event) => {
-              setPreviewOpen(false)
-              onUpdateExplanation(event.target.value)
-            }}
+            onChange={(event) => onUpdateExplanation(event.target.value)}
             rows={9}
             placeholder="Escreva ou gere uma explicação para o paciente."
             disabled={!canWorkOnExplanation}
@@ -163,7 +156,6 @@ export function ReportComposer({
             </span>
           </div>
         </div>
-
       </section>
 
       {report.finding.explanationReviewRequired ? (
@@ -188,58 +180,18 @@ export function ReportComposer({
         <section className="safety-box review-approved-v2">
           <span aria-hidden="true">✓</span>
           <div>
-            <strong>Revisão clínica concluída</strong>
+            <strong>Revisão concluída</strong>
             <p>{report.finding.clinicianNote}</p>
           </div>
         </section>
       )}
 
-      {hasExplanation && canWorkOnExplanation && report.status !== 'published' && (
-        <section className="patient-preview-control">
-          <button
-            type="button"
-            aria-expanded={previewOpen}
-            onClick={() => setPreviewOpen((current) => !current)}
-          >
-            <span aria-hidden="true">◫</span>
-            {previewOpen
-              ? 'Fechar visão do paciente'
-              : 'Ver como paciente'}
+      {hasExplanation && canWorkOnExplanation && (
+        <section className="patient-preview-control patient-view-control">
+          <button type="button" onClick={onPreviewPatient}>
+            <span aria-hidden="true">◉</span>
+            Ver como paciente
           </button>
-
-          {previewOpen && (
-            <div
-              className="patient-preview-card patient-preview-card-live"
-              role="region"
-              aria-label="Preview do paciente"
-            >
-              <div className="patient-preview-live-heading">
-                <span>VISÃO DO PACIENTE</span>
-                <strong>Prévia do relatório</strong>
-                <small>Ainda não compartilhada.</small>
-              </div>
-
-              <AnatomyFocusPreview
-                conceptId={report.finding.atlasConceptId || undefined}
-                label={report.finding.anatomicalStructure}
-                atlasRef={report.finding.atlasRef}
-                eyebrow="HUMAN ATLAS 3D · VISÃO DO PACIENTE"
-                appearance="patient"
-                contextMode="system"
-                compact
-                description="Prévia real do modelo anatômico que acompanha o link do paciente. Anatomia humana de referência, não reconstrução individual."
-              />
-
-              <div className="patient-preview-explanation">
-                <span className="label">EM LINGUAGEM MAIS SIMPLES</span>
-                <p>{report.finding.patientExplanation}</p>
-              </div>
-
-              <footer>
-                Prévia local · ainda não compartilhada.
-              </footer>
-            </div>
-          )}
         </section>
       )}
 
@@ -255,7 +207,7 @@ export function ReportComposer({
             <span aria-hidden="true">✓</span>
             <div>
               <strong>Link pronto</strong>
-              <small>Compartilhamento sintético temporário</small>
+              <small>Compartilhamento temporário</small>
             </div>
           </div>
           <code>{shareUrl}</code>

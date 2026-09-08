@@ -90,15 +90,20 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
     .getByRole('button', { name: 'Ver como paciente' })
     .click()
 
-  const unpublishedPatientPreview = page.getByRole('region', {
-    name: 'Preview do paciente',
-  })
+  await expect(page.locator('.patient-shell')).toBeVisible()
+  await expect(page.getByText('VISÃO DO PACIENTE · PRÉVIA')).toBeVisible()
   await expect(
-    unpublishedPatientPreview.locator('.human-atlas-scene canvas'),
+    page.locator('#patient-anatomy .human-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
+
+  await page
+    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
+    .getByRole('button', { name: /Profissional/ })
+    .click()
+
   await expect(
-    unpublishedPatientPreview.getByText('3D carregado', { exact: true }),
-  ).toBeVisible({ timeout: 45_000 })
+    page.getByRole('heading', { name: 'Adicionar laudo' }),
+  ).toBeVisible()
 
   await page
     .getByRole('button', { name: 'Marcar como revisada' })

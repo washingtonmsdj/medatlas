@@ -472,6 +472,7 @@ function ClinicianApp() {
             onGenerateDraft={generateExplanationDraft}
             onUpdateExplanation={updateExplanation}
             onApproveExplanation={approveExplanation}
+            onPreviewPatient={() => setViewMode('patient')}
           />
         </div>
       </section>

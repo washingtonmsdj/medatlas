@@ -19,10 +19,6 @@ const patient = await readFile(
   'src/components/PatientReportPage.tsx',
   'utf8',
 )
-const reportComposer = await readFile(
-  'src/components/ReportComposer.tsx',
-  'utf8',
-)
 const anatomyFocus = await readFile(
   'src/components/AnatomyFocusPreview.tsx',
   'utf8',
@@ -300,15 +296,6 @@ const contextual3dSurfaces = [
       'contextMode="system"',
     ],
   },
-  {
-    surface: 'patient-preview',
-    source: reportComposer,
-    required: [
-      '<AnatomyFocusPreview',
-      'appearance="patient"',
-      'contextMode="system"',
-    ],
-  },
 ]
 
 for (const { surface, source, required } of contextual3dSurfaces) {
@@ -333,10 +320,6 @@ if (
   styles.includes('@keyframes medatlas-orbit')
 ) {
   failures.push('legacy fake 3D orbit CSS is still present')
-}
-
-if (reportComposer.includes('<span aria-hidden="true">3D</span>')) {
-  failures.push('patient report preview still contains the legacy fake 3D badge')
 }
 
 if (!model.includes('export function createFocusedAtlas')) {

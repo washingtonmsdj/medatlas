@@ -186,23 +186,27 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(previewButton).toBeVisible()
   await previewButton.click()
 
-  const patientPreview = page.getByRole('region', {
-    name: 'Preview do paciente',
-  })
-  await expect(patientPreview).toBeVisible()
-  await expect(patientPreview).toContainText('Coração')
-  await expect(patientPreview).toContainText('FMA7088')
+  await expect(page.locator('.patient-shell')).toBeVisible()
+  await expect(page.getByText('VISÃO DO PACIENTE · PRÉVIA')).toBeVisible()
   await expect(
-    patientPreview.locator('.human-atlas-scene canvas'),
+    page.locator('#patient-anatomy .human-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
-  await expect(
-    patientPreview.getByText('3D carregado', { exact: true }),
-  ).toBeVisible({ timeout: 45_000 })
+  await expect(page.getByText('Coração', { exact: true }).first()).toBeVisible()
+
   await mkdir('test-results/visual-qa', { recursive: true })
   await page.screenshot({
     path: 'test-results/visual-qa/patient-preview-real-3d.png',
     fullPage: true,
   })
+
+  await page
+    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
+    .getByRole('button', { name: /Profissional/ })
+    .click()
+
+  await expect(
+    page.getByRole('heading', { name: 'Adicionar laudo' }),
+  ).toBeVisible()
 
   const publishBeforeReview = page.getByRole('button', {
     name: 'Revise a explicação',
@@ -437,7 +441,7 @@ test('stale contextual 3D stays visible but explicitly requires reconfirmation',
   ).toContainText('Confirme novamente esta referência')
 })
 
-test('patient 3D preview requires a fresh explicit open after anatomy changes', async ({
+test('canonical patient view follows the current report state', async ({
   page,
 }) => {
   await openReports(page)
@@ -449,22 +453,39 @@ test('patient 3D preview requires a fresh explicit open after anatomy changes', 
     .filter({ hasText: 'FMA7088' })
     .getByRole('button', { name: 'Confirmar estrutura' })
     .click()
+  await page.getByRole('button', { name: 'Gerar explicação' }).click()
+  await page.getByRole('button', { name: 'Ver como paciente' }).click()
 
-  await page
-    .getByRole('button', { name: 'Gerar explicação' })
-    .click()
-  await page
-    .getByRole('button', { name: 'Ver como paciente' })
-    .click()
-
+  await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(
-    page.getByRole('region', { name: 'Preview do paciente' }),
+    page.locator('#patient-anatomy').getByText('FMA7088', { exact: true }),
   ).toBeVisible()
+
+  await page
+    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
+    .getByRole('button', { name: /Profissional/ })
+    .click()
 
   await page.getByRole('button', { name: 'Rim', exact: true }).click()
   await expect(
-    page.getByRole('region', { name: 'Preview do paciente' }),
-  ).toHaveCount(0)
+    page.getByText('Reconfirmação anatômica necessária').first(),
+  ).toBeVisible()
+
+  await page
+    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
+    .getByRole('button', { name: /Paciente/ })
+    .click()
+
+  await expect(page.locator('.patient-shell')).toBeVisible()
+  await expect(page.getByText('Pendente', { exact: true })).toBeVisible()
+  await expect(
+    page.locator('#patient-anatomy').getByText('FMA7088', { exact: true }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
+    .getByRole('button', { name: /Profissional/ })
+    .click()
 
   await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
   await page
@@ -472,17 +493,11 @@ test('patient 3D preview requires a fresh explicit open after anatomy changes', 
     .filter({ hasText: 'FMA7203' })
     .getByRole('button', { name: 'Confirmar estrutura' })
     .click()
-  await page
-    .getByRole('button', { name: 'Gerar explicação' })
-    .click()
+  await page.getByRole('button', { name: 'Gerar explicação' }).click()
+  await page.getByRole('button', { name: 'Ver como paciente' }).click()
 
   await expect(
-    page.getByRole('region', { name: 'Preview do paciente' }),
-  ).toHaveCount(0)
-  await expect(
-    page.getByRole('button', {
-      name: 'Ver como paciente',
-    }),
+    page.locator('#patient-anatomy').getByText('FMA7203', { exact: true }),
   ).toBeVisible()
 })
 
