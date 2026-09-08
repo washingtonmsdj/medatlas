@@ -7,6 +7,7 @@ const productSurfaces = [
   'src/components/ReportComposer.tsx',
   'src/components/PatientReportPage.tsx',
   'src/components/ReferenceAtlasExplorer.tsx',
+  'src/components/AnatomyFocusPreview.tsx',
   'src/components/PatientsModule.tsx',
   'src/components/TeamModule.tsx',
   'src/components/AnalyticsModule.tsx',
@@ -37,12 +38,21 @@ const forbiddenProductCopy = [
   'verificada por SHA-256',
   'gate humano',
   'gate clínico',
+  'chunks necessários',
+  'Preparando geometria real',
+  'O MedAtlas não inventa um modelo',
 ]
 
 for (const [file, source] of sources) {
   for (const fragment of forbiddenProductCopy) {
-    if (source.toLocaleLowerCase('pt-BR').includes(fragment.toLocaleLowerCase('pt-BR'))) {
-      failures.push(`${file} exposes engineering/product-documentation copy: ${fragment}`)
+    if (
+      source
+        .toLocaleLowerCase('pt-BR')
+        .includes(fragment.toLocaleLowerCase('pt-BR'))
+    ) {
+      failures.push(
+        `${file} exposes engineering/product-documentation copy: ${fragment}`,
+      )
     }
   }
 }
@@ -51,6 +61,7 @@ const app = sources.get('src/App.tsx')
 const switcher = sources.get('src/components/ViewModeSwitcher.tsx')
 const patient = sources.get('src/components/PatientReportPage.tsx')
 const explorer = sources.get('src/components/ReferenceAtlasExplorer.tsx')
+const focusPreview = sources.get('src/components/AnatomyFocusPreview.tsx')
 
 const requiredAppFragments = [
   "useState<MedAtlasViewMode>('professional')",
@@ -102,6 +113,17 @@ for (const fragment of [
 ]) {
   if (!explorer.includes(fragment)) {
     failures.push(`Atlas MVP surface is missing task-first interaction: ${fragment}`)
+  }
+}
+
+for (const fragment of [
+  '<HumanAtlasScene',
+  '3D carregado',
+  'Anatomia humana de referência.',
+  'Arraste para girar · clique para identificar',
+]) {
+  if (!focusPreview.includes(fragment)) {
+    failures.push(`Shared 3D preview is missing task-first behavior: ${fragment}`)
   }
 }
 
