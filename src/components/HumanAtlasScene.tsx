@@ -7,6 +7,7 @@ import {
   conceptDisplayName,
   findAtlasConcept,
   loadHumanAtlas,
+  PORTUGUESE_LABELS,
 } from '../atlas/source'
 import {
   isAtlasSystemId,
@@ -47,13 +48,17 @@ interface PreparedFocus {
   contextPartCount: number
   visibleSystems: AtlasSystemId[]
   partLabels: Record<string, string>
+  patientPartLabels: Record<string, string>
 }
 
 interface InspectedPart {
   partId: string
   conceptId: string
   label: string
+  technicalLabel: string
 }
+
+const PATIENT_INSPECTION_FALLBACK = 'Estrutura anatômica selecionada'
 
 export function HumanAtlasScene({
   conceptId,
@@ -100,12 +105,32 @@ export function HumanAtlasScene({
         const conceptsById = new Map(
           atlas.concepts.map((candidate) => [candidate.id, candidate]),
         )
+        const focusedConceptPatientLabel = PORTUGUESE_LABELS[concept.id]
         const partLabels = Object.fromEntries(
           focusedAtlas.parts.map((part) => {
             const partConcept = conceptsById.get(part.conceptId)
             return [
               part.id,
               partConcept ? conceptDisplayName(partConcept) : part.name,
+            ]
+          }),
+        )
+        const patientPartLabels = Object.fromEntries(
+          focusedAtlas.parts.map((part) => {
+            const partConcept = conceptsById.get(part.conceptId)
+            const translatedPartLabel = partConcept
+              ? PORTUGUESE_LABELS[partConcept.id]
+              : undefined
+            const focusedLabel =
+              part.conceptId === concept.id
+                ? focusedConceptPatientLabel
+                : undefined
+
+            return [
+              part.id,
+              translatedPartLabel ??
+                focusedLabel ??
+                PATIENT_INSPECTION_FALLBACK,
             ]
           }),
         )
@@ -117,6 +142,7 @@ export function HumanAtlasScene({
           contextPartCount,
           visibleSystems,
           partLabels,
+          patientPartLabels,
         })
       })
       .catch((reason) => {
@@ -194,10 +220,14 @@ export function HumanAtlasScene({
       setInspectedPart({
         partId: part.id,
         conceptId: part.conceptId,
-        label: prepared.partLabels[part.id] ?? part.name,
+        label:
+          appearance === 'patient'
+            ? prepared.patientPartLabels[part.id] ?? PATIENT_INSPECTION_FALLBACK
+            : prepared.partLabels[part.id] ?? part.name,
+        technicalLabel: part.name,
       })
     },
-    [prepared],
+    [appearance, prepared],
   )
 
   if (!prepared) {
@@ -266,7 +296,9 @@ export function HumanAtlasScene({
           <span>ESTRUTURA INSPECIONADA</span>
           <strong>{inspectedPart.label}</strong>
           <small>
-            {inspectedPart.conceptId} · peça {inspectedPart.partId}
+            {appearance === 'patient'
+              ? `Referência técnica: ${inspectedPart.technicalLabel} · ${inspectedPart.conceptId}`
+              : `${inspectedPart.conceptId} · peça ${inspectedPart.partId}`}
           </small>
           <em>
             {appearance === 'patient'
