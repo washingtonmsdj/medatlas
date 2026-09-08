@@ -1,3 +1,4 @@
+import { deriveReportPresentation } from '../domain/report-presentation'
 import type { VisualReport } from '../domain/types'
 
 interface Props {
@@ -5,47 +6,46 @@ interface Props {
 }
 
 export function PilotChecklist({ report }: Props) {
+  const presentation = deriveReportPresentation(report)
   const steps = [
     {
+      id: 'source',
       label: 'Texto clínico inserido',
-      done: report.finding.sourceText.trim().length > 0,
+      done: presentation.completion.source,
     },
     {
+      id: 'anatomy',
       label: 'Anatomia confirmada',
-      done:
-        Boolean(report.finding.atlasConceptId) &&
-        !report.finding.anatomyReviewRequired,
+      done: presentation.completion.anatomy,
     },
     {
+      id: 'draft',
       label: 'Explicação preparada',
-      done: report.finding.patientExplanation.trim().length > 0,
+      done: presentation.explanation.state !== 'empty',
     },
     {
+      id: 'review',
       label: 'Revisão clínica concluída',
-      done:
-        !report.finding.anatomyReviewRequired &&
-        !report.finding.explanationReviewRequired &&
-        report.finding.patientExplanation.trim().length > 0,
+      done: presentation.completion.explanation,
     },
     {
+      id: 'share',
       label: 'Handoff do paciente gerado',
-      done:
-        report.status === 'published' &&
-        Boolean(report.shareSlug),
+      done: presentation.completion.share,
     },
   ]
 
   const completed = steps.filter((step) => step.done).length
 
   return (
-    <section className="pilot-card" aria-labelledby="pilot-title">
+    <section className="pilot-card pilot-card-v3" aria-labelledby="pilot-title">
       <div className="pilot-heading">
         <div>
-          <span className="section-kicker">PILOTO SINTÉTICO</span>
+          <span className="section-kicker">VALIDAÇÃO DO FLUXO DEMO</span>
           <h2 id="pilot-title">Critérios de aceite do fluxo</h2>
           <p>
-            Progresso calculado somente a partir do relatório fictício em
-            trabalho. Nenhuma telemetria externa é enviada.
+            A mesma fonte de estado usada nas telas clínicas alimenta esta
+            validação. Nenhuma telemetria externa ou etapa paralela é criada.
           </p>
         </div>
         <strong className="pilot-score">
@@ -56,7 +56,7 @@ export function PilotChecklist({ report }: Props) {
       <div className="pilot-steps">
         {steps.map((step, index) => (
           <article
-            key={step.label}
+            key={step.id}
             className={step.done ? 'done' : ''}
           >
             <span aria-hidden="true">
