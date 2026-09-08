@@ -1305,25 +1305,112 @@
   }
 }
 
+.analytics-mobile-label {
+  display: none;
+}
+
+.analytics-report-stat > b,
+.analytics-report-time > b {
+  font: inherit;
+}
+
 @media (max-width: 700px) {
   .analytics-hero {
     align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .analytics-hero .module-hero-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .analytics-refresh {
+    min-height: 34px;
+    flex: 0 0 auto;
+    padding-inline: 10px;
   }
 
   .analytics-metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .analytics-metrics.analytics-metrics-v3 article {
+    min-height: 102px;
+    padding: 11px;
+  }
+
+  .analytics-metrics strong {
+    font-size: 22px;
   }
 
   .analytics-report-card {
-    overflow-x: auto;
+    overflow: hidden;
   }
 
   .analytics-report-card > header {
-    min-width: 640px;
+    min-width: 0;
   }
 
-  .analytics-report-row {
-    min-width: 640px;
+  .analytics-report-head {
+    display: none;
+  }
+
+  .analytics-report-list {
+    gap: 8px;
+    padding: 8px;
+    background: #f8fbfd;
+  }
+
+  .analytics-report-row:not(.analytics-report-head) {
+    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid #dfe8ef;
+    border-radius: 12px;
+    background: white;
+  }
+
+  .analytics-report-row:not(.analytics-report-head) > div:first-child {
+    grid-column: 1 / -1;
+    padding: 10px 11px;
+    border-bottom: 1px solid #e8eef3;
+    background: #fbfdfe;
+  }
+
+  .analytics-report-row:not(.analytics-report-head) > span,
+  .analytics-report-row:not(.analytics-report-head) > time {
+    min-width: 0;
+    display: grid;
+    align-content: center;
+    gap: 4px;
+    padding: 9px 8px;
+    text-align: left;
+  }
+
+  .analytics-mobile-label {
+    display: block;
+    color: #647d90;
+    font-size: 6px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  .analytics-report-stat > b,
+  .analytics-report-time > b {
+    overflow: hidden;
+    color: #304f67;
+    font-size: 8px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .analytics-report-stat.analytics-view-count > b {
+    color: #176958;
   }
 }

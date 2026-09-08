@@ -270,6 +270,27 @@ test('management modules stay readable without internal horizontal scroll on mob
   await expect(page.getByText('RELATÓRIOS VISTOS', { exact: true })).toBeVisible()
   await expect(page.getByText(/Última abertura:/)).toBeVisible()
 
+  const metricCards = page.locator('.analytics-metrics > article')
+  await expect(metricCards).toHaveCount(4)
+  const metricBoxes = await Promise.all(
+    [0, 1, 2, 3].map((index) => metricCards.nth(index).boundingBox()),
+  )
+  for (const box of metricBoxes) {
+    expect(box).not.toBeNull()
+  }
+  expect(Math.abs(metricBoxes[0]!.y - metricBoxes[1]!.y)).toBeLessThan(2)
+  expect(Math.abs(metricBoxes[2]!.y - metricBoxes[3]!.y)).toBeLessThan(2)
+  expect(metricBoxes[2]!.y).toBeGreaterThan(metricBoxes[0]!.y + 20)
+
+  const analyticsCard = page.locator('.analytics-report-card')
+  const analyticsCardSize = await analyticsCard.evaluate((element) => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+  }))
+  expect(analyticsCardSize.scrollWidth).toBeLessThanOrEqual(
+    analyticsCardSize.clientWidth + 1,
+  )
+
   await openModule(page, { button: 'Configurações', heading: 'Configurações' })
   await expect(
     page.locator('.settings-card-heading').getByText('Clínica Horizonte', {

@@ -137,9 +137,21 @@ export function AnalyticsModule({ repository }: Props) {
                       <strong>{report.reportTitle}</strong>
                       <small>versão {report.reportVersion}</small>
                     </div>
-                    <span>{report.sharesCreated}</span>
-                    <span className="analytics-view-count">{report.viewCount}</span>
-                    <time>{formatDate(report.lastViewedAt)}</time>
+                    <span className="analytics-report-stat">
+                      <small className="analytics-mobile-label">Links</small>
+                      <b>{report.sharesCreated}</b>
+                    </span>
+                    <span className="analytics-report-stat analytics-view-count">
+                      <small className="analytics-mobile-label">Visualizações</small>
+                      <b>{report.viewCount}</b>
+                    </span>
+                    <time
+                      className="analytics-report-time"
+                      dateTime={report.lastViewedAt}
+                    >
+                      <small className="analytics-mobile-label">Última abertura</small>
+                      <b>{formatDate(report.lastViewedAt)}</b>
+                    </time>
                   </div>
                 ))}
               </div>
