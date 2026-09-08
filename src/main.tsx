@@ -11,6 +11,7 @@ import './styles/mvp-mode.css'
 import './module-workspaces.css'
 import './team-invitations.css'
 import './experience-surfaces.css'
+import './styles/clinical-sidebar.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

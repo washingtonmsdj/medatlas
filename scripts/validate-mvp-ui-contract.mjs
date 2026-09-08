@@ -14,6 +14,7 @@ const productSurfaces = [
   'src/components/DemoSettings.tsx',
   'src/components/TopbarUtilityActions.tsx',
   'src/components/ViewModeSwitcher.tsx',
+  'src/components/ClinicalSidebar.tsx',
 ]
 
 const sources = new Map(
@@ -61,6 +62,7 @@ const app = sources.get('src/App.tsx')
 const switcher = sources.get('src/components/ViewModeSwitcher.tsx')
 const patient = sources.get('src/components/PatientReportPage.tsx')
 const explorer = sources.get('src/components/ReferenceAtlasExplorer.tsx')
+const sidebar = sources.get('src/components/ClinicalSidebar.tsx')
 const focusPreview = sources.get('src/components/AnatomyFocusPreview.tsx')
 
 const requiredAppFragments = [
@@ -125,6 +127,23 @@ for (const fragment of [
   if (!focusPreview.includes(fragment)) {
     failures.push(`Shared 3D preview is missing task-first behavior: ${fragment}`)
   }
+}
+
+for (const fragment of [
+  'Novo relatório',
+  'Navegação principal',
+  'clinical-sidebar-nav-icon',
+  'clinical-sidebar-nav-text',
+  'clinical-sidebar-nav-badge',
+  'WORKSPACE ATIVO',
+]) {
+  if (!sidebar.includes(fragment)) {
+    failures.push(`ClinicalSidebar is missing task-first navigation: ${fragment}`)
+  }
+}
+
+if (sidebar.includes('clinic-card-chevron')) {
+  failures.push('ClinicalSidebar must not imply a clickable workspace card without an action')
 }
 
 if (failures.length > 0) {

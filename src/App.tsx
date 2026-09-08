@@ -13,6 +13,11 @@ import { AtlasViewport } from './components/AtlasViewport'
 import { AnalyticsModule } from './components/AnalyticsModule'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
 import { DemoSettings } from './components/DemoSettings'
+import {
+  CLINICAL_NAV_ITEMS,
+  ClinicalSidebar,
+  type ClinicalModuleName,
+} from './components/ClinicalSidebar'
 import { TeamModule } from './components/TeamModule'
 import { PatientsModule } from './components/PatientsModule'
 import { Overview } from './components/Overview'
@@ -36,38 +41,13 @@ import type { VisualReport } from './domain/types'
 import {
   DEFAULT_DEMO_WORKSPACE_ID,
   DEMO_ORGANIZATION,
-  DEMO_ORGANIZATION_BRANDING,
   getDemoCurrentMember,
   getDemoUnit,
   getDemoWorkspace,
   ROLE_LABELS,
 } from './organization/demo-organization'
 
-const nav = [
-  'Visão geral',
-  'Pacientes',
-  'Relatórios visuais',
-  'Atlas 3D',
-  'Analytics',
-  'Equipe',
-  'Configurações',
-] as const
-
-type ModuleName = (typeof nav)[number]
-
-const navGroups: ReadonlyArray<{
-  label: string
-  items: readonly ModuleName[]
-}> = [
-  {
-    label: 'Clínica',
-    items: ['Visão geral', 'Pacientes', 'Relatórios visuais', 'Atlas 3D'],
-  },
-  {
-    label: 'Gestão',
-    items: ['Analytics', 'Equipe', 'Configurações'],
-  },
-]
+type ModuleName = ClinicalModuleName
 
 const moduleMeta: Record<ModuleName, { title: string }> = {
   'Visão geral': { title: 'Início' },
@@ -567,7 +547,7 @@ function ClinicianApp() {
       keywords: report.title,
       onSelect: () => setActive('Pacientes'),
     },
-    ...nav.map((item) => ({
+    ...CLINICAL_NAV_ITEMS.map((item) => ({
       id: 'module-' + item,
       label: item,
       description: moduleMeta[item].title,
@@ -600,57 +580,14 @@ function ClinicianApp() {
       <a className="skip-link" href="#clinical-workspace">
         Ir para o conteúdo principal
       </a>
-      <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark">M</span>
-          <span>MedAtlas</span>
-        </div>
-        <p className="brand-subtitle">Comunicação clínica visual</p>
-
-
-        <nav aria-label="Navegação principal">
-          {navGroups.map((group) => (
-            <section className="sidebar-nav-group" key={group.label}>
-              <span className="sidebar-nav-label">{group.label}</span>
-              {group.items.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={[
-                    active === item ? 'active' : '',
-                    item === 'Atlas 3D' ? 'atlas-nav-item' : '',
-                  ].filter(Boolean).join(' ')}
-                  aria-label={item === 'Relatórios visuais' ? 'Relatórios' : item}
-                  aria-current={active === item ? 'page' : undefined}
-                  title={item}
-                  onClick={() => setActive(item)}
-                >
-                  <span className="nav-dot" />
-                  <span>{item === 'Relatórios visuais' ? 'Relatórios' : item}</span>
-                </button>
-              ))}
-            </section>
-          ))}
-        </nav>
-
-        <div className="clinic-card clinic-card-premium">
-          <div
-            className="clinic-card-logo"
-            style={{ background: DEMO_ORGANIZATION_BRANDING.primaryColorHex }}
-          >
-            {DEMO_ORGANIZATION_BRANDING.markText}
-          </div>
-          <div>
-            <span className="eyebrow">CLÍNICA</span>
-            <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
-            <small>
-              {activeWorkspace?.name ?? 'Sem workspace'}
-              {activeUnit ? ` · ${activeUnit.name}` : ''}
-            </small>
-          </div>
-          <span className="clinic-card-chevron" aria-hidden="true">⌃</span>
-        </div>
-      </aside>
+      <ClinicalSidebar
+        active={active}
+        organizationName={DEMO_ORGANIZATION.name}
+        workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
+        unitName={activeUnit?.name}
+        onNavigate={setActive}
+        onNewReport={startNewReport}
+      />
 
       <main className="workspace" id="clinical-workspace" tabIndex={-1}>
         <header className="topbar topbar-saas">

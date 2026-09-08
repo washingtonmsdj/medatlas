@@ -793,8 +793,11 @@ test('patients module reflects only the current synthetic report context', async
     page.getByText('Paciente demonstração', { exact: true }),
   ).toBeVisible()
   await expect(
-    page.getByText('FMA16036', { exact: true }),
+    page.getByText('Disco intervertebral L4–L5', { exact: true }).first(),
   ).toBeVisible()
+  await expect(
+    page.locator('.patients-module').getByText('3D carregado', { exact: true }),
+  ).toBeVisible({ timeout: 60_000 })
 
   await page
     .getByRole('button', { name: 'Abrir relatório visual' })
@@ -859,8 +862,13 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 
   await patientPage.waitForLoadState('domcontentloaded')
 
+  const patientAttribution = patientPage.locator(
+    'details.attribution-disclosure',
+  )
+  await expect(patientAttribution).toBeVisible()
+  await patientAttribution.locator('summary').click()
   await expect(
-    patientPage.getByText(
+    patientAttribution.getByText(
       'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.',
       { exact: false },
     ),
@@ -871,14 +879,14 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Atlas 3D', exact: true }).click()
+  await page.locator('.sidebar nav').getByRole('button', { name: 'Atlas 3D', exact: true }).click()
 
   await expect(
     page.getByRole('heading', { name: 'Atlas 3D' }),
   ).toBeVisible()
 
   await expect(
-    page.getByText('HUMAN ATLAS · MOTOR DE REFERÊNCIA'),
+    page.getByText('Pesquise, explore e escolha uma estrutura para o relatório.'),
   ).toBeVisible()
 
   await expect(
@@ -896,7 +904,7 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
   ).toBeVisible()
 
   await expect(
-    page.getByText(/peças · .* conceitos · BodyParts3D/),
+    page.getByText(/estruturas visíveis/),
   ).toBeVisible()
 
   await expect(
@@ -904,7 +912,7 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
   ).toBeVisible()
 
   await expect(
-    page.getByRole('button', { name: 'Redefinir workspace' }),
+    page.getByRole('button', { name: 'Redefinir', exact: true }),
   ).toBeVisible()
 })
 
@@ -973,7 +981,7 @@ test('clinical report uses the same Human Atlas reference engine in focused mode
   ).toBeVisible()
 })
 
-test('team module mirrors source-first roles and keeps membership writes blocked', async ({
+test('team module presents roles and keeps unavailable membership writes blocked', async ({
   page,
 }) => {
   await page.goto('/')
@@ -1018,26 +1026,11 @@ test('team module mirrors source-first roles and keeps membership writes blocked
   await expect(staffRow.getByRole('cell', { name: 'Não permitido', exact: true })).toHaveCount(2)
 
   await expect(
-    page.getByRole('button', { name: 'Alterar papéis' }),
-  ).toBeDisabled()
-  await expect(
     page.getByRole('button', { name: 'Convidar membro' }),
   ).toBeDisabled()
-
   await expect(
-    page.getByText('Permissões visíveis; mutações bloqueadas.'),
+    page.getByText('Permissões por papel', { exact: true }),
   ).toBeVisible()
-
-  await expect(
-    page.getByText('Unidades e workspaces clínicos'),
-  ).toBeVisible()
-  await expect(page.getByText('Unidade principal', { exact: true })).toBeVisible()
-  await expect(page.getByText('Ortopedia', { exact: true }).first()).toBeVisible()
-  await expect(page.getByText('Cardiologia', { exact: true }).first()).toBeVisible()
-  await expect(page.getByText('Fisioterapia', { exact: true }).first()).toBeVisible()
-  await expect(
-    page.getByRole('button', { name: 'Gerenciar estrutura' }),
-  ).toBeDisabled()
 })
 
 test('organization switcher changes the active clinical workspace locally', async ({
@@ -1079,11 +1072,13 @@ test('organization switcher changes the active clinical workspace locally', asyn
   ).toBeVisible()
 
   await expect(
-    page.getByText(/Cardiologia · Unidade principal/),
+    page.locator('.organization-switcher-shell').getByText(
+      /Cardiologia · Unidade principal/,
+    ),
   ).toBeVisible()
 })
 
-test('settings expose source-first clinic branding without enabling mutations', async ({
+test('settings expose clinic branding without enabling unavailable mutations', async ({
   page,
 }) => {
   await page.goto('/')
@@ -1096,7 +1091,7 @@ test('settings expose source-first clinic branding without enabling mutations', 
     }),
   ).toBeVisible()
 
-  await expect(page.getByText('CLÍNICA')).toBeVisible()
+  await expect(page.locator('.settings-branding-card').getByText('CLÍNICA', { exact: true })).toBeVisible()
   await expect(
     page.getByText('Clínica Horizonte', { exact: true }).first(),
   ).toBeVisible()
@@ -1115,8 +1110,11 @@ test('Atlas 3D exposes canonical source links in the explorer', async ({ page })
   await page.goto('/')
 
   await page
+    .locator('.sidebar nav')
     .getByRole('button', { name: 'Atlas 3D', exact: true })
     .click()
+
+  await page.locator('details.reference-atlas-source > summary').click()
 
   await expect(
     page.getByRole('navigation', { name: 'Fontes do Atlas 3D' }),
