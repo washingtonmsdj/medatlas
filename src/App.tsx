@@ -110,22 +110,9 @@ function PatientRoute({ slug }: { slug: string }) {
             <i />
           </div>
 
-          <span className="section-kicker">LINK DO PACIENTE · VALIDAÇÃO SEGURA</span>
-          <h1>Preparando seu relatório visual…</h1>
-          <p>
-            Estamos verificando se este link ainda está válido antes de
-            carregar qualquer conteúdo.
-          </p>
-
-          <div className="patient-route-state-steps" aria-hidden="true">
-            <span className="active">Validar link</span>
-            <span>Carregar relatório</span>
-            <span>Preparar anatomia 3D</span>
-          </div>
-
-          <small>
-            Nenhum conteúdo é exibido enquanto a validação não terminar.
-          </small>
+          <span className="section-kicker">RELATÓRIO DO PACIENTE</span>
+          <h1>Abrindo relatório…</h1>
+          <p>Validando o link e preparando a visualização 3D.</p>
         </div>
       </main>
     )

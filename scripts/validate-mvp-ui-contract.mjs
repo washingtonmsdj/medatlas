@@ -15,6 +15,7 @@ const productSurfaces = [
   'src/components/TopbarUtilityActions.tsx',
   'src/components/ViewModeSwitcher.tsx',
   'src/components/ClinicalSidebar.tsx',
+  'src/components/GlobalCommandSearch.tsx',
 ]
 
 const sources = new Map(
@@ -64,6 +65,8 @@ const patient = sources.get('src/components/PatientReportPage.tsx')
 const explorer = sources.get('src/components/ReferenceAtlasExplorer.tsx')
 const sidebar = sources.get('src/components/ClinicalSidebar.tsx')
 const focusPreview = sources.get('src/components/AnatomyFocusPreview.tsx')
+const globalSearch = sources.get('src/components/GlobalCommandSearch.tsx')
+const topbar = sources.get('src/components/TopbarUtilityActions.tsx')
 
 const requiredAppFragments = [
   "useState<MedAtlasViewMode>('professional')",
@@ -145,6 +148,33 @@ for (const fragment of [
 if (sidebar.includes('clinic-card-chevron')) {
   failures.push('ClinicalSidebar must not imply a clickable workspace card without an action')
 }
+
+for (const fragment of [
+  'aria-label="Ações pendentes"',
+  'Ações pendentes',
+  'Perfil do profissional',
+]) {
+  if (!topbar.includes(fragment)) {
+    failures.push(`Topbar must stay task-first: ${fragment}`)
+  }
+}
+
+for (const forbidden of ['Ajuda rápida do MedAtlas', 'Como funciona']) {
+  if (topbar.includes(forbidden)) {
+    failures.push(`Topbar reintroduced explanatory tutorial UI: ${forbidden}`)
+  }
+}
+
+if (
+  !globalSearch.includes(
+    'Buscar paciente, relatório, anatomia ou módulo',
+  )
+) {
+  failures.push(
+    'Global search copy must match the current MVP scope',
+  )
+}
+
 
 if (focusPreview.includes('atlasRef')) {
   failures.push(

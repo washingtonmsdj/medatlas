@@ -383,7 +383,7 @@ test('global command search navigates local MVP actions without backend', async 
   await page.keyboard.press('Control+K')
 
   const search = page.getByRole('combobox', {
-    name: 'Buscar paciente, exame, laudo ou módulo',
+    name: 'Buscar paciente, relatório, anatomia ou módulo',
   })
   await expect(search).toBeFocused()
 
@@ -415,7 +415,7 @@ test('global command search navigates local MVP actions without backend', async 
   await page.goto('/')
 
   const mobileSearch = page.getByRole('combobox', {
-    name: 'Buscar paciente, exame, laudo ou módulo',
+    name: 'Buscar paciente, relatório, anatomia ou módulo',
   })
   await mobileSearch.fill('atlas')
 
@@ -435,24 +435,7 @@ test('topbar utility controls perform useful local demo actions', async ({
   await page.setViewportSize({ width: 1440, height: 960 })
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Ajuda' }).click()
-  const help = page.getByRole('dialog', {
-    name: 'Ajuda rápida do MedAtlas',
-  })
-  await expect(help).toBeVisible()
-  await expect(help).toContainText('Confirme a anatomia')
-  await expect(help).toContainText('Ctrl/⌘ K')
-
-  await help
-    .getByRole('button', { name: 'Abrir fluxo de relatório' })
-    .click()
-  await expect(
-    page.getByRole('heading', {
-      name: 'Adicionar laudo',
-    }),
-  ).toBeVisible()
-
-  await page.getByRole('button', { name: 'Notificações' }).click()
+  await page.getByRole('button', { name: 'Ações pendentes' }).click()
   const notifications = page.getByRole('dialog', {
     name: 'Ações pendentes do relatório',
   })

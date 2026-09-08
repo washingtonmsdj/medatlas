@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import type { VisualReport } from '../domain/types'
 
-type PanelName = 'help' | 'notifications' | 'profile' | null
+type PanelName = 'tasks' | 'profile' | null
 
 interface Props {
   memberName: string
@@ -81,91 +81,20 @@ export function TopbarUtilityActions({
       <div className="topbar-utility-anchor">
         <button
           type="button"
-          className="topbar-icon-button"
-          aria-label="Ajuda"
-          aria-expanded={panel === 'help'}
-          aria-controls="medatlas-help-panel"
-          onClick={() => toggle('help')}
-        >
-          ?
-        </button>
-
-        {panel === 'help' && (
-          <section
-            className="topbar-popover help-popover"
-            id="medatlas-help-panel"
-            role="dialog"
-            aria-label="Ajuda rápida do MedAtlas"
-          >
-            <header>
-              <span className="topbar-popover-icon" aria-hidden="true">?</span>
-              <div>
-                <strong>Como funciona</strong>
-                <small>4 passos</small>
-              </div>
-            </header>
-
-            <ol className="help-flow-list">
-              <li>
-                <span>01</span>
-                <div>
-                  <strong>Adicione o laudo</strong>
-                  <small>Cole o texto ou importe um arquivo.</small>
-                </div>
-              </li>
-              <li>
-                <span>02</span>
-                <div>
-                  <strong>Confirme a anatomia</strong>
-                  <small>Use o Atlas 3D para localizar a estrutura.</small>
-                </div>
-              </li>
-              <li>
-                <span>03</span>
-                <div>
-                  <strong>Revise a explicação</strong>
-                  <small>Confira o texto que será mostrado ao paciente.</small>
-                </div>
-              </li>
-              <li>
-                <span>04</span>
-                <div>
-                  <strong>Compartilhe</strong>
-                  <small>Gere o link do paciente.</small>
-                </div>
-              </li>
-            </ol>
-
-            <div className="topbar-shortcuts">
-              <span><kbd>Ctrl/⌘ K</kbd> buscar</span>
-              <span><kbd>Esc</kbd> fechar</span>
-            </div>
-
-            <button type="button" onClick={() => run(onOpenReports)}>
-              Abrir fluxo de relatório
-              <b aria-hidden="true">→</b>
-            </button>
-          </section>
-        )}
-      </div>
-
-      <div className="topbar-utility-anchor">
-        <button
-          type="button"
           className="topbar-icon-button notification-button"
-          aria-label="Notificações"
-          aria-expanded={panel === 'notifications'}
-          aria-controls="medatlas-notifications-panel"
-          onClick={() => toggle('notifications')}
+          aria-label="Ações pendentes"
+          aria-expanded={panel === 'tasks'}
+          aria-controls="medatlas-tasks-panel"
+          onClick={() => toggle('tasks')}
         >
-          <span aria-hidden="true">♢</span>
+          <span aria-hidden="true">✓</span>
           {pendingSteps.length > 0 && <i />}
         </button>
 
-        {panel === 'notifications' && (
+        {panel === 'tasks' && (
           <section
-            className="topbar-popover notifications-popover task-center-popover"
-            id="medatlas-notifications-panel"
+            className="topbar-popover task-center-popover"
+            id="medatlas-tasks-panel"
             role="dialog"
             aria-label="Ações pendentes do relatório"
           >

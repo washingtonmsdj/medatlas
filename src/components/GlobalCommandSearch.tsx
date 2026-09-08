@@ -140,7 +140,7 @@ export function GlobalCommandSearch({ actions }: Props) {
         ref={inputRef}
         type="search"
         role="combobox"
-        aria-label="Buscar paciente, exame, laudo ou módulo"
+        aria-label="Buscar paciente, relatório, anatomia ou módulo"
         aria-expanded={open}
         aria-controls="medatlas-global-search-options"
         aria-autocomplete="list"
@@ -156,7 +156,7 @@ export function GlobalCommandSearch({ actions }: Props) {
           setOpen(true)
         }}
         onKeyDown={onKeyDown}
-        placeholder="Buscar paciente, exame, laudo ou módulo..."
+        placeholder="Buscar paciente, relatório, anatomia ou módulo..."
       />
       <kbd aria-hidden="true">⌘ K</kbd>
 
