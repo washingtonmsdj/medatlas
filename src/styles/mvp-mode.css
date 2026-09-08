@@ -229,3 +229,19 @@
     display: none;
   }
 }
+
+
+.sidebar nav .atlas-nav-item {
+  position: relative;
+}
+
+.sidebar nav .atlas-nav-item .nav-dot {
+  border-color: rgba(92, 214, 221, .55);
+  background: rgba(69, 192, 208, .2);
+  box-shadow: 0 0 0 3px rgba(69, 192, 208, .06);
+}
+
+.sidebar nav .atlas-nav-item.active .nav-dot {
+  background: #70dce0;
+  box-shadow: 0 0 14px rgba(89, 218, 222, .34);
+}

@@ -913,69 +913,12 @@
   transform: translateY(-1px);
 }
 
-.sidebar-3d-launcher {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 16px;
-  gap: 9px;
-  align-items: center;
-  margin: 12px 0 9px;
-  padding: 9px;
-  border: 1px solid rgba(89, 165, 213, .24);
-  border-radius: 13px;
-  color: #dff6ff;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(49, 163, 223, .20), transparent 44%),
-    rgba(10, 41, 67, .72);
-  cursor: pointer;
-  text-align: left;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
-}
 
-.sidebar-3d-launcher:hover {
-  border-color: rgba(100, 193, 232, .42);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(49, 163, 223, .26), transparent 48%),
-    rgba(11, 49, 78, .82);
-  transform: translateY(-1px);
-}
 
-.sidebar-3d-launcher > span {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(97, 203, 225, .25);
-  border-radius: 10px;
-  color: #8ee9e6;
-  background: rgba(14, 95, 119, .28);
-  font-size: 8px;
-  font-weight: 900;
-}
 
-.sidebar-3d-launcher > div {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-}
 
-.sidebar-3d-launcher strong {
-  color: #eefaff;
-  font-size: 9px;
-}
 
-.sidebar-3d-launcher small {
-  overflow: hidden;
-  color: #7fa5b9;
-  font-size: 6px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
-.sidebar-3d-launcher b {
-  color: #6eb8d5;
-  font-size: 11px;
-}
 
 @media (max-width: 1180px) {
   .overview-3d-hero-grid {
@@ -995,19 +938,7 @@
 }
 
 @media (max-width: 900px) {
-  .sidebar-3d-launcher {
-    width: auto;
-    min-width: 155px;
-    grid-template-columns: 30px minmax(0, 1fr) 14px;
-    margin: 0;
-    padding: 6px 8px;
-    justify-self: start;
-  }
 
-  .sidebar-3d-launcher > span {
-    width: 30px;
-    height: 30px;
-  }
 
   .overview-3d-hero-grid {
     grid-template-columns: 1fr;
@@ -1103,13 +1034,7 @@
     gap: 3px;
   }
 
-  .sidebar-3d-launcher {
-    min-width: 144px;
-  }
 
-  .sidebar-3d-launcher small {
-    display: none;
-  }
 }
 
 @media (max-width: 430px) {
@@ -1153,13 +1078,7 @@
 
   .sidebar .brand,
   .sidebar .brand-subtitle,
-  .sidebar-3d-launcher {
-    flex: 0 0 auto;
-  }
 
-  .sidebar-3d-launcher {
-    margin-top: 0;
-  }
 
   .sidebar nav {
     flex: 1 1 auto;

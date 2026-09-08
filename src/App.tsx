@@ -606,19 +606,6 @@ function ClinicianApp() {
         </div>
         <p className="brand-subtitle">Comunicação clínica visual</p>
 
-        <button
-          className="sidebar-3d-launcher"
-          type="button"
-          onClick={() => setActive('Atlas 3D')}
-          aria-label="Abrir Human Atlas 3D"
-        >
-          <span aria-hidden="true">3D</span>
-          <div>
-            <strong>Human Atlas</strong>
-            <small>Novo · anatomia interativa</small>
-          </div>
-          <b aria-hidden="true">→</b>
-        </button>
 
         <nav aria-label="Navegação principal">
           {navGroups.map((group) => (
@@ -628,7 +615,10 @@ function ClinicianApp() {
                 <button
                   key={item}
                   type="button"
-                  className={active === item ? 'active' : ''}
+                  className={[
+                    active === item ? 'active' : '',
+                    item === 'Atlas 3D' ? 'atlas-nav-item' : '',
+                  ].filter(Boolean).join(' ')}
                   aria-label={item === 'Relatórios visuais' ? 'Relatórios' : item}
                   aria-current={active === item ? 'page' : undefined}
                   title={item}
@@ -650,17 +640,14 @@ function ClinicianApp() {
             {DEMO_ORGANIZATION_BRANDING.markText}
           </div>
           <div>
-            <span className="eyebrow">ORGANIZAÇÃO ATIVA</span>
+            <span className="eyebrow">CLÍNICA</span>
             <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
             <small>
               {activeWorkspace?.name ?? 'Sem workspace'}
-              {activeUnit ? ` · ${activeUnit.name}` : ''} · demonstração
+              {activeUnit ? ` · ${activeUnit.name}` : ''}
             </small>
           </div>
           <span className="clinic-card-chevron" aria-hidden="true">⌃</span>
-          <small className="clinic-card-data">
-            {clinicalData.descriptor.label} · somente dados sintéticos
-          </small>
         </div>
       </aside>
 

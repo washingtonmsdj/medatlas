@@ -1064,7 +1064,7 @@ test('organization switcher changes the active clinical workspace locally', asyn
   ).toBeVisible()
 
   await expect(
-    page.getByText(/Cardiologia · Unidade principal · demonstração/),
+    page.getByText(/Cardiologia · Unidade principal/),
   ).toBeVisible()
 })
 

@@ -150,11 +150,6 @@ button:not(:disabled):active {
   justify-self: end;
 }
 
-.clinic-card-data {
-  grid-column: 1 / -1;
-  padding-top: 9px;
-  border-top: 1px solid rgba(128, 166, 207, .12);
-}
 
 .workspace {
   min-width: 0;
