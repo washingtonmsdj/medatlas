@@ -73,14 +73,17 @@ O wedge vencedor continua sendo:
 
 ### Produto / shell SaaS
 
-- [x] Dashboard clínico premium.
-- [x] Sidebar/topbar SaaS.
+- [x] Dashboard clínico task-first com Human Atlas 3D como diferencial principal.
+- [x] `ClinicalSidebar` canônica: ícones, grupos Clínica/Gestão, ação global **Novo relatório**, Atlas 3D destacado no próprio item e workspace ativo no rodapé.
+- [x] sidebar possui um único destino para Atlas 3D; não existe launcher paralelo/duplicado.
+- [x] desktop completo, tablet colapsado por ícones e mobile como header + navegação horizontal.
+- [x] topbar SaaS com organização/workspace, seletor Profissional/Paciente, busca global e utilidades.
+- [x] **Visão Profissional e Visão Paciente são shells separados**; Patient view não carrega sidebar/ferramentas clínicas.
 - [x] organização e workspace ativos visíveis.
 - [x] troca local sintética de workspace/especialidade.
 - [x] Pacientes.
-- [x] Consultas.
-- [x] Exames/documentos sintéticos.
 - [x] Relatórios visuais.
+- [x] laudo/exame e contexto da consulta pertencem ao fluxo de **Relatórios**; **Consultas e Exames não são módulos independentes no MVP**.
 - [x] Atlas 3D.
 - [x] Equipe.
 - [x] Analytics.
@@ -150,7 +153,10 @@ Hierarquia permanente:
 - [x] Skip-link permanece no accessibility tree e aparece por teclado, mas fica visualmente oculto sem foco para não sobrepor o workbench/capturas.
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
-- [x] refinamento visual V4 orientado pelas capturas reais: 3D mais dominante no Dashboard/Studio, etapa atual explícita, KPIs com affordance e navegação mobile em duas linhas sem card redundante da clínica.
+- [x] refinamento visual V4 orientado pelas capturas reais: 3D mais dominante no Dashboard/Studio, etapa atual explícita e KPIs com affordance.
+- [x] refinamento MVP V5/V6: copy técnica removida das superfícies de produto, Profissional/Paciente separados, módulos fora do escopo retirados do shell e Atlas convertido em ferramenta task-first.
+- [x] sidebar V7 reconstruída como componente dedicado; sem card clicável falso, sem launcher 3D duplicado e com comportamento desktop/tablet/mobile explícito.
+- [x] axe/WCAG voltou a PASS após correção de contraste específica no seletor de visão e próximo passo; gate não foi desabilitado.
 - [x] busca global deixou de ser decorativa: command search local com Ctrl/⌘ K, módulos, paciente demo, ações rápidas e cenários sintéticos, com teclado e E2E.
 - [x] controles do topbar deixaram de ser decorativos: Ajuda, Notificações e Perfil possuem popovers locais úteis e navegam para fluxos reais do MVP, sem fingir backend.
 - [x] workflow publica artifact de visual QA também em runs verdes.
@@ -158,14 +164,14 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
-- **Baseline atual de produto/frontend:** `7db6aad14073049e7f392415364fe904e500fa9e`.
-- **CI:** run `34197395606` — PASS completo.
-- **Browser E2E:** run `34197395517` — PASS completo.
-- **GitHub Pages / Chromium remoto:** run `34197395475` — PASS contra `https://washingtonmsdj.github.io/medatlas/`; shell/assets + atlas provenance/index validados e **2/2 testes 3D remotos PASS**.
-- **Bundle atual:** entry `335.589 bytes`; Human Atlas lazy chunk `502,80 kB` minificado / `128,66 kB gzip`; total JS `838.398 bytes`; budget PASS.
+- **Baseline atual de produto/frontend:** `6f5c3f12cc928a06306d59729052136199a4d1a8`.
+- **CI:** run `34216648290` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
+- **Browser E2E:** run `34216648376` — PASS completo, incluindo axe/WCAG, 1600/1440/390 px, Clinical Studio, Atlas, Patient view e portal.
+- **GitHub Pages / Chromium remoto:** run `34216648257` — PASS contra `https://washingtonmsdj.github.io/medatlas/`; build, deploy e verificação 3D remota verdes.
+- **Bundle atual:** entry `307.980 bytes`; Human Atlas lazy chunk `502,80 kB` minificado / `128,66 kB gzip`; total JS `810.789 bytes`; budget PASS.
 - **Runtime:** Node `>=22.13.0 <23`, impedindo upgrade automático de major sem permitir versões 22 abaixo do mínimo.
 - **3D canônico:** Explorer completo + superfícies focadas clinical/patient compartilham o mesmo engine derivado diretamente do Human Atlas fixado; não existe renderer simplificado paralelo.
-- **Visual QA:** artifact `visual-qa-34196529069` (`10044214674`) — 19 capturas desktop/mobile do frontend atual revisadas nesta rodada, incluindo Atlas Explorer, Clinical Studio e portal do paciente.
+- **Visual QA:** artifact `visual-qa-34216648376` (`10052240068`) — **15 capturas** revisadas visualmente no baseline final: Dashboard, Clinical Studio, Atlas Explorer, Pacientes, inspeção focada, preview/portal do paciente e mobile 390 px.
 - **Preview público:** `https://washingtonmsdj.github.io/medatlas/`.
 - **Vercel:** deployment API já funciona e não é blocker de arquitetura; GitHub Pages permanece a preview canônica porque executa verificação 3D remota automaticamente.
 
@@ -204,9 +210,7 @@ O diferencial do MedAtlas é a anatomia 3D integrada ao workflow, não um Atlas 
 | --- | --- | --- |
 | **Visão geral** | preview real do atendimento atual | `AnatomyFocusPreview → HumanAtlasScene` |
 | **Pacientes** | anatomia do relatório atual em modo patient | mesmo engine, sem thumbnail fake |
-| **Consultas** | foco anatômico permanece visível durante a sessão | mesmo engine clinical |
-| **Exames** | conceito FMA ligado ao texto aparece em geometria real | documento → conceito → 3D |
-| **Relatórios visuais** | Clinical 3D Workbench completo | busca, confirmação, contexto, câmera |
+| **Relatórios visuais** | laudo/exame + contexto clínico + Clinical 3D Workbench | texto → sugestão → confirmação → contexto/câmera → revisão → compartilhar |
 | **Preview do paciente (pré-publicação)** | Human Atlas real em modo patient | preview local, não publica nem contorna review gate |
 | **Atlas 3D** | explorer completo de ~2.234 peças | picking, sistemas, explode, inspector |
 | **Link do paciente** | 3D real é o elemento visual dominante | modo patient, controles simplificados |
@@ -226,7 +230,7 @@ Regras permanentes:
 - [x] toda prévia contextual explicita que o 3D é interativo e orienta arrastar/clicar, sem duplicar lógica por módulo;
 - [x] troca de superfície desmonta o renderer anterior;
 - [x] cleanup canônico cancela animation frame, listeners/observer e descarta controls, geometrias, materiais, textures e renderer WebGL;
-- [x] source gate falha se Dashboard voltar ao placeholder fake ou se Pacientes/Consultas/Exames perderem o preview canônico;
+- [x] source gate falha se Dashboard ou Pacientes perderem o preview canônico, se surgir renderer paralelo ou se o Clinical Studio deixar de usar o engine de referência;
 - [x] Browser E2E exige canvas real nas superfícies 3D-first;
 - [x] Pages executa Playwright contra o site publicado e exige canvas Human Atlas também no portal do paciente.
 - [x] asset base do Human Atlas herda `import.meta.env.BASE_URL`; deploys em subpath como `/medatlas/` não quebram `atlas.json` nem chunks.
@@ -394,8 +398,8 @@ Depois do backend:
 Prioridade depois do P1 source-first:
 
 1. [x] publicar/confirmar preview externo atual — GitHub Pages ativo em `https://washingtonmsdj.github.io/medatlas/`;
-2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34197395606` PASS, Browser E2E `34197395517` PASS e Pages/Playwright remoto `34197395475` PASS;
-3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34117852477`, 19 capturas;
+2. [x] validar Browser E2E completo contra deploy — baseline atual: CI `34216648290` PASS, Browser E2E `34216648376` PASS e Pages/Playwright remoto `34216648257` PASS;
+3. [x] concluir pré-piloto automatizado + revisão visual do artifact verde — `visual-qa-34216648376` (`10052240068`), 15 capturas revisadas;
 4. [ ] executar piloto manual sintético no preview com navegação humana real;
 5. [ ] corrigir UX adicional encontrada no piloto manual;
 5. [ ] preparar Supabase dedicado (P2) quando autorizado;
@@ -410,8 +414,8 @@ Se GitHub Pages continuar dependendo de configuração administrativa, não cria
 
 Se continuar **sem Supabase ativo**:
 
-1. preservar o baseline funcional `7db6aad…` — CI `34197395606` PASS, Browser E2E `34197395517` PASS, GitHub Pages Preview `34197395475` PASS;
-2. manter CI, Browser E2E e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34189680315` (`10041842621`) — refinamento V4 revisado em desktop/mobile.
+1. preservar o baseline funcional `6f5c3f12…` — CI `34216648290` PASS, Browser E2E `34216648376` PASS, GitHub Pages Preview `34216648257` PASS;
+2. manter CI, Browser E2E, axe/WCAG e Playwright 3D do GitHub Pages verdes; artifact visual atual: `visual-qa-34216648376` (`10052240068`) — 15 capturas revisadas em desktop/mobile.
 3. executar **piloto manual sintético completo** no preview externo;
 4. registrar somente bugs/UX observados por navegação humana e corrigi-los;
 5. não iniciar billing, IA remota ou Supabase sem autorização.
