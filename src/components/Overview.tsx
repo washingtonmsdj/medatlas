@@ -144,7 +144,7 @@ export function Overview({
               conceptId={report.finding.atlasConceptId || undefined}
               label={report.finding.anatomicalStructure}
               atlasRef={report.finding.atlasRef}
-              eyebrow="HUMAN ATLAS · MODELO 3D DE REFERÊNCIA"
+              eyebrow="3D DO ATENDIMENTO · HUMAN ATLAS · MODELO DE REFERÊNCIA"
               contextMode="none"
               compact
               reviewRequired={report.finding.anatomyReviewRequired}
