@@ -22,7 +22,7 @@ const STEP_META: Record<
   { label: string; shortLabel: string }
 > = {
   source: {
-    label: 'Importar laudo',
+    label: 'Adicionar laudo',
     shortLabel: 'Laudo',
   },
   anatomy: {
@@ -34,7 +34,7 @@ const STEP_META: Record<
     shortLabel: 'Explicação',
   },
   share: {
-    label: 'Publicar ao paciente',
+    label: 'Compartilhar',
     shortLabel: 'Paciente',
   },
 }
@@ -79,22 +79,22 @@ export function deriveReportPresentation(report: VisualReport) {
   const currentIndex = ids.findIndex((id) => !completion[id])
 
   const detailByStep: Record<ReportWorkflowStepId, string> = {
-    source: completion.source
-      ? `${report.finding.sourceText.trim().length.toLocaleString('pt-BR')} caracteres carregados`
-      : 'Aguardando texto clínico',
+    source: completion.source ? 'Laudo adicionado' : 'Adicione o texto do laudo',
     anatomy: completion.anatomy
-      ? `${report.finding.anatomicalStructure} · ${report.finding.atlasConceptId}`
+      ? report.finding.anatomicalStructure
       : report.finding.atlasConceptId
-        ? 'Reconfirmação necessária para o texto atual'
-        : 'Nenhuma referência FMA confirmada',
+        ? 'Confirme novamente a estrutura'
+        : 'Selecione uma estrutura',
     explanation: completion.explanation
-      ? 'Texto revisado pelo profissional'
+      ? 'Explicação revisada'
       : report.finding.patientExplanation.trim()
-        ? 'Revisão profissional pendente'
-        : 'Rascunho ainda não criado',
+        ? 'Revisão pendente'
+        : 'Crie a explicação',
     share: completion.share
-      ? 'Link temporário publicado'
-      : 'Compartilhamento ainda não liberado',
+      ? 'Link disponível'
+      : completion.explanation
+        ? 'Pronto para compartilhar'
+        : 'Aguardando revisão',
   }
 
   const steps: ReportWorkflowStepPresentation[] = ids.map(
@@ -114,29 +114,6 @@ export function deriveReportPresentation(report: VisualReport) {
   const completed = steps.filter((step) => step.done).length
   const currentStep = steps.find((step) => step.state === 'current') ?? null
 
-  const hasExplanation = Boolean(report.finding.patientExplanation.trim())
-
-  const composerStages = [
-    {
-      id: 'anatomy' as const,
-      label: 'Anatomia',
-      detail: completion.anatomy ? 'confirmada' : 'pendente',
-      done: completion.anatomy,
-    },
-    {
-      id: 'draft' as const,
-      label: 'Explicação',
-      detail: hasExplanation ? 'rascunho pronto' : 'aguardando',
-      done: hasExplanation,
-    },
-    {
-      id: 'review' as const,
-      label: 'Revisão',
-      detail: completion.explanation ? 'aprovada' : 'obrigatória',
-      done: completion.explanation,
-    },
-  ]
-
   const statusLabel = !completion.source
     ? 'Novo relatório'
     : !completion.anatomy
@@ -148,18 +125,18 @@ export function deriveReportPresentation(report: VisualReport) {
           ? 'Revisar explicação'
           : 'Criar explicação'
         : !completion.share
-          ? 'Pronto para publicar'
+          ? 'Pronto para compartilhar'
           : 'Compartilhado'
 
   const publication = {
     canPublish: completion.explanation && !completion.share,
     summary: !completion.anatomy
-      ? 'A anatomia precisa ser confirmada.'
+      ? 'Confirme a anatomia para continuar.'
       : !completion.explanation
-        ? 'A explicação precisa de revisão explícita.'
+        ? 'Revise a explicação para continuar.'
         : completion.share
-          ? 'O relatório já foi compartilhado.'
-          : 'Todos os gates estão concluídos.',
+          ? 'O link do paciente está disponível.'
+          : 'Pronto para compartilhar com o paciente.',
     buttonLabel: !completion.anatomy
       ? 'Confirme a anatomia'
       : !completion.explanation
@@ -181,11 +158,10 @@ export function deriveReportPresentation(report: VisualReport) {
     progressPercent: Math.round((completed / steps.length) * 100),
     currentStep,
     statusLabel,
-    composerStages,
     publication,
     source: {
       state: completion.source ? 'ready' : 'empty',
-      label: completion.source ? 'Texto carregado' : 'Aguardando texto',
+      label: completion.source ? 'Laudo adicionado' : 'Aguardando laudo',
       detail: detailByStep.source,
     },
     anatomy: {
@@ -197,7 +173,7 @@ export function deriveReportPresentation(report: VisualReport) {
       label: anatomyLabel,
       detail: report.finding.atlasConceptId
         ? `${report.finding.atlasRef} · ${report.finding.atlasConceptId}`
-        : `${report.finding.atlasRef} · sem FMA confirmado`,
+        : 'Aguardando seleção',
     },
     explanation: {
       state: completion.explanation
@@ -211,17 +187,19 @@ export function deriveReportPresentation(report: VisualReport) {
           ? 'Revisão pendente'
           : 'Não criada',
       detail: report.finding.patientExplanation.trim()
-        ? `${report.finding.patientExplanation.length.toLocaleString('pt-BR')} caracteres`
-        : 'Aguardando conteúdo',
+        ? completion.explanation
+          ? 'Pronta para compartilhar'
+          : 'Revise antes de compartilhar'
+        : 'Aguardando explicação',
     },
     sharing: {
       state: completion.share ? 'published' : 'draft',
-      label: completion.share ? 'Compartilhado' : 'Não publicado',
+      label: completion.share ? 'Compartilhado' : 'Não compartilhado',
       detail: completion.share
-        ? 'Link temporário ativo'
+        ? 'Link ativo'
         : completion.explanation
-          ? 'Gate clínico concluído'
-          : 'Gate humano preservado',
+          ? 'Pronto para gerar link'
+          : 'Aguardando revisão',
     },
   }
 }
