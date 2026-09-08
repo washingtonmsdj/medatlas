@@ -25,7 +25,8 @@ import {
 } from './components/PatientReportPage'
 import { ReportComposer } from './components/ReportComposer'
 import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
-import type { ReportExample } from './clinical/demo-scenarios'
+import { GlobalCommandSearch, type GlobalSearchAction } from './components/GlobalCommandSearch'
+import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
@@ -590,6 +591,57 @@ function ClinicianApp() {
   const activeUnit = getDemoUnit(activeWorkspace?.unitId)
   const currentMember = getDemoCurrentMember()
 
+  const globalSearchActions: GlobalSearchAction[] = [
+    {
+      id: 'action-new-report',
+      label: 'Novo relatório visual',
+      description: 'Iniciar um relatório sintético vazio.',
+      group: 'Ação',
+      keywords: 'novo laudo exame criar atendimento',
+      onSelect: startNewReport,
+    },
+    {
+      id: 'action-current-report',
+      label: 'Continuar relatório atual',
+      description: report.title,
+      group: 'Ação',
+      keywords: report.finding.anatomicalStructure,
+      onSelect: () => setActive('Relatórios visuais'),
+    },
+    {
+      id: 'action-open-atlas',
+      label: 'Explorar Atlas 3D',
+      description: 'Abrir o Human Atlas completo.',
+      group: 'Ação',
+      keywords: 'anatomia corpo fma human atlas',
+      onSelect: () => setActive('Atlas 3D'),
+    },
+    {
+      id: 'patient-demo',
+      label: report.patient.displayName,
+      description: 'Abrir o contexto sintético do paciente atual.',
+      group: 'Paciente',
+      keywords: report.title,
+      onSelect: () => setActive('Pacientes'),
+    },
+    ...nav.map((item) => ({
+      id: 'module-' + item,
+      label: item,
+      description: moduleMeta[item].title,
+      group: 'Módulo' as const,
+      keywords: moduleMeta[item].eyebrow,
+      onSelect: () => setActive(item),
+    })),
+    ...REPORT_EXAMPLES.map((example) => ({
+      id: 'scenario-' + example.id,
+      label: example.label,
+      description: example.title,
+      group: 'Cenário' as const,
+      keywords: example.sourceText,
+      onSelect: () => loadExample(example),
+    })),
+  ]
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#clinical-workspace">
@@ -648,15 +700,7 @@ function ClinicianApp() {
             onWorkspaceChange={setActiveWorkspaceId}
           />
 
-          <label className="global-search">
-            <span aria-hidden="true">⌕</span>
-            <input
-              type="search"
-              aria-label="Buscar paciente, exame ou laudo"
-              placeholder="Buscar paciente, exame ou laudo..."
-            />
-            <kbd>⌘ K</kbd>
-          </label>
+          <GlobalCommandSearch actions={globalSearchActions} />
 
           <div className="topbar-actions">
             <button type="button" className="topbar-icon-button" aria-label="Ajuda">?</button>

@@ -1,0 +1,208 @@
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react'
+
+export interface GlobalSearchAction {
+  id: string
+  label: string
+  description: string
+  group: 'Ação' | 'Módulo' | 'Paciente' | 'Cenário'
+  keywords?: string
+  onSelect: () => void
+}
+
+interface Props {
+  actions: GlobalSearchAction[]
+}
+
+function normalize(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR')
+    .trim()
+}
+
+export function GlobalCommandSearch({ actions }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  useEffect(() => {
+    const shortcut = (event: globalThis.KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === 'k'
+      ) {
+        event.preventDefault()
+        inputRef.current?.focus()
+        setOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', shortcut)
+    return () => document.removeEventListener('keydown', shortcut)
+  }, [])
+
+  const results = useMemo(() => {
+    const term = normalize(query)
+
+    if (!term) {
+      return actions.filter((action) => action.group === 'Ação').slice(0, 5)
+    }
+
+    return actions
+      .map((action) => {
+        const haystack = normalize(
+          [
+            action.label,
+            action.description,
+            action.group,
+            action.keywords ?? '',
+          ].join(' '),
+        )
+
+        let score = 0
+
+        if (normalize(action.label).startsWith(term)) score += 6
+        if (normalize(action.label).includes(term)) score += 4
+        if (haystack.includes(term)) score += 2
+
+        return { action, score }
+      })
+      .filter((entry) => entry.score > 0)
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          a.action.label.localeCompare(b.action.label, 'pt-BR'),
+      )
+      .slice(0, 8)
+      .map((entry) => entry.action)
+  }, [actions, query])
+
+  useEffect(() => {
+    setActiveIndex(0)
+  }, [query])
+
+  const select = (action: GlobalSearchAction) => {
+    action.onSelect()
+    setQuery('')
+    setOpen(false)
+    inputRef.current?.blur()
+  }
+
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setOpen(false)
+      setQuery('')
+      inputRef.current?.blur()
+      return
+    }
+
+    if (!open || results.length === 0) return
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setActiveIndex((current) => (current + 1) % results.length)
+      return
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setActiveIndex(
+        (current) => (current - 1 + results.length) % results.length,
+      )
+      return
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      select(results[activeIndex] ?? results[0])
+    }
+  }
+
+  return (
+    <div
+      className="global-search global-command-search"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setOpen(false)
+        }
+      }}
+    >
+      <span aria-hidden="true">⌕</span>
+      <input
+        ref={inputRef}
+        type="search"
+        role="combobox"
+        aria-label="Buscar paciente, exame, laudo ou módulo"
+        aria-expanded={open}
+        aria-controls="medatlas-global-search-results"
+        aria-autocomplete="list"
+        value={query}
+        onFocus={() => setOpen(true)}
+        onChange={(event) => {
+          setQuery(event.target.value)
+          setOpen(true)
+        }}
+        onKeyDown={onKeyDown}
+        placeholder="Buscar paciente, exame, laudo ou módulo..."
+      />
+      <kbd aria-hidden="true">⌘ K</kbd>
+
+      {open && (
+        <div
+          className="global-command-results"
+          id="medatlas-global-search-results"
+          role="listbox"
+          aria-label="Resultados da busca global"
+        >
+          <div className="global-command-results-heading">
+            <span>{query.trim() ? 'Resultados' : 'Ações rápidas'}</span>
+            <small>{results.length}</small>
+          </div>
+
+          {results.length > 0 ? (
+            results.map((action, index) => (
+              <button
+                key={action.id}
+                type="button"
+                role="option"
+                aria-selected={index === activeIndex}
+                className={index === activeIndex ? 'active' : ''}
+                onMouseEnter={() => setActiveIndex(index)}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => select(action)}
+              >
+                <span className="global-command-group">
+                  {action.group}
+                </span>
+                <span>
+                  <strong>{action.label}</strong>
+                  <small>{action.description}</small>
+                </span>
+                <b aria-hidden="true">↵</b>
+              </button>
+            ))
+          ) : (
+            <p className="global-command-empty">
+              Nenhuma correspondência local. A busca clínica real entra com o
+              backend dedicado.
+            </p>
+          )}
+
+          <footer>
+            <span>↑↓ navegar</span>
+            <span>Enter abrir</span>
+            <span>Esc fechar</span>
+          </footer>
+        </div>
+      )}
+    </div>
+  )
+}

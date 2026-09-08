@@ -386,3 +386,58 @@ test('frontend refinement keeps hierarchy explicit on desktop and mobile', async
 
   await expectNoHorizontalOverflow(page)
 })
+
+
+test('global command search navigates local MVP actions without backend', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.goto('/')
+
+  await page.keyboard.press('Control+K')
+
+  const search = page.getByRole('combobox', {
+    name: 'Buscar paciente, exame, laudo ou módulo',
+  })
+  await expect(search).toBeFocused()
+
+  const results = page.getByRole('listbox', {
+    name: 'Resultados da busca global',
+  })
+  await expect(results).toBeVisible()
+  await expect(results).toContainText('Novo relatório visual')
+
+  await search.fill('coração')
+  await expect(results).toContainText('Coração')
+
+  const heartOption = results
+    .getByRole('option')
+    .filter({ hasText: 'Coração' })
+    .first()
+  await heartOption.click()
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Localizar anatomia mencionada',
+    }),
+  ).toBeVisible()
+  await expect(
+    page.getByLabel('Texto do laudo ou relatório'),
+  ).toContainText(/coração/i)
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const mobileSearch = page.getByRole('combobox', {
+    name: 'Buscar paciente, exame, laudo ou módulo',
+  })
+  await mobileSearch.fill('atlas')
+
+  await expect(
+    page.getByRole('listbox', {
+      name: 'Resultados da busca global',
+    }),
+  ).toBeVisible()
+
+  await expectNoHorizontalOverflow(page)
+})
