@@ -17,7 +17,7 @@
   padding: 7px 10px;
   border: 0;
   border-radius: 10px;
-  color: #668095;
+  color: #4d687c;
   background: transparent;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .view-mode-switcher button small {
-  color: #89a0af;
+  color: #4d687c;
   font-size: 6px;
 }
 

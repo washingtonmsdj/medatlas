@@ -275,11 +275,12 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   )
   await expect(patientInspector).toBeVisible()
   await expect(patientInspector).toContainText(
-    'Identificação visual de anatomia humana de referência',
+    'Anatomia humana de referência',
   )
   await expect(patientInspector).toContainText(
-    'não representa o corpo individual do paciente',
+    'Referência visual. Não representa o corpo individual do paciente.',
   )
+  await expect(patientInspector).not.toContainText('Referência técnica:')
   await expect(
     patientPage.getByRole('navigation', {
       name: 'Navegar pelas partes do relatório',
