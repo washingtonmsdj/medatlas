@@ -55,7 +55,6 @@ interface InspectedPart {
   partId: string
   conceptId: string
   label: string
-  technicalLabel: string
 }
 
 const PATIENT_INSPECTION_FALLBACK = 'Estrutura anatômica selecionada'
@@ -224,7 +223,6 @@ export function HumanAtlasScene({
           appearance === 'patient'
             ? prepared.patientPartLabels[part.id] ?? PATIENT_INSPECTION_FALLBACK
             : prepared.partLabels[part.id] ?? part.name,
-        technicalLabel: part.name,
       })
     },
     [appearance, prepared],
@@ -236,13 +234,13 @@ export function HumanAtlasScene({
         className="human-atlas-scene focused-reference-loading"
         role="status"
         aria-live="polite"
-        aria-label="Preparando anatomia de referência"
+        aria-label="Preparando visualização 3D"
       >
         <div className="focused-reference-loading-card">
           <span className="focused-reference-loader" aria-hidden="true" />
           <div>
-            <strong>Preparando anatomia de referência</strong>
-            <small>Carregando somente as peças necessárias para este foco.</small>
+            <strong>Preparando visualização 3D</strong>
+            <small>Carregando anatomia interativa.</small>
           </div>
         </div>
       </div>
@@ -257,13 +255,13 @@ export function HumanAtlasScene({
             className="focused-reference-loading renderer-module-loading"
             role="status"
             aria-live="polite"
-            aria-label="Carregando motor 3D"
+            aria-label="Carregando visualização 3D"
           >
             <div className="focused-reference-loading-card">
               <span className="focused-reference-loader" aria-hidden="true" />
               <div>
-                <strong>Carregando motor 3D</strong>
-                <small>O shell clínico permanece disponível enquanto o renderer é preparado.</small>
+                <strong>Carregando visualização 3D</strong>
+                <small>O relatório continua disponível durante o carregamento.</small>
               </div>
             </div>
           </div>
@@ -297,12 +295,12 @@ export function HumanAtlasScene({
           <strong>{inspectedPart.label}</strong>
           <small>
             {appearance === 'patient'
-              ? `Referência técnica: ${inspectedPart.technicalLabel} · ${inspectedPart.conceptId}`
+              ? 'Anatomia humana de referência'
               : `${inspectedPart.conceptId} · peça ${inspectedPart.partId}`}
           </small>
           <em>
             {appearance === 'patient'
-              ? 'Identificação visual de anatomia humana de referência. Ela ajuda na orientação e não representa o corpo individual do paciente.'
+              ? 'Referência visual. Não representa o corpo individual do paciente.'
               : 'Inspeção visual apenas. A anatomia confirmada do relatório não foi alterada.'}
           </em>
         </aside>

@@ -218,14 +218,28 @@ const requiredPatientInspectionLanguage = [
   "PATIENT_INSPECTION_FALLBACK = 'Estrutura anatômica selecionada'",
   'patientPartLabels',
   "appearance === 'patient'",
-  'Referência técnica:',
-  'technicalLabel',
+  'Anatomia humana de referência',
+  'Referência visual. Não representa o corpo individual do paciente.',
 ]
 
 for (const fragment of requiredPatientInspectionLanguage) {
   if (!focused.includes(fragment)) {
     failures.push(
       'patient anatomy inspection language contract missing: ' + fragment,
+    )
+  }
+}
+
+for (const forbidden of [
+  'Referência técnica:',
+  'technicalLabel',
+  'peças necessárias',
+  'Carregando motor 3D',
+]) {
+  if (focused.includes(forbidden)) {
+    failures.push(
+      'patient/shared focused 3D reintroduced technical product copy: ' +
+        forbidden,
     )
   }
 }

@@ -8,6 +8,7 @@ const productSurfaces = [
   'src/components/PatientReportPage.tsx',
   'src/components/ReferenceAtlasExplorer.tsx',
   'src/components/AnatomyFocusPreview.tsx',
+  'src/components/HumanAtlasScene.tsx',
   'src/components/PatientsModule.tsx',
   'src/components/TeamModule.tsx',
   'src/components/AnalyticsModule.tsx',
@@ -43,6 +44,9 @@ const forbiddenProductCopy = [
   'chunks necessários',
   'Preparando geometria real',
   'O MedAtlas não inventa um modelo',
+  'peças necessárias',
+  'Carregando motor 3D',
+  'Referência técnica:',
 ]
 
 for (const [file, source] of sources) {
