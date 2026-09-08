@@ -19,6 +19,7 @@
     "validate:report-workflow": "node scripts/validate-report-workflow.mjs",
     "validate:license-attribution": "node scripts/validate-license-attribution.mjs",
     "validate:reference-atlas": "node scripts/validate-reference-atlas.mjs",
+    "validate:mvp-ui": "node scripts/validate-mvp-ui-contract.mjs",
     "validate:bundle-budget": "node scripts/validate-bundle-budget.mjs"
   },
   "dependencies": {
