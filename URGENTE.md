@@ -183,6 +183,7 @@ Referências recentes de validação:
 - [x] paridade visual adicional com Human Atlas: anéis/plataforma, marcadores de inventário, hover por peça no inventário explodido e câmera com viewport reservado para painéis.
 - [x] cache de chunks.
 - [x] geometry-aware camera framing.
+- [x] Explorer assembled-body framing uses real atlas bounds plus the usable viewport between layers/search/inspector/dock so head and feet do not hide behind overlays at desktop widths.
 - [x] licenças/atribuições visíveis e validadas.
 - [x] gate permanente `validate-reference-atlas`.
 

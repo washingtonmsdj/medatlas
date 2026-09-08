@@ -561,26 +561,74 @@ export function HumanAtlasExplorerScene({
         return
       }
 
-      const normalDistance = mobile ? 4.8 : 4
       const reservedHeight = mobile ? 300 : 220
       const availableAspect = Math.max(
         0.35,
         (element.clientWidth - (mobile ? 40 : 300)) /
           Math.max(160, element.clientHeight - reservedHeight),
       )
+
+      let assembledDistance = mobile ? 4.8 : 4
+
+      if (
+        appearance === 'explorer' &&
+        extent < 0.05 &&
+        !atlasBounds.isEmpty()
+      ) {
+        const width = Math.max(1, element.clientWidth)
+        const height = Math.max(1, element.clientHeight)
+        const leftReserved = width > 900 ? 270 : mobile ? 18 : 56
+        const rightReserved = width > 900 ? 340 : mobile ? 18 : 56
+        const topReserved = width > 900 ? 112 : mobile ? 150 : 92
+        const bottomReserved = width > 900 ? 118 : mobile ? 190 : 104
+        const usableWidth = Math.max(
+          180,
+          width - leftReserved - rightReserved,
+        )
+        const usableHeight = Math.max(
+          220,
+          height - topReserved - bottomReserved,
+        )
+        const verticalFov = THREE.MathUtils.degToRad(camera.fov)
+        const horizontalFov =
+          2 *
+          Math.atan(
+            Math.tan(verticalFov / 2) *
+              Math.max(camera.aspect, 0.35),
+          )
+        const fitHeight =
+          atlasSize.y /
+          Math.max(0.001, 2 * Math.tan(verticalFov / 2))
+        const fitWidth =
+          atlasSize.x /
+          Math.max(0.001, 2 * Math.tan(horizontalFov / 2))
+        const heightScale = height / usableHeight
+        const widthScale = width / usableWidth
+
+        assembledDistance = Math.max(
+          3.8,
+          fitHeight * heightScale * 1.06,
+          fitWidth * widthScale * 1.06,
+        )
+      }
+
       const atlasDistance =
         (Math.max(packingHeight, packingWidth / availableAspect) /
           (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)))) *
         1.08
       const distance = THREE.MathUtils.lerp(
-        normalDistance,
+        assembledDistance,
         Math.max(0.2, atlasDistance),
         extent,
       )
 
       controls.target.set(
         extent > 0.1 && !mobile ? -packingWidth * 0.12 : 0,
-        extent > 0.1 || mobile ? 0.85 : 0.68,
+        extent > 0.1 || mobile
+          ? 0.85
+          : appearance === 'explorer'
+            ? atlasCenter.y
+            : 0.68,
         0,
       )
       camera.position
