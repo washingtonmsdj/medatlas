@@ -3,7 +3,7 @@ import { deriveReportPresentation } from '../domain/report-presentation'
 import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
 import type { VisualReport } from '../domain/types'
-import { PATIENT_CLARITY_STEPS, PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
+import { PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
 import {
   DEMO_ORGANIZATION_BRANDING,
   getDemoCurrentMember,
@@ -307,18 +307,6 @@ export function PatientReportPage({
             </p>
           </div>
         </aside>
-      </section>
-
-      <section className="patient-clarity-strip" aria-label="Como usar o relatório visual">
-        {PATIENT_CLARITY_STEPS.map((step, index) => (
-          <article key={step.id}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <div>
-              <strong>{step.title}</strong>
-              <p>{step.description}</p>
-            </div>
-          </article>
-        ))}
       </section>
 
       <section className="patient-next-step patient-next-step-v3" id="patient-questions">

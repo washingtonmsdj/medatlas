@@ -2311,54 +2311,6 @@ button:not(:disabled):active {
   color: #607486;
 }
 
-.patient-clarity-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.patient-clarity-strip article {
-  min-height: 105px;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
-  padding: 15px;
-  border: 1px solid #dbe5ed;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, .82);
-  box-shadow: 0 11px 30px rgba(46, 75, 104, .05);
-}
-
-.patient-clarity-strip article > span {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  color: #1673b5;
-  background: #eaf6ff;
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.patient-clarity-strip article > div {
-  display: grid;
-  gap: 4px;
-}
-
-.patient-clarity-strip strong {
-  color: #193a57;
-  font-size: 11px;
-}
-
-.patient-clarity-strip p {
-  margin: 0;
-  color: #667d92;
-  font-size: 9px;
-  line-height: 1.5;
-}
 
 .patient-next-step {
   margin-top: 16px;
