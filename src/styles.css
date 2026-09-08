@@ -10545,3 +10545,45 @@ button:not(:disabled):active {
     padding-inline: 13px;
   }
 }
+
+
+/* MEDATLAS_SIDEBAR_FLOW_FIX_V5 */
+@media (min-width: 901px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar .brand,
+  .sidebar .brand-subtitle,
+  .sidebar-3d-launcher {
+    flex: 0 0 auto;
+  }
+
+  .sidebar-3d-launcher {
+    margin-top: 0;
+  }
+
+  .sidebar nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 2px 8px 0;
+    scrollbar-width: none;
+  }
+
+  .sidebar nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar .clinic-card-premium {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    flex: 0 0 auto;
+    margin-top: 10px;
+  }
+}
