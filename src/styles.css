@@ -10,17 +10,8 @@
 body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 65% 0%, #15315a 0, #091524 34%, #050b14 74%); }
 button,input { font: inherit; }
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: 235px minmax(0, 1fr); }
-.sidebar { padding: 28px 18px; border-right: 1px solid #203047; background: rgba(5, 12, 23, .84); backdrop-filter: blur(22px); position: sticky; top: 0; height: 100vh; }
 .brand { display: flex; gap: 11px; align-items: center; font-size: 23px; font-weight: 800; letter-spacing: -.04em; }
 .brand-mark { width: 35px; height: 35px; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(145deg,#3ab7ff,#7257ff); box-shadow: 0 10px 35px #2469ff55; }
-.brand-subtitle { margin: 5px 0 28px 46px; font-size: 11px; color: #7f93ad; }
-.sidebar nav { display: grid; gap: 5px; }
-.sidebar nav button { border: 0; color: #9aabc0; background: transparent; border-radius: 12px; padding: 11px 12px; display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left; }
-.sidebar nav button:hover,.sidebar nav button.active { color:white; background:linear-gradient(90deg,#263b64aa,#1b2b48aa); }
-.nav-dot { width: 7px; height: 7px; border-radius:50%; border:1px solid currentColor; }
-.sidebar nav button.active .nav-dot { background:#55d8ff; border-color:#55d8ff; box-shadow:0 0 10px #55d8ff; }
-.clinic-card { position:absolute; left:18px; right:18px; bottom:22px; padding:16px; border:1px solid #243652; border-radius:15px; background:#0b1729; display:grid; gap:5px; }
-.clinic-card small { color:#72869f; }
 .workspace { padding: 32px clamp(22px,3vw,50px) 50px; }
 .topbar { display:flex; justify-content:space-between; gap:26px; align-items:center; margin-bottom:24px; }
 .eyebrow,.section-kicker { font-size:10px; letter-spacing:.16em; color:#54bdf8; font-weight:800; }
@@ -164,21 +155,12 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
 
 @media (max-width:1050px) {
   .app-shell{grid-template-columns:82px 1fr}
-  .sidebar{padding:22px 12px}
-  .brand span:last-child,.brand-subtitle,.clinic-card{display:none}
-  .brand{justify-content:center}
-  .sidebar nav button{justify-content:center}
-  .sidebar nav button span:last-child{display:none}
   .content-grid{grid-template-columns:1fr}
   .report-card{position:static}
   .doctor-chip{display:none}
 }
 @media (max-width:720px) {
   .app-shell{display:block}
-  .sidebar{position:static;height:auto;display:flex;align-items:center;gap:12px;border-right:0;border-bottom:1px solid #203047}
-  .sidebar nav{display:flex;overflow:auto}
-  .sidebar nav button{white-space:nowrap;padding:9px 10px}
-  .sidebar nav button span:last-child{display:inline}
   .workspace{padding:22px 14px 35px}
   .workflow-strip{grid-template-columns:1fr 1fr}
   .finding-card{align-items:flex-start;flex-direction:column}
