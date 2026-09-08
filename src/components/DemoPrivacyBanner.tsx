@@ -7,10 +7,8 @@ export function DemoPrivacyBanner() {
       role="note"
       aria-label="Aviso do ambiente demonstrativo"
     >
-      <strong>Demo</strong>
-      <span>
-        Use apenas dados fictícios · links expiram em {demoShareTtlLabel()}.
-      </span>
+      <strong>Ambiente demo</strong>
+      <span>Dados fictícios · links expiram em {demoShareTtlLabel()}.</span>
     </section>
   )
 }

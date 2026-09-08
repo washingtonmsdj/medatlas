@@ -99,12 +99,32 @@
 }
 
 .demo-privacy-banner-mvp {
-  min-height: 36px;
-  padding-block: 7px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 28px;
+  align-items: center;
+  flex-direction: row;
+  gap: 7px;
+  margin: 10px 0 0;
+  padding: 5px 9px;
+  border-color: #d9c89f;
+  border-radius: 999px;
+  color: #6c5a2f;
+  background: rgba(255, 250, 237, .9);
+  box-shadow: 0 5px 16px rgba(80, 65, 30, .04);
+  line-height: 1.2;
 }
 
 .demo-privacy-banner-mvp strong {
   flex: 0 0 auto;
+  color: #6a5726;
+}
+
+.demo-privacy-banner-mvp span {
+  overflow: hidden;
+  color: #786b4d;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mvp-compact-grid {
