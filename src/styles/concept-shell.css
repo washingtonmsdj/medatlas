@@ -10,7 +10,7 @@
   padding: 0 10px 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 45% -10%, rgba(24, 81, 134, .16), transparent 30%),
+    radial-gradient(circle at 45% -10%, var(--overlay-workspace-glow), transparent 30%),
     var(--surface-workspace);
 }
 
@@ -45,7 +45,7 @@
   left: 13px;
   top: 50%;
   transform: translateY(-50%);
-  color: #7392ab;
+  color: var(--text-accent-muted);
 }
 
 .medatlas-v2-topbar .global-command-search input {
@@ -57,13 +57,13 @@
   outline: none;
   color: var(--text-strong);
   background: var(--surface-control);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+  box-shadow: inset 0 1px 0 var(--overlay-inset-highlight);
   font-size: var(--type-body);
 }
 
 .medatlas-v2-topbar .global-command-search input:focus {
-  border-color: rgba(82, 170, 246, .54);
-  box-shadow: 0 0 0 3px rgba(56, 140, 219, .09);
+  border-color: var(--line-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .medatlas-v2-topbar .global-command-search input::placeholder {
@@ -77,10 +77,10 @@
   top: 50%;
   transform: translateY(-50%);
   padding: 3px 5px;
-  border: 1px solid rgba(114, 156, 193, .20);
+  border: 1px solid var(--line-shortcut);
   border-radius: 6px;
-  color: #6f89a0;
-  background: rgba(5, 16, 28, .66);
+  color: var(--text-accent-muted);
+  background: var(--surface-shortcut);
   font-size: 8px;
 }
 
@@ -91,10 +91,10 @@
   left: 0;
   right: 0;
   overflow: hidden;
-  border: 1px solid rgba(86, 145, 200, .30);
+  border: 1px solid var(--line-command);
   border-radius: 12px;
   background: var(--surface-popover);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .44);
+  box-shadow: 0 24px 60px var(--shadow-command);
 }
 
 .medatlas-v2-topbar .global-command-results-heading,
@@ -104,7 +104,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
-  color: #6f8aa1;
+  color: var(--text-muted);
   font-size: var(--type-caption);
 }
 
@@ -125,7 +125,7 @@
   padding: 7px 8px;
   border: 0;
   border-radius: 8px;
-  color: #b4c8da;
+  color: var(--text-soft);
   background: transparent;
   cursor: pointer;
   text-align: left;
@@ -133,11 +133,11 @@
 
 .medatlas-v2-topbar .global-command-options button.active,
 .medatlas-v2-topbar .global-command-options button:hover {
-  background: rgba(39, 93, 150, .24);
+  background: var(--overlay-command-active);
 }
 
 .medatlas-v2-topbar .global-command-group {
-  color: #6298bd;
+  color: var(--text-group);
   font-size: 8px;
   font-weight: 800;
   text-transform: uppercase;
@@ -151,7 +151,7 @@
 
 .medatlas-v2-topbar .global-command-options strong {
   overflow: hidden;
-  color: #e8f3fb;
+  color: var(--text-emphasis);
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -159,7 +159,7 @@
 
 .medatlas-v2-topbar .global-command-options small {
   overflow: hidden;
-  color: #71899e;
+  color: var(--text-muted-deep);
   font-size: 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -168,13 +168,13 @@
 .medatlas-v2-topbar .global-command-empty {
   margin: 0;
   padding: 16px 13px;
-  color: #8299ad;
+  color: var(--text-muted-strong);
   font-size: 9px;
   line-height: 1.5;
 }
 
 .medatlas-v2-topbar .global-command-options button b {
-  color: #79a1bf;
+  color: var(--text-accent-soft);
   font-size: 9px;
 }
 
@@ -225,11 +225,11 @@
   display: grid;
   place-items: center;
   padding: 0 4px;
-  border: 2px solid #071522;
+  border: 2px solid var(--surface-deep);
   border-radius: 999px;
-  color: #fff;
+  color: var(--text-primary);
   background: var(--state-danger);
-  box-shadow: 0 3px 9px rgba(241, 92, 112, .34);
+  box-shadow: 0 3px 9px var(--state-danger-glow);
   font-size: 8px;
   font-style: normal;
   font-weight: 900;
@@ -254,7 +254,7 @@
 
 .medatlas-v2-topbar .doctor-chip:hover,
 .medatlas-v2-topbar .doctor-chip[aria-expanded="true"] {
-  background: rgba(45, 85, 126, .22);
+  background: var(--overlay-profile-active);
 }
 
 .medatlas-v2-topbar .doctor-chip > span {
@@ -262,10 +262,10 @@
   height: 36px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(117, 163, 202, .30);
+  border: 1px solid var(--line-avatar);
   border-radius: 50%;
-  color: #f4f9ff;
-  background: linear-gradient(145deg, #708ca5, #324c66);
+  color: var(--text-primary);
+  background: linear-gradient(145deg, var(--surface-avatar-start), var(--surface-avatar-end));
   font-size: 8px;
   font-weight: 850;
 }
@@ -307,7 +307,7 @@
   overflow: hidden;
   border: 1px solid var(--line-elevated);
   border-radius: 12px;
-  background: rgba(6, 18, 31, .98);
+  background: var(--surface-popover-elevated);
   box-shadow: var(--shadow-popover);
   color: var(--text-secondary);
 }
@@ -318,7 +318,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 11px;
-  border-bottom: 1px solid rgba(94, 140, 181, .15);
+  border-bottom: 1px solid var(--line-popover-section);
 }
 
 .medatlas-v2-topbar .topbar-popover header > div {
@@ -334,7 +334,7 @@
 .medatlas-v2-topbar .topbar-popover header small,
 .medatlas-v2-topbar .profile-popover-facts,
 .medatlas-v2-topbar .task-center-complete small {
-  color: #8198ac;
+  color: var(--text-popover-muted);
   font-size: var(--type-caption);
 }
 
@@ -345,10 +345,10 @@
   place-items: center;
   margin-left: auto;
   padding: 0 7px;
-  border: 1px solid rgba(241, 92, 112, .24);
+  border: 1px solid var(--state-danger-line);
   border-radius: 999px;
-  color: #ff9cad;
-  background: rgba(129, 40, 56, .26);
+  color: var(--state-danger-soft);
+  background: var(--overlay-danger-count);
   font-size: 8px;
   font-weight: 900;
 }
@@ -366,7 +366,7 @@
 
 .medatlas-v2-topbar .notification-item:hover,
 .medatlas-v2-topbar .profile-popover-actions button:hover {
-  background: rgba(43, 91, 143, .20);
+  background: var(--overlay-popover-hover);
 }
 
 .medatlas-v2-topbar .notification-item {
@@ -400,18 +400,18 @@
   place-items: center;
   border-radius: 8px;
   color: var(--accent-text);
-  background: rgba(35, 92, 143, .34);
+  background: var(--overlay-info-icon);
   font-size: 7px;
   font-weight: 900;
 }
 
 .medatlas-v2-topbar .notification-item.urgent > span {
-  color: #f2bd80;
-  background: rgba(133, 80, 30, .28);
+  color: var(--state-warning);
+  background: var(--overlay-warning-icon);
 }
 
 .medatlas-v2-topbar .notification-item b {
-  color: #7999b3;
+  color: var(--text-profile-muted);
   font-size: 9px;
 }
 
@@ -425,8 +425,8 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #2f5373;
-  color: #fff;
+  background: var(--surface-avatar);
+  color: var(--text-primary);
   font-size: 8px;
 }
 
@@ -442,7 +442,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 7px 2px;
-  border-bottom: 1px solid rgba(88, 131, 170, .12);
+  border-bottom: 1px solid var(--line-profile-section);
 }
 
 .medatlas-v2-topbar .profile-popover-facts > div:last-child {
@@ -455,18 +455,18 @@
 }
 
 .medatlas-v2-topbar .profile-popover-facts dt {
-  color: #728aa0;
+  color: var(--text-profile-term);
 }
 
 .medatlas-v2-topbar .profile-popover-facts dd {
-  color: #b8cad8;
+  color: var(--text-profile-value);
   font-weight: 800;
   text-align: right;
 }
 
 .medatlas-v2-topbar .profile-popover-actions {
   display: grid;
-  border-top: 1px solid rgba(88, 131, 170, .14);
+  border-top: 1px solid var(--line-profile-actions);
 }
 
 .medatlas-v2-topbar .profile-popover-actions button {
@@ -486,23 +486,23 @@
   margin: 0;
   min-height: 24px;
   padding: 4px 8px;
-  border-color: rgba(207, 177, 105, .24);
+  border-color: var(--line-demo);
   border-radius: 999px;
-  background: rgba(37, 31, 18, .82);
+  background: var(--surface-warning);
   box-shadow: none;
-  color: #b8a477;
+  color: var(--text-demo);
   backdrop-filter: blur(10px);
   font-size: 6px;
   pointer-events: auto;
 }
 
 .medatlas-v2-demo-boundary .demo-privacy-banner strong {
-  color: #d8bd7c;
+  color: var(--text-demo-strong);
   font-size: 6px;
 }
 
 .medatlas-v2-demo-boundary .demo-privacy-banner span {
-  color: #9f8e67;
+  color: var(--text-demo-muted);
   font-size: 6px;
 }
 
