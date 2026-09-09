@@ -65,7 +65,7 @@ const invariants = [
   [
     'browser test performs explicit clinician review',
     files.e2e,
-    'Marcar como revisada',
+    'Aprovar explicação',
   ],
 ]
 
