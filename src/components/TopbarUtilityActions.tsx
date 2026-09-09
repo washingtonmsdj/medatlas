@@ -15,6 +15,7 @@ interface Props {
   onOpenAtlas: () => void
   onOpenTeam: () => void
   onOpenSettings: () => void
+  onOpenPatientPreview: () => void
 }
 
 export function TopbarUtilityActions({
@@ -28,6 +29,7 @@ export function TopbarUtilityActions({
   onOpenAtlas,
   onOpenTeam,
   onOpenSettings,
+  onOpenPatientPreview,
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [panel, setPanel] = useState<PanelName>(null)
@@ -185,6 +187,9 @@ export function TopbarUtilityActions({
             </dl>
 
             <div className="profile-popover-actions">
+              <button type="button" onClick={() => run(onOpenPatientPreview)}>
+                Visualizar como paciente
+              </button>
               <button type="button" onClick={() => run(onOpenTeam)}>
                 Equipe e permissões
               </button>
