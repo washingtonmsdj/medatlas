@@ -842,7 +842,7 @@ test('patients module reflects only the current synthetic report context', async
   ).toBeVisible({ timeout: 60_000 })
 
   await page
-    .getByRole('button', { name: 'Abrir relatório' })
+    .getByRole('button', { name: 'Continuar relatório' })
     .click()
 
   await expect(
