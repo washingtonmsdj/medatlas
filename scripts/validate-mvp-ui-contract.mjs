@@ -77,11 +77,12 @@ const topbar = sources.get('src/components/TopbarUtilityActions.tsx')
 const team = sources.get('src/components/TeamModule.tsx')
 
 const requiredAppFragments = [
-  "useState<MedAtlasViewMode>('professional')",
+  "useState<'professional' | 'patient'>('professional')",
   "if (viewMode === 'patient')",
   '<PatientReportPage',
   'previewMode',
-  '<ViewModeSwitcher',
+  'onOpenPatientPreview',
+  'medatlas-v2-topbar',
 ]
 
 for (const fragment of requiredAppFragments) {
@@ -93,6 +94,16 @@ for (const fragment of requiredAppFragments) {
 for (const removedModule of ['ConsultationsModule', 'DocumentsModule']) {
   if (app.includes(removedModule)) {
     failures.push(`App reintroduced out-of-scope standalone MVP module: ${removedModule}`)
+  }
+}
+
+for (const legacyShell of [
+  '<OrganizationSwitcher',
+  '<ViewModeSwitcher',
+  'topbar topbar-saas',
+]) {
+  if (app.includes(legacyShell)) {
+    failures.push(`App reintroduced legacy shell UI: ${legacyShell}`)
   }
 }
 
@@ -126,9 +137,13 @@ for (const fragment of [
 
 for (const fragment of [
   'Buscar no corpo',
-  'Camadas anatômicas',
-  'Usar no relatório',
-  '<details className="reference-atlas-source">',
+  'Sistemas anatômicos',
+  'Usar estrutura no relatório',
+  'atlas-v3-workspace',
+  'atlas-v3-case-panel',
+  'atlas-v3-body-panel',
+  'atlas-v3-detail-panel',
+  'Explicação para o paciente',
 ]) {
   if (!explorer.includes(fragment)) {
     failures.push(`Atlas MVP surface is missing task-first interaction: ${fragment}`)
@@ -147,15 +162,15 @@ for (const fragment of [
 }
 
 for (const fragment of [
-  'Novo relatório',
   'Navegação principal',
+  'Clinical 3D Workbench',
   'clinical-sidebar-nav-icon',
   'clinical-sidebar-nav-text',
-  'clinical-sidebar-nav-badge',
-  'WORKSPACE ATIVO',
+  'Conhecimento',
+  'vidas mais longas.',
 ]) {
   if (!sidebar.includes(fragment)) {
-    failures.push(`ClinicalSidebar is missing task-first navigation: ${fragment}`)
+    failures.push(`ClinicalSidebar is missing concept navigation: ${fragment}`)
   }
 }
 
