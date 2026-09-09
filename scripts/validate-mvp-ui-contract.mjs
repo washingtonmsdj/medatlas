@@ -94,7 +94,7 @@ const requiredAppFragments = [
   '<PatientReportPage',
   'previewMode',
   'onOpenPatientPreview',
-  'medatlas-v2-topbar',
+  'clinical-topbar',
   '<WorkspacePageHeader',
   'eyebrow="RELATÓRIO VISUAL"',
   'workspace-page',
@@ -212,6 +212,10 @@ for (const [name, stylesheet] of [
 
 for (const legacySelector of [
   'module-v3',
+  'medatlas-v2-shell',
+  'medatlas-v2-workspace',
+  'medatlas-v2-topbar',
+  'medatlas-v2-demo-boundary',
   'anatomy-context-meta-v3',
   'document-step-rail-v3',
   'workspace-hero-v3',
@@ -334,6 +338,10 @@ if (clinicalShellStyles.includes('--saas-')) {
 
 for (const [file, obsoleteClass] of [
   ['src/App.tsx', 'module-v3'],
+  ['src/App.tsx', 'medatlas-v2-shell'],
+  ['src/App.tsx', 'medatlas-v2-workspace'],
+  ['src/App.tsx', 'medatlas-v2-topbar'],
+  ['src/App.tsx', 'medatlas-v2-demo-boundary'],
   ['src/components/Overview.tsx', 'module-v3'],
   ['src/components/PatientsModule.tsx', 'module-v3'],
   ['src/components/TeamModule.tsx', 'module-v3'],
