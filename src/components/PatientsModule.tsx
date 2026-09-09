@@ -29,9 +29,9 @@ export function PatientsModule({
   return (
     <section className="module-v3 mvp-surface">
       <WorkspacePageHeader
-        eyebrow="PACIENTES"
-        title="Paciente atual"
-        description="Relatório, progresso e anatomia no mesmo contexto clínico."
+        eyebrow="PACIENTE ATUAL"
+        title={report.patient.displayName}
+        description={`${report.patient.age} anos · ${report.title}`}
         className="patients-compact-hero"
         meta={
           <span
@@ -82,10 +82,10 @@ export function PatientsModule({
 
         <div className="patient-workspace-actions">
           <button className="primary" type="button" onClick={onOpenReport}>
-            Abrir relatório
+            Continuar relatório
           </button>
           <button type="button" onClick={onOpenAtlas}>
-            Abrir Atlas
+            Abrir Atlas 3D
           </button>
         </div>
       </article>
