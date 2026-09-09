@@ -7,7 +7,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   await expect(
     page.getByRole('heading', {
-      name: 'Seu fluxo clínico visual',
+      name: 'Atendimento em andamento',
     }),
   ).toBeVisible()
 
