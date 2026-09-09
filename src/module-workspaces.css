@@ -171,7 +171,7 @@
 /* MedAtlas MVP workspace layout.
    Visual color authority lives in design-tokens.css + concept-modules.css. */
 
-.module-v3 {
+.workspace-page {
   display: grid;
   gap: 16px;
 }
@@ -831,7 +831,7 @@
 }
 
 @media (max-width: 620px) {
-  .module-v3 {
+  .workspace-page {
     gap: 12px;
   }
 
