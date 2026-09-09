@@ -347,6 +347,22 @@ test('full Atlas concept stays usable from desktop to mobile', async ({
   await expect(canvas).toBeVisible()
   await capture(page, 'atlas-explorer-1440')
 
+  await page.setViewportSize({ width: 1080, height: 900 })
+  await page.waitForTimeout(250)
+  await expectNoHorizontalOverflow(page)
+  await expect(canvas).toBeVisible()
+
+  const compactCase = await page.locator('.atlas-v3-case-panel').boundingBox()
+  const compactBody = await page.locator('.atlas-v3-body-panel').boundingBox()
+  const compactDetail = await page.locator('.atlas-v3-detail-panel').boundingBox()
+  expect(compactCase).not.toBeNull()
+  expect(compactBody).not.toBeNull()
+  expect(compactDetail).not.toBeNull()
+  expect(compactBody!.x).toBeGreaterThan(compactCase!.x)
+  expect(compactDetail!.x).toBeGreaterThan(compactBody!.x)
+  expect(compactDetail!.y).toBeLessThan(compactBody!.y + 8)
+  await capture(page, 'atlas-explorer-1080')
+
   await page.setViewportSize({ width: 390, height: 844 })
   await page.waitForTimeout(300)
 
