@@ -341,6 +341,16 @@ const requiredPatient3dFragments = [
   'Controles da anatomia 3D de referência',
   'Girar modelo 3D automaticamente',
   'appearance="patient"',
+  'resolveOrganDetail',
+  "import('./OrganDetailScene')",
+  'patient-anatomy-depth-switch',
+  'Nível da anatomia 3D',
+  'Corpo completo',
+  'Ver ',
+  ' em detalhe',
+  'Ativar corte do órgão',
+  'patient-organ-detail-safety',
+  'não representa o corpo individual do paciente',
 ]
 
 for (const fragment of requiredPatient3dFragments) {
@@ -505,5 +515,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas Human Atlas reference-engine contract PASS: full-system, clinical and patient surfaces share one engine while preserving MedAtlas-specific presentation modes, picking, patient-safe inspection language, explode layout, camera controls and chunk-bounded focused slicing.',
+  'MedAtlas anatomy contract PASS: Human Atlas remains the canonical BodyParts3D/FMA authority across full-system, clinical and patient surfaces; detailed organ viewers remain explicit, lazy, patient-safe supplementary depth.',
 )
