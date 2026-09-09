@@ -33,7 +33,7 @@ async function openReports(page: import('@playwright/test').Page) {
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
-      name: 'Seu fluxo clínico visual',
+      name: 'Atendimento em andamento',
     }),
   ).toBeVisible()
 
@@ -706,7 +706,7 @@ test('dashboard progress follows the current report', async ({ page }) => {
   await page.goto('/')
 
   await expect(
-    page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
+    page.getByRole('heading', { name: 'Atendimento em andamento' }),
   ).toBeVisible()
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
