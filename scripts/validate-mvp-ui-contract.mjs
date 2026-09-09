@@ -231,6 +231,19 @@ for (const legacySelector of [
   'patient-workspace-grid',
   'patients-hero',
   'synthetic-chip',
+  'content-grid',
+  'left-stack',
+  'atlas-toolbar',
+  'atlas-search-panel',
+  'atlas-search-copy',
+  'atlas-search-box',
+  'atlas-search-results',
+  'quick-concepts',
+  'structure-label',
+  'real-label',
+  'integration-note',
+  'invalid-share',
+  'context-mode-group',
 ]) {
   if (
     conceptModulesStyles.includes(legacySelector) ||
