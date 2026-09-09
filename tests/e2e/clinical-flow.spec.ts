@@ -326,7 +326,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await page.getByRole('button', { name: 'Analytics' }).click()
   await expect(
     page.getByRole('heading', {
-      name: 'Analytics',
+      name: 'Desempenho dos relatórios',
     }),
   ).toBeVisible()
 
@@ -832,7 +832,7 @@ test('patients module reflects only the current synthetic report context', async
   ).toBeVisible()
 
   await expect(
-    page.getByText('Paciente demonstração', { exact: true }),
+    page.locator('.patient-summary-card-mvp').getByText('Paciente demonstração', { exact: true }),
   ).toBeVisible()
   await expect(
     page.getByText('Disco intervertebral L4–L5', { exact: true }).first(),
