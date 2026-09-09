@@ -1,13 +1,6 @@
 .medatlas-v2-shell {
-  background: #06111d;
-  font-family:
-    Inter,
-    "SF Pro Display",
-    "Segoe UI",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  color: var(--text-primary);
+  background: var(--surface-app);
 }
 
 .medatlas-v2-workspace {
@@ -18,7 +11,7 @@
   overflow-x: hidden;
   background:
     radial-gradient(circle at 45% -10%, rgba(24, 81, 134, .16), transparent 30%),
-    #07131f;
+    var(--surface-workspace);
 }
 
 .medatlas-v2-topbar {
@@ -33,9 +26,9 @@
   gap: 18px;
   margin: 0 -10px;
   padding: 8px 16px;
-  border-bottom: 1px solid rgba(102, 151, 197, .16);
-  background: rgba(7, 20, 34, .92);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+  border-bottom: 1px solid var(--line-subtle);
+  background: var(--surface-topbar);
+  box-shadow: var(--shadow-topbar);
   backdrop-filter: blur(18px);
 }
 
@@ -59,13 +52,13 @@
   width: 100%;
   min-height: 38px;
   padding: 0 48px 0 36px;
-  border: 1px solid rgba(101, 150, 195, .22);
+  border: 1px solid var(--line-control);
   border-radius: 11px;
   outline: none;
-  color: #dceaf7;
-  background: rgba(12, 30, 49, .78);
+  color: var(--text-strong);
+  background: var(--surface-control);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
-  font-size: 10.5px;
+  font-size: var(--type-body);
 }
 
 .medatlas-v2-topbar .global-command-search input:focus {
@@ -74,7 +67,7 @@
 }
 
 .medatlas-v2-topbar .global-command-search input::placeholder {
-  color: #637f96;
+  color: var(--text-subtle);
 }
 
 .medatlas-v2-topbar .global-command-search kbd {
@@ -100,7 +93,7 @@
   overflow: hidden;
   border: 1px solid rgba(86, 145, 200, .30);
   border-radius: 12px;
-  background: rgba(5, 16, 28, .98);
+  background: var(--surface-popover);
   box-shadow: 0 24px 60px rgba(0, 0, 0, .44);
 }
 
@@ -112,7 +105,7 @@
   gap: 8px;
   padding: 8px 10px;
   color: #6f8aa1;
-  font-size: 8.5px;
+  font-size: var(--type-caption);
 }
 
 .medatlas-v2-topbar .global-command-options {
@@ -204,15 +197,15 @@
   place-items: center;
   border: 0;
   border-radius: 10px;
-  color: #b3c9db;
+  color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
 }
 
 .medatlas-v2-topbar .topbar-icon-button:hover,
 .medatlas-v2-topbar .topbar-icon-button[aria-expanded="true"] {
-  color: #edf7ff;
-  background: rgba(46, 90, 137, .28);
+  color: var(--text-primary);
+  background: var(--surface-control-hover);
 }
 
 .medatlas-v2-topbar .notification-button {
@@ -235,7 +228,7 @@
   border: 2px solid #071522;
   border-radius: 999px;
   color: #fff;
-  background: #f15c70;
+  background: var(--state-danger);
   box-shadow: 0 3px 9px rgba(241, 92, 112, .34);
   font-size: 8px;
   font-style: normal;
@@ -286,7 +279,7 @@
 .medatlas-v2-topbar .doctor-chip strong {
   overflow: hidden;
   max-width: 160px;
-  color: #eef6fd;
+  color: var(--text-primary);
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -294,14 +287,14 @@
 
 .medatlas-v2-topbar .doctor-chip small {
   overflow: hidden;
-  color: #7891a7;
-  font-size: 8.5px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .medatlas-v2-topbar .doctor-chip b {
-  color: #7e98ad;
+  color: var(--text-muted);
   font-size: 9px;
 }
 
@@ -312,11 +305,11 @@
   right: 0;
   width: 290px;
   overflow: hidden;
-  border: 1px solid rgba(92, 145, 194, .30);
+  border: 1px solid var(--line-elevated);
   border-radius: 12px;
   background: rgba(6, 18, 31, .98);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .46);
-  color: #b6c9d8;
+  box-shadow: var(--shadow-popover);
+  color: var(--text-secondary);
 }
 
 .medatlas-v2-topbar .topbar-popover header {
@@ -334,15 +327,15 @@
 }
 
 .medatlas-v2-topbar .topbar-popover header strong {
-  color: #e7f2fa;
-  font-size: 10.5px;
+  color: var(--text-primary);
+  font-size: var(--type-body);
 }
 
 .medatlas-v2-topbar .topbar-popover header small,
 .medatlas-v2-topbar .profile-popover-facts,
 .medatlas-v2-topbar .task-center-complete small {
   color: #8198ac;
-  font-size: 8.5px;
+  font-size: var(--type-caption);
 }
 
 .medatlas-v2-topbar .topbar-popover-count {
@@ -365,7 +358,7 @@
   width: 100%;
   min-height: 44px;
   border: 0;
-  color: #aabed0;
+  color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
   text-align: left;
@@ -391,13 +384,13 @@
 }
 
 .medatlas-v2-topbar .notification-item strong {
-  color: #dcebf6;
-  font-size: 9.5px;
+  color: var(--text-strong);
+  font-size: var(--type-small);
 }
 
 .medatlas-v2-topbar .notification-item small {
-  color: #70879a;
-  font-size: 8.5px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
 }
 
 .medatlas-v2-topbar .notification-item > span {
@@ -406,7 +399,7 @@
   display: grid;
   place-items: center;
   border-radius: 8px;
-  color: #8dc8f2;
+  color: var(--accent-text);
   background: rgba(35, 92, 143, .34);
   font-size: 7px;
   font-weight: 900;
@@ -478,7 +471,7 @@
 
 .medatlas-v2-topbar .profile-popover-actions button {
   padding: 0 11px;
-  font-size: 9.5px;
+  font-size: var(--type-small);
 }
 
 .medatlas-v2-demo-boundary {
@@ -597,7 +590,7 @@
   .medatlas-v2-topbar .global-command-results footer {
     position: sticky;
     bottom: 0;
-    background: rgba(5, 16, 28, .98);
+    background: var(--surface-popover);
   }
 
   .medatlas-v2-topbar .topbar-actions {
