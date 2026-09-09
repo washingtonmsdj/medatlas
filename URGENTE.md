@@ -56,17 +56,17 @@ O wedge vencedor continua sendo:
 2. Explorer, clinical e patient são modos do mesmo Human Atlas; não criar um segundo renderer concorrente para confirmar anatomia.
 3. É permitido um **viewer suplementar de órgão em detalhe** somente como segunda profundidade explícita (`Corpo → Órgão em detalhe`), depois de uma estrutura Human Atlas/FMA selecionada. Ele nunca muda a anatomia confirmada nem vira fonte de verdade.
 4. BodyParts3D/FMA representam **anatomia humana de referência**, nunca reconstrução do paciente.
-4. IA nunca pode inventar anatomia que não resolva no atlas fixado.
-5. IA nunca publica sozinha.
-6. Alterar laudo, anatomia ou explicação invalida as revisões necessárias.
-7. Patient share não expõe IDs internos previsíveis.
-8. Token bruto de share ou convite não é persistido.
-9. Dados clínicos reais **não entram no modo demo**.
-10. Bucket clínico de produção nunca é público.
-11. Não reutilizar banco/Supabase de Achegue-se, OrdaX ou outro produto.
-12. Não criar segunda autoridade de persistência paralela ao `ClinicalRepository`.
-13. Não habilitar botão ou fluxo de produção fake para “parecer pronto”.
-14. Supabase/auth real permanece bloqueado até ativação deliberada do P2.
+5. IA nunca pode inventar anatomia que não resolva no atlas fixado.
+6. IA nunca publica sozinha.
+7. Alterar laudo, anatomia ou explicação invalida as revisões necessárias.
+8. Patient share não expõe IDs internos previsíveis.
+9. Token bruto de share ou convite não é persistido.
+10. Dados clínicos reais **não entram no modo demo**.
+11. Bucket clínico de produção nunca é público.
+12. Não reutilizar banco/Supabase de Achegue-se, OrdaX ou outro produto.
+13. Não criar segunda autoridade de persistência paralela ao `ClinicalRepository`.
+14. Não habilitar botão ou fluxo de produção fake para “parecer pronto”.
+15. Supabase/auth real permanece bloqueado até ativação deliberada do P2.
 
 ---
 
