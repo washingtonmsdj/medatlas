@@ -35,3 +35,25 @@ Geometry/data redistribution or adaptation must preserve attribution, the licens
 ## Clinical scope
 
 BodyParts3D is reference anatomy. MedAtlas must not represent the upstream model as patient-specific anatomy or as a diagnostic/surgical model without separate validation and appropriate regulatory review.
+
+
+## thebuggeddev/anatomy — supplementary organ detail
+
+Upstream: https://github.com/thebuggeddev/anatomy
+
+Pinned integration checkpoint:
+
+`8c0e6f321a47f895ae58ce098028b92774733ee9`
+
+The MedAtlas owner recorded project-specific permission from the upstream owner
+to copy/adapt this repository. The public upstream checkpoint did not contain a
+standalone LICENSE/COPYING file, so MedAtlas does not represent that permission
+as a general open-source license.
+
+MedAtlas adapts selected interaction/rendering patterns and, on explicit user
+request, can load detailed organ GLB files from that immutable checkpoint.
+Those models are supplementary visualization only; the confirmed report
+anatomy continues to be BodyParts3D/FMA.
+
+Before commercial/public production release, preserve the permission evidence
+and complete a separate provenance review for the detailed GLB assets.
