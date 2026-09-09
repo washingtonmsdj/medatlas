@@ -43,6 +43,23 @@ interface Props {
   onOpenPatientPreview: () => void
 }
 
+type AtlasIconName =
+  | 'search'
+  | 'zoom-in'
+  | 'zoom-out'
+  | 'rotate'
+  | 'section'
+  | 'reset'
+  | 'body'
+  | 'systems'
+  | 'thorax'
+  | 'heart'
+  | 'organs'
+  | 'skeleton'
+  | 'patient'
+  | 'quality'
+  | 'chevron'
+
 const ORGAN_SYSTEMS: AtlasSystemId[] = [
   'cardiac',
   'respiratory',
@@ -62,6 +79,128 @@ const VIEW_OPTIONS: Array<{
   { id: 'side', label: 'Vista lateral', short: 'Lado' },
   { id: 'back', label: 'Vista posterior', short: 'Costas' },
 ]
+
+function AtlasIcon({ name, size = 18 }: { name: AtlasIconName; size?: number }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.7,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  }
+
+  switch (name) {
+    case 'search':
+      return (
+        <svg {...common}>
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="m16 16 4 4" />
+        </svg>
+      )
+    case 'zoom-in':
+      return (
+        <svg {...common}>
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      )
+    case 'zoom-out':
+      return (
+        <svg {...common}>
+          <path d="M5 12h14" />
+        </svg>
+      )
+    case 'rotate':
+      return (
+        <svg {...common}>
+          <path d="M20 8a8 8 0 1 0 1 6" />
+          <path d="M20 3v5h-5" />
+        </svg>
+      )
+    case 'section':
+      return (
+        <svg {...common}>
+          <rect x="4" y="4" width="16" height="16" rx="3" />
+          <path d="m7 17 10-10M9 20 20 9M4 15 15 4" />
+        </svg>
+      )
+    case 'reset':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="7" />
+          <path d="M12 8v4l3 2M5 5v4h4" />
+        </svg>
+      )
+    case 'body':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="4.5" r="2.3" />
+          <path d="M9.5 8h5l1.5 5-2 2v5M8 20l2-6-1-4M16 20l-2-6 1-4M10 9l-3 5M14 9l3 5" />
+        </svg>
+      )
+    case 'systems':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="5" r="2" />
+          <circle cx="6" cy="12" r="2" />
+          <circle cx="18" cy="12" r="2" />
+          <circle cx="12" cy="19" r="2" />
+          <path d="m10.5 6.5-3 4m6-4 3 4m-9 3 3 4m6-4-3 4M8 12h8" />
+        </svg>
+      )
+    case 'thorax':
+      return (
+        <svg {...common}>
+          <path d="M8 4c1 2 1.5 4 1 6-1 3-1 6 0 10M16 4c-1 2-1.5 4-1 6 1 3 1 6 0 10" />
+          <path d="M9 7h6M8.5 11h7M8.5 15h7" />
+        </svg>
+      )
+    case 'heart':
+      return (
+        <svg {...common}>
+          <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+          <path d="M12 7V3M12 5l4-2" />
+        </svg>
+      )
+    case 'organs':
+      return (
+        <svg {...common}>
+          <path d="M8 5c-2 2-3 5-2 8s3 5 6 6M16 5c2 2 3 5 2 8s-3 5-6 6" />
+          <path d="M10 8c-2 1-2 4 0 5M14 8c2 1 2 4 0 5M12 6v12" />
+        </svg>
+      )
+    case 'skeleton':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="4" r="2" />
+          <path d="M12 6v6M8 8h8M9 12l-2 7M15 12l2 7M10 10l-3 4M14 10l3 4" />
+        </svg>
+      )
+    case 'patient':
+      return (
+        <svg {...common}>
+          <path d="M12 3v18M7 7h10M8 11l-2 5M16 11l2 5" />
+          <circle cx="12" cy="4" r="2" />
+        </svg>
+      )
+    case 'quality':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="m8 12 2.5 2.5L16.5 9" />
+        </svg>
+      )
+    case 'chevron':
+      return (
+        <svg {...common}>
+          <path d="m9 7 5 5-5 5" />
+        </svg>
+      )
+  }
+}
 
 function initialState(): AtlasExplorerSceneState {
   return {
@@ -147,6 +286,7 @@ export function ReferenceAtlasExplorer({
   const [caseTab, setCaseTab] = useState<'summary' | 'exams' | 'history' | 'files'>(
     'summary',
   )
+  const [systemsOpen, setSystemsOpen] = useState(true)
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -249,7 +389,11 @@ export function ReferenceAtlasExplorer({
 
   const chooseConcept = (concept: AtlasConcept) => {
     setChosen(concept)
-    setFocusMode(resolveOrganDetail(concept.id, conceptDisplayName(concept)) ? 'detail' : 'body')
+    setFocusMode(
+      resolveOrganDetail(concept.id, conceptDisplayName(concept))
+        ? 'detail'
+        : 'body',
+    )
     setState((current) => ({
       ...current,
       selected: concept.elements,
@@ -269,7 +413,11 @@ export function ReferenceAtlasExplorer({
 
       const concept = partConcept(atlas, part)
       setChosen(concept)
-      setFocusMode(resolveOrganDetail(concept.id, conceptDisplayName(concept)) ? 'detail' : 'body')
+      setFocusMode(
+        resolveOrganDetail(concept.id, conceptDisplayName(concept))
+          ? 'detail'
+          : 'body',
+      )
       setState((current) => ({
         ...current,
         selected: [part.id],
@@ -361,6 +509,9 @@ export function ReferenceAtlasExplorer({
   }, [])
 
   const detailAvailable = Boolean(chosenDetail)
+  const reviewPending =
+    report.finding.anatomyReviewRequired ||
+    report.finding.explanationReviewRequired
 
   return (
     <section
@@ -380,7 +531,7 @@ export function ReferenceAtlasExplorer({
             </small>
           </div>
           <span className="atlas-v3-patient-more" aria-hidden="true">
-            ⋮
+            ···
           </span>
         </header>
 
@@ -407,21 +558,80 @@ export function ReferenceAtlasExplorer({
 
         <div className="atlas-v3-case-scroll">
           {caseTab === 'summary' && (
-            <section>
-              <div className="atlas-v3-section-title">
-                <strong>Resumo do exame</strong>
-                <span>{reportStatusLabel(report)}</span>
-              </div>
-              <small className="atlas-v3-report-title">{report.title}</small>
-              <p>{report.finding.sourceText || 'Nenhum texto clínico informado.'}</p>
-            </section>
+            <>
+              <section>
+                <div className="atlas-v3-section-title">
+                  <strong>Resumo do exame</strong>
+                  <span>{reportStatusLabel(report)}</span>
+                </div>
+                <small className="atlas-v3-report-title">{report.title}</small>
+                <p>
+                  {report.finding.sourceText || 'Nenhum texto clínico informado.'}
+                </p>
+              </section>
+
+              <section>
+                <span className="atlas-v3-label">Estrutura confirmada</span>
+                <button
+                  type="button"
+                  className="atlas-v3-structure-card"
+                  onClick={() =>
+                    setFocusMode(detailAvailable ? 'detail' : 'body')
+                  }
+                >
+                  <span aria-hidden="true">
+                    <AtlasIcon name="heart" size={18} />
+                  </span>
+                  <div>
+                    <strong>{bodyLabel}</strong>
+                    <small>{selectedSystem?.name ?? 'Human Atlas 3D'}</small>
+                  </div>
+                  <b aria-hidden="true">
+                    <AtlasIcon name="chevron" size={15} />
+                  </b>
+                </button>
+              </section>
+
+              <section>
+                <span className="atlas-v3-label">Achados principais</span>
+                <div className="atlas-v3-findings">
+                  {(sourceHighlights.length > 0
+                    ? sourceHighlights
+                    : ['Aguardando conteúdo clínico.']
+                  ).map((item) => (
+                    <p key={item}>
+                      <i aria-hidden="true" />
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </section>
+
+              <section>
+                <span className="atlas-v3-label">Contexto clínico</span>
+                <div className="atlas-v3-tags">
+                  <span className="blue">
+                    {report.finding.atlasConceptId
+                      ? 'Anatomia confirmada'
+                      : 'Selecionar anatomia'}
+                  </span>
+                  {selectedSystem && (
+                    <span className="rose">{selectedSystem.name}</span>
+                  )}
+                  <span className="green">{reportStatusLabel(report)}</span>
+                </div>
+              </section>
+            </>
           )}
 
           {caseTab === 'exams' && (
             <section className="atlas-v3-case-tab-content">
               <span className="atlas-v3-label">Exame atual</span>
               <strong>{report.title}</strong>
-              <p>{report.finding.sourceText || 'Sem descrição clínica disponível.'}</p>
+              <p>
+                {report.finding.sourceText ||
+                  'Sem descrição clínica disponível.'}
+              </p>
               <small>{reportStatusLabel(report)}</small>
             </section>
           )}
@@ -431,8 +641,9 @@ export function ReferenceAtlasExplorer({
               <span className="atlas-v3-label">Histórico deste fluxo</span>
               <strong>{report.patient.displayName}</strong>
               <p>
-                O relatório atual está em {reportStatusLabel(report).toLocaleLowerCase('pt-BR')}.
-                Alterações no texto ou na anatomia exigem nova revisão antes da publicação.
+                O relatório atual está em{' '}
+                {reportStatusLabel(report).toLocaleLowerCase('pt-BR')}. Alterações
+                no texto ou na anatomia exigem nova revisão antes da publicação.
               </p>
             </section>
           )}
@@ -442,53 +653,11 @@ export function ReferenceAtlasExplorer({
               <span className="atlas-v3-label">Arquivos do caso</span>
               <strong>Fonte clínica atual</strong>
               <p>
-                O conteúdo desta demonstração está vinculado ao relatório visual atual.
-                Nenhum arquivo adicional foi anexado.
+                O conteúdo desta demonstração está vinculado ao relatório visual
+                atual. Nenhum arquivo adicional foi anexado.
               </p>
             </section>
           )}
-
-          <section>
-            <span className="atlas-v3-label">Estrutura confirmada</span>
-            <button
-              type="button"
-              className="atlas-v3-structure-card"
-              onClick={() => setFocusMode(detailAvailable ? 'detail' : 'body')}
-            >
-              <span aria-hidden="true">◉</span>
-              <div>
-                <strong>{bodyLabel}</strong>
-                <small>{selectedSystem?.name ?? 'Human Atlas 3D'}</small>
-              </div>
-              <b aria-hidden="true">›</b>
-            </button>
-          </section>
-
-          <section>
-            <span className="atlas-v3-label">Achados principais</span>
-            <div className="atlas-v3-findings">
-              {(sourceHighlights.length > 0
-                ? sourceHighlights
-                : ['Aguardando conteúdo clínico.']
-              ).map((item) => (
-                <p key={item}>
-                  <i aria-hidden="true" />
-                  {item}
-                </p>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <span className="atlas-v3-label">Estado</span>
-            <div className="atlas-v3-tags">
-              <span className="blue">
-                {report.finding.atlasConceptId ? 'Anatomia confirmada' : 'Selecionar anatomia'}
-              </span>
-              {selectedSystem && <span className="rose">{selectedSystem.name}</span>}
-              <span className="green">{reportStatusLabel(report)}</span>
-            </div>
-          </section>
 
           <button
             className="atlas-v3-primary-action"
@@ -502,38 +671,38 @@ export function ReferenceAtlasExplorer({
               }
             }}
           >
-            {chosen ? 'Usar estrutura no relatório' : 'Buscar estrutura anatômica'}
-            <span aria-hidden="true">→</span>
+            {chosen
+              ? 'Usar estrutura no relatório'
+              : 'Buscar estrutura anatômica'}
+            <AtlasIcon name="chevron" size={14} />
           </button>
 
           <div className="atlas-v3-secondary-actions">
-            <button type="button" onClick={onOpenReport}>Gerar relatório</button>
-            <button type="button" onClick={onOpenPatientPreview}>Compartilhar</button>
+            <button type="button" onClick={onOpenReport}>
+              Gerar relatório
+            </button>
+            <button type="button" onClick={onOpenPatientPreview}>
+              Compartilhar
+            </button>
           </div>
 
           <div
             className={
-              report.finding.anatomyReviewRequired ||
-              report.finding.explanationReviewRequired
+              reviewPending
                 ? 'atlas-v3-review-banner pending'
                 : 'atlas-v3-review-banner'
             }
           >
-            <span aria-hidden="true">
-              {report.finding.anatomyReviewRequired ||
-              report.finding.explanationReviewRequired
-                ? '!'
-                : '✓'}
-            </span>
+            <span aria-hidden="true">{reviewPending ? '!' : '✓'}</span>
             <div>
               <strong>
-                {report.finding.anatomyReviewRequired ||
-                report.finding.explanationReviewRequired
+                {reviewPending
                   ? 'Revisão clínica obrigatória'
                   : 'Revisão clínica registrada'}
               </strong>
               <small>
-                O conteúdo visual complementa, mas não substitui a avaliação profissional.
+                O conteúdo visual complementa, mas não substitui a avaliação
+                profissional.
               </small>
             </div>
           </div>
@@ -562,7 +731,9 @@ export function ReferenceAtlasExplorer({
         </div>
 
         <div className="atlas-v3-search">
-          <span aria-hidden="true">⌕</span>
+          <span aria-hidden="true">
+            <AtlasIcon name="search" size={15} />
+          </span>
           <input
             ref={searchRef}
             id="reference-atlas-search"
@@ -591,29 +762,44 @@ export function ReferenceAtlasExplorer({
           )}
         </div>
 
-        <aside className="atlas-v3-systems" aria-label="Sistemas anatômicos">
+        <aside
+          className={
+            systemsOpen ? 'atlas-v3-systems open' : 'atlas-v3-systems'
+          }
+          aria-label="Sistemas anatômicos"
+        >
           <header>
-            <strong>Sistemas</strong>
-            <span>{state.visible.length}</span>
+            <button
+              type="button"
+              aria-expanded={systemsOpen}
+              aria-controls="atlas-v3-system-list"
+              onClick={() => setSystemsOpen((current) => !current)}
+            >
+              <strong>Sistemas</strong>
+              <span>{state.visible.length}</span>
+              <b aria-hidden="true">{systemsOpen ? '⌃' : '⌄'}</b>
+            </button>
           </header>
-          <div>
-            {activeSystems.map((system) => {
-              const enabled = state.visible.includes(system.id)
-              return (
-                <button
-                  type="button"
-                  className={enabled ? 'active' : ''}
-                  key={system.id}
-                  aria-pressed={enabled}
-                  onClick={() => toggleSystem(system.id)}
-                  onDoubleClick={() => showOnlySystem(system.id)}
-                >
-                  <i style={{ background: system.color }} />
-                  <span>{system.name}</span>
-                </button>
-              )
-            })}
-          </div>
+          {systemsOpen && (
+            <div id="atlas-v3-system-list">
+              {activeSystems.map((system) => {
+                const enabled = state.visible.includes(system.id)
+                return (
+                  <button
+                    type="button"
+                    className={enabled ? 'active' : ''}
+                    key={system.id}
+                    aria-pressed={enabled}
+                    onClick={() => toggleSystem(system.id)}
+                    onDoubleClick={() => showOnlySystem(system.id)}
+                  >
+                    <i style={{ background: system.color }} />
+                    <span>{system.name}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </aside>
 
         <nav className="atlas-v3-body-tools" aria-label="Ferramentas do corpo 3D">
@@ -627,7 +813,7 @@ export function ReferenceAtlasExplorer({
               }))
             }
           >
-            +
+            <AtlasIcon name="zoom-in" />
           </button>
           <button
             type="button"
@@ -639,22 +825,33 @@ export function ReferenceAtlasExplorer({
               }))
             }
           >
-            −
+            <AtlasIcon name="zoom-out" />
           </button>
           <button
             type="button"
-            aria-label={state.rotate ? 'Pausar rotação automática' : 'Ativar rotação automática'}
+            aria-label={
+              state.rotate
+                ? 'Pausar rotação automática'
+                : 'Ativar rotação automática'
+            }
             aria-pressed={state.rotate}
             className={state.rotate ? 'active' : ''}
             onClick={() =>
-              setState((current) => ({ ...current, rotate: !current.rotate }))
+              setState((current) => ({
+                ...current,
+                rotate: !current.rotate,
+              }))
             }
           >
-            ↻
+            <AtlasIcon name="rotate" />
           </button>
           <button
             type="button"
-            aria-label={state.section ? 'Desativar corte anatômico' : 'Ativar corte anatômico'}
+            aria-label={
+              state.section
+                ? 'Desativar corte anatômico'
+                : 'Ativar corte anatômico'
+            }
             aria-pressed={state.section}
             className={state.section ? 'active' : ''}
             onClick={() =>
@@ -665,10 +862,10 @@ export function ReferenceAtlasExplorer({
               }))
             }
           >
-            ◈
+            <AtlasIcon name="section" />
           </button>
           <button type="button" aria-label="Redefinir Atlas 3D" onClick={reset}>
-            ⌖
+            <AtlasIcon name="reset" />
           </button>
         </nav>
 
@@ -676,7 +873,11 @@ export function ReferenceAtlasExplorer({
           {atlas && (
             <Suspense
               fallback={
-                <div className="atlas-v3-loading" role="status" aria-live="polite">
+                <div
+                  className="atlas-v3-loading"
+                  role="status"
+                  aria-live="polite"
+                >
                   <span className="focused-reference-loader" aria-hidden="true" />
                   <strong>Carregando corpo 3D</strong>
                 </div>
@@ -705,7 +906,11 @@ export function ReferenceAtlasExplorer({
             <div className="atlas-v3-error" role="alert">
               <strong>3D indisponível</strong>
               <p>{error}</p>
-              <button className="atlas-retry-button" type="button" onClick={retryAtlas}>
+              <button
+                className="atlas-retry-button"
+                type="button"
+                onClick={retryAtlas}
+              >
                 Tentar novamente
               </button>
             </div>
@@ -753,37 +958,58 @@ export function ReferenceAtlasExplorer({
             className="active"
             onClick={() => showPreset(DEFAULT_VISIBLE_SYSTEMS, 'front')}
           >
-            <span className="mini-body" aria-hidden="true">♙</span>
+            <span aria-hidden="true">
+              <AtlasIcon name="body" size={24} />
+            </span>
             <small>Corpo completo</small>
           </button>
-          <button type="button" onClick={() => showPreset(DEFAULT_VISIBLE_SYSTEMS)}>
-            <span aria-hidden="true">◎</span>
+          <button
+            type="button"
+            onClick={() => showPreset(DEFAULT_VISIBLE_SYSTEMS)}
+          >
+            <span aria-hidden="true">
+              <AtlasIcon name="systems" size={24} />
+            </span>
             <small>Sistemas</small>
           </button>
           <button
             type="button"
-            onClick={() => showPreset(['cardiac', 'respiratory', 'skeletal'])}
+            onClick={() =>
+              showPreset(['cardiac', 'respiratory', 'skeletal'])
+            }
           >
-            <span aria-hidden="true">◫</span>
+            <span aria-hidden="true">
+              <AtlasIcon name="thorax" size={24} />
+            </span>
             <small>Tórax</small>
           </button>
           <button type="button" onClick={chooseHeart}>
-            <span aria-hidden="true">♥</span>
+            <span aria-hidden="true">
+              <AtlasIcon name="heart" size={24} />
+            </span>
             <small>Coração</small>
           </button>
           <button type="button" onClick={() => showPreset(ORGAN_SYSTEMS)}>
-            <span aria-hidden="true">◉</span>
+            <span aria-hidden="true">
+              <AtlasIcon name="organs" size={24} />
+            </span>
             <small>Órgãos</small>
           </button>
           <button type="button" onClick={() => showPreset(['skeletal'])}>
-            <span aria-hidden="true">♧</span>
+            <span aria-hidden="true">
+              <AtlasIcon name="skeleton" size={24} />
+            </span>
             <small>Esqueleto</small>
           </button>
         </nav>
 
         <div className="atlas-v3-progress" aria-live="polite">
           <i style={{ width: `${Math.max(4, progress)}%` }} />
-          <span>{progress >= 100 ? 'Atlas pronto' : `Carregando ${Math.round(progress)}%`}</span>
+          <span>
+            {progress >= 100
+              ? 'Atlas pronto'
+              : `Carregando ${Math.round(progress)}%`}
+          </span>
         </div>
       </main>
 
@@ -807,7 +1033,10 @@ export function ReferenceAtlasExplorer({
 
         <div className="atlas-v3-detail-heading">
           <span className="atlas-v3-organ-icon" aria-hidden="true">
-            {chosenDetail?.id === 'heart' ? '♥' : '◉'}
+            <AtlasIcon
+              name={chosenDetail?.id === 'heart' ? 'heart' : 'organs'}
+              size={20}
+            />
           </span>
           <div>
             <strong>{chosenDetail?.label ?? bodyLabel}</strong>
@@ -820,7 +1049,9 @@ export function ReferenceAtlasExplorer({
           <select
             aria-label="Vista do modelo detalhado"
             value={detailRotate ? 'rotating' : 'anterior'}
-            onChange={(event) => setDetailRotate(event.target.value === 'rotating')}
+            onChange={(event) =>
+              setDetailRotate(event.target.value === 'rotating')
+            }
             disabled={!detailAvailable}
           >
             <option value="anterior">Vista anterior</option>
@@ -832,7 +1063,11 @@ export function ReferenceAtlasExplorer({
           {chosenDetail ? (
             <Suspense
               fallback={
-                <div className="atlas-v3-loading" role="status" aria-live="polite">
+                <div
+                  className="atlas-v3-loading"
+                  role="status"
+                  aria-live="polite"
+                >
                   <span className="focused-reference-loader" aria-hidden="true" />
                   <strong>Carregando modelo detalhado</strong>
                 </div>
@@ -859,20 +1094,31 @@ export function ReferenceAtlasExplorer({
             </div>
           )}
 
-          <nav className="atlas-v3-organ-tools" aria-label="Ferramentas do órgão detalhado">
+          <nav
+            className="atlas-v3-organ-tools"
+            aria-label="Ferramentas do órgão detalhado"
+          >
             <button
               type="button"
-              aria-label={detailRotate ? 'Pausar rotação do órgão' : 'Girar órgão automaticamente'}
+              aria-label={
+                detailRotate
+                  ? 'Pausar rotação do órgão'
+                  : 'Girar órgão automaticamente'
+              }
               aria-pressed={detailRotate}
               className={detailRotate ? 'active' : ''}
               disabled={!detailAvailable}
               onClick={() => setDetailRotate((current) => !current)}
             >
-              ↻
+              <AtlasIcon name="rotate" />
             </button>
             <button
               type="button"
-              aria-label={detailSection ? 'Desativar corte do órgão' : 'Ativar corte do órgão'}
+              aria-label={
+                detailSection
+                  ? 'Desativar corte do órgão'
+                  : 'Ativar corte do órgão'
+              }
               aria-pressed={detailSection}
               className={detailSection ? 'active' : ''}
               disabled={!detailAvailable}
@@ -881,7 +1127,7 @@ export function ReferenceAtlasExplorer({
                 setDetailRotate(false)
               }}
             >
-              ◫
+              <AtlasIcon name="section" />
             </button>
             <button
               type="button"
@@ -893,7 +1139,7 @@ export function ReferenceAtlasExplorer({
                 setDetailReset((current) => current + 1)
               }}
             >
-              ⌖
+              <AtlasIcon name="reset" />
             </button>
           </nav>
         </div>
@@ -981,7 +1227,7 @@ export function ReferenceAtlasExplorer({
 
           {detailTab === 'references' && (
             <div className="atlas-v3-tab-copy">
-              <strong>Proveniência anatômica</strong>
+              <strong>Referência anatômica</strong>
               <p>
                 Human Atlas / BodyParts3D permanece como fonte de verdade. O
                 modelo de órgão é uma visualização suplementar validada e
@@ -992,7 +1238,9 @@ export function ReferenceAtlasExplorer({
         </div>
 
         <section className="atlas-v3-patient-explanation">
-          <span aria-hidden="true">✦</span>
+          <span aria-hidden="true">
+            <AtlasIcon name="patient" size={20} />
+          </span>
           <div>
             <strong>Explicação para o paciente</strong>
             <p>
@@ -1002,13 +1250,15 @@ export function ReferenceAtlasExplorer({
             </p>
             <button type="button" onClick={onOpenPatientPreview}>
               Ver em linguagem simples
-              <span aria-hidden="true">→</span>
+              <AtlasIcon name="chevron" size={13} />
             </button>
           </div>
         </section>
 
         <footer className="atlas-v3-model-quality">
-          <span aria-hidden="true">✓</span>
+          <span aria-hidden="true">
+            <AtlasIcon name="quality" size={18} />
+          </span>
           <div>
             <strong>Qualidade do modelo</strong>
             <small>Modelo anatômico local validado para esta visualização.</small>
