@@ -1097,7 +1097,7 @@ test('full Atlas moves from body context to detailed organ and back without chan
   await detailControls.getByRole('button', { name: 'Corpo', exact: true }).click()
 
   await expect(
-    page.locator('.reference-atlas-stage .human-atlas-scene canvas'),
+    page.locator('.reference-atlas-stage .reference-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
   await expect(
     page.getByRole('navigation', {
