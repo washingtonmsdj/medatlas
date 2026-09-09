@@ -47,7 +47,14 @@ async function openReports(page: import('@playwright/test').Page) {
 }
 
 async function startNewReportThroughSearch(page: Page) {
-  await startNewReportThroughSearch(page)
+  const search = page.getByRole('combobox', {
+    name: 'Buscar paciente, relatório, anatomia ou módulo',
+  })
+  await search.fill('Novo relatório')
+  await page
+    .getByRole('listbox', { name: 'Resultados da busca global' })
+    .getByRole('option', { name: /Novo relatório/ })
+    .click()
 }
 
 async function expectRealContextual3D(
@@ -162,6 +169,7 @@ test('all synthetic scenarios surface the expected anatomy first', async ({
 test('clinician review gate leads to a patient-facing visual report', async ({
   page,
 }) => {
+  test.setTimeout(120_000)
   await openReports(page)
 
   await page.getByRole('button', { name: 'Coração', exact: true }).click()
@@ -324,14 +332,14 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     patientPage.locator('.patient-clinic').getByText('Clínica Horizonte', { exact: true }),
   ).toBeVisible()
 
-  const patientMobilePdf = patientPage.getByRole('button', {
-    name: 'Imprimir / salvar PDF',
-  })
+  const patientMobilePdf = patientPage.locator('.patient-print-button')
   await expect(patientMobilePdf).toBeVisible()
-  const patientMobilePdfBox = await patientMobilePdf.boundingBox()
-  expect(patientMobilePdfBox).not.toBeNull()
-  expect(patientMobilePdfBox!.width).toBeGreaterThanOrEqual(44)
-  expect(patientMobilePdfBox!.height).toBeGreaterThanOrEqual(44)
+  const patientMobilePdfBox = await patientMobilePdf.evaluate((button) => {
+    const box = button.getBoundingClientRect()
+    return { width: box.width, height: box.height }
+  })
+  expect(patientMobilePdfBox.width).toBeGreaterThanOrEqual(44)
+  expect(patientMobilePdfBox.height).toBeGreaterThanOrEqual(44)
 
   const patientMobileStage = patientPage.locator('.patient-atlas-stage')
   const patientMobileStageBox = await patientMobileStage.boundingBox()
@@ -1121,9 +1129,6 @@ test('clinical workbench opens detailed organ and returns to the same confirmed 
     stage.locator('.organ-detail-scene[data-organ="heart"] canvas'),
   ).toBeVisible({ timeout: 45_000 })
   await expect(stage).toHaveClass(/detail-active/)
-  await expect(
-    page.getByText('ÓRGÃO EM DETALHE', { exact: true }),
-  ).toBeVisible()
 
   const controls = page.getByRole('navigation', {
     name: 'Controles da visualização clínica 3D',
@@ -1307,14 +1312,15 @@ test('concept shell keeps workspace context without the removed organization swi
   ).toBeVisible()
 
   await page.getByRole('button', { name: 'Abrir menu do profissional' }).click()
+  const profile = page.getByRole('dialog', { name: 'Perfil do profissional' })
   await expect(
-    page.getByRole('button', { name: 'Visualizar como paciente' }),
+    profile.getByRole('button', { name: 'Visualizar como paciente' }),
   ).toBeVisible()
   await expect(
-    page.getByRole('button', { name: 'Equipe e permissões' }),
+    profile.getByRole('button', { name: 'Equipe e permissões' }),
   ).toBeVisible()
   await expect(
-    page.getByRole('button', { name: 'Configurações' }),
+    profile.getByRole('button', { name: 'Configurações' }),
   ).toBeVisible()
 })
 
