@@ -1,7 +1,7 @@
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 196px minmax(0, 1fr);
+  grid-template-columns: 208px minmax(0, 1fr);
   background: #06111d;
 }
 
@@ -72,7 +72,7 @@
 
 .clinical-sidebar-brand-copy small {
   color: #8ca1b5;
-  font-size: 6.5px;
+  font-size: 8px;
   letter-spacing: .01em;
 }
 
@@ -128,7 +128,7 @@
 .clinical-sidebar-nav-text {
   min-width: 0;
   overflow: hidden;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -140,8 +140,8 @@
   gap: 2px;
   padding: 18px 8px 22px;
   color: #6e89a2;
-  font-size: 8px;
-  line-height: 1.35;
+  font-size: 9.5px;
+  line-height: 1.45;
 }
 
 .clinical-sidebar-message strong {
@@ -173,15 +173,15 @@
 
 .clinical-sidebar-context strong {
   color: #d9e8f5;
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .clinical-sidebar-context small,
 .clinical-sidebar-context p {
   margin: 0;
-  color: #607b93;
-  font-size: 6px;
-  line-height: 1.35;
+  color: #718aa0;
+  font-size: 7.5px;
+  line-height: 1.4;
 }
 
 @media (max-width: 1120px) and (min-width: 861px) {
@@ -284,7 +284,7 @@
   }
 
   .clinical-sidebar-nav-text {
-    font-size: 8px;
+    font-size: 9.5px;
   }
 
   .clinical-sidebar-message,
