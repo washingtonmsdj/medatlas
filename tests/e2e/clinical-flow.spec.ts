@@ -200,7 +200,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     page.getByText('Gerado pelo MedAtlas'),
   ).toBeVisible()
 
-  const previewButton = page.getByRole('button', {
+  const previewButton = page.locator('.patient-preview-control').getByRole('button', {
     name: 'Prévia do paciente',
   })
   await expect(previewButton).toBeVisible()
@@ -410,7 +410,7 @@ test('canonical patient view follows the current report state', async ({
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar rascunho' }).click()
-  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
+  await page.locator('.patient-preview-control').getByRole('button', { name: 'Prévia do paciente' }).click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(
@@ -454,7 +454,7 @@ test('canonical patient view follows the current report state', async ({
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar rascunho' }).click()
-  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
+  await page.locator('.patient-preview-control').getByRole('button', { name: 'Prévia do paciente' }).click()
 
   await expect(
     page
@@ -477,7 +477,7 @@ test('patient view can explore detailed organ without exposing or changing the c
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar rascunho' }).click()
-  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
+  await page.locator('.patient-preview-control').getByRole('button', { name: 'Prévia do paciente' }).click()
 
   const patient = page.locator('.patient-shell')
   await expect(patient).toBeVisible()
