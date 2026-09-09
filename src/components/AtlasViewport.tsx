@@ -261,7 +261,7 @@ export function AtlasViewport({
 
   return (
     <section
-      className="atlas-card clinical-atlas-card"
+      className="clinical-atlas-card"
       aria-label="Atlas anatômico 3D"
     >
       <header className="clinical-atlas-header">
@@ -328,8 +328,8 @@ export function AtlasViewport({
       <div
         className={
           detailActive
-            ? 'atlas-stage real-stage clinical-atlas-stage detail-active'
-            : 'atlas-stage real-stage clinical-atlas-stage'
+            ? 'clinical-atlas-stage detail-active'
+            : 'clinical-atlas-stage'
         }
         ref={stageRef}
       >
@@ -576,7 +576,7 @@ export function AtlasViewport({
           )}
 
         {status === 'error' && (
-          <div className="atlas-error clinical-atlas-error" role="alert">
+          <div className="clinical-atlas-error" role="alert">
             <strong>Atlas 3D indisponível</strong>
             <span>Tente carregar novamente.</span>
             <button
