@@ -120,6 +120,7 @@ export function AnatomyFocusPreview({
         compact ? 'anatomy-focus-preview-compact' : '',
         appearance === 'patient' ? 'anatomy-focus-preview-patient' : '',
         reviewRequired ? 'anatomy-focus-preview-review' : '',
+        organDetail ? 'anatomy-focus-preview-has-detail' : '',
         detailActive ? 'anatomy-focus-preview-detail-active' : '',
       ]
         .filter(Boolean)
