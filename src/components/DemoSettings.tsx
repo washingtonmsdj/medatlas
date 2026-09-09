@@ -27,7 +27,7 @@ export function DemoSettings({ onNewReport }: Props) {
   }
 
   return (
-    <section className="settings-module module-v3 mvp-surface">
+    <section className="module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow="CONFIGURAÇÕES"
         title="Configurações"
