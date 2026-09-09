@@ -213,8 +213,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   })
 
   await page
-    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
-    .getByRole('button', { name: /Profissional/ })
+    .getByRole('button', { name: 'Voltar ao profissional' })
     .click()
 
   await expect(
@@ -482,8 +481,7 @@ test('canonical patient view follows the current report state', async ({
   await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7088')
 
   await page
-    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
-    .getByRole('button', { name: /Profissional/ })
+    .getByRole('button', { name: 'Voltar ao profissional' })
     .click()
 
   await page.getByRole('button', { name: 'Rim', exact: true }).click()
@@ -491,9 +489,9 @@ test('canonical patient view follows the current report state', async ({
     page.getByText('Reconfirmação anatômica necessária').first(),
   ).toBeVisible()
 
+  await page.getByRole('button', { name: 'Abrir menu do profissional' }).click()
   await page
-    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
-    .getByRole('button', { name: /Paciente/ })
+    .getByRole('button', { name: 'Visualizar como paciente' })
     .click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
@@ -506,8 +504,7 @@ test('canonical patient view follows the current report state', async ({
   await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7088')
 
   await page
-    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
-    .getByRole('button', { name: /Profissional/ })
+    .getByRole('button', { name: 'Voltar ao profissional' })
     .click()
 
   await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
