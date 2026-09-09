@@ -1521,23 +1521,23 @@ button:not(:disabled):active {
 
 
 /* Clinical Studio composer — canonical MVP theme. */
-.intake-card-v2,
-.report-card-v2 {
+.intake-card,
+.report-composer {
   display: grid;
   gap: 12px;
 }
 
-.intake-heading-v2 {
+.intake-heading {
   align-items: flex-start;
 }
 
-.intake-heading-v2 h2 {
+.intake-heading h2 {
   margin: 5px 0 3px;
   font-size: 18px;
   letter-spacing: -.02em;
 }
 
-.intake-heading-v2 p {
+.intake-heading p {
   font-size: var(--type-caption);
 }
 
@@ -1713,41 +1713,41 @@ button:not(:disabled):active {
   font-size: var(--type-caption);
 }
 
-.intake-actions-v2 {
+.intake-actions {
   margin: 0;
 }
 
-.intake-actions-v2 .primary {
+.intake-actions .primary {
   min-width: 150px;
 }
 
-.suggestion-list-v2 {
+.suggestion-list {
   margin-top: 0;
   padding-top: 11px;
   border-top-color: var(--line-subtle);
 }
 
-.suggestion-list-v2 .suggestion-list-heading {
+.suggestion-list .suggestion-list-heading {
   align-items: flex-end;
   padding: 0 1px 2px;
 }
 
-.suggestion-list-v2 .suggestion-list-heading > div {
+.suggestion-list .suggestion-list-heading > div {
   display: grid;
   gap: 2px;
 }
 
-.suggestion-list-v2 .suggestion-list-heading .section-kicker {
+.suggestion-list .suggestion-list-heading .section-kicker {
   color: var(--accent-text);
   font-size: var(--type-caption);
 }
 
-.suggestion-list-v2 .suggestion-list-heading strong {
+.suggestion-list .suggestion-list-heading strong {
   color: var(--text-strong);
   font-size: var(--type-small);
 }
 
-.suggestion-list-v2 .suggestion-list-heading > span {
+.suggestion-list .suggestion-list-heading > span {
   color: var(--text-muted);
 }
 
@@ -1854,7 +1854,7 @@ button:not(:disabled):active {
   background: var(--accent-surface);
 }
 
-.report-card-v2 {
+.report-composer {
   padding: 14px;
 }
 
@@ -2027,12 +2027,12 @@ button:not(:disabled):active {
   background: var(--surface-control);
 }
 
-.explanation-heading-v2 {
+.explanation-heading {
   align-items: center;
   margin: 0;
 }
 
-.explanation-heading-v2 .label {
+.explanation-heading .label {
   color: var(--text-secondary);
 }
 
@@ -2104,13 +2104,13 @@ button:not(:disabled):active {
   line-height: 1.45;
 }
 
-.review-gate-v2 {
+.review-required-box {
   margin: 0;
   gap: 8px;
 }
 
 .review-gate-heading,
-.review-approved-v2,
+.safety-box,
 .share-ready-heading {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
@@ -2119,7 +2119,7 @@ button:not(:disabled):active {
 }
 
 .review-gate-heading > span,
-.review-approved-v2 > span,
+.safety-box > span,
 .share-ready-heading > span {
   width: 28px;
   height: 28px;
@@ -2146,27 +2146,27 @@ button:not(:disabled):active {
 }
 
 .review-gate-heading small,
-.review-gate-v2 > p {
+.review-required-box > p {
   color: var(--text-muted);
   font-size: var(--type-caption);
 }
 
-.review-gate-v2 > p {
+.review-required-box > p {
   margin: 0;
   line-height: 1.45;
 }
 
-.review-approved-v2 {
+.safety-box {
   align-items: start;
 }
 
-.review-approved-v2 > span,
+.safety-box > span,
 .share-ready-heading > span {
   color: var(--text-primary);
   background: var(--accent-surface);
 }
 
-.review-approved-v2 p {
+.safety-box p {
   margin: 3px 0 0;
   color: var(--text-secondary);
   font-size: var(--type-caption);
@@ -2222,7 +2222,7 @@ button:not(:disabled):active {
   text-align: right;
 }
 
-.share-box-v2 {
+.share-box {
   display: grid;
   gap: 8px;
 }
@@ -2238,18 +2238,18 @@ button:not(:disabled):active {
 }
 
 @media (max-width: 1450px) {
-  .report-explanation-column .report-card-v2 {
+  .report-explanation-column .report-composer {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .report-explanation-column .report-card-v2 > .report-composer-header,
-  .report-explanation-column .report-card-v2 > .composer-progress,
-  .report-explanation-column .report-card-v2 > .source-excerpt,
-  .report-explanation-column .report-card-v2 > .patient-preview-control,
-  .report-explanation-column .report-card-v2 > .publish-zone,
-  .report-explanation-column .report-card-v2 > .share-box,
-  .report-explanation-column .report-card-v2 > .publish-error {
+  .report-explanation-column .report-composer > .report-composer-header,
+  .report-explanation-column .report-composer > .composer-progress,
+  .report-explanation-column .report-composer > .source-excerpt,
+  .report-explanation-column .report-composer > .patient-preview-control,
+  .report-explanation-column .report-composer > .publish-zone,
+  .report-explanation-column .report-composer > .share-box,
+  .report-explanation-column .report-composer > .publish-error {
     grid-column: 1 / -1;
   }
 }
@@ -2275,7 +2275,7 @@ button:not(:disabled):active {
 }
 
 @media (max-width: 620px) {
-  .intake-heading-v2,
+  .intake-heading,
   .report-composer-header {
     flex-direction: column;
   }
@@ -2297,16 +2297,16 @@ button:not(:disabled):active {
     grid-template-columns: 1fr;
   }
 
-  .report-explanation-column .report-card-v2 {
+  .report-explanation-column .report-composer {
     display: grid;
     grid-template-columns: 1fr;
   }
 
-  .report-explanation-column .report-card-v2 > * {
+  .report-explanation-column .report-composer > * {
     grid-column: auto;
   }
 
-  .explanation-heading-v2 {
+  .explanation-heading {
     align-items: stretch;
   }
 
