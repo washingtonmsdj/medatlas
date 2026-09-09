@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import './styles/design-tokens.css'
 import './styles.css'
 import './styles/clinical-shell.css'
 import './styles/supporting-modules.css'
