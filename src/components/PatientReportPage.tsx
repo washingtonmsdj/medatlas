@@ -11,7 +11,6 @@ import {
 } from '../organization/demo-organization'
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
-import { ViewModeSwitcher } from './ViewModeSwitcher'
 
 const OrganDetailScene = lazy(async () => {
   const module = await import('./OrganDetailScene')
@@ -84,13 +83,14 @@ export function PatientReportPage({
 
         <div className="patient-header-right">
           {previewMode && onSwitchToProfessional && (
-            <ViewModeSwitcher
-              mode="patient"
-              compact
-              onChange={(mode) => {
-                if (mode === 'professional') onSwitchToProfessional()
-              }}
-            />
+            <button
+              className="patient-return-professional"
+              type="button"
+              onClick={onSwitchToProfessional}
+            >
+              <span aria-hidden="true">←</span>
+              Voltar ao profissional
+            </button>
           )}
           <div className="patient-clinic">
             <span>{DEMO_ORGANIZATION_BRANDING.brandName}</span>
