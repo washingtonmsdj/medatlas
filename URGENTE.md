@@ -502,3 +502,16 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 2. remover CSS morto somente após provar ausência de uso no source e manter paridade visual/E2E;
 3. manter Human Atlas e órgão detalhado como renderers canônicos, sem criar fallback visual paralelo;
 4. validar CI + Browser E2E + Pages no mesmo source antes de declarar novo baseline visual.
+
+
+### Continuação do checkpoint visual — páginas e legado (2026-09-09)
+- [x] shell/topbar, sidebar, cabeçalho canônico, `concept-modules.css` e `module-workspaces.css` não definem mais literais de cor; toda cor ativa passa pela fundação semântica;
+- [x] `module-workspaces.css` foi reconstruído como camada de layout responsivo + estados ativos, eliminando a mistura antiga de tema claro com overrides escuros;
+- [x] removidos seletores comprovadamente mortos por busca no source: `workspace-hero-v3`, `module-hero-copy`, `workspace-context-grid`, `status-facts-v3`, `module-boundary-v3`, `settings-governance-v3` e `mvp-page-hero`;
+- [x] mantidos e migrados os seletores com consumidores reais: anatomia do paciente, composer/publicação de relatório, métricas de Analytics, cards de Configurações e dashboard 3D;
+- [x] o contrato `validate:mvp-ui` agora falha se cores hardcoded voltarem às camadas canônicas ou se os seletores mortos forem reintroduzidos.
+
+### Próxima frente P0 após este checkpoint
+1. validar CI, Browser E2E e Pages no HEAD exato;
+2. auditar `supporting-modules.css` e `organization-analytics.css` por consumidor antes de migrar/remover o restante do tema claro histórico;
+3. não mexer no renderer Human Atlas/órgão detalhado enquanto a limpeza visual não exigir mudança funcional.
