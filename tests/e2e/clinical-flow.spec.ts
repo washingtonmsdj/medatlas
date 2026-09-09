@@ -838,7 +838,7 @@ test('patients module reflects only the current synthetic report context', async
     page.getByText('Disco intervertebral L4–L5', { exact: true }).first(),
   ).toBeVisible()
   await expect(
-    page.locator('.patients-module').getByText('3D carregado', { exact: true }),
+    page.locator('.patient-anatomy-live').getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 60_000 })
 
   await page
