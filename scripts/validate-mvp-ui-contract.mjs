@@ -212,6 +212,8 @@ for (const [name, stylesheet] of [
 
 for (const legacySelector of [
   'module-v3',
+  'anatomy-context-meta-v3',
+  'document-step-rail-v3',
   'workspace-hero-v3',
   'module-hero-copy',
   'workspace-context-grid',
