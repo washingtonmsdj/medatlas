@@ -15,16 +15,62 @@
   --surface-popover: rgba(5, 16, 28, .98);
   --surface-panel: rgba(14, 31, 49, .97);
   --surface-panel-deep: rgba(8, 21, 35, .98);
+  --surface-deep: #071522;
+  --surface-popover-elevated: rgba(6, 18, 31, .98);
+  --surface-shortcut: rgba(5, 16, 28, .66);
+  --surface-warning: rgba(37, 31, 18, .82);
+  --surface-avatar: #2f5373;
+  --surface-avatar-start: #708ca5;
+  --surface-avatar-end: #324c66;
+
+  --overlay-workspace-glow: rgba(24, 81, 134, .16);
+  --overlay-inset-highlight: rgba(255, 255, 255, .025);
+  --overlay-command-active: rgba(39, 93, 150, .24);
+  --overlay-profile-active: rgba(45, 85, 126, .22);
+  --overlay-popover-hover: rgba(43, 91, 143, .20);
+  --overlay-info-icon: rgba(35, 92, 143, .34);
+  --overlay-warning-icon: rgba(133, 80, 30, .28);
+  --overlay-danger-count: rgba(129, 40, 56, .26);
+  --overlay-sidebar-glow: rgba(28, 90, 153, .18);
+  --overlay-sidebar-hover: rgba(47, 96, 147, .10);
+  --overlay-sidebar-nav-hover: rgba(36, 77, 122, .20);
+  --overlay-header-glow: rgba(39, 110, 177, .12);
+  --overlay-header-control: rgba(13, 34, 54, .78);
 
   --text-primary: #edf7ff;
   --text-strong: #dceaf7;
   --text-secondary: #b3c9db;
   --text-muted: #7891a7;
   --text-subtle: #637f96;
+  --text-emphasis: #e8f3fb;
+  --text-soft: #b4c8da;
+  --text-muted-strong: #8299ad;
+  --text-muted-deep: #71899e;
+  --text-accent-muted: #7392ab;
+  --text-accent-soft: #79a1bf;
+  --text-group: #6298bd;
+  --text-popover-muted: #8198ac;
+  --text-profile-muted: #7999b3;
+  --text-profile-term: #728aa0;
+  --text-profile-value: #b8cad8;
+  --text-demo: #b8a477;
+  --text-demo-strong: #d8bd7c;
+  --text-demo-muted: #9f8e67;
 
   --line-subtle: rgba(102, 151, 197, .16);
   --line-control: rgba(101, 150, 195, .22);
   --line-elevated: rgba(92, 145, 194, .30);
+  --line-focus: rgba(82, 170, 246, .54);
+  --line-shortcut: rgba(114, 156, 193, .20);
+  --line-command: rgba(86, 145, 200, .30);
+  --line-avatar: rgba(117, 163, 202, .30);
+  --line-popover-section: rgba(94, 140, 181, .15);
+  --line-profile-section: rgba(88, 131, 170, .12);
+  --line-profile-actions: rgba(88, 131, 170, .14);
+  --line-demo: rgba(207, 177, 105, .24);
+  --line-sidebar-context: rgba(105, 151, 190, .16);
+  --line-sidebar-mobile: rgba(86, 132, 177, .20);
+  --line-header-control: rgba(91, 142, 187, .24);
 
   --accent-primary: #4d91ff;
   --accent-strong: #2f65ff;
@@ -33,10 +79,16 @@
   --accent-text: #8dc8f2;
   --accent-surface: rgba(37, 111, 218, .82);
   --accent-surface-deep: rgba(28, 74, 141, .66);
+  --accent-gradient-start: #2e88fa;
+  --accent-gradient-end: #245fd5;
+  --focus-ring: rgba(56, 140, 219, .09);
 
   --state-danger: #f15c70;
   --state-warning: #f2bd80;
   --state-success: #8fe2cd;
+  --state-danger-soft: #ff9cad;
+  --state-danger-glow: rgba(241, 92, 112, .34);
+  --state-danger-line: rgba(241, 92, 112, .24);
 
   --radius-control: 10px;
   --radius-panel: 15px;
@@ -45,6 +97,9 @@
   --shadow-topbar: 0 10px 28px rgba(0, 0, 0, .12);
   --shadow-panel: 0 18px 42px rgba(0, 0, 0, .16);
   --shadow-popover: 0 24px 60px rgba(0, 0, 0, .46);
+  --shadow-command: 0 24px 60px rgba(0, 0, 0, .44);
+  --shadow-sidebar-active: 0 10px 24px rgba(8, 42, 83, .24);
+  --shadow-primary: 0 12px 28px rgba(35, 101, 211, .22);
 
   --type-caption: 0.625rem;
   --type-small: 0.75rem;
