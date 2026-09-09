@@ -399,8 +399,7 @@ export function AnatomyFocusPreview({
           )}
           {detailActive && appearance === 'patient' && (
             <span className="anatomy-detail-safety-note">
-              O modelo detalhado é uma referência anatômica e não representa o
-              corpo individual do paciente.
+              {'O modelo detalhado é uma referência anatômica e não representa o corpo individual do paciente.'}
             </span>
           )}
         </div>
