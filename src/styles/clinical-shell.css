@@ -1874,6 +1874,84 @@ button:not(:disabled):active {
     bottom: 10px;
   }
 }
+/* MEDATLAS_PATIENT_ORGAN_DETAIL_V1 */
+.patient-atlas-stage > .organ-detail-scene {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  min-height: 100%;
+}
+
+.patient-anatomy-depth-switch {
+  position: absolute;
+  z-index: 7;
+  top: 14px;
+  left: 14px;
+  max-width: min(52%, 360px);
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid rgba(83, 119, 150, .22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 12px 30px rgba(42, 70, 96, .12);
+  backdrop-filter: blur(14px);
+}
+
+.patient-anatomy-depth-switch button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #4d657c;
+  background: transparent;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.patient-anatomy-depth-switch button:hover {
+  color: #173d62;
+  background: #edf5fb;
+}
+
+.patient-anatomy-depth-switch button.active {
+  color: #fff;
+  border-color: #267bb6;
+  background: linear-gradient(145deg, #1f7fbd, #246799);
+}
+
+.patient-atlas-stage.detail-active {
+  background:
+    radial-gradient(circle at 50% 42%, #fff 0, #f2f5f4 42%, #e3ecee 100%);
+}
+
+.patient-organ-detail-safety {
+  margin: 0;
+  padding: 10px 14px 12px;
+  color: #587385;
+  border-top: 1px solid #d8e2ea;
+  background: #f8fbfc;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .patient-anatomy-depth-switch {
+    top: 58px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    overflow-x: auto;
+  }
+
+  .patient-anatomy-depth-switch button {
+    flex: 1 0 auto;
+    min-height: 34px;
+  }
+}
+
 /* MEDATLAS_PATIENT_VISUAL_QA_V1 */
 .patient-header .brand {
   color: #102542;
