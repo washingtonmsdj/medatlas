@@ -429,12 +429,20 @@ const requiredOrganDetailCatalogFragments = [
   "FMA7198",
   "resolveOrganDetail",
   "organDetailModelUrl",
+  "` ${normalized} `.includes(` ${candidate} `)",
 ]
 
 for (const fragment of requiredOrganDetailCatalogFragments) {
   if (!organDetailCatalog.includes(fragment)) {
     failures.push('organ detail catalog missing contract: ' + fragment)
   }
+}
+
+
+if (organDetailCatalog.includes('normalized.includes(candidate)')) {
+  failures.push(
+    'organ detail label matching must remain word/phrase-bounded to avoid false positives such as cor → corpo',
+  )
 }
 
 const requiredOrganDetailSceneFragments = [
