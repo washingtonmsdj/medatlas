@@ -18,9 +18,7 @@ export function WorkspacePageHeader({
   className = '',
 }: Props) {
   return (
-    <header
-      className={`workspace-page-header workspace-hero-v3 mvp-page-hero ${className}`.trim()}
-    >
+    <header className={`workspace-page-header ${className}`.trim()}>
       <div className="workspace-page-header-copy">
         <span className="section-kicker">{eyebrow}</span>
         <h2>{title}</h2>
