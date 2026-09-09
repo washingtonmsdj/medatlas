@@ -1385,3 +1385,18 @@
     min-width: 0;
   }
 }
+
+
+/* MEDATLAS_REFERENCE_DETAIL_PERSISTENCE_V1 */
+.reference-atlas-stage.detail-active > .reference-atlas-scene {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.reference-atlas-stage.detail-active > .reference-organ-renderer-loading {
+  z-index: 2;
+}
+
+.reference-atlas-stage.detail-active > .organ-detail-scene {
+  z-index: 2;
+}
