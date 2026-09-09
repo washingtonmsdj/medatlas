@@ -1,13 +1,7 @@
+/* MedAtlas MVP-specific interaction surfaces. */
+
 .mvp-surface {
   gap: 14px;
-}
-
-.mvp-page-hero {
-  min-height: 108px;
-}
-
-.mvp-page-hero .module-hero-copy p {
-  max-width: 640px;
 }
 
 .demo-privacy-banner-mvp {
@@ -19,28 +13,23 @@
   gap: 7px;
   margin: 10px 0 0;
   padding: 5px 9px;
-  border-color: #d9c89f;
+  border-color: var(--line-warning);
   border-radius: 999px;
-  color: #6c5a2f;
-  background: rgba(255, 250, 237, .9);
-  box-shadow: 0 5px 16px rgba(80, 65, 30, .04);
+  color: var(--state-warning);
+  background: var(--surface-warning);
   line-height: 1.2;
 }
 
 .demo-privacy-banner-mvp strong {
   flex: 0 0 auto;
-  color: #6a5726;
+  color: var(--text-demo-strong);
 }
 
 .demo-privacy-banner-mvp span {
   overflow: hidden;
-  color: #786b4d;
+  color: var(--text-demo);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.mvp-compact-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .mvp-settings-grid {
@@ -48,15 +37,15 @@
 }
 
 .mvp-technical-details {
-  border: 1px solid #dce8ef;
+  border: 1px solid var(--line-subtle);
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface-panel);
 }
 
 .mvp-technical-details summary {
   cursor: pointer;
   padding: 14px 16px;
-  color: #385b71;
+  color: var(--text-secondary);
   font-weight: 800;
 }
 
@@ -71,20 +60,20 @@
   justify-content: center;
   gap: 7px;
   padding: 0 12px;
-  border: 1px solid #d2e1eb;
-  border-radius: 10px;
-  color: #335b76;
-  background: #f7fbfd;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  background: var(--surface-control);
   cursor: pointer;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .patient-return-professional:hover,
 .patient-return-professional:focus-visible {
-  border-color: #9fc6df;
-  color: #155f86;
-  background: #eef8fd;
+  border-color: var(--line-focus);
+  color: var(--accent-cyan);
+  background: var(--surface-control-hover);
 }
 
 .patient-atlas-empty {
@@ -93,7 +82,7 @@
   place-items: center;
   align-content: center;
   gap: 8px;
-  color: #6c8292;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -102,12 +91,13 @@
   height: 62px;
   display: grid;
   place-items: center;
+  border: 1px solid var(--line-control);
   border-radius: 18px;
-  color: #1a749d;
-  background: #e9f6fb;
+  color: var(--accent-cyan);
+  background: var(--surface-control);
   font-weight: 900;
 }
 
 .patient-atlas-empty strong {
-  color: #294e65;
+  color: var(--text-strong);
 }
