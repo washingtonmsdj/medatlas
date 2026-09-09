@@ -177,7 +177,9 @@ if (sidebar.includes('clinic-card-chevron')) {
 }
 
 for (const fragment of [
-  'aria-label="Ações pendentes"',
+  "aria-controls=\"medatlas-tasks-panel\"",
+  "? `${pendingSteps.length} ações pendentes`",
+  ": 'Nenhuma ação pendente'",
   'Ações pendentes',
   'Perfil do profissional',
 ]) {
