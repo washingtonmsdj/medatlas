@@ -67,6 +67,9 @@ O wedge vencedor continua sendo:
 13. Não criar segunda autoridade de persistência paralela ao `ClinicalRepository`.
 14. Não habilitar botão ou fluxo de produção fake para “parecer pronto”.
 15. Supabase/auth real permanece bloqueado até ativação deliberada do P2.
+16. **Não reintroduzir `OrganizationSwitcher` ou qualquer switcher de organização/workspace no shell atual.** O contexto ativo é informativo no rodapé/perfil; mudança de workspace só volta quando houver fluxo de produto deliberado e validado.
+17. **Não reintroduzir `ViewModeSwitcher` nem seletor global Profissional/Paciente.** A prévia do paciente abre pelo menu do profissional e retorna por uma única ação explícita.
+18. **Não recolocar “Novo relatório” na sidebar.** A criação é uma ação da busca global/dashboard; a sidebar permanece navegação de módulos.
 
 ---
 
@@ -75,13 +78,13 @@ O wedge vencedor continua sendo:
 ### Produto / shell SaaS
 
 - [x] Dashboard clínico task-first com Human Atlas 3D como diferencial principal.
-- [x] `ClinicalSidebar` canônica: ícones, grupos Clínica/Gestão, ação global **Novo relatório**, Atlas 3D destacado no próprio item e workspace ativo no rodapé.
-- [x] sidebar possui um único destino para Atlas 3D; não existe launcher paralelo/duplicado.
+- [x] `ClinicalSidebar` canônica: marca MedAtlas, navegação por módulos, Atlas 3D como destino único e contexto ativo no rodapé; **não** contém launcher paralelo nem ação “Novo relatório”.
+- [x] “Novo relatório” é ação canônica da busca global/dashboard e inicia um relatório vazio fail-closed.
 - [x] desktop completo, tablet colapsado por ícones e mobile como header + navegação horizontal.
-- [x] topbar SaaS com organização/workspace, seletor Profissional/Paciente, busca global e utilidades.
-- [x] **Visão Profissional e Visão Paciente são shells separados**; Patient view não carrega sidebar/ferramentas clínicas.
-- [x] organização e workspace ativos visíveis.
-- [x] troca local sintética de workspace/especialidade.
+- [x] topbar canônica: busca global, central de ações pendentes e menu do profissional; **não** contém switcher de organização/workspace nem seletor Profissional/Paciente.
+- [x] **Visão Profissional e Visão Paciente são shells separados**; a prévia do paciente abre pelo menu do profissional e retorna por uma única ação “Voltar ao profissional”.
+- [x] organização, unidade/workspace e papel ativos permanecem visíveis como contexto informativo no rodapé/perfil.
+- [x] o shell atual mantém um workspace demo fixo; troca de unidade/workspace não é exposta até existir fluxo de produto deliberado.
 - [x] Pacientes.
 - [x] Relatórios visuais.
 - [x] laudo/exame e contexto da consulta pertencem ao fluxo de **Relatórios**; **Consultas e Exames não são módulos independentes no MVP**.
@@ -146,7 +149,7 @@ Hierarquia permanente:
 - [x] dock de câmera do Clinical Studio vira barra horizontal em 390 px e possui teste geométrico contra regressão;
 - [x] portal do paciente possui contrato mobile-first em 390 px: branding da clínica e ação PDF permanecem visíveis, palco 3D >= 500 px, controles/tabs/ações com alvos >= 44 px e ausência de overflow;
 - [x] Dashboard mobile preserva o 3D do atendimento como superfície principal, com palco >= 400 px protegido por E2E;
-- [x] Clinical Report Studio possui contrato desktop-first protegido por E2E em 1440/1600 px: três colunas alinhadas, coluna 3D mais larga e palco >= 560 px; override explícito do breakpoint legado <=1450 mantém a explicação na terceira coluna em desktop;
+- [x] Clinical Report Studio possui contrato desktop-first protegido por E2E em 1440/1600 px: três colunas alinhadas, coluna 3D mais larga e palco >= 560 px; regras responsivas canônicas preservam a terceira coluna em desktop sem depender de breakpoint legado;
 - [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
@@ -270,15 +273,16 @@ O 3D continua sendo **anatomia humana de referência**. Não chamar esse modelo 
 - [x] somente `admin` administra membership/estrutura organizacional.
 - [x] E2E de papéis/permissões.
 
-### Unidades e workspaces — IMPLEMENTADO EM SOURCE/UI
+### Unidades e workspaces — IMPLEMENTADO EM SOURCE; CONTEXTO UI READ-ONLY
 
 - [x] `organization_units`.
 - [x] `clinical_workspaces`.
 - [x] FK tenant-safe workspace → unit + organization.
 - [x] policies admin-write.
-- [x] switcher local de unidade/workspace.
-- [x] Ortopedia / Cardiologia / Fisioterapia no demo.
-- [x] E2E do switcher.
+- [x] Ortopedia / Cardiologia / Fisioterapia permanecem modeladas no demo.
+- [x] workspace/unidade atuais aparecem como contexto no shell e perfil.
+- [x] switcher de unidade/workspace foi removido do shell atual; não reintroduzir sem requisito de produto.
+- [x] E2E protege o contexto do workspace e a ausência do switcher removido.
 
 ### Branding — IMPLEMENTADO EM SOURCE/UI
 
