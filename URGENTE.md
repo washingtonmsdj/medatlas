@@ -593,3 +593,18 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 4. tratar `atlas-v3-*` separadamente dentro do domínio do Reference Atlas; não misturar essa renomeação com mudanças no renderer;
 5. continuar removendo legado somente com consumidor/ownership comprovados e sempre preservar Human Atlas + órgão detalhado como engines reais.
 
+### Checkpoint — wrapper semântico e recuperação do Browser E2E (2026-09-09)
+- [x] `module-v3` foi totalmente migrado para o wrapper semântico `workspace-page` em App, Overview, Pacientes, Equipe, Analytics e Configurações; CSS e gate foram alinhados sem mudança funcional do renderer.
+- [x] runtime funcional da migração: **`021be7174798f9883d32df7c0ccaea1431e4add0`**; gate final da migração: **`2ddd74b482de017ee06aa80ae8bd6fa65dc5db54`**.
+- [x] CI do gate `2ddd74b…`: run **`34388830346` PASS**; CI do runtime `021be717…`: run **`34388718567` PASS**; Pages do mesmo runtime: run **`34388718571` PASS**, incluindo o fluxo 3D publicado.
+- [x] o Browser `34388718603` não falhou por instalação: completou setup/build e executou 39 testes, mas acumulou falhas de contrato de UI antigo e atingiu o timeout do job antes do resumo final.
+- [x] drift comprovado corrigido nos E2E sem alterar frontend: `Reconfirmação anatômica necessária` → `RECONFIRMAÇÃO NECESSÁRIA`; headings de Pacientes/Configurações alinhados aos títulos atuais; copy de branding alinhada; ação de Pacientes `Abrir relatório` → `Continuar relatório`.
+- [x] commits de recuperação E2E: **`7265d5d…`**, **`be6e2d1…`**, **`c44c0f9…`** e **`d0c0b62…`**. CI de `c44c0f9…`: run **`34391280485` PASS**; novo Browser após o último ajuste: run **`34391665765`** em validação.
+- [x] auditoria direta dos **22 arquivos TSX atuais** não encontrou consumidor de `anatomy-context-meta-v3` nem `document-step-rail-v3`; ambos permanecem somente em `module-workspaces.css` e são candidatos de remoção segura após o checkpoint Browser.
+- [x] `medatlas-v2-shell`, `medatlas-v2-workspace`, `medatlas-v2-topbar` e `medatlas-v2-demo-boundary` continuam com ownership real do shell/tema atual; não remover nem renomear por busca mecânica. A futura migração deve consolidar ownership em nomes semânticos e atualizar testes/gates no mesmo lote.
+
+### Próxima frente P0 a partir deste checkpoint
+1. fechar o Browser E2E **`34391665765`** e corrigir somente falhas reais remanescentes;
+2. remover `anatomy-context-meta-v3` e `document-step-rail-v3` de `module-workspaces.css` e adicioná-los ao gate de seletores mortos;
+3. revalidar CI + Browser + Pages no runtime resultante antes de declarar novo baseline;
+4. só então executar a migração semântica isolada do shell `medatlas-v2-*`, sem misturar com `atlas-v3-*` nem com mudanças no Human Atlas/órgão detalhado.
