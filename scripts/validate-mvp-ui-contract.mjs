@@ -163,11 +163,18 @@ if (/#[0-9a-f]{3,8}/i.test(sidebar)) {
 }
 
 for (const [name, stylesheet] of [
+  ['concept-shell.css', conceptShellStyles],
   ['clinical-sidebar.css', sidebarStyles],
   ['workspace-page-header.css', pageHeaderStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
+  }
+
+  if (/#[0-9a-f]{3,8}\b|rgba?\(/i.test(stylesheet)) {
+    failures.push(
+      `${name} must not define visual color literals outside design-tokens.css`,
+    )
   }
 }
 
