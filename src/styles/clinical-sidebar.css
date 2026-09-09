@@ -1,8 +1,8 @@
-/* Clinical sidebar is a single, task-first navigation surface.
-   Imported last so legacy shell rules cannot split its behavior across files. */
-
 .app-shell {
-  grid-template-columns: 244px minmax(0, 1fr);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr);
+  background: #06111d;
 }
 
 .clinical-sidebar {
@@ -14,44 +14,44 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 18px 14px 14px;
-  border-right: 1px solid rgba(102, 160, 211, .14);
+  padding: 13px 12px 14px;
+  border-right: 1px solid rgba(102, 151, 197, .16);
   background:
-    radial-gradient(circle at 18% -4%, rgba(42, 157, 244, .20), transparent 31%),
-    linear-gradient(180deg, #071a30 0%, #061526 52%, #05111f 100%);
-  box-shadow: 18px 0 48px rgba(16, 38, 67, .08);
+    radial-gradient(circle at 18% 12%, rgba(28, 90, 153, .18), transparent 26%),
+    linear-gradient(180deg, #07182a 0%, #061524 48%, #06121f 100%);
 }
 
 .clinical-sidebar-brand {
   width: 100%;
+  min-height: 52px;
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   padding: 4px 5px;
   border: 0;
-  border-radius: 13px;
-  color: #f4f9ff;
+  border-radius: 11px;
+  color: #f6fbff;
   background: transparent;
-  text-align: left;
   cursor: pointer;
+  text-align: left;
 }
 
 .clinical-sidebar-brand:hover {
-  background: rgba(55, 118, 177, .10);
+  background: rgba(47, 96, 147, .10);
 }
 
 .clinical-sidebar-brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  color: white;
-  background: linear-gradient(145deg, #39c3f2, #2877ee);
-  box-shadow: 0 12px 28px rgba(28, 139, 255, .30);
-  font-size: 18px;
-  font-weight: 900;
+}
+
+.clinical-sidebar-brand-mark svg {
+  width: 38px;
+  height: 38px;
+  display: block;
 }
 
 .clinical-sidebar-brand-copy {
@@ -62,211 +62,107 @@
 
 .clinical-sidebar-brand-copy strong {
   font-size: 19px;
-  line-height: 1.1;
-  letter-spacing: -.035em;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.clinical-sidebar-brand-copy strong span {
+  color: #4d91ff;
 }
 
 .clinical-sidebar-brand-copy small {
-  overflow: hidden;
-  color: #7995b1;
-  font-size: 8px;
-  letter-spacing: .035em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.clinical-sidebar-new-report {
-  width: 100%;
-  min-height: 42px;
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  padding: 8px 10px;
-  border: 1px solid rgba(79, 190, 238, .32);
-  border-radius: 12px;
-  color: #eaf9ff;
-  background:
-    linear-gradient(135deg, rgba(24, 145, 224, .94), rgba(28, 103, 210, .90));
-  box-shadow: 0 12px 28px rgba(8, 64, 128, .20);
-  cursor: pointer;
-  text-align: left;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.clinical-sidebar-new-report:hover {
-  border-color: rgba(115, 219, 255, .58);
-  box-shadow: 0 15px 34px rgba(8, 70, 141, .28);
-}
-
-.clinical-sidebar-new-icon {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, .10);
-  font-size: 16px;
-  line-height: 1;
+  color: #8ca1b5;
+  font-size: 6.5px;
+  letter-spacing: .01em;
 }
 
 .clinical-sidebar nav {
-  min-height: 0;
-  flex: 1 1 auto;
-  display: grid;
-  align-content: start;
-  gap: 0;
-  margin-top: 22px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
-}
-
-.clinical-sidebar nav::-webkit-scrollbar {
-  display: none;
-}
-
-.clinical-sidebar .sidebar-nav-group {
   display: grid;
   gap: 4px;
-}
-
-.clinical-sidebar .sidebar-nav-group + .sidebar-nav-group {
-  margin-top: 15px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(112, 159, 194, .11);
-}
-
-.clinical-sidebar .sidebar-nav-label {
-  padding: 0 9px 6px;
-  color: #5f7d96;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  margin-top: 18px;
 }
 
 .clinical-sidebar nav button {
   width: 100%;
   min-height: 43px;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-columns: 28px minmax(0, 1fr);
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   padding: 6px 9px;
-  border: 1px solid transparent;
-  border-radius: 11px;
-  color: #93aac0;
+  border: 0;
+  border-radius: 9px;
+  color: #a3b7c9;
   background: transparent;
   cursor: pointer;
   text-align: left;
 }
 
 .clinical-sidebar nav button:hover {
-  color: #f6fbff;
-  border-color: rgba(87, 173, 255, .13);
-  background: rgba(38, 91, 147, .15);
+  color: #f1f8ff;
+  background: rgba(36, 77, 122, .20);
 }
 
 .clinical-sidebar nav button.active {
-  color: white;
-  border-color: rgba(80, 177, 255, .22);
+  color: #fff;
   background:
-    linear-gradient(90deg, rgba(24, 115, 219, .48), rgba(19, 68, 124, .20));
+    linear-gradient(90deg, rgba(37, 111, 218, .82), rgba(28, 74, 141, .66));
   box-shadow:
-    inset 3px 0 0 #55cfff,
-    0 10px 26px rgba(2, 28, 61, .20);
+    inset 3px 0 0 #62b4ff,
+    0 10px 24px rgba(8, 42, 83, .24);
 }
 
 .clinical-sidebar-nav-icon {
-  width: 30px;
-  height: 30px;
-  display: grid !important;
+  width: 28px;
+  height: 28px;
+  display: grid;
   place-items: center;
-  border: 1px solid rgba(116, 153, 183, .14);
-  border-radius: 9px;
-  color: #7896ad;
-  background: rgba(10, 31, 52, .50);
+  color: #88a8c2;
 }
 
-.clinical-sidebar nav button:hover .clinical-sidebar-nav-icon,
-.clinical-sidebar nav button.active .clinical-sidebar-nav-icon {
-  color: #a9ebff;
-  border-color: rgba(78, 191, 239, .24);
-  background: rgba(18, 70, 109, .64);
+.clinical-sidebar nav button.active .clinical-sidebar-nav-icon,
+.clinical-sidebar nav button:hover .clinical-sidebar-nav-icon {
+  color: #d8eeff;
 }
 
 .clinical-sidebar-nav-text {
   min-width: 0;
-  display: block !important;
   overflow: hidden;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 9px;
+  font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.clinical-sidebar .atlas-nav-item {
-  margin-top: 3px;
-  border-color: rgba(78, 211, 214, .16);
-  background:
-    linear-gradient(90deg, rgba(24, 112, 128, .13), rgba(11, 45, 67, .08));
+.clinical-sidebar-message {
+  margin-top: auto;
+  display: grid;
+  gap: 2px;
+  padding: 18px 8px 22px;
+  color: #6e89a2;
+  font-size: 8px;
+  line-height: 1.35;
 }
 
-.clinical-sidebar .atlas-nav-item .clinical-sidebar-nav-icon {
-  color: #72dadd;
-  border-color: rgba(91, 218, 220, .22);
-  background: rgba(22, 89, 98, .26);
-}
-
-.clinical-sidebar .atlas-nav-item.active {
-  border-color: rgba(94, 220, 224, .28);
-  background:
-    linear-gradient(90deg, rgba(18, 129, 142, .48), rgba(16, 68, 91, .23));
-  box-shadow:
-    inset 3px 0 0 #72e2df,
-    0 12px 28px rgba(0, 51, 61, .21);
-}
-
-.clinical-sidebar-nav-badge {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  min-width: 27px;
-  height: 19px;
-  padding-inline: 6px;
-  border: 1px solid rgba(100, 222, 223, .28);
-  border-radius: 999px;
-  color: #8ce6e4;
-  background: rgba(32, 123, 129, .18);
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: .06em;
+.clinical-sidebar-message strong {
+  color: #7c9bb6;
+  font-weight: 600;
 }
 
 .clinical-sidebar-context {
-  flex: 0 0 auto;
   display: grid;
-  grid-template-columns: 9px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
   align-items: start;
-  gap: 9px;
-  margin-top: 14px;
-  padding: 12px 10px;
-  border: 1px solid rgba(79, 133, 181, .17);
-  border-radius: 12px;
-  background: rgba(10, 31, 53, .68);
+  gap: 8px;
+  padding: 11px 8px 0;
+  border-top: 1px solid rgba(105, 151, 190, .16);
 }
 
-.clinical-sidebar-live-dot {
-  width: 7px;
-  height: 7px;
-  margin-top: 4px;
-  border-radius: 50%;
-  background: #48d8b2;
-  box-shadow: 0 0 12px rgba(72, 216, 178, .52);
+.clinical-sidebar-context > span {
+  width: 28px;
+  height: 1px;
+  margin-top: 8px;
+  background: #4f8ec3;
 }
 
 .clinical-sidebar-context > div {
@@ -275,36 +171,26 @@
   gap: 2px;
 }
 
-.clinical-sidebar-context small {
-  color: #5d829b;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: .13em;
-}
-
 .clinical-sidebar-context strong {
-  overflow: hidden;
-  color: #e8f4ff;
-  font-size: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.clinical-sidebar-context div > span {
-  overflow: hidden;
-  color: #6f8ba4;
+  color: #d9e8f5;
   font-size: 8px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-@media (max-width: 1180px) and (min-width: 901px) {
+.clinical-sidebar-context small,
+.clinical-sidebar-context p {
+  margin: 0;
+  color: #607b93;
+  font-size: 6px;
+  line-height: 1.35;
+}
+
+@media (max-width: 1120px) and (min-width: 861px) {
   .app-shell {
-    grid-template-columns: 84px minmax(0, 1fr);
+    grid-template-columns: 78px minmax(0, 1fr);
   }
 
   .clinical-sidebar {
-    padding-inline: 11px;
+    padding-inline: 10px;
   }
 
   .clinical-sidebar-brand {
@@ -314,18 +200,10 @@
   }
 
   .clinical-sidebar-brand-copy,
-  .clinical-sidebar-new-report > span:last-child,
-  .clinical-sidebar .sidebar-nav-label,
   .clinical-sidebar-nav-text,
-  .clinical-sidebar-nav-badge,
+  .clinical-sidebar-message,
   .clinical-sidebar-context > div {
-    display: none !important;
-  }
-
-  .clinical-sidebar-new-report {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    padding-inline: 0;
+    display: none;
   }
 
   .clinical-sidebar nav button {
@@ -339,13 +217,9 @@
     justify-items: center;
     padding-inline: 0;
   }
-
-  .clinical-sidebar-live-dot {
-    margin-top: 0;
-  }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 860px) {
   .app-shell {
     display: block;
   }
@@ -355,94 +229,53 @@
     width: auto;
     height: auto;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px 12px;
-    padding: 10px 12px 9px;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 9px 10px 8px;
     border-right: 0;
-    border-bottom: 1px solid rgba(70, 117, 169, .26);
-    box-shadow: none;
+    border-bottom: 1px solid rgba(86, 132, 177, .20);
   }
 
   .clinical-sidebar-brand {
-    width: auto;
-    grid-template-columns: 32px minmax(0, 1fr);
-    padding: 0;
+    width: max-content;
+    grid-template-columns: 34px auto;
+    min-height: 40px;
+    padding: 0 3px;
   }
 
-  .clinical-sidebar-brand-mark {
-    width: 32px;
-    height: 32px;
-    border-radius: 9px;
-    font-size: 14px;
-  }
-
-  .clinical-sidebar-brand-copy {
-    display: grid !important;
+  .clinical-sidebar-brand-mark,
+  .clinical-sidebar-brand-mark svg {
+    width: 34px;
+    height: 34px;
   }
 
   .clinical-sidebar-brand-copy strong {
     font-size: 16px;
   }
 
-  .clinical-sidebar-brand-copy small {
-    font-size: 7px;
-  }
-
-  .clinical-sidebar-new-report {
-    width: auto;
-    min-height: 34px;
-    grid-template-columns: 22px auto;
-    align-self: center;
-    margin: 0;
-    padding: 5px 8px;
-    font-size: 8px;
-  }
-
-  .clinical-sidebar-new-icon {
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
-    font-size: 14px;
-  }
-
   .clinical-sidebar nav {
-    grid-column: 1 / -1;
-    width: 100%;
-    min-height: auto;
     display: flex;
-    gap: 6px;
-    margin: 0;
-    padding: 0 0 2px;
+    gap: 5px;
+    margin-top: 7px;
     overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
+    scrollbar-width: none;
   }
 
-  .clinical-sidebar .sidebar-nav-group {
-    display: contents;
-  }
-
-  .clinical-sidebar .sidebar-nav-label,
-  .clinical-sidebar-context {
-    display: none !important;
+  .clinical-sidebar nav::-webkit-scrollbar {
+    display: none;
   }
 
   .clinical-sidebar nav button {
     width: auto;
-    min-height: 36px;
+    min-height: 40px;
     flex: 0 0 auto;
-    grid-template-columns: 22px auto auto;
-    gap: 6px;
+    grid-template-columns: 22px auto;
+    gap: 5px;
     padding: 5px 8px;
-    scroll-snap-align: start;
-    border-radius: 9px;
   }
 
   .clinical-sidebar-nav-icon {
     width: 22px;
     height: 22px;
-    border-radius: 7px;
   }
 
   .clinical-sidebar-nav-icon svg {
@@ -451,99 +284,21 @@
   }
 
   .clinical-sidebar-nav-text {
-    display: block !important;
     font-size: 8px;
   }
 
-  .clinical-sidebar-nav-badge {
-    display: inline-flex !important;
-    min-width: 24px;
-    height: 17px;
-    padding-inline: 5px;
-    font-size: 6px;
+  .clinical-sidebar-message,
+  .clinical-sidebar-context {
+    display: none;
   }
 }
 
-@media (max-width: 620px) {
-  .clinical-sidebar {
-    gap: 7px 10px;
-    padding: 8px 10px 7px;
-  }
-
-  .clinical-sidebar-brand {
-    grid-template-columns: 30px minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .clinical-sidebar-brand-mark {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    font-size: 13px;
-  }
-
-  .clinical-sidebar-brand-copy strong {
-    font-size: 15px;
-  }
-
+@media (max-width: 520px) {
   .clinical-sidebar-brand-copy small {
-    font-size: 6px;
-  }
-
-  .clinical-sidebar-new-report {
-    min-height: 30px;
-    grid-template-columns: 20px auto;
-    padding: 4px 7px;
-  }
-
-  .clinical-sidebar-new-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-
-  .clinical-sidebar nav {
-    gap: 5px;
-  }
-
-  .clinical-sidebar nav button {
-    min-height: 32px;
-    grid-template-columns: 20px auto auto;
-    gap: 5px;
-    padding: 4px 7px;
-    border-radius: 8px;
-  }
-
-  .clinical-sidebar-nav-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-  }
-
-  .clinical-sidebar-nav-icon svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .clinical-sidebar-nav-text {
-    font-size: 7.5px;
-  }
-
-  .clinical-sidebar-nav-badge {
-    min-width: 22px;
-    height: 16px;
-    padding-inline: 4px;
-    font-size: 5.5px;
-  }
-}
-
-@media (max-width: 480px) {
-  .clinical-sidebar-new-report > span:last-child {
     display: none;
   }
 
-  .clinical-sidebar-new-report {
-    grid-template-columns: 22px;
+  .clinical-sidebar nav button {
+    min-height: 44px;
   }
 }
