@@ -563,10 +563,6 @@
     border-bottom: 0;
   }
 
-  .analytics-metrics {
-    grid-template-columns: 1fr;
-  }
-
   .analytics-error {
     grid-template-columns: 1fr;
   }
