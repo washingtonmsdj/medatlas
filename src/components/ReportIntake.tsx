@@ -108,8 +108,8 @@ export function ReportIntake({
   }
 
   return (
-    <section className="intake-card intake-card-v2">
-      <div className="intake-heading intake-heading-v2">
+    <section className="intake-card">
+      <div className="intake-heading">
         <div>
           <span className="section-kicker">LAUDO / EXAME</span>
           <h2>Adicionar laudo</h2>
@@ -202,7 +202,7 @@ export function ReportIntake({
         </div>
       )}
 
-      <div className="intake-actions intake-actions-v2">
+      <div className="intake-actions">
         <button
           className="primary"
           type="button"
@@ -221,7 +221,7 @@ export function ReportIntake({
       )}
 
       {suggestions.length > 0 && (
-        <div className="suggestion-list suggestion-list-v2">
+        <div className="suggestion-list">
           <div className="suggestion-list-heading">
             <div>
               <span className="section-kicker">ESTRUTURAS ENCONTRADAS</span>
