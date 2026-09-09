@@ -142,28 +142,43 @@ known IDs only
 clinician confirmation
 ```
 
-### 6. Renderer
+### 6. Renderers anatômicos
 
-Existe **um único engine 3D canônico**, derivado diretamente do Human Atlas.
+Existe **uma única autoridade 3D clínica canônica**: o Human Atlas baseado em
+BodyParts3D/FMA.
 
-Modos:
+Modos dessa autoridade:
 
 - **Explorer completo** — carrega o atlas integral para sistemas, picking por peça,
   vistas, rotação, isolamento e explode;
 - **Focused clinical** — recorta semanticamente a estrutura confirmada + contexto,
-  remapeia somente os chunks necessários e executa o mesmo engine.
+  remapeia somente os chunks necessários e executa o mesmo engine;
+- **Patient** — reutiliza o mesmo Human Atlas focado com linguagem e controles
+  simplificados.
 
 O modo focado não mantém um segundo renderer simplificado. A diferença é somente
 a entrada de dados/estado e o orçamento de payload.
 
+Existe também um **viewer suplementar de órgão em detalhe**
+(`OrganDetailScene`). Ele só pode ser alcançado a partir de uma estrutura já
+selecionada no Human Atlas/FMA, seguindo `Corpo → Órgão em detalhe`. Esse viewer:
 
-O renderer usa Three.js e a geometria BodyParts3D empacotada pelo Human Atlas.
+- não altera `conceptId`, `elementIds` ou confirmação clínica;
+- não é usado para resolver ou inventar anatomia;
+- substitui apenas o palco visual enquanto o detalhe está aberto;
+- sempre oferece retorno ao corpo completo preservando o contexto;
+- em superfícies de paciente é explicitamente descrito como anatomia de
+  referência, não reconstrução individual.
+
+O Human Atlas usa Three.js e a geometria BodyParts3D empacotada pelo upstream.
+O viewer detalhado usa GLBs permitidos e vendorizados separadamente.
 
 Propriedades atuais:
 
 - upstream fixado por SHA;
-- assets comprimidos vendorizados em `public/atlas-assets/`;
-- SHA-256 + provenance da closure anatômica;
+- assets comprimidos do Human Atlas vendorizados em `public/atlas-assets/`;
+- 9 GLBs de órgão detalhado vendorizados em `public/organ-models/`;
+- SHA-256 + provenance verificável para as duas closures;
 - nenhum fetch normal de geometria depende do repositório upstream;
 - conceitos com uma ou várias meshes;
 - download agrupado por chunk;
@@ -339,11 +354,24 @@ O campo `concept_id` precisa ser resolvido contra o atlas fixado antes de a resp
 
 ### Assets anatômicos
 
-A closure comprimida do Human Atlas está sob origem controlada pelo MedAtlas em `public/atlas-assets/`.
+A closure comprimida do Human Atlas está sob origem controlada pelo MedAtlas em
+`public/atlas-assets/`.
 
-O workflow `vendor-atlas-assets.yml` baixa somente do commit upstream fixado, gera hashes SHA-256 e provenance. O CI recalcula os hashes e aplica um orçamento de payload antes do build. Atualizar o upstream exige uma mudança explícita de source/provenance; não existe atualização silenciosa em runtime.
+O workflow `vendor-atlas-assets.yml` baixa somente do commit upstream fixado,
+gera hashes SHA-256 e provenance. O CI recalcula os hashes e aplica um orçamento
+de payload antes do build. Atualizar o upstream exige uma mudança explícita de
+source/provenance; não existe atualização silenciosa em runtime.
 
-Os cenários sintéticos atuais exigem de 1 a 2 chunks e permanecem abaixo de 7,5 MB de payload inicial de atlas (catálogo + geometria comprimida).
+Os 9 modelos de órgão detalhado ficam em `public/organ-models/`, materializados
+pelo workflow `vendor-organ-detail-assets.yml` a partir do checkpoint permitido
+`thebuggeddev/anatomy@8c0e6f321a47f895ae58ce098028b92774733ee9`.
+`manifest.json` registra Git blob de origem, bytes e SHA-256. O CI verifica os
+digests reais antes do build.
+
+Os cenários sintéticos atuais exigem de 1 a 2 chunks do Human Atlas e permanecem
+abaixo de 7,5 MB de payload inicial de atlas. Os GLBs detalhados somam cerca de
+30,0 MB na closure de deploy, mas cada arquivo é carregado somente quando o
+usuário abre explicitamente o detalhe daquele órgão.
 
 ## Proibições arquiteturais
 
@@ -353,5 +381,6 @@ Os cenários sintéticos atuais exigem de 1 a 2 chunks e permanecem abaixo de 7,
 - não abrir bucket clínico;
 - não aceitar ID anatômico inventado por IA;
 - não publicar automaticamente saída de IA;
-- não criar segundo renderer paralelo;
-- não representar BodyParts3D como reconstrução do paciente.
+- não criar renderer concorrente que substitua o Human Atlas como autoridade clínica;
+- não permitir que o viewer detalhado altere FMA/BodyParts3D confirmado;
+- não representar BodyParts3D ou GLB detalhado como reconstrução do paciente.
