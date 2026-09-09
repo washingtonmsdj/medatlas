@@ -19,7 +19,7 @@ export function TeamModule() {
         eyebrow="EQUIPE"
         title="Equipe"
         description="Membros ativos, papéis e acessos da clínica."
-        className="team-hero"
+        
         meta={
           <div className="team-hero-summary workspace-hero-badge">
             <strong>{activeMembers.length}</strong>
