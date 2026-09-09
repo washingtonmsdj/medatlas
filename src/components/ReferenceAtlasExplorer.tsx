@@ -14,10 +14,16 @@ import {
   type AtlasView,
 } from '../atlas/systems'
 import type { AtlasConcept, AtlasPart, HumanAtlas } from '../atlas/types'
+import { resolveOrganDetail } from '../anatomy-detail/catalog'
 
 const HumanAtlasExplorerScene = lazy(async () => {
   const module = await import('./HumanAtlasExplorerScene')
   return { default: module.HumanAtlasExplorerScene }
+})
+
+const OrganDetailScene = lazy(async () => {
+  const module = await import('./OrganDetailScene')
+  return { default: module.OrganDetailScene }
 })
 
 interface Props {
@@ -84,6 +90,7 @@ export function ReferenceAtlasExplorer({
   const [loadAttempt, setLoadAttempt] = useState(0)
   const [query, setQuery] = useState('')
   const [chosen, setChosen] = useState<AtlasConcept | null>(null)
+  const [detailMode, setDetailMode] = useState(false)
   const [mobilePanel, setMobilePanel] = useState<
     'layers' | 'inspector' | null
   >(null)
@@ -164,6 +171,14 @@ export function ReferenceAtlasExplorer({
     ? ATLAS_SYSTEMS.find((system) => system.id === selectedParts[0].system)
     : undefined
 
+  const chosenDetail = useMemo(
+    () =>
+      chosen
+        ? resolveOrganDetail(chosen.id, conceptDisplayName(chosen))
+        : null,
+    [chosen],
+  )
+
   const visibleCount = useMemo(() => {
     if (!atlas) return 0
 
@@ -179,6 +194,7 @@ export function ReferenceAtlasExplorer({
 
   const chooseConcept = (concept: AtlasConcept) => {
     setChosen(concept)
+    setDetailMode(false)
     setMobilePanel('inspector')
     setState((current) => ({
       ...current,
@@ -199,6 +215,7 @@ export function ReferenceAtlasExplorer({
 
       const concept = partConcept(atlas, part)
       setChosen(concept)
+      setDetailMode(false)
       setMobilePanel('inspector')
       setState((current) => ({
         ...current,
@@ -212,6 +229,7 @@ export function ReferenceAtlasExplorer({
 
   const toggleSystem = (systemId: AtlasSystemId) => {
     setChosen(null)
+    setDetailMode(false)
     setState((current) => ({
       ...current,
       selected: [],
@@ -224,6 +242,7 @@ export function ReferenceAtlasExplorer({
 
   const showOnlySystem = (systemId: AtlasSystemId) => {
     setChosen(null)
+    setDetailMode(false)
     setState((current) => ({
       ...current,
       selected: [],
@@ -236,6 +255,7 @@ export function ReferenceAtlasExplorer({
 
   const showPreset = (visible: AtlasSystemId[]) => {
     setChosen(null)
+    setDetailMode(false)
     setState((current) => ({
       ...current,
       selected: [],
@@ -249,6 +269,7 @@ export function ReferenceAtlasExplorer({
 
   const reset = () => {
     setChosen(null)
+    setDetailMode(false)
     setQuery('')
     setMobilePanel(null)
     setState((current) => ({
@@ -280,6 +301,33 @@ export function ReferenceAtlasExplorer({
   const onError = useCallback((message: string) => {
     setError(message)
   }, [])
+
+  const openDetail = () => {
+    if (!chosenDetail) return
+    setError('')
+    setProgress(0)
+    setDetailMode(true)
+    setState((current) => ({
+      ...current,
+      isolate: false,
+      explode: 0,
+      rotate: false,
+      section: false,
+      reset: current.reset + 1,
+    }))
+  }
+
+  const returnToBody = () => {
+    setError('')
+    setProgress(100)
+    setDetailMode(false)
+    setState((current) => ({
+      ...current,
+      rotate: false,
+      section: false,
+      reset: current.reset + 1,
+    }))
+  }
 
   return (
     <section
@@ -317,22 +365,48 @@ export function ReferenceAtlasExplorer({
               >
                 <span className="focused-reference-loader" aria-hidden="true" />
                 <div>
-                  <strong>Carregando Atlas 3D</strong>
+                  <strong>
+                    {detailMode ? 'Carregando órgão em detalhe' : 'Carregando Atlas 3D'}
+                  </strong>
                   <small>Preparando anatomia interativa.</small>
                 </div>
               </div>
             }
           >
-            <HumanAtlasExplorerScene
-              key={loadAttempt}
-              atlas={atlas}
-              state={state}
-              onSelect={choosePart}
-              onProgress={onProgress}
-              onError={onError}
-              appearance="explorer"
-            />
+            {detailMode && chosenDetail ? (
+              <OrganDetailScene
+                key={`${chosenDetail.id}-${loadAttempt}`}
+                organ={chosenDetail}
+                appearance="explorer"
+                rotate={state.rotate}
+                section={state.section}
+                reset={state.reset}
+                onReady={() => setProgress(100)}
+                onError={onError}
+              />
+            ) : (
+              <HumanAtlasExplorerScene
+                key={loadAttempt}
+                atlas={atlas}
+                state={state}
+                onSelect={choosePart}
+                onProgress={onProgress}
+                onError={onError}
+                appearance="explorer"
+              />
+            )}
           </Suspense>
+        )}
+
+        {detailMode && chosenDetail && (
+          <div className="reference-organ-detail-breadcrumb">
+            <button type="button" onClick={returnToBody}>
+              Corpo completo
+            </button>
+            <span aria-hidden="true">›</span>
+            <strong>{chosenDetail.label}</strong>
+            <em>modelo detalhado</em>
+          </div>
         )}
 
         <div className="reference-atlas-search reference-command-palette">
@@ -521,21 +595,37 @@ export function ReferenceAtlasExplorer({
                 </span>
               </div>
 
-              <button
-                className="primary"
-                type="button"
-                onClick={() =>
-                  setState((current) => ({
-                    ...current,
-                    isolate: !current.isolate,
-                    explode: 0,
-                    rotate: false,
-                    reset: current.reset + 1,
-                  }))
-                }
-              >
-                {state.isolate ? 'Mostrar anatomia ao redor' : 'Isolar estrutura'}
-              </button>
+              {chosenDetail && (
+                <button
+                  className="primary reference-organ-detail-action"
+                  type="button"
+                  onClick={detailMode ? returnToBody : openDetail}
+                >
+                  {detailMode
+                    ? 'Voltar ao corpo completo'
+                    : `Abrir ${chosenDetail.label} em detalhe`}
+                </button>
+              )}
+
+              {!detailMode && (
+                <button
+                  className={chosenDetail ? '' : 'primary'}
+                  type="button"
+                  onClick={() =>
+                    setState((current) => ({
+                      ...current,
+                      isolate: !current.isolate,
+                      explode: 0,
+                      rotate: false,
+                      reset: current.reset + 1,
+                    }))
+                  }
+                >
+                  {state.isolate
+                    ? 'Mostrar anatomia ao redor'
+                    : 'Isolar estrutura'}
+                </button>
+              )}
 
               <button type="button" onClick={() => onConfirmConcept(chosen)}>
                 Usar no relatório
@@ -545,6 +635,7 @@ export function ReferenceAtlasExplorer({
                 type="button"
                 onClick={() => {
                   setChosen(null)
+                  setDetailMode(false)
                   setState((current) => ({
                     ...current,
                     selected: [],
@@ -576,22 +667,31 @@ export function ReferenceAtlasExplorer({
         </aside>
 
         <nav
-          className="reference-view-controls"
-          aria-label="Controles de câmera do Atlas 3D"
+          className={
+            detailMode
+              ? 'reference-view-controls reference-detail-view-controls'
+              : 'reference-view-controls'
+          }
+          aria-label={
+            detailMode
+              ? 'Controles do órgão detalhado'
+              : 'Controles de câmera do Atlas 3D'
+          }
         >
-          {VIEW_OPTIONS.map((viewOption) => (
-            <button
-              key={viewOption.id}
-              type="button"
-              className={state.view === viewOption.id ? 'active' : ''}
-              aria-pressed={state.view === viewOption.id}
-              title={viewOption.label}
-              onClick={() => setView(viewOption.id)}
-            >
-              {viewOption.short}
-            </button>
-          ))}
-          <i />
+          {!detailMode &&
+            VIEW_OPTIONS.map((viewOption) => (
+              <button
+                key={viewOption.id}
+                type="button"
+                className={state.view === viewOption.id ? 'active' : ''}
+                aria-pressed={state.view === viewOption.id}
+                title={viewOption.label}
+                onClick={() => setView(viewOption.id)}
+              >
+                {viewOption.short}
+              </button>
+            ))}
+          {!detailMode && <i />}
           <button
             type="button"
             className={state.rotate ? 'active' : ''}
@@ -630,12 +730,32 @@ export function ReferenceAtlasExplorer({
           >
             ◐
           </button>
-          <button type="button" aria-label="Resetar Atlas 3D" onClick={reset}>
+          <button
+            type="button"
+            aria-label={detailMode ? 'Resetar órgão detalhado' : 'Resetar Atlas 3D'}
+            onClick={() => {
+              if (detailMode) {
+                setState((current) => ({
+                  ...current,
+                  rotate: false,
+                  section: false,
+                  reset: current.reset + 1,
+                }))
+              } else {
+                reset()
+              }
+            }}
+          >
             ↺
           </button>
+          {detailMode && (
+            <button type="button" onClick={returnToBody}>
+              Corpo
+            </button>
+          )}
         </nav>
 
-        <div className="reference-explode-control">
+        {!detailMode && <div className="reference-explode-control">
           <div>
             <label htmlFor="reference-explode">Separar anatomia</label>
             <output>{Math.round(state.explode * 100)}%</output>
@@ -662,7 +782,7 @@ export function ReferenceAtlasExplorer({
             <span>Corpo</span>
             <span>Separado</span>
           </div>
-        </div>
+        </div>}
 
         <div className="reference-atlas-hud">
           <span>
@@ -670,9 +790,13 @@ export function ReferenceAtlasExplorer({
             {chosen ? conceptDisplayName(chosen) : 'Nenhuma seleção'}
           </span>
           <span>
-            {state.section
-              ? 'Corte anatômico ativo'
-              : state.isolate
+            {detailMode
+              ? state.section
+                ? 'Detalhe do órgão · corte ativo'
+                : 'Detalhe do órgão'
+              : state.section
+                ? 'Corte anatômico ativo'
+                : state.isolate
                 ? 'Estrutura isolada'
                 : state.explode > 0.05
                   ? 'Anatomia separada'
@@ -705,8 +829,16 @@ export function ReferenceAtlasExplorer({
         )}
 
         <footer className="reference-atlas-caption">
-          <span>ANATOMIA HUMANA DE REFERÊNCIA</span>
-          <small>Não representa anatomia individual do paciente.</small>
+          <span>
+            {detailMode
+              ? 'DETALHE ANATÔMICO COMPLEMENTAR'
+              : 'ANATOMIA HUMANA DE REFERÊNCIA'}
+          </span>
+          <small>
+            {detailMode && chosenDetail
+              ? `${chosenDetail.label} · vinculado ao contexto do corpo completo.`
+              : 'Não representa anatomia individual do paciente.'}
+          </small>
         </footer>
       </div>
 
