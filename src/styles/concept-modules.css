@@ -42,12 +42,12 @@
   .clinical-report-studio
 ) :is(h1, h2, h3, h4),
 .medatlas-v2-workspace :is(
-  .anatomy-showcase-v3,
+  .patient-anatomy-live,
   .report-composer-v3,
   .publish-zone-v3,
-  .module-action-bar-v3,
-  .settings-grid-v3 > article,
-  .analytics-metrics-v3 article
+  .settings-actions,
+  .settings-grid > article,
+  .analytics-metrics article
 ) {
   border-color: var(--line-subtle);
   color: var(--text-secondary);
