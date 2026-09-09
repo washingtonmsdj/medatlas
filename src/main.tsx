@@ -12,6 +12,7 @@ import './module-workspaces.css'
 import './experience-surfaces.css'
 import './styles/clinical-sidebar.css'
 import './styles/concept-shell.css'
+import './styles/concept-modules.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
