@@ -371,6 +371,14 @@ export function ReferenceAtlasExplorer({
         : null,
     [chosen],
   )
+  const confirmedDetail = useMemo(
+    () =>
+      resolveOrganDetail(
+        report.finding.atlasConceptId,
+        report.finding.anatomicalStructure,
+      ),
+    [report.finding.atlasConceptId, report.finding.anatomicalStructure],
+  )
 
   const activeLabel = chosen
     ? conceptDisplayName(chosen)
@@ -396,11 +404,7 @@ export function ReferenceAtlasExplorer({
 
   const chooseConcept = (concept: AtlasConcept) => {
     setChosen(concept)
-    setFocusMode(
-      resolveOrganDetail(concept.id, conceptDisplayName(concept))
-        ? 'detail'
-        : 'body',
-    )
+    setFocusMode('body')
     setState((current) => ({
       ...current,
       selected: concept.elements,
@@ -420,11 +424,7 @@ export function ReferenceAtlasExplorer({
 
       const concept = partConcept(atlas, part)
       setChosen(concept)
-      setFocusMode(
-        resolveOrganDetail(concept.id, conceptDisplayName(concept))
-          ? 'detail'
-          : 'body',
-      )
+      setFocusMode('body')
       setState((current) => ({
         ...current,
         selected: [part.id],
@@ -598,7 +598,10 @@ export function ReferenceAtlasExplorer({
                   onClick={focusConfirmedAnatomy}
                 >
                   <span aria-hidden="true">
-                    <AtlasIcon name="heart" size={18} />
+                    <AtlasIcon
+                      name={confirmedDetail?.id === 'heart' ? 'heart' : 'organs'}
+                      size={18}
+                    />
                   </span>
                   <div>
                     <strong>{confirmedLabel}</strong>
@@ -694,7 +697,6 @@ export function ReferenceAtlasExplorer({
             onClick={() => {
               if (chosen) {
                 onConfirmConcept(chosen)
-                setFocusMode(detailAvailable ? 'detail' : 'body')
               } else {
                 searchRef.current?.focus()
               }
@@ -950,20 +952,22 @@ export function ReferenceAtlasExplorer({
             </div>
           )}
 
-          {chosen && (
-            <button
-              type="button"
-              className="atlas-v3-body-callout"
-              onClick={() => detailAvailable && setFocusMode('detail')}
-            >
-              <strong>{conceptDisplayName(chosen)}</strong>
-              <small>
-                {detailAvailable
-                  ? 'Clique para ver o modelo detalhado'
-                  : selectedSystem?.name ?? 'Estrutura selecionada'}
-              </small>
-            </button>
-          )}
+          {chosen &&
+            (detailAvailable ? (
+              <button
+                type="button"
+                className="atlas-v3-body-callout"
+                onClick={() => setFocusMode('detail')}
+              >
+                <strong>{conceptDisplayName(chosen)}</strong>
+                <small>Abrir modelo detalhado</small>
+              </button>
+            ) : (
+              <div className="atlas-v3-body-callout static" role="status">
+                <strong>{conceptDisplayName(chosen)}</strong>
+                <small>{selectedSystem?.name ?? 'Estrutura selecionada'}</small>
+              </div>
+            ))}
 
           <div className="atlas-v3-orientation" aria-hidden="true">
             <span>S</span>
@@ -1090,14 +1094,14 @@ export function ReferenceAtlasExplorer({
             </span>
           </div>
           <select
-            aria-label="Vista do modelo detalhado"
-            value={detailRotate ? 'rotating' : 'anterior'}
+            aria-label="Modo de navegação do modelo detalhado"
+            value={detailRotate ? 'rotating' : 'manual'}
             onChange={(event) =>
               setDetailRotate(event.target.value === 'rotating')
             }
             disabled={!detailAvailable}
           >
-            <option value="anterior">Vista anterior</option>
+            <option value="manual">Controle manual</option>
             <option value="rotating">Rotação automática</option>
           </select>
         </div>
@@ -1317,7 +1321,7 @@ export function ReferenceAtlasExplorer({
             <strong>Qualidade do modelo</strong>
             <small>Modelo anatômico local validado para esta visualização.</small>
           </div>
-          <b>HD</b>
+          <b>3D</b>
         </footer>
       </aside>
     </section>
