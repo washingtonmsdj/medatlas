@@ -17,8 +17,8 @@ test('clinical anatomy depth controls keep separate hit areas on desktop', async
     await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
     await page
       .locator('.suggestion-item')
-      .filter({ hasText: 'FMA7088' })
-      .getByRole('button', { name: 'Confirmar estrutura' })
+      .filter({ hasText: 'Coração' })
+      .getByRole('button', { name: 'Usar estrutura' })
       .click()
 
     const depth = page.getByRole('navigation', {
