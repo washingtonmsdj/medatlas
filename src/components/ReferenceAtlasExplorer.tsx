@@ -942,7 +942,7 @@ export function ReferenceAtlasExplorer({
           <span aria-hidden="true">✓</span>
           <div>
             <strong>Qualidade do modelo</strong>
-            <small>Assets locais verificados por provenance e SHA-256.</small>
+            <small>Modelo anatômico local validado para esta visualização.</small>
           </div>
           <b>HD</b>
         </footer>
