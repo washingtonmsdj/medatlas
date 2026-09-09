@@ -547,6 +547,16 @@ test('patient view can explore detailed organ without exposing or changing the c
   })
   await expect(depth).toBeVisible()
 
+  await page.setViewportSize({ width: 390, height: 844 })
+
+  const patientDepthButtons = depth.getByRole('button')
+  await expect(patientDepthButtons).toHaveCount(2)
+  for (let index = 0; index < 2; index += 1) {
+    const box = await patientDepthButtons.nth(index).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.height).toBeGreaterThanOrEqual(44)
+  }
+
   await depth
     .getByRole('button', { name: 'Ver Coração em detalhe' })
     .click()
