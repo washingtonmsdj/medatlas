@@ -187,6 +187,7 @@ for (const [name, stylesheet] of [
   ['clinical-shell.css', clinicalShellStyles],
   ['anatomy-responsive.css', anatomyResponsiveStyles],
   ['reference-atlas.css', referenceAtlasStyles],
+  ['styles.css', baseStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -268,6 +269,22 @@ for (const legacySelector of [
   ) {
     failures.push(
       `Dead workspace selectors must not return: ${legacySelector}`,
+    )
+  }
+}
+
+for (const deadBaseSelector of [
+  '.topbar {',
+  '.eyebrow',
+  '.atlas-actions',
+  '.local-file-note',
+]) {
+  if (
+    baseStyles.includes(deadBaseSelector) ||
+    clinicalShellStyles.includes(deadBaseSelector)
+  ) {
+    failures.push(
+      `Dead base selectors must not return: ${deadBaseSelector}`,
     )
   }
 }
