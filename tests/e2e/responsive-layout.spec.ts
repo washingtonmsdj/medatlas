@@ -12,7 +12,7 @@ const MODULES = [
   },
   {
     button: 'Pacientes',
-    heading: 'Paciente atual',
+    heading: 'Paciente demonstração',
   },
   {
     button: 'Equipe',
@@ -24,7 +24,7 @@ const MODULES = [
   },
   {
     button: 'Configurações',
-    heading: 'Configurações',
+    heading: 'Configurações do workspace',
   },
 ] as const
 
