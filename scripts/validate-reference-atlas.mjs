@@ -42,7 +42,6 @@ const styles = (
       'src/styles/supporting-modules.css',
       'src/styles/organization-analytics.css',
       'src/styles/anatomy-responsive.css',
-      'src/styles/interaction-polish.css',
       'src/module-workspaces.css',
       'src/styles/concept-modules.css',
       'src/reference-atlas.css',
