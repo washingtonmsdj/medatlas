@@ -984,8 +984,8 @@ export function ReferenceAtlasExplorer({
               <strong>Proveniência anatômica</strong>
               <p>
                 Human Atlas / BodyParts3D permanece como fonte de verdade. O
-                modelo de órgão é uma visualização suplementar vendorizada e
-                verificada por SHA-256.
+                modelo de órgão é uma visualização suplementar validada e
+                vinculada ao contexto anatômico.
               </p>
             </div>
           )}
