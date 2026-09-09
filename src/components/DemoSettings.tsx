@@ -44,7 +44,7 @@ export function DemoSettings({ onNewReport }: Props) {
         }
       />
 
-      <div className="settings-grid settings-grid-v2 settings-grid-v3 mvp-settings-grid">
+      <div className="settings-grid mvp-settings-grid">
         <article className="settings-branding-card">
           <div className="settings-card-heading">
             <span
@@ -106,7 +106,7 @@ export function DemoSettings({ onNewReport }: Props) {
         <AttributionNotice />
       </details>
 
-      <div className="settings-actions settings-actions-v2 module-action-bar-v3">
+      <div className="settings-actions">
         <div>
           <strong>Novo relatório</strong>
           <span>Inicie um novo fluxo clínico visual.</span>
