@@ -6,6 +6,7 @@ import {
 } from '../data/demo-clinical-repository'
 import { DEMO_ORGANIZATION_BRANDING } from '../organization/demo-organization'
 import { demoShareTtlLabel } from '../product/constraints'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   onNewReport: () => void
@@ -27,20 +28,21 @@ export function DemoSettings({ onNewReport }: Props) {
 
   return (
     <section className="settings-module settings-module-v2 module-v3 mvp-surface">
-      <div className="settings-hero settings-hero-v2 workspace-hero-v3 mvp-page-hero">
-        <div className="module-hero-copy">
-          <span className="section-kicker">CONFIGURAÇÕES</span>
-          <h2>Configurações</h2>
-          <p>Preferências da clínica e dos links compartilhados.</p>
-        </div>
-        <div className="environment-badge workspace-hero-badge">
-          <i aria-hidden="true" />
-          <span>
-            <strong>Ambiente demo</strong>
-            <small>somente dados fictícios</small>
-          </span>
-        </div>
-      </div>
+      <WorkspacePageHeader
+        eyebrow="CONFIGURAÇÕES"
+        title="Configurações"
+        description="Preferências da clínica, privacidade e links compartilhados."
+        className="settings-hero settings-hero-v2"
+        meta={
+          <div className="environment-badge workspace-hero-badge">
+            <i aria-hidden="true" />
+            <span>
+              <strong>Ambiente demo</strong>
+              <small>somente dados fictícios</small>
+            </span>
+          </div>
+        }
+      />
 
       <div className="settings-grid settings-grid-v2 settings-grid-v3 mvp-settings-grid">
         <article className="settings-branding-card">
@@ -58,12 +60,16 @@ export function DemoSettings({ onNewReport }: Props) {
             </div>
           </div>
           <p>Identidade usada na visão do paciente.</p>
-          <button type="button" disabled>Editar identidade</button>
+          <button type="button" disabled>
+            Editar identidade
+          </button>
         </article>
 
         <article>
           <div className="settings-card-heading">
-            <span className="settings-icon safe" aria-hidden="true">S</span>
+            <span className="settings-icon safe" aria-hidden="true">
+              S
+            </span>
             <div>
               <span className="label">DADOS</span>
               <strong>Somente fictícios</strong>
@@ -75,17 +81,24 @@ export function DemoSettings({ onNewReport }: Props) {
 
         <article>
           <div className="settings-card-heading">
-            <span className="settings-icon links" aria-hidden="true">L</span>
+            <span className="settings-icon links" aria-hidden="true">
+              L
+            </span>
             <div>
               <span className="label">LINKS</span>
               <strong>{shareCount}</strong>
             </div>
           </div>
           <p>Expiram em {demoShareTtlLabel()}.</p>
-          <button type="button" onClick={clear}>Limpar links</button>
-          {message && <small className="settings-message" role="status">{message}</small>}
+          <button type="button" onClick={clear}>
+            Limpar links
+          </button>
+          {message && (
+            <small className="settings-message" role="status">
+              {message}
+            </small>
+          )}
         </article>
-
       </div>
 
       <details className="mvp-technical-details">
