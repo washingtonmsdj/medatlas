@@ -515,3 +515,18 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 1. validar CI, Browser E2E e Pages no HEAD exato;
 2. auditar `supporting-modules.css` e `organization-analytics.css` por consumidor antes de migrar/remover o restante do tema claro histórico;
 3. não mexer no renderer Human Atlas/órgão detalhado enquanto a limpeza visual não exigir mudança funcional.
+
+
+### Continuação do checkpoint visual — supporting, analytics e experiência (2026-09-09)
+- [x] `supporting-modules.css` reconstruído somente com seletores consumidos pelo MVP; removidos `module-hero-copy`, `module-hero-status`, `patient-workspace-grid-v2`, `patient-profile-card-v2`, `patient-profile-meta`, `settings-status-strip`, `settings-governance` e `patient-production-boundary-v2`;
+- [x] `organization-analytics.css` reconstruído para Equipe, branding e Analytics ativos; removidos `organization-structure-*`, `settings-branding-preview` e `analytics-boundary`;
+- [x] classes antigas sem responsabilidade visual foram retiradas do JSX de Pacientes, Configurações, Equipe e Analytics; classes ainda funcionais foram preservadas;
+- [x] `mvp-mode.css`, `interaction-polish.css` e `experience-surfaces.css` migrados para tokens e limpos de `mvp-page-hero`, `mvp-compact-grid`, `module-hero-copy` e `module-heading`;
+- [x] estados de rota do paciente, retry/erro do Atlas, loading 3D, permissões, analytics e configuração permanecem funcionais e agora compartilham a mesma fundação visual;
+- [x] todas essas camadas canônicas passam a falhar no `validate:mvp-ui` se voltarem a definir `#hex`/`rgb(a)` ou reintroduzirem seletores mortos.
+
+### Próxima frente P0
+1. fechar CI + Browser E2E + Pages do último commit funcional desta rodada;
+2. atacar `clinical-shell.css`, `styles.css`, `anatomy-responsive.css` e `reference-atlas.css` por domínio, sem reescrever o renderer 3D;
+3. separar CSS estrutural do Clinical Studio/Atlas de paleta histórica, migrando primeiro superfícies compartilhadas e só removendo seletores com consumidor comprovado;
+4. reduzir gradualmente o número de folhas importadas quando a autoridade de cada camada estiver comprovadamente absorvida, sem criar um mega-CSS.
