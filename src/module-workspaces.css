@@ -236,34 +236,6 @@
   line-height: 1.62;
 }
 
-.anatomy-context-meta-v3 {
-  display: grid;
-  gap: 7px;
-  margin-top: 9px;
-}
-
-.anatomy-context-meta-v3 > span {
-  display: grid;
-  gap: 2px;
-  padding: 9px 10px;
-  border: 1px solid var(--line-subtle);
-  border-radius: var(--radius-control);
-  background: var(--surface-control);
-}
-
-.anatomy-context-meta-v3 small {
-  color: var(--text-muted);
-  font-size: var(--type-caption);
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-.anatomy-context-meta-v3 strong {
-  color: var(--text-strong);
-  font-size: var(--type-small);
-}
-
 .patient-anatomy-live > .anatomy-focus-preview {
   min-width: 0;
   height: 100%;
@@ -851,10 +823,6 @@
   .patient-anatomy-live .focused-reference-loading,
   .patient-anatomy-live .renderer-module-loading {
     min-height: 440px;
-  }
-
-  .document-step-rail-v3 {
-    grid-template-columns: 1fr;
   }
 
   .overview-current-action {
