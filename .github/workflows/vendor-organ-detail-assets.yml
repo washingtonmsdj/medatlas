@@ -1,0 +1,56 @@
+name: Vendor organ detail assets
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/vendor-organ-detail-assets.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: medatlas-vendor-organ-detail-assets
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Use Node 22.13
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+
+      - name: Vendor pinned detailed organ models
+        run: node scripts/vendor-organ-detail-assets.mjs
+
+      - name: Verify generated closure
+        run: |
+          test -f public/organ-models/manifest.json
+          test "$(find public/organ-models -maxdepth 1 -name '*.glb' | wc -l)" -eq 9
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('public/organ-models/manifest.json','utf8'));if(m.upstreamCommit!=='8c0e6f321a47f895ae58ce098028b92774733ee9'||m.assets.length!==9)process.exit(1)"
+
+      - name: Commit vendored assets when changed
+        shell: bash
+        run: |
+          if git diff --quiet -- public/organ-models && [ -d public/organ-models ]; then
+            if git ls-files --error-unmatch public/organ-models/manifest.json >/dev/null 2>&1; then
+              echo "Organ detail assets already match the pinned source."
+              exit 0
+            fi
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/organ-models
+          git commit -m "build: vendor pinned organ detail models"
+          git push origin HEAD:main
