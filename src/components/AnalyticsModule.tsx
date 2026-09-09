@@ -72,7 +72,7 @@ export function AnalyticsModule({ repository }: Props) {
       />
 
       {status === 'error' ? (
-        <div className="analytics-error analytics-error-v3" role="alert">
+        <div className="analytics-error" role="alert">
           <div>
             <strong>Não foi possível carregar os dados.</strong>
           </div>
@@ -83,7 +83,7 @@ export function AnalyticsModule({ repository }: Props) {
       ) : (
         <>
           <div
-            className={`analytics-metrics analytics-metrics-v3 ${status === 'loading' ? 'is-loading' : ''}`}
+            className={`analytics-metrics ${status === 'loading' ? 'is-loading' : ''}`}
             aria-label="Resumo de visualizações dos relatórios"
             aria-busy={status === 'loading'}
           >
@@ -109,7 +109,7 @@ export function AnalyticsModule({ repository }: Props) {
             </article>
           </div>
 
-          <section className="analytics-report-card analytics-report-card-v3">
+          <section className="analytics-report-card">
             <header>
               <div>
                 <span className="section-kicker">RELATÓRIOS</span>
