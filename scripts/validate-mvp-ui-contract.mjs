@@ -32,6 +32,8 @@ const sidebarStyles = await readFile('src/styles/clinical-sidebar.css', 'utf8')
 const pageHeaderStyles = await readFile('src/styles/workspace-page-header.css', 'utf8')
 const conceptModulesStyles = await readFile('src/styles/concept-modules.css', 'utf8')
 const moduleWorkspaceStyles = await readFile('src/module-workspaces.css', 'utf8')
+const supportingModuleStyles = await readFile('src/styles/supporting-modules.css', 'utf8')
+const organizationAnalyticsStyles = await readFile('src/styles/organization-analytics.css', 'utf8')
 
 const failures = []
 
@@ -170,6 +172,8 @@ for (const [name, stylesheet] of [
   ['workspace-page-header.css', pageHeaderStyles],
   ['concept-modules.css', conceptModulesStyles],
   ['module-workspaces.css', moduleWorkspaceStyles],
+  ['supporting-modules.css', supportingModuleStyles],
+  ['organization-analytics.css', organizationAnalyticsStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -190,13 +194,43 @@ for (const legacySelector of [
   'module-boundary-v3',
   'settings-governance-v3',
   'mvp-page-hero',
+  'module-hero-status',
+  'patient-workspace-grid-v2',
+  'patient-profile-card-v2',
+  'patient-profile-meta',
+  'settings-status-strip',
+  'settings-governance',
+  'patient-production-boundary-v2',
+  'organization-structure-card',
+  'organization-structure-tree',
+  'organization-structure-unit',
+  'organization-structure-workspaces',
+  'settings-branding-preview',
+  'analytics-boundary',
 ]) {
   if (
     conceptModulesStyles.includes(legacySelector) ||
-    moduleWorkspaceStyles.includes(legacySelector)
+    moduleWorkspaceStyles.includes(legacySelector) ||
+    supportingModuleStyles.includes(legacySelector) ||
+    organizationAnalyticsStyles.includes(legacySelector)
   ) {
     failures.push(
       `Dead workspace selectors must not return: ${legacySelector}`,
+    )
+  }
+}
+
+for (const [file, obsoleteClass] of [
+  ['src/components/PatientsModule.tsx', 'patients-module-v2'],
+  ['src/components/PatientsModule.tsx', 'patients-hero-v2'],
+  ['src/components/DemoSettings.tsx', 'settings-module-v2'],
+  ['src/components/DemoSettings.tsx', 'settings-hero-v2'],
+  ['src/components/TeamModule.tsx', 'className="team-hero"'],
+  ['src/components/AnalyticsModule.tsx', 'className="analytics-hero"'],
+]) {
+  if (sources.get(file).includes(obsoleteClass)) {
+    failures.push(
+      `Obsolete page layout class must not return: ${file} -> ${obsoleteClass}`,
     )
   }
 }
