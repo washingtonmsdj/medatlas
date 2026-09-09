@@ -50,11 +50,16 @@ kidneys, eyeball, intestine, pancreas and skin. Exact MedAtlas/FMA mappings are
 used where already curated. Label matching is only a navigation aid and never
 changes the report's confirmed FMA concept.
 
-Detailed GLBs load only after the user explicitly enters organ detail. They are
-currently requested from the immutable upstream checkpoint above, so they do
-not increase the MedAtlas initial anatomy payload. Deployments can set
-`VITE_ORGAN_DETAIL_ASSET_BASE` to a controlled MedAtlas asset origin that
-contains the same model filenames.
+Detailed GLBs load only after the user explicitly enters organ detail. The nine
+models are vendored under `public/organ-models` from the immutable upstream
+checkpoint above, with `manifest.json`, source Git blob IDs, byte sizes and
+SHA-256 digests. They increase the deployment asset closure but do **not**
+increase the initial client JS/anatomy request because the GLB is fetched only
+on detail entry.
+
+Deployments can set `VITE_ORGAN_DETAIL_ASSET_BASE` only for a controlled
+equivalent asset origin containing the same pinned model filenames and
+provenance.
 
 The detailed model is supplementary visualization. Human Atlas / BodyParts3D /
 FMA remains the report anatomy authority and the full-body context remains the
