@@ -182,6 +182,7 @@ for (const [name, stylesheet] of [
   ['mvp-mode.css', mvpModeStyles],
   ['interaction-polish.css', interactionPolishStyles],
   ['experience-surfaces.css', experienceSurfaceStyles],
+  ['clinical-shell.css', clinicalShellStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
