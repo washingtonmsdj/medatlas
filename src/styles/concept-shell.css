@@ -1,0 +1,497 @@
+.medatlas-v2-shell {
+  background: #06111d;
+}
+
+.medatlas-v2-workspace {
+  position: relative;
+  min-width: 0;
+  min-height: 100vh;
+  padding: 0 10px 0;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 45% -10%, rgba(24, 81, 134, .16), transparent 30%),
+    #07131f;
+}
+
+.medatlas-v2-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: minmax(320px, 520px) auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 -10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(102, 151, 197, .16);
+  background: rgba(7, 20, 34, .92);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+  backdrop-filter: blur(18px);
+}
+
+.medatlas-v2-topbar .global-command-search {
+  position: relative;
+  width: min(100%, 520px);
+  min-width: 0;
+  justify-self: center;
+}
+
+.medatlas-v2-topbar .global-command-search > span {
+  position: absolute;
+  z-index: 2;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7392ab;
+}
+
+.medatlas-v2-topbar .global-command-search input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 48px 0 36px;
+  border: 1px solid rgba(101, 150, 195, .22);
+  border-radius: 11px;
+  outline: none;
+  color: #dceaf7;
+  background: rgba(12, 30, 49, .78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+  font-size: 8.5px;
+}
+
+.medatlas-v2-topbar .global-command-search input:focus {
+  border-color: rgba(82, 170, 246, .54);
+  box-shadow: 0 0 0 3px rgba(56, 140, 219, .09);
+}
+
+.medatlas-v2-topbar .global-command-search input::placeholder {
+  color: #637f96;
+}
+
+.medatlas-v2-topbar .global-command-search kbd {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 3px 5px;
+  border: 1px solid rgba(114, 156, 193, .20);
+  border-radius: 6px;
+  color: #6f89a0;
+  background: rgba(5, 16, 28, .66);
+  font-size: 6px;
+}
+
+.medatlas-v2-topbar .global-command-results {
+  position: absolute;
+  z-index: 80;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  border: 1px solid rgba(86, 145, 200, .30);
+  border-radius: 12px;
+  background: rgba(5, 16, 28, .98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .44);
+}
+
+.medatlas-v2-topbar .global-command-results-heading,
+.medatlas-v2-topbar .global-command-results footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  color: #6f8aa1;
+  font-size: 7px;
+}
+
+.medatlas-v2-topbar .global-command-options {
+  display: grid;
+  gap: 3px;
+  max-height: 330px;
+  overflow: auto;
+  padding: 5px;
+}
+
+.medatlas-v2-topbar .global-command-options button {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 8px;
+  color: #b4c8da;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.medatlas-v2-topbar .global-command-options button.active,
+.medatlas-v2-topbar .global-command-options button:hover {
+  background: rgba(39, 93, 150, .24);
+}
+
+.medatlas-v2-topbar .global-command-group {
+  color: #6298bd;
+  font-size: 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.medatlas-v2-topbar .global-command-options button > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.medatlas-v2-topbar .global-command-options strong {
+  overflow: hidden;
+  color: #e8f3fb;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.medatlas-v2-topbar .global-command-options small {
+  overflow: hidden;
+  color: #71899e;
+  font-size: 6.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.medatlas-v2-topbar .topbar-utility-actions,
+.medatlas-v2-topbar .topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.medatlas-v2-topbar .topbar-utility-anchor {
+  position: relative;
+}
+
+.medatlas-v2-topbar .topbar-icon-button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  color: #b3c9db;
+  background: transparent;
+  cursor: pointer;
+}
+
+.medatlas-v2-topbar .topbar-icon-button:hover {
+  background: rgba(46, 90, 137, .22);
+}
+
+.medatlas-v2-topbar .notification-button {
+  position: relative;
+}
+
+.medatlas-v2-topbar .notification-button > span {
+  font-size: 14px;
+}
+
+.medatlas-v2-topbar .notification-button i {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #071522;
+  border-radius: 50%;
+  background: #f15c70;
+}
+
+.medatlas-v2-topbar .doctor-chip {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 3px 7px 3px 3px;
+  border: 0;
+  border-radius: 11px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.medatlas-v2-topbar .doctor-chip:hover {
+  background: rgba(45, 85, 126, .18);
+}
+
+.medatlas-v2-topbar .doctor-chip > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(117, 163, 202, .30);
+  border-radius: 50%;
+  color: #f4f9ff;
+  background: linear-gradient(145deg, #708ca5, #324c66);
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.medatlas-v2-topbar .doctor-chip > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.medatlas-v2-topbar .doctor-chip strong {
+  overflow: hidden;
+  max-width: 160px;
+  color: #eef6fd;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.medatlas-v2-topbar .doctor-chip small {
+  overflow: hidden;
+  color: #7891a7;
+  font-size: 6.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.medatlas-v2-topbar .doctor-chip b {
+  color: #7e98ad;
+  font-size: 9px;
+}
+
+.medatlas-v2-topbar .topbar-popover {
+  position: absolute;
+  z-index: 90;
+  top: calc(100% + 9px);
+  right: 0;
+  width: 290px;
+  overflow: hidden;
+  border: 1px solid rgba(92, 145, 194, .30);
+  border-radius: 12px;
+  background: rgba(6, 18, 31, .98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .46);
+  color: #b6c9d8;
+}
+
+.medatlas-v2-topbar .topbar-popover header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px;
+  border-bottom: 1px solid rgba(94, 140, 181, .15);
+}
+
+.medatlas-v2-topbar .topbar-popover header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.medatlas-v2-topbar .topbar-popover header strong {
+  color: #e7f2fa;
+  font-size: 9px;
+}
+
+.medatlas-v2-topbar .topbar-popover header small,
+.medatlas-v2-topbar .profile-popover-facts,
+.medatlas-v2-topbar .task-center-complete small {
+  color: #758da2;
+  font-size: 7px;
+}
+
+.medatlas-v2-topbar .notification-item,
+.medatlas-v2-topbar .profile-popover-actions button {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  color: #aabed0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.medatlas-v2-topbar .notification-item:hover,
+.medatlas-v2-topbar .profile-popover-actions button:hover {
+  background: rgba(43, 91, 143, .20);
+}
+
+.medatlas-v2-topbar .notification-item {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+}
+
+.medatlas-v2-topbar .notification-item > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.medatlas-v2-topbar .notification-item strong {
+  color: #dcebf6;
+  font-size: 8px;
+}
+
+.medatlas-v2-topbar .notification-item small {
+  color: #70879a;
+  font-size: 6.5px;
+}
+
+.medatlas-v2-topbar .profile-popover-header {
+  justify-content: flex-start;
+}
+
+.medatlas-v2-topbar .profile-popover-header > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #2f5373;
+  color: #fff;
+  font-size: 8px;
+}
+
+.medatlas-v2-topbar .profile-popover-facts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 10px;
+}
+
+.medatlas-v2-topbar .profile-popover-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.medatlas-v2-topbar .profile-popover-facts dt,
+.medatlas-v2-topbar .profile-popover-facts dd {
+  margin: 0;
+}
+
+.medatlas-v2-topbar .profile-popover-actions {
+  display: grid;
+  border-top: 1px solid rgba(88, 131, 170, .14);
+}
+
+.medatlas-v2-topbar .profile-popover-actions button {
+  padding: 0 11px;
+  font-size: 8px;
+}
+
+.medatlas-v2-demo-boundary {
+  position: absolute;
+  z-index: 35;
+  top: 66px;
+  right: 18px;
+  pointer-events: none;
+}
+
+.medatlas-v2-demo-boundary .demo-privacy-banner {
+  margin: 0;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-color: rgba(207, 177, 105, .24);
+  border-radius: 999px;
+  background: rgba(37, 31, 18, .82);
+  box-shadow: none;
+  color: #b8a477;
+  backdrop-filter: blur(10px);
+  font-size: 6px;
+  pointer-events: auto;
+}
+
+.medatlas-v2-demo-boundary .demo-privacy-banner strong {
+  color: #d8bd7c;
+  font-size: 6px;
+}
+
+.medatlas-v2-demo-boundary .demo-privacy-banner span {
+  color: #9f8e67;
+  font-size: 6px;
+}
+
+@media (max-width: 900px) {
+  .medatlas-v2-workspace {
+    padding-inline: 8px;
+  }
+
+  .medatlas-v2-topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-inline: -8px;
+    padding-inline: 10px;
+  }
+
+  .medatlas-v2-topbar .global-command-search {
+    width: 100%;
+  }
+
+  .medatlas-v2-topbar .doctor-chip > div,
+  .medatlas-v2-topbar .doctor-chip > b {
+    display: none;
+  }
+
+  .medatlas-v2-topbar .doctor-chip {
+    grid-template-columns: 36px;
+    padding-right: 3px;
+  }
+
+  .medatlas-v2-demo-boundary {
+    top: 64px;
+    right: 10px;
+  }
+
+  .medatlas-v2-demo-boundary .demo-privacy-banner span {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .medatlas-v2-topbar {
+    min-height: 58px;
+    gap: 7px;
+  }
+
+  .medatlas-v2-topbar .global-command-search input {
+    min-height: 42px;
+    padding-right: 10px;
+  }
+
+  .medatlas-v2-topbar .global-command-search kbd {
+    display: none;
+  }
+
+  .medatlas-v2-topbar .topbar-actions {
+    gap: 3px;
+  }
+
+  .medatlas-v2-topbar .topbar-icon-button,
+  .medatlas-v2-topbar .doctor-chip > span {
+    width: 40px;
+    height: 40px;
+  }
+
+  .medatlas-v2-topbar .doctor-chip {
+    min-height: 40px;
+    grid-template-columns: 40px;
+  }
+
+  .medatlas-v2-demo-boundary {
+    display: none;
+  }
+}
