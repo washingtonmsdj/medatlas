@@ -54,7 +54,7 @@ export function AnalyticsModule({ repository }: Props) {
   }, [load])
 
   return (
-    <section className="analytics-module module-v3 mvp-surface">
+    <section className="analytics-module workspace-page mvp-surface">
       <WorkspacePageHeader
         eyebrow="ANALYTICS"
         title="Desempenho dos relatórios"
