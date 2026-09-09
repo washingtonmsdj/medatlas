@@ -29,6 +29,7 @@ import { ReportComposer } from './components/ReportComposer'
 import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
 import { GlobalCommandSearch, type GlobalSearchAction } from './components/GlobalCommandSearch'
 import { TopbarUtilityActions } from './components/TopbarUtilityActions'
+import { WorkspacePageHeader } from './components/WorkspacePageHeader'
 import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
@@ -301,7 +302,29 @@ function ClinicianApp() {
   const reportPresentation = deriveReportPresentation(report)
 
   const reportWorkflow = (
-    <>
+    <section className="module-v3 mvp-surface">
+      <WorkspacePageHeader
+        eyebrow="RELATÓRIO VISUAL"
+        title={report.title}
+        description={`${report.patient.displayName} · ${reportPresentation.statusLabel}`}
+        meta={
+          <span
+            className={
+              reportPresentation.completion.share
+                ? 'report-state-chip published'
+                : 'report-state-chip'
+            }
+          >
+            {reportPresentation.completed}/{reportPresentation.total} etapas
+          </span>
+        }
+        actions={
+          <button type="button" onClick={() => setViewMode('patient')}>
+            Prévia do paciente
+          </button>
+        }
+      />
+
       <section className="workflow-strip workflow-strip-premium" aria-label="Fluxo do relatório">
         {reportPresentation.steps.map((step, index) => (
           <div
@@ -322,7 +345,7 @@ function ClinicianApp() {
             <span>01</span>
             <div>
               <strong>Laudo / exame</strong>
-              <small>Fonte clínica e estruturas sugeridas</small>
+              <small>Adicione o texto e localize a anatomia</small>
             </div>
           </div>
 
@@ -345,8 +368,8 @@ function ClinicianApp() {
           <div className="studio-panel-label">
             <span>02</span>
             <div>
-              <strong>Visualização 3D</strong>
-              <small>Confirme a referência anatômica</small>
+              <strong>Anatomia 3D</strong>
+              <small>Confirme a estrutura usada no relatório</small>
             </div>
             <button type="button" onClick={() => setActive('Atlas 3D')}>
               Abrir Atlas completo
@@ -386,10 +409,10 @@ function ClinicianApp() {
               <h2>{report.finding.anatomicalStructure}</h2>
               <p>
                 {!report.finding.atlasConceptId
-                  ? 'Analise o texto ou use a busca do atlas para escolher uma referência.'
+                  ? 'Analise o texto ou use a busca do Atlas para escolher a estrutura.'
                   : report.finding.anatomyReviewRequired
                     ? 'O texto mudou. Confirme novamente a estrutura antes de continuar.'
-                    : 'Referência visual validada para esta versão do texto.'}
+                    : 'Estrutura confirmada para esta versão do relatório.'}
               </p>
             </div>
 
@@ -422,7 +445,7 @@ function ClinicianApp() {
             <span>03</span>
             <div>
               <strong>Explicação ao paciente</strong>
-              <small>Rascunho assistido + revisão clínica</small>
+              <small>Edite, revise e compartilhe</small>
             </div>
           </div>
 
@@ -439,7 +462,7 @@ function ClinicianApp() {
           />
         </div>
       </section>
-    </>
+    </section>
   )
 
   const renderModule = () => {
