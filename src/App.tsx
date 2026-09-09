@@ -21,7 +21,6 @@ import {
 import { TeamModule } from './components/TeamModule'
 import { PatientsModule } from './components/PatientsModule'
 import { Overview } from './components/Overview'
-import { OrganizationSwitcher } from './components/OrganizationSwitcher'
 import {
   InvalidPatientLink,
   PatientReportPage,
@@ -30,7 +29,6 @@ import { ReportComposer } from './components/ReportComposer'
 import { ReferenceAtlasExplorer } from './components/ReferenceAtlasExplorer'
 import { GlobalCommandSearch, type GlobalSearchAction } from './components/GlobalCommandSearch'
 import { TopbarUtilityActions } from './components/TopbarUtilityActions'
-import { ViewModeSwitcher, type MedAtlasViewMode } from './components/ViewModeSwitcher'
 import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
@@ -131,10 +129,8 @@ function ClinicianApp() {
     demoReport,
   )
   const [active, setActive] = useState<ModuleName>('Visão geral')
-  const [viewMode, setViewMode] = useState<MedAtlasViewMode>('professional')
-  const [activeWorkspaceId, setActiveWorkspaceId] = useState(
-    DEFAULT_DEMO_WORKSPACE_ID,
-  )
+  const [viewMode, setViewMode] = useState<'professional' | 'patient'>('professional')
+  const [activeWorkspaceId] = useState(DEFAULT_DEMO_WORKSPACE_ID)
   const [publishing, setPublishing] = useState(false)
   const [generatingDraft, setGeneratingDraft] = useState(false)
   const [publishError, setPublishError] = useState('')
@@ -470,7 +466,10 @@ function ClinicianApp() {
             initialConceptId={
               report.finding.atlasConceptId || undefined
             }
+            report={report}
             onConfirmConcept={confirmConcept}
+            onOpenReport={() => setActive('Relatórios visuais')}
+            onOpenPatientPreview={() => setViewMode('patient')}
           />
         )
 
@@ -563,7 +562,7 @@ function ClinicianApp() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell medatlas-v2-shell">
       <a className="skip-link" href="#clinical-workspace">
         Ir para o conteúdo principal
       </a>
@@ -573,18 +572,10 @@ function ClinicianApp() {
         workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
         unitName={activeUnit?.name}
         onNavigate={setActive}
-        onNewReport={startNewReport}
       />
 
-      <main className="workspace" id="clinical-workspace" tabIndex={-1}>
-        <header className="topbar topbar-saas">
-          <OrganizationSwitcher
-            activeWorkspaceId={activeWorkspaceId}
-            onWorkspaceChange={setActiveWorkspaceId}
-          />
-
-          <ViewModeSwitcher mode={viewMode} onChange={setViewMode} />
-
+      <main className="workspace medatlas-v2-workspace" id="clinical-workspace" tabIndex={-1}>
+        <header className="medatlas-v2-topbar">
           <GlobalCommandSearch actions={globalSearchActions} />
 
           <TopbarUtilityActions
@@ -609,10 +600,13 @@ function ClinicianApp() {
             onOpenAtlas={() => setActive('Atlas 3D')}
             onOpenTeam={() => setActive('Equipe')}
             onOpenSettings={() => setActive('Configurações')}
+            onOpenPatientPreview={() => setViewMode('patient')}
           />
         </header>
 
-        <DemoPrivacyBanner />
+        <div className="medatlas-v2-demo-boundary">
+          <DemoPrivacyBanner />
+        </div>
 
         {renderModule()}
       </main>
