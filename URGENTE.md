@@ -3,7 +3,7 @@
 > **Documento canônico de continuidade.** Leia antes de alterar o projeto.
 > O objetivo deste arquivo é registrar o estado **atual**, não preservar um diário de commits.
 >
-> Última consolidação: **2026-09-08**
+> Última consolidação: **2026-09-09**
 > Branch canônica: **`main`**
 > Repositório: **`washingtonmsdj/medatlas`**
 
@@ -52,9 +52,10 @@ O wedge vencedor continua sendo:
 
 ## 1. Regras de arquitetura — INVARIANTES
 
-1. Existe **um único engine Human Atlas canônico**.
-2. Explorer, clinical e patient são modos do mesmo engine, não renderers paralelos.
-3. BodyParts3D/FMA representam **anatomia humana de referência**, nunca reconstrução do paciente.
+1. Existe **um único engine Human Atlas canônico** para a autoridade anatômica BodyParts3D/FMA.
+2. Explorer, clinical e patient são modos do mesmo Human Atlas; não criar um segundo renderer concorrente para confirmar anatomia.
+3. É permitido um **viewer suplementar de órgão em detalhe** somente como segunda profundidade explícita (`Corpo → Órgão em detalhe`), depois de uma estrutura Human Atlas/FMA selecionada. Ele nunca muda a anatomia confirmada nem vira fonte de verdade.
+4. BodyParts3D/FMA representam **anatomia humana de referência**, nunca reconstrução do paciente.
 4. IA nunca pode inventar anatomia que não resolva no atlas fixado.
 5. IA nunca publica sozinha.
 6. Alterar laudo, anatomia ou explicação invalida as revisões necessárias.
@@ -205,8 +206,17 @@ Referências recentes de validação:
 - [x] Explorer assembled-body framing uses real atlas bounds plus the usable viewport between layers/search/inspector/dock so head and feet do not hide behind overlays at desktop widths.
 - [x] licenças/atribuições visíveis e validadas.
 - [x] gate permanente `validate-reference-atlas`.
+- [x] integração permitida de `thebuggeddev/anatomy` registrada em `docs/UPSTREAM_ANATOMY.md`, fixada no upstream `8c0e6f321a47f895ae58ce098028b92774733ee9`.
+- [x] segundo nível anatômico `Corpo → Órgão em detalhe` integrado sem substituir a seleção FMA/BodyParts3D do relatório.
+- [x] catálogo detalhado atual: cérebro, olho, coração, intestino, rins, fígado, pulmões, pâncreas e pele.
+- [x] 9 GLBs vendorizados em `public/organ-models`; `manifest.json` registra upstream, Git blob, bytes e SHA-256.
+- [x] modelos detalhados são lazy-loaded somente ao abrir detalhe; não entram no JS inicial.
+- [x] runtime não depende de `raw.githubusercontent.com`; `VITE_ORGAN_DETAIL_ASSET_BASE` é apenas override controlado.
+- [x] `scripts/validate-vendored-assets.mjs` verifica também o fechamento SHA-256 dos modelos detalhados.
+- [ ] antes de lançamento comercial/público definitivo, arquivar a evidência da permissão e concluir revisão documental de provenance dos GLBs detalhados.
 
 Não voltar ao visual/pedestal original do upstream nas superfícies clinical/patient.
+Não transformar `OrganDetailScene` em autoridade clínica paralela ao Human Atlas.
 
 ### 3.1 Regra 3D-first — ONDE O MODELO REAL DEVE APARECER
 
@@ -214,11 +224,11 @@ O diferencial do MedAtlas é a anatomia 3D integrada ao workflow, não um Atlas 
 
 | Superfície | Uso do 3D | Contrato |
 | --- | --- | --- |
-| **Visão geral** | preview real do atendimento atual | `AnatomyFocusPreview → HumanAtlasScene` |
-| **Pacientes** | anatomia do relatório atual em modo patient | mesmo engine, sem thumbnail fake |
+| **Visão geral** | preview real do atendimento atual | `AnatomyFocusPreview → HumanAtlasScene → detalhe opcional` |
+| **Pacientes** | anatomia do relatório atual em modo patient | Human Atlas como contexto + detalhe opcional, sem thumbnail fake |
 | **Relatórios visuais** | laudo/exame + contexto clínico + Clinical 3D Workbench | texto → sugestão → confirmação → contexto/câmera → revisão → compartilhar |
 | **Preview do paciente (pré-publicação)** | Human Atlas real em modo patient | preview local, não publica nem contorna review gate |
-| **Atlas 3D** | explorer completo de ~2.234 peças | picking, sistemas, explode, inspector |
+| **Atlas 3D** | explorer completo de ~2.234 peças | picking, sistemas, explode, inspector + profundidade de órgão quando disponível |
 | **Link do paciente** | 3D real é o elemento visual dominante | modo patient, controles simplificados |
 | **Equipe / Analytics / Configurações** | **sem canvas 3D de propósito** | não existe tarefa anatômica; evitar decoração e custo de GPU |
 
@@ -227,7 +237,9 @@ Regras permanentes:
 - [x] o placeholder/orbit “3D” do Dashboard foi removido;
 - [x] nenhuma superfície anatômica usa imagem estática para fingir 3D;
 - [x] o preview do paciente dentro do Report Studio usa o Human Atlas real antes da publicação;
-- [x] `AnatomyFocusPreview` reutiliza `HumanAtlasScene`; não é renderer novo;
+- [x] `AnatomyFocusPreview` reutiliza `HumanAtlasScene` como contexto/autoridade e só lazy-load `OrganDetailScene` após entrada explícita no detalhe;
+- [x] o Atlas completo usa o mesmo contrato: seleção no Human Atlas → detalhe opcional → retorno ao corpo sem perder FMA;
+- [x] o detalhe mostra breadcrumb `Corpo completo › órgão › modelo detalhado` e, no modo paciente, aviso explícito de referência anatômica;
 - [x] sem conceito FMA válido, a UI mostra estado vazio e **não inventa modelo**;
 - [x] status mostra quando a geometria real terminou de carregar;
 - [x] seleção clínica confirmada e inspeção visual temporária são estados diferentes; clicar numa peça não muda o relatório;
