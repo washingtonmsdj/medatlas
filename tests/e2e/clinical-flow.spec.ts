@@ -1255,7 +1255,7 @@ test('concept shell keeps workspace context without the removed organization swi
     'Clinical 3D Workbench',
   )
   await expect(page.locator('.organization-switcher-shell')).toHaveCount(0)
-  await expect(page.locator('.medatlas-v2-topbar')).toBeVisible()
+  await expect(page.locator('.clinical-topbar')).toBeVisible()
   await expect(
     page.getByRole('combobox', {
       name: 'Buscar paciente, relatório, anatomia ou módulo',
