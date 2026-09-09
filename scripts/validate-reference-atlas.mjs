@@ -23,6 +23,14 @@ const anatomyFocus = await readFile(
   'src/components/AnatomyFocusPreview.tsx',
   'utf8',
 )
+const organDetailCatalog = await readFile(
+  'src/anatomy-detail/catalog.ts',
+  'utf8',
+)
+const organDetailScene = await readFile(
+  'src/components/OrganDetailScene.tsx',
+  'utf8',
+)
 const overview = await readFile('src/components/Overview.tsx', 'utf8')
 const patients = await readFile('src/components/PatientsModule.tsx', 'utf8')
 const atlasSource = await readFile('src/atlas/source.ts', 'utf8')
@@ -180,6 +188,12 @@ const requiredExplorerFragments = [
   'reference-mobile-tools',
   'mobilePanel',
   'reference-mobile-panel-close',
+  'resolveOrganDetail',
+  "import('./OrganDetailScene')",
+  'reference-organ-detail-breadcrumb',
+  'Abrir ',
+  ' em detalhe',
+  'Voltar ao corpo completo',
 ]
 
 for (const fragment of requiredExplorerFragments) {
@@ -365,6 +379,14 @@ const requiredFocusPreviewFragments = [
   'anatomy-focus-preview-interaction-hint',
   'INTERATIVO',
   'onOpenAtlas',
+  'resolveOrganDetail',
+  "import('./OrganDetailScene')",
+  'anatomy-focus-level-switch',
+  'Corpo',
+  'Órgão em detalhe',
+  'anatomy-detail-breadcrumb',
+  'anatomy-detail-safety-note',
+  'não representa o corpo individual do paciente',
 ]
 
 for (const fragment of requiredFocusPreviewFragments) {
@@ -372,6 +394,53 @@ for (const fragment of requiredFocusPreviewFragments) {
     failures.push(
       'canonical contextual 3D preview missing mechanism: ' + fragment,
     )
+  }
+}
+
+const requiredOrganDetailCatalogFragments = [
+  "ORGAN_DETAIL_UPSTREAM_SHA",
+  "8c0e6f321a47f895ae58ce098028b92774733ee9",
+  "VITE_ORGAN_DETAIL_ASSET_BASE",
+  "FMA7088",
+  "FMA50801",
+  "FMA7197",
+  "FMA7203",
+  "FMA7198",
+  "resolveOrganDetail",
+  "organDetailModelUrl",
+]
+
+for (const fragment of requiredOrganDetailCatalogFragments) {
+  if (!organDetailCatalog.includes(fragment)) {
+    failures.push('organ detail catalog missing contract: ' + fragment)
+  }
+}
+
+const requiredOrganDetailSceneFragments = [
+  'GLTFLoader',
+  'OrbitControls',
+  'RoomEnvironment',
+  'renderer.localClippingEnabled = true',
+  'sectionPlane',
+  'IntersectionObserver',
+  'visibilitychange',
+  'if (!viewportVisible || !pageVisible) return',
+  'renderer.dispose()',
+  'organ-detail-scene',
+]
+
+for (const fragment of requiredOrganDetailSceneFragments) {
+  if (!organDetailScene.includes(fragment)) {
+    failures.push('organ detail renderer missing contract: ' + fragment)
+  }
+}
+
+for (const forbidden of [
+  'patient diagnosis',
+  'patient-specific reconstruction',
+]) {
+  if (organDetailScene.includes(forbidden)) {
+    failures.push('organ detail renderer contains unsafe patient claim: ' + forbidden)
   }
 }
 
