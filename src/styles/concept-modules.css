@@ -43,8 +43,8 @@
 ) :is(h1, h2, h3, h4),
 .medatlas-v2-workspace :is(
   .patient-anatomy-live,
-  .report-composer-v3,
-  .publish-zone-v3,
+  .report-composer,
+  .publish-zone,
   .settings-actions,
   .settings-grid > article,
   .analytics-metrics article
@@ -231,7 +231,7 @@
   .intake-editor-foot,
   .intake-editor-foot small,
   .source-excerpt summary small,
-  .explanation-heading-v2 small,
+  .explanation-heading small,
   .explanation-editor-meta,
   .provenance-panel p
 ) {
@@ -239,7 +239,7 @@
 }
 
 .medatlas-v2-workspace .clinical-report-studio .label,
-.medatlas-v2-workspace .clinical-report-studio .explanation-heading-v2 .label {
+.medatlas-v2-workspace .clinical-report-studio .explanation-heading .label {
   color: var(--text-secondary);
 }
 
