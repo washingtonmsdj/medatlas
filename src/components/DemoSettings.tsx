@@ -27,12 +27,12 @@ export function DemoSettings({ onNewReport }: Props) {
   }
 
   return (
-    <section className="settings-module settings-module-v2 module-v3 mvp-surface">
+    <section className="settings-module module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow="CONFIGURAÇÕES"
         title="Configurações"
         description="Preferências da clínica, privacidade e links compartilhados."
-        className="settings-hero settings-hero-v2"
+        className="settings-hero"
         meta={
           <div className="environment-badge workspace-hero-badge">
             <i aria-hidden="true" />
