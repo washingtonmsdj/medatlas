@@ -72,24 +72,6 @@
 }
 
 .medatlas-v2-workspace :is(
-  .mvp-page-hero
-) {
-  border-radius: var(--radius-panel);
-}
-
-.medatlas-v2-workspace :is(
-  .mvp-page-hero
-) h1 {
-  color: var(--text-primary);
-}
-
-.medatlas-v2-workspace :is(
-  .mvp-page-hero
-) > :is(p, div > p) {
-  color: var(--text-secondary);
-}
-
-.medatlas-v2-workspace :is(
   button.primary,
   .primary
 ) {
@@ -194,7 +176,7 @@
 .medatlas-v2-workspace :is(
   .settings-grid button,
   .analytics-refresh,
-  .patient-workspace-actions button,
+  .patient-workspace-actions button
 ):not(.primary) {
   border-color: var(--line-header-control);
   color: var(--text-secondary);
@@ -295,7 +277,7 @@
 
 @media (max-width: 700px) {
   .medatlas-v2-workspace :is(
-        .continue-care-card,
+    .continue-care-card,
     .patient-current-report,
     .workspace-panel,
     .team-roster,
