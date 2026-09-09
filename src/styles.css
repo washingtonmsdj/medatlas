@@ -81,23 +81,6 @@ h2 { margin:6px 0 8px; font-size:20px; letter-spacing:-.02em; }
       }
 
 
-.context-legend {
-  position:absolute;
-  left:20px;
-  bottom:18px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:8px 10px;
-  border:1px solid var(--line-focus);
-  border-radius:10px;
-  background:var(--surface-deep);
-  backdrop-filter:blur(12px);
-  color:var(--accent-text);
-  font-size:9px;
-  pointer-events:none;
-}
-.context-legend b { font-weight:600; }
 .legend-selected,.legend-context {
   width:9px;
   height:9px;
