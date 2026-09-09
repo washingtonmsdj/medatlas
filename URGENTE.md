@@ -530,3 +530,19 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 2. atacar `clinical-shell.css`, `styles.css`, `anatomy-responsive.css` e `reference-atlas.css` por domínio, sem reescrever o renderer 3D;
 3. separar CSS estrutural do Clinical Studio/Atlas de paleta histórica, migrando primeiro superfícies compartilhadas e só removendo seletores com consumidor comprovado;
 4. reduzir gradualmente o número de folhas importadas quando a autoridade de cada camada estiver comprovadamente absorvida, sem criar um mega-CSS.
+
+
+### Continuação do checkpoint visual — base e Clinical Studio (2026-09-09)
+- [x] removidos de `styles.css` os pacotes históricos completos do dashboard anterior, Pacientes anterior e Configurações anterior; as classes atuais seguem com ownership em `module-workspaces.css`, `supporting-modules.css` e `concept-modules.css`;
+- [x] removidos do base os controles Atlas substituídos por `clinical-atlas-*`: `atlas-search-panel`, `atlas-search-copy`, `atlas-search-box`, `atlas-search-results`, `quick-concepts`, `structure-label`, `real-label`, `atlas-toolbar`, `integration-note` e layouts antigos `content-grid`/`left-stack`;
+- [x] removidos estados sem consumidor `invalid-share` e `context-mode-group`;
+- [x] `clinical-shell.css` deixou de declarar a paleta paralela `--saas-*`; o shell do Clinical Studio usa os tokens canônicos;
+- [x] removidos `module-heading`, `synthetic-badge` e `overview-actions-premium` do Clinical Studio, preservando `studio-panel-label`, `care-status`, `care-progress` e o layout clínico ativo;
+- [x] aliases de classe sem regra ativa foram removidos do JSX de Overview, Pacientes e Configurações;
+- [x] `validate:mvp-ui` impede reintrodução desses seletores/aliases e da paleta `--saas-*`.
+
+### Próxima frente P0
+1. validar o último commit funcional com CI + Browser E2E + Pages;
+2. continuar `clinical-shell.css` pelo Clinical Studio ativo, convertendo blocos ainda claros em tokens sem substituir a estrutura 3D;
+3. auditar `anatomy-responsive.css` e `reference-atlas.css` por ownership real do Atlas/órgão detalhado;
+4. somente depois revisar os imports do `main.tsx` e fundir/remover folhas cujo ownership tenha sido totalmente absorvido.
