@@ -17,9 +17,8 @@ export function TeamModule() {
     <section className="team-module module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow="EQUIPE"
-        title="Equipe"
-        description="Membros ativos, papéis e acessos da clínica."
-        
+        title="Equipe e acessos"
+        description="Veja quem está ativo e o que cada papel pode fazer."
         meta={
           <div className="team-hero-summary workspace-hero-badge">
             <strong>{activeMembers.length}</strong>
