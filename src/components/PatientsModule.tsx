@@ -46,7 +46,7 @@ export function PatientsModule({
         }
       />
 
-      <article className="patient-current-report patient-current-report-v2 workspace-panel patient-summary-card-mvp">
+      <article className="patient-current-report workspace-panel patient-summary-card-mvp">
         <header className="patient-summary-heading-mvp">
           <div className="patient-profile-heading">
             <span className="patient-avatar" aria-hidden="true">
@@ -90,8 +90,8 @@ export function PatientsModule({
         </div>
       </article>
 
-      <section className="patient-anatomy-live anatomy-showcase-v3">
-        <div className="patient-anatomy-live-copy anatomy-showcase-copy-v3">
+      <section className="patient-anatomy-live">
+        <div className="patient-anatomy-live-copy">
           <span className="section-kicker">ANATOMIA 3D</span>
           <h2>{presentation.anatomy.label}</h2>
           <p>{presentation.anatomy.detail}</p>
