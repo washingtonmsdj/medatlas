@@ -34,7 +34,6 @@ const conceptModulesStyles = await readFile('src/styles/concept-modules.css', 'u
 const moduleWorkspaceStyles = await readFile('src/module-workspaces.css', 'utf8')
 const supportingModuleStyles = await readFile('src/styles/supporting-modules.css', 'utf8')
 const organizationAnalyticsStyles = await readFile('src/styles/organization-analytics.css', 'utf8')
-const interactionPolishStyles = await readFile('src/styles/interaction-polish.css', 'utf8')
 const baseStyles = await readFile('src/styles.css', 'utf8')
 const clinicalShellStyles = await readFile('src/styles/clinical-shell.css', 'utf8')
 const anatomyResponsiveStyles = await readFile('src/styles/anatomy-responsive.css', 'utf8')
@@ -123,6 +122,16 @@ for (const legacyShell of [
   }
 }
 
+for (const deletedSurfaceImport of [
+  "import './styles/mvp-mode.css'",
+  "import './experience-surfaces.css'",
+  "import './styles/interaction-polish.css'",
+]) {
+  if (main.includes(deletedSurfaceImport)) {
+    failures.push(`App entrypoint must not reload absorbed stylesheet: ${deletedSurfaceImport}`)
+  }
+}
+
 if (main.includes('team-invitations.css')) {
   failures.push(
     'App entrypoint must not load invitation UI styles while invitations are out of MVP scope',
@@ -184,7 +193,6 @@ for (const [name, stylesheet] of [
   ['module-workspaces.css', moduleWorkspaceStyles],
   ['supporting-modules.css', supportingModuleStyles],
   ['organization-analytics.css', organizationAnalyticsStyles],
-  ['interaction-polish.css', interactionPolishStyles],
   ['clinical-shell.css', clinicalShellStyles],
   ['anatomy-responsive.css', anatomyResponsiveStyles],
   ['reference-atlas.css', referenceAtlasStyles],
@@ -261,7 +269,6 @@ for (const legacySelector of [
     moduleWorkspaceStyles.includes(legacySelector) ||
     supportingModuleStyles.includes(legacySelector) ||
     organizationAnalyticsStyles.includes(legacySelector) ||
-    interactionPolishStyles.includes(legacySelector) ||
     baseStyles.includes(legacySelector) ||
     clinicalShellStyles.includes(legacySelector) ||
     anatomyResponsiveStyles.includes(legacySelector)
