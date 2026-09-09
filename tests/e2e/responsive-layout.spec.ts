@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
 const MODULES = [
   {
     button: 'Visão geral',
-    heading: 'Seu fluxo clínico visual',
+    heading: 'Atendimento em andamento',
   },
   {
     button: 'Relatórios',
@@ -69,7 +69,7 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
-      name: 'Seu fluxo clínico visual',
+      name: 'Atendimento em andamento',
     }),
   ).toBeVisible()
   await expect(
@@ -169,7 +169,7 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
-      name: 'Seu fluxo clínico visual',
+      name: 'Atendimento em andamento',
     }),
   ).toBeVisible()
 
@@ -592,7 +592,7 @@ test('professional and patient views are separated in the MVP', async ({
 
   await expect(page.locator('.clinical-sidebar')).toBeVisible()
   await expect(
-    page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
+    page.getByRole('heading', { name: 'Atendimento em andamento' }),
   ).toBeVisible()
 })
 
