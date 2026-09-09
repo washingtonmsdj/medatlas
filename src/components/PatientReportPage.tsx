@@ -108,7 +108,7 @@ export function PatientReportPage({
         </div>
       </header>
 
-      <section className="patient-hero patient-hero-premium patient-hero-v3">
+      <section className="patient-hero">
         <div className="patient-hero-copy">
           <span className="section-kicker">
             {previewMode ? 'VISÃO DO PACIENTE · PRÉVIA' : 'SEU RELATÓRIO VISUAL'}
@@ -192,7 +192,7 @@ export function PatientReportPage({
         </aside>
       </section>
 
-      <section className="patient-grid patient-grid-v3">
+      <section className="patient-grid">
         <section className="patient-atlas-card" id="patient-anatomy">
           <div className="patient-card-heading">
             <div>
@@ -447,7 +447,7 @@ export function PatientReportPage({
         </aside>
       </section>
 
-      <section className="patient-next-step patient-next-step-v3" id="patient-questions">
+      <section className="patient-next-step" id="patient-questions">
         <div>
           <span className="section-kicker">PRÓXIMA CONVERSA</span>
           <h2>Perguntas para levar ao profissional</h2>
