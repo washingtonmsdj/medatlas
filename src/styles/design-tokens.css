@@ -1,0 +1,60 @@
+/* MedAtlas MVP design foundation — single semantic source for shell typography and color. */
+:root {
+  color-scheme: dark;
+
+  --font-sans: Inter, "SF Pro Display", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --surface-app: #06111d;
+  --surface-workspace: #07131f;
+  --surface-sidebar-start: #07182a;
+  --surface-sidebar-mid: #061524;
+  --surface-sidebar-end: #06121f;
+  --surface-topbar: rgba(7, 20, 34, .92);
+  --surface-control: rgba(12, 30, 49, .78);
+  --surface-control-hover: rgba(46, 90, 137, .28);
+  --surface-popover: rgba(5, 16, 28, .98);
+  --surface-panel: rgba(14, 31, 49, .97);
+  --surface-panel-deep: rgba(8, 21, 35, .98);
+
+  --text-primary: #edf7ff;
+  --text-strong: #dceaf7;
+  --text-secondary: #b3c9db;
+  --text-muted: #7891a7;
+  --text-subtle: #637f96;
+
+  --line-subtle: rgba(102, 151, 197, .16);
+  --line-control: rgba(101, 150, 195, .22);
+  --line-elevated: rgba(92, 145, 194, .30);
+
+  --accent-primary: #4d91ff;
+  --accent-strong: #2f65ff;
+  --accent-bright: #62b4ff;
+  --accent-cyan: #74c9ff;
+  --accent-text: #8dc8f2;
+  --accent-surface: rgba(37, 111, 218, .82);
+  --accent-surface-deep: rgba(28, 74, 141, .66);
+
+  --state-danger: #f15c70;
+  --state-warning: #f2bd80;
+  --state-success: #8fe2cd;
+
+  --radius-control: 10px;
+  --radius-panel: 15px;
+  --radius-popover: 12px;
+
+  --shadow-topbar: 0 10px 28px rgba(0, 0, 0, .12);
+  --shadow-panel: 0 18px 42px rgba(0, 0, 0, .16);
+  --shadow-popover: 0 24px 60px rgba(0, 0, 0, .46);
+
+  --type-caption: 0.625rem;
+  --type-small: 0.75rem;
+  --type-body: 0.8125rem;
+  --type-nav: 0.8125rem;
+  --type-title: clamp(1.625rem, 2vw, 2.125rem);
+
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--surface-app);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
