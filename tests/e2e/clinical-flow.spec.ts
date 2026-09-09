@@ -319,76 +319,9 @@ test('clinician review gate leads to a patient-facing visual report', async ({
     fullPage: true,
   })
 
-  await patientPage.setViewportSize({ width: 390, height: 844 })
-  await expect(
-    patientPage.locator('#patient-anatomy .human-atlas-scene canvas'),
-  ).toBeVisible({ timeout: 45_000 })
-
-  await expect(
-    patientPage.locator('.patient-shell'),
-  ).toHaveAttribute('data-surface-priority', 'mobile-first')
-
-  await expect(
-    patientPage.locator('.patient-clinic').getByText('Clínica Horizonte', { exact: true }),
-  ).toBeVisible()
-
-  const patientMobilePdf = patientPage.locator('.patient-print-button')
-  await expect(patientMobilePdf).toBeVisible()
-  const patientMobilePdfBox = await patientMobilePdf.evaluate((button) => {
-    const box = button.getBoundingClientRect()
-    return { width: box.width, height: box.height }
-  })
-  expect(patientMobilePdfBox.width).toBeGreaterThanOrEqual(44)
-  expect(patientMobilePdfBox.height).toBeGreaterThanOrEqual(44)
-
-  const patientMobileStage = patientPage.locator('.patient-atlas-stage')
-  const patientMobileStageBox = await patientMobileStage.boundingBox()
-  expect(patientMobileStageBox).not.toBeNull()
-  expect(patientMobileStageBox!.height).toBeGreaterThanOrEqual(500)
-
-  const patientMobileControls = patientPage.locator(
-    '.patient-atlas-controls',
-  )
-  const patientMobileControlsBox = await patientMobileControls.boundingBox()
-  expect(patientMobileControlsBox).not.toBeNull()
-  expect(patientMobileControlsBox!.width).toBeGreaterThan(300)
-  expect(patientMobileControlsBox!.height).toBeLessThan(70)
-
-  const patientControlBoxes = await patientMobileControls
-    .getByRole('button')
-    .evaluateAll((buttons) =>
-      buttons.map((button) => {
-        const box = button.getBoundingClientRect()
-        return { width: box.width, height: box.height }
-      }),
-    )
-  expect(patientControlBoxes.length).toBeGreaterThanOrEqual(5)
-  for (const box of patientControlBoxes) {
-    expect(box.width).toBeGreaterThanOrEqual(44)
-    expect(box.height).toBeGreaterThanOrEqual(44)
-  }
-
-  for (const label of ['Anatomia', 'Explicação', 'Perguntas']) {
-    const target = patientPage
-      .getByRole('navigation', { name: 'Navegar pelas partes do relatório' })
-      .getByRole('button', { name: label })
-    const targetBox = await target.boundingBox()
-    expect(targetBox).not.toBeNull()
-    expect(targetBox!.height).toBeGreaterThanOrEqual(44)
-  }
-
-  const patientMobileOverflow = await patientPage.evaluate(
-    () =>
-      document.documentElement.scrollWidth >
-      document.documentElement.clientWidth + 1,
-  )
-  expect(patientMobileOverflow).toBe(false)
-
-  await patientPage.screenshot({
-    path: 'test-results/visual-qa/patient-portal-mobile-real-3d.png',
-    fullPage: true,
-  })
-
+  // Mobile geometry/touch targets are covered once in responsive-layout.spec.ts.
+  // Keep this scenario focused on the clinical authority chain:
+  // review -> publish -> patient portal -> observed analytics.
   await patientPage.close()
 
   await page.getByRole('button', { name: 'Analytics' }).click()
