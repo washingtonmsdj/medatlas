@@ -77,7 +77,6 @@ async function expectRealContextual3D(
   ).toBeVisible()
 }
 
-
 async function inspectVisibleAnatomyPart(
   page: Page,
   canvas: Locator,
@@ -814,7 +813,6 @@ test('synthetic text file import stays local and resolves anatomy', async ({
 })
 
 
-
 test('patients module reflects only the current synthetic report context', async ({
   page,
 }) => {
@@ -1049,6 +1047,8 @@ test('clinical workbench opens detailed organ and returns to the same confirmed 
   const depth = page.getByRole('navigation', {
     name: 'Nível anatômico do relatório',
   })
+  const bodyDepth = depth.getByRole('button', { name: /^Corpo/ })
+  const organDepth = depth.getByRole('button', { name: /Órgão em detalhe/ })
 
   await expect(depth).toBeVisible()
   await expect(stage.locator('.human-atlas-scene canvas')).toBeVisible({
@@ -1056,12 +1056,13 @@ test('clinical workbench opens detailed organ and returns to the same confirmed 
   })
   await expect(page.locator('.clinical-atlas-meta')).toContainText('FMA7088')
 
-  await depth.getByRole('button', { name: /Órgão em detalhe/ }).click()
+  await organDepth.click()
 
   await expect(
     stage.locator('.organ-detail-scene[data-organ="heart"] canvas'),
   ).toBeVisible({ timeout: 45_000 })
   await expect(stage).toHaveClass(/detail-active/)
+  await expect(organDepth).toHaveAttribute('aria-pressed', 'true')
 
   const controls = page.getByRole('navigation', {
     name: 'Controles da visualização clínica 3D',
@@ -1077,16 +1078,15 @@ test('clinical workbench opens detailed organ and returns to the same confirmed 
     }),
   ).toHaveAttribute('aria-pressed', 'true')
 
-  await depth.getByRole('button', { name: /^Corpo/ }).click()
+  await bodyDepth.click()
 
   await expect(stage).not.toHaveClass(/detail-active/)
   await expect(stage.locator('.human-atlas-scene canvas')).toBeVisible({
     timeout: 10_000,
   })
   await expect(page.locator('.clinical-atlas-meta')).toContainText('FMA7088')
-  await expect(
-    page.getByText('ESTRUTURA EM FOCO', { exact: true }),
-  ).toBeVisible()
+  await expect(bodyDepth).toHaveAttribute('aria-pressed', 'true')
+  await expect(organDepth).toHaveAttribute('aria-pressed', 'false')
 })
 
 test('focused Human Atlas picking identifies a real part without changing the report', async ({
@@ -1284,7 +1284,6 @@ test('settings expose clinic branding without enabling unavailable mutations', a
 })
 
 
-
 test('Atlas detail reference tab keeps anatomy authority explicit without engineering UI', async ({
   page,
 }) => {
@@ -1314,4 +1313,3 @@ test('Atlas detail reference tab keeps anatomy authority explicit without engine
   await expect(detail).not.toContainText('SHA-256')
   await expect(detail).not.toContainText('provenance')
 })
-
