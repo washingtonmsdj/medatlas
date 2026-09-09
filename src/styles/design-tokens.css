@@ -22,6 +22,9 @@
   --surface-avatar: #2f5373;
   --surface-avatar-start: #708ca5;
   --surface-avatar-end: #324c66;
+  --surface-success-soft: rgba(28, 91, 69, .26);
+  --surface-success: rgba(18, 70, 51, .45);
+  --surface-disabled: rgba(15, 29, 43, .52);
 
   --overlay-workspace-glow: rgba(24, 81, 134, .16);
   --overlay-inset-highlight: rgba(255, 255, 255, .025);
@@ -71,6 +74,7 @@
   --line-sidebar-context: rgba(105, 151, 190, .16);
   --line-sidebar-mobile: rgba(86, 132, 177, .20);
   --line-header-control: rgba(91, 142, 187, .24);
+  --line-success: rgba(75, 177, 132, .28);
 
   --accent-primary: #4d91ff;
   --accent-strong: #2f65ff;
