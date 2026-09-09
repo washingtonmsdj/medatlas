@@ -325,8 +325,15 @@ const requiredClinicalWorkbenchFragments = [
   'Contexto anatômico',
   'HUMAN ATLAS · FOCO CLÍNICO',
   'appearance="clinical"',
-  'section={section}',
+  'section={detailActive ? false : section}',
   'Corte visual 3D',
+  'resolveOrganDetail',
+  "import('./OrganDetailScene')",
+  'Nível anatômico do relatório',
+  'clinical-anatomy-depth-switch',
+  'Órgão em detalhe',
+  'Ativar corte do órgão',
+  'clinical-organ-renderer-loading',
 ]
 
 for (const fragment of requiredClinicalWorkbenchFragments) {
