@@ -262,6 +262,10 @@ for (const legacySelector of [
   'continue-care-body',
   'focused-reference-inspector',
   'reference-renderer-loading',
+  'patient-hero-premium',
+  'patient-hero-v3',
+  'patient-grid-v3',
+  'patient-next-step-v3',
   'patient-clarity-strip',
 ]) {
   if (
@@ -304,6 +308,10 @@ if (clinicalShellStyles.includes('--saas-')) {
 }
 
 for (const [file, obsoleteClass] of [
+  ['src/components/PatientReportPage.tsx', 'patient-hero-premium'],
+  ['src/components/PatientReportPage.tsx', 'patient-hero-v3'],
+  ['src/components/PatientReportPage.tsx', 'patient-grid-v3'],
+  ['src/components/PatientReportPage.tsx', 'patient-next-step-v3'],
   ['src/components/PatientsModule.tsx', 'patients-module-v2'],
   ['src/components/PatientsModule.tsx', 'patients-hero-v2'],
   ['src/components/DemoSettings.tsx', 'settings-module-v2'],
