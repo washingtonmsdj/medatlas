@@ -481,3 +481,24 @@ Se o usuário autorizar **ativar produção/Supabase**:
 - não permitir PHI no demo.
 
 - [x] contraste do texto auxiliar da zona de publicação corrigido para WCAG AA (de ~3,3:1 para >5:1 em fundo claro); gate Axe permanece bloqueante.
+
+
+---
+
+## Checkpoint MVP — fundação visual canônica (2026-09-09)
+
+Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca493816ec0d31fa8cf9749fdb9a1cf8`.
+
+### Feito nesta rodada
+- [x] criada uma autoridade semântica única para fonte, paleta, superfícies, bordas, estados e escala tipográfica do shell em `src/styles/design-tokens.css`;
+- [x] `main.tsx` passa a carregar os tokens antes das folhas base/legadas;
+- [x] shell, topbar, sidebar e `WorkspacePageHeader` passaram a consumir tokens em vez de duplicar a fundação visual;
+- [x] logo da sidebar deixou de carregar cores hex dentro do JSX; a aparência agora vem do tema;
+- [x] tipografia primária da sidebar, topbar e cabeçalhos foi elevada para uma escala de produto mais legível, preservando responsividade;
+- [x] `validate:mvp-ui` ganhou contrato para impedir regressão da fonte canônica, ausência dos tokens e retorno de hex hardcoded no componente da sidebar.
+
+### Próxima frente P0
+1. continuar a migração das superfícies de conteúdo em `module-workspaces.css`, `concept-modules.css` e stylesheets de módulos para os mesmos tokens;
+2. remover CSS morto somente após provar ausência de uso no source e manter paridade visual/E2E;
+3. manter Human Atlas e órgão detalhado como renderers canônicos, sem criar fallback visual paralelo;
+4. validar CI + Browser E2E + Pages no mesmo source antes de declarar novo baseline visual.
