@@ -321,6 +321,10 @@ for (const deadBaseSelector of [
   '.atlas-actions',
   '.local-file-note',
   '.context-legend {',
+  '.suggestion-confidence',
+  '.confidence-high',
+  '.confidence-medium',
+  '.provenance-note',
 ]) {
   if (
     baseStyles.includes(deadBaseSelector) ||
