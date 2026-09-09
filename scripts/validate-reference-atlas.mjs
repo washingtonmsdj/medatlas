@@ -172,30 +172,24 @@ for (const fragment of requiredEngineFragments) {
 
 const requiredExplorerFragments = [
   'DEFAULT_VISIBLE_SYSTEMS',
-  'Sistemas anatômicos',
-  'Separar anatomia',
-  'Usar no relatório',
-  'Isolar estrutura',
-  'Corte anatômico',
   'searchAtlasConcepts',
-  'Camadas anatômicas',
-  'INSPETOR ANATÔMICO',
-  'appearance="explorer"',
-  'Fontes do Atlas 3D',
-  'https://github.com/ashemag/human-atlas',
-  'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
-  'Ferramentas do Atlas no celular',
-  'reference-mobile-tools',
-  'mobilePanel',
-  'reference-mobile-panel-close',
   'resolveOrganDetail',
   "import('./OrganDetailScene')",
-  'reference-organ-detail-breadcrumb',
-  'Abrir ',
-  ' em detalhe',
-  'Voltar ao corpo completo',
-  'bodySceneState',
-  'reference-atlas-stage detail-active',
+  'appearance="explorer"',
+  'data-concept-layout="clinical-atlas-v3"',
+  'atlas-v3-workspace',
+  'atlas-v3-case-panel',
+  'atlas-v3-body-panel',
+  'atlas-v3-detail-panel',
+  'atlas-v3-depth-switch',
+  'atlas-v3-systems',
+  'atlas-v3-presets',
+  'atlas-v3-organ-stage',
+  'reference-atlas-search',
+  'Usar estrutura no relatório',
+  'Explicação para o paciente',
+  'Qualidade do modelo',
+  'onOpenPatientPreview',
 ]
 
 for (const fragment of requiredExplorerFragments) {
@@ -207,13 +201,14 @@ for (const fragment of requiredExplorerFragments) {
 }
 
 const requiredMobileExplorerCss = [
-  '.reference-mobile-tools',
-  '.reference-atlas-systems.mobile-open',
-  '.reference-inspector-card.mobile-open',
-  '.reference-atlas-stage > .reference-atlas-scene',
-  'min-height: 790px',
-  'MEDATLAS_REFERENCE_DETAIL_PERSISTENCE_V1',
-  '.reference-atlas-stage.detail-active > .reference-atlas-scene',
+  '.atlas-v3-workspace',
+  'grid-template-columns: minmax(282px, 22%) minmax(500px, 1fr) minmax(360px, 30%)',
+  '.atlas-v3-body-stage > .reference-atlas-scene',
+  '.atlas-v3-detail-panel',
+  '.atlas-v3-organ-stage > .organ-detail-scene',
+  '.atlas-v3-presets',
+  'min-height: 610px',
+  '@media (max-width: 560px)',
 ]
 
 for (const fragment of requiredMobileExplorerCss) {
@@ -224,9 +219,11 @@ for (const fragment of requiredMobileExplorerCss) {
   }
 }
 
-if (referenceStyles.includes('top: 646px')) {
+if (
+  referenceStyles.includes('.reference-atlas-stage.detail-active > .reference-atlas-scene')
+) {
   failures.push(
-    'mobile explorer must not push the canonical 3D scene below stacked panels',
+    'concept layout must keep the full body visible instead of hiding it behind organ detail',
   )
 }
 
@@ -534,5 +531,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas anatomy contract PASS: Human Atlas remains the canonical BodyParts3D/FMA authority across full-system, clinical and patient surfaces; detailed organ viewers remain explicit, lazy, patient-safe supplementary depth.',
+  'MedAtlas anatomy contract PASS: Human Atlas remains the canonical BodyParts3D/FMA authority; Atlas 3D uses the canonical three-column body + organ-detail concept layout with patient-safe supplementary depth.',
 )
