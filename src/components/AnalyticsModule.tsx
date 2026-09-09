@@ -59,7 +59,7 @@ export function AnalyticsModule({ repository }: Props) {
         eyebrow="ANALYTICS"
         title="Analytics"
         description="Acompanhe a abertura e o alcance dos relatórios compartilhados."
-        className="analytics-hero"
+        
         actions={
           <button
             type="button"
