@@ -319,7 +319,7 @@ export function ReferenceAtlasExplorer({
 
   const returnToBody = () => {
     setError('')
-    setProgress(100)
+    setProgress(0)
     setDetailMode(false)
     setState((current) => ({
       ...current,
