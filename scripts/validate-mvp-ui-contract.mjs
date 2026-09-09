@@ -34,6 +34,9 @@ const conceptModulesStyles = await readFile('src/styles/concept-modules.css', 'u
 const moduleWorkspaceStyles = await readFile('src/module-workspaces.css', 'utf8')
 const supportingModuleStyles = await readFile('src/styles/supporting-modules.css', 'utf8')
 const organizationAnalyticsStyles = await readFile('src/styles/organization-analytics.css', 'utf8')
+const mvpModeStyles = await readFile('src/styles/mvp-mode.css', 'utf8')
+const interactionPolishStyles = await readFile('src/styles/interaction-polish.css', 'utf8')
+const experienceSurfaceStyles = await readFile('src/experience-surfaces.css', 'utf8')
 
 const failures = []
 
@@ -174,6 +177,9 @@ for (const [name, stylesheet] of [
   ['module-workspaces.css', moduleWorkspaceStyles],
   ['supporting-modules.css', supportingModuleStyles],
   ['organization-analytics.css', organizationAnalyticsStyles],
+  ['mvp-mode.css', mvpModeStyles],
+  ['interaction-polish.css', interactionPolishStyles],
+  ['experience-surfaces.css', experienceSurfaceStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -207,12 +213,17 @@ for (const legacySelector of [
   'organization-structure-workspaces',
   'settings-branding-preview',
   'analytics-boundary',
+  'mvp-compact-grid',
+  'module-heading',
 ]) {
   if (
     conceptModulesStyles.includes(legacySelector) ||
     moduleWorkspaceStyles.includes(legacySelector) ||
     supportingModuleStyles.includes(legacySelector) ||
-    organizationAnalyticsStyles.includes(legacySelector)
+    organizationAnalyticsStyles.includes(legacySelector) ||
+    mvpModeStyles.includes(legacySelector) ||
+    interactionPolishStyles.includes(legacySelector) ||
+    experienceSurfaceStyles.includes(legacySelector)
   ) {
     failures.push(
       `Dead workspace selectors must not return: ${legacySelector}`,
