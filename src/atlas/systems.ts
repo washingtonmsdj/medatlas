@@ -69,6 +69,7 @@ export interface AtlasExplorerSceneState {
   rotate: boolean
   section: boolean
   reset: number
+  zoomStep?: number
   inspectorOpen?: boolean
 }
 
