@@ -1,33 +1,46 @@
 # MedAtlas — MVP release readiness
 
-Checkpoint: **2026-09-08**
+Checkpoint: **2026-09-09**
 Canonical branch: `main`
-Verified product/frontend HEAD: `7db6aad14073049e7f392415364fe904e500fa9e`
+Current main HEAD: `8b00ad5fe54eaa4376cd021a4be57a533bdc8589`
+Current product/frontend source HEAD: `4d860d57620ddb698fe605c3f45ff9f141fa11fd`
 
 ## Current verdict
 
-The browser-only MedAtlas MVP is **published and verified in an external synthetic preview**.
+The browser-only MedAtlas MVP is **published and externally verified with synthetic data**.
 
 Public preview:
 
 `https://washingtonmsdj.github.io/medatlas/`
 
-The project is **not ready for real patient data** and is **not yet a production clinical system**. Supabase, authentication, real tenant-isolation proofs, private clinical Storage and the controlled clinical pilot remain deliberately blocked.
+The current product source is `4d860d57…`. The following commit `8b00ad5f…` adds a browser regression gate for the anatomy depth control hit areas and does not change product/runtime code.
+
+The project is **not ready for real patient data** and is **not yet a production clinical system**. Supabase, authentication, real tenant-isolation proofs, private clinical Storage and a controlled clinical pilot remain deliberately blocked.
+
+## Canonical product shell
+
+The dark clinical shell introduced on 2026-09-09 is now the baseline and must not regress to the previous launcher/switcher design.
+
+- `ClinicalSidebar` is the canonical navigation surface.
+- The topbar contains global search, pending-action center and professional profile actions.
+- `OrganizationSwitcher` is removed from the product shell.
+- `ViewModeSwitcher` / the global Profissional–Paciente toggle is removed.
+- Patient preview opens from the professional profile and returns through one explicit **Voltar ao profissional** action.
+- Workspace/organization context is read-only in the current MVP shell; do not reintroduce a fake local switcher.
+- **Novo relatório** is an action resolved through the workflow/search surface, not a permanent duplicate sidebar launcher.
+- `concept-shell.css` + `concept-modules.css` are the canonical concept theme layer; the concept stylesheet no longer depends on blanket `!important` overrides.
 
 ## Canonical 3D architecture
 
-The original gap has been closed.
-
-Earlier MedAtlas iterations reused Human Atlas / BodyParts3D data while rendering some clinical surfaces through a simplified Three.js implementation.
-
-The current product has **one canonical Human Atlas engine**:
+The product has **one canonical Human Atlas engine** for BodyParts3D/FMA authority:
 
 - full Atlas 3D explorer — approximately 2,234 parts, systems/layers, GPU visibility/selection state, picking, isolate, explode, camera views and rotation;
 - focused clinical mode — the same engine fed by semantic atlas slicing and only the chunks required for the confirmed concept/context;
 - patient mode — the same focused engine with simplified, patient-safe controls/language;
-- temporary inspected-part highlighting remains separate from the clinically confirmed anatomy.
+- optional detailed-organ viewer is a supplementary depth after a confirmed Human Atlas/FMA concept and never changes clinical authority;
+- temporary inspected-part highlighting remains separate from clinically confirmed anatomy.
 
-No static image, fake orbit, thumbnail or second renderer is allowed to substitute for the real geometry on a 3D-first surface.
+No static image, fake orbit, thumbnail or second simplified renderer may substitute for real geometry on a 3D-first surface.
 
 Human Atlas upstream remains pinned to:
 
@@ -37,72 +50,58 @@ BodyParts3D assets remain vendored, attributed and SHA-256 verified.
 
 ## Verified gates
 
-Current verified runs:
+### Current main (`8b00ad5f…`)
 
-- CI: `34197395606` — **PASS**;
-- Browser E2E: `34197395517` — **PASS**;
-- GitHub Pages Preview: `34197395475` — **PASS**;
-- deployed Pages URL: `https://washingtonmsdj.github.io/medatlas/`;
-- Pages shell/assets + atlas provenance/index: **PASS**;
-- deployed Chromium 3D tests: **2/2 PASS**.
+- CI run `34360983823` — **PASS**;
+- database/anatomy/demo/vendored-assets/performance/security/AI/review/report/license/reference-atlas/MVP-UI contracts — **PASS**;
+- TypeScript check — **PASS**;
+- production build — **PASS**;
+- bundle budget — **PASS**;
+- Browser E2E run `34360983826` — **running at this checkpoint**; do not record it as PASS until GitHub completes it.
 
-The source-equivalent previous Browser E2E run `34196529069` also passed and produced visual QA artifact:
+### Current product source (`4d860d57…`)
 
-- name: `visual-qa-34196529069`;
-- artifact ID: `10044214674`;
-- 19 desktop/mobile screenshots.
+- CI run `34360419117` — **PASS**;
+- GitHub Pages Preview run `34360419167` — **PASS** against the published site after the anatomy depth hit-area correction;
+- public Pages URL — `https://washingtonmsdj.github.io/medatlas/`.
 
-Representative visual QA reviewed in this checkpoint:
-
-- `atlas-explorer-1600.png`;
-- `clinical-studio-1600.png`;
-- `patient-portal-real-3d.png`;
-- `focused-inspection-highlight.png`.
+The `8b00ad5f…` commit adds `tests/e2e/anatomy-depth-layout.spec.ts`, which permanently checks at 1600×1000 and 1440×960 that the **Corpo** and **Órgão em detalhe** controls remain inside their container and their clickable areas do not overlap.
 
 ## Frontend / bundle state
 
-Current production build:
+Current build from CI `34360983823`:
 
-- CSS: approximately **173.38 kB** minified / **32.39 kB gzip**;
-- initial JS entry: **335,589 bytes** / approximately **96.45 kB gzip**;
-- lazy Human Atlas renderer: approximately **502.80 kB** / **128.66 kB gzip**;
-- total JavaScript: **838,398 bytes**;
+- CSS: **188.91 kB** minified / **35.48 kB gzip**;
+- initial JS entry: **319,131 bytes** / approximately **92.82 kB gzip**;
+- lazy Human Atlas explorer chunk: **19.43 kB** / **7.82 kB gzip**;
+- detailed-organ chunk: **48.18 kB** / **14.86 kB gzip**;
+- BufferGeometryUtils chunk: **519.81 kB** / **131.13 kB gzip**;
+- total JavaScript: **906,558 bytes** across 4 chunks;
 - bundle budget: **PASS**.
 
-The heavy 3D renderer is no longer part of the initial JavaScript entry.
+The heavy 3D runtime remains outside the initial JavaScript entry.
 
-Runtime range is constrained to:
+Runtime range remains constrained to:
 
 `>=22.13.0 <23`
 
-This preserves the tested Node 22 baseline and prevents an automatic future major upgrade.
-
 ## Preview/deployment state
 
-### GitHub Pages — canonical preview
+### GitHub Pages — canonical synthetic preview
 
-GitHub Pages is enabled and is the canonical public synthetic preview because its workflow:
+GitHub Pages remains the canonical public MVP preview because its workflow builds from `main`, publishes the vendored anatomy assets, checks shell/assets and provenance, and executes Chromium against the deployed 3D flow.
 
-1. builds from `main`;
-2. publishes the vendored atlas assets;
-3. validates JS/CSS assets;
-4. validates atlas provenance/index;
-5. runs Chromium against the published site;
-6. requires real Human Atlas canvas in the deployed 3D flow.
+Latest verified product-source run: `34360419167` — **PASS**.
 
-### Vercel — secondary preview path
+### Vercel — secondary path
 
-The Vercel API deployment path was successfully proven after the earlier free-tier quota reset.
-
-A direct preview deployment reached `READY`, so Vercel quota/integration is no longer an architectural blocker. GitHub Pages remains canonical for current MVP validation because it already executes deployed 3D verification automatically.
-
-Do not change the anatomy architecture merely to accommodate a hosting quota.
+Vercel is not an architectural dependency for the current MVP validation. Do not alter the product or anatomy architecture to work around hosting quota or platform-specific limits.
 
 ## Security / data boundary
 
-Current public preview is **synthetic-only**.
+The public preview is **synthetic-only**.
 
-Do not introduce real patient information until all production blockers exist and are proved:
+Do not introduce real patient information until the production blockers are implemented and proved:
 
 - dedicated MedAtlas Supabase project;
 - authentication;
@@ -117,13 +116,13 @@ Do not introduce real patient information until all production blockers exist an
 
 ## Next action
 
-Without Supabase:
+Without Supabase authorization:
 
-1. keep CI, Browser E2E and deployed Pages 3D verification green;
-2. execute the documented **manual synthetic pilot** on the public preview;
-3. record only real UX/navigation problems observed by a human;
+1. finish and keep the current Browser E2E gate green, including the anatomy-depth hit-area regression test;
+2. execute the documented **manual synthetic pilot** on the public preview when a real human-navigation pass is available;
+3. record only concrete UX/navigation problems observed in that pilot;
 4. correct those problems without reopening solved architecture;
-5. keep remote AI, billing and real clinical data blocked.
+5. keep remote AI, billing, auth and real clinical data blocked.
 
 When production/Supabase is explicitly authorized:
 
@@ -136,17 +135,18 @@ When production/Supabase is explicitly authorized:
 
 ## Do not repeat
 
-Unless source changes invalidate the proof, do not redo:
+Unless source changes invalidate the proof, do not redo or reintroduce:
 
-- whether MedAtlas should use the Human Atlas reference engine — **it now does**;
+- a second/simplified 3D renderer;
+- `OrganizationSwitcher` in the canonical shell;
+- `ViewModeSwitcher` or a global Profissional/Paciente switch;
+- duplicate **Novo relatório** launcher in the sidebar;
+- old Clinical Report Studio layout/breakpoint architecture;
 - Human Atlas / BodyParts3D licensing and provenance investigation;
 - L4-L5 Unicode dash/root-cause investigation;
 - vendored asset migration;
-- 34 MB anatomy/runtime architecture investigation;
 - deterministic FMA scenario mapping;
 - blank-report fail-closed workflow;
 - demo-share expiry investigation;
 - accessibility contrast fixes already covered by axe;
-- report state-machine extraction;
-- Vercel quota workaround investigation;
-- creation of a second/simplified 3D renderer.
+- Vercel quota workarounds as product architecture.
