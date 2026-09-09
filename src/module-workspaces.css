@@ -205,7 +205,7 @@
   background: var(--surface-success-soft);
 }
 
-.anatomy-showcase-v3 {
+.patient-anatomy-live {
   display: grid;
   grid-template-columns: minmax(250px, .46fr) minmax(560px, 1.54fr);
   gap: 16px;
@@ -215,14 +215,14 @@
   border-radius: 22px;
 }
 
-.anatomy-showcase-copy-v3 {
+.patient-anatomy-live-copy {
   display: grid;
   align-content: center;
   gap: 8px;
   padding: 12px 9px 12px 10px;
 }
 
-.anatomy-showcase-copy-v3 h2 {
+.patient-anatomy-live-copy h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: clamp(22px, 1.85vw, 31px);
@@ -230,7 +230,7 @@
   letter-spacing: -.025em;
 }
 
-.anatomy-showcase-copy-v3 p {
+.patient-anatomy-live-copy p {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.62;
@@ -264,17 +264,17 @@
   font-size: var(--type-small);
 }
 
-.anatomy-showcase-v3 > .anatomy-focus-preview {
+.patient-anatomy-live > .anatomy-focus-preview {
   min-width: 0;
   height: 100%;
   box-shadow: var(--shadow-panel);
 }
 
-.anatomy-showcase-v3 .anatomy-focus-preview-stage,
-.anatomy-showcase-v3 .human-atlas-scene,
-.anatomy-showcase-v3 .organ-detail-scene,
-.anatomy-showcase-v3 .focused-reference-loading,
-.anatomy-showcase-v3 .renderer-module-loading {
+.patient-anatomy-live .anatomy-focus-preview-stage,
+.patient-anatomy-live .human-atlas-scene,
+.patient-anatomy-live .organ-detail-scene,
+.patient-anatomy-live .focused-reference-loading,
+.patient-anatomy-live .renderer-module-loading {
   min-height: 510px;
 }
 
@@ -354,62 +354,62 @@
   background: var(--surface-control-hover);
 }
 
-.analytics-metrics-v3 article {
+.analytics-metrics article {
   min-height: 126px;
 }
 
-.analytics-metrics-v3.is-loading article {
+.analytics-metrics.is-loading article {
   opacity: .72;
 }
 
-.analytics-error-v3 {
+.analytics-error {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
 }
 
-.analytics-error-v3 > div {
+.analytics-error > div {
   display: grid;
   gap: 3px;
 }
 
-.analytics-error-v3 button {
+.analytics-error button {
   flex: 0 0 auto;
 }
 
-.analytics-report-card-v3 .analytics-report-row:not(.analytics-report-head) {
+.analytics-report-card .analytics-report-row:not(.analytics-report-head) {
   transition: background .16s ease;
 }
 
-.analytics-report-card-v3 .analytics-report-row:not(.analytics-report-head):hover {
+.analytics-report-card .analytics-report-row:not(.analytics-report-head):hover {
   background: var(--surface-control-hover);
 }
 
-.settings-grid-v3 {
+.settings-grid {
   align-items: stretch;
 }
 
-.settings-grid-v3 > article {
+.settings-grid > article {
   min-height: 176px;
   display: flex;
   flex-direction: column;
 }
 
-.settings-grid-v3 .settings-card-heading .label {
+.settings-grid .settings-card-heading .label {
   color: var(--text-muted);
 }
 
-.settings-grid-v3 .settings-card-heading strong {
+.settings-grid .settings-card-heading strong {
   color: var(--text-strong);
   font-size: var(--type-small);
 }
 
-.settings-grid-v3 > article > p {
+.settings-grid > article > p {
   color: var(--text-secondary);
 }
 
-.settings-grid-v3 > article > button:disabled {
+.settings-grid > article > button:disabled {
   color: var(--text-muted);
   border-color: var(--line-subtle);
   background: var(--surface-disabled);
@@ -421,8 +421,8 @@
   min-width: 160px;
 }
 
-.settings-grid-v3 > article > button,
-.settings-grid-v3 > article > .settings-card-state {
+.settings-grid > article > button,
+.settings-grid > article > .settings-card-state {
   margin-top: auto;
 }
 
@@ -701,7 +701,7 @@
 }
 
 @media (max-width: 1180px) {
-  .anatomy-showcase-v3 {
+  .patient-anatomy-live {
     grid-template-columns: minmax(220px, .55fr) minmax(460px, 1.45fr);
   }
 
@@ -718,20 +718,20 @@
 }
 
 @media (max-width: 900px) {
-  .anatomy-showcase-v3 {
+  .patient-anatomy-live {
     grid-template-columns: 1fr;
   }
 
-  .anatomy-showcase-copy-v3 {
+  .patient-anatomy-live-copy {
     padding: 7px 3px 2px;
   }
 
-  .analytics-error-v3 {
+  .analytics-error {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .settings-grid-v3 > article {
+  .settings-grid > article {
     min-height: 150px;
   }
 
@@ -841,15 +841,15 @@
     justify-items: start;
   }
 
-  .anatomy-showcase-v3 {
+  .patient-anatomy-live {
     padding: 9px;
     border-radius: 16px;
   }
 
-  .anatomy-showcase-v3 .anatomy-focus-preview-stage,
-  .anatomy-showcase-v3 .human-atlas-scene,
-  .anatomy-showcase-v3 .focused-reference-loading,
-  .anatomy-showcase-v3 .renderer-module-loading {
+  .patient-anatomy-live .anatomy-focus-preview-stage,
+  .patient-anatomy-live .human-atlas-scene,
+  .patient-anatomy-live .focused-reference-loading,
+  .patient-anatomy-live .renderer-module-loading {
     min-height: 440px;
   }
 
