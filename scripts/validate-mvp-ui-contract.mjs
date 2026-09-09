@@ -37,6 +37,8 @@ const organizationAnalyticsStyles = await readFile('src/styles/organization-anal
 const mvpModeStyles = await readFile('src/styles/mvp-mode.css', 'utf8')
 const interactionPolishStyles = await readFile('src/styles/interaction-polish.css', 'utf8')
 const experienceSurfaceStyles = await readFile('src/experience-surfaces.css', 'utf8')
+const baseStyles = await readFile('src/styles.css', 'utf8')
+const clinicalShellStyles = await readFile('src/styles/clinical-shell.css', 'utf8')
 
 const failures = []
 
@@ -215,6 +217,20 @@ for (const legacySelector of [
   'analytics-boundary',
   'mvp-compact-grid',
   'module-heading',
+  'overview-hero',
+  'overview-flow',
+  'overview-boundary',
+  'module-intro-card',
+  'overview-actions',
+  'overview-metrics',
+  'overview-flow-heading',
+  'overview-status',
+  'overview-steps',
+  'boundary-list',
+  'patient-profile-card',
+  'patient-workspace-grid',
+  'patients-hero',
+  'synthetic-chip',
 ]) {
   if (
     conceptModulesStyles.includes(legacySelector) ||
@@ -223,12 +239,18 @@ for (const legacySelector of [
     organizationAnalyticsStyles.includes(legacySelector) ||
     mvpModeStyles.includes(legacySelector) ||
     interactionPolishStyles.includes(legacySelector) ||
-    experienceSurfaceStyles.includes(legacySelector)
+    experienceSurfaceStyles.includes(legacySelector) ||
+    baseStyles.includes(legacySelector) ||
+    clinicalShellStyles.includes(legacySelector)
   ) {
     failures.push(
       `Dead workspace selectors must not return: ${legacySelector}`,
     )
   }
+}
+
+if (clinicalShellStyles.includes('--saas-')) {
+  failures.push('Parallel clinical SaaS theme must not return')
 }
 
 for (const [file, obsoleteClass] of [
@@ -238,6 +260,12 @@ for (const [file, obsoleteClass] of [
   ['src/components/DemoSettings.tsx', 'settings-hero-v2'],
   ['src/components/TeamModule.tsx', 'className="team-hero"'],
   ['src/components/AnalyticsModule.tsx', 'className="analytics-hero"'],
+  ['src/components/Overview.tsx', 'overview-module'],
+  ['src/components/Overview.tsx', 'overview-saas-v2'],
+  ['src/components/Overview.tsx', 'overview-mvp-v8'],
+  ['src/components/PatientsModule.tsx', 'patients-module'],
+  ['src/components/PatientsModule.tsx', 'patients-mvp-v8'],
+  ['src/components/DemoSettings.tsx', 'settings-module'],
 ]) {
   if (sources.get(file).includes(obsoleteClass)) {
     failures.push(
