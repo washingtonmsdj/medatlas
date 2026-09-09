@@ -17,3 +17,5 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+import './styles/concept-shell.css'
