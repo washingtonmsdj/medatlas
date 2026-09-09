@@ -548,27 +548,30 @@ test('professional and patient views are separated in the MVP', async ({
   await page.setViewportSize({ width: 1440, height: 960 })
   await page.goto('/')
 
-  const modeSwitcher = page.getByRole('group', {
-    name: 'Alternar visão do MedAtlas',
-  })
-  await expect(modeSwitcher).toBeVisible()
+  await expect(page.locator('.clinical-sidebar')).toBeVisible()
+  await expect(page.locator('.medatlas-v2-topbar')).toBeVisible()
   await expect(
-    modeSwitcher.getByRole('button', { name: /Profissional/ }),
-  ).toHaveAttribute('aria-pressed', 'true')
+    page.getByRole('group', { name: 'Alternar visão do MedAtlas' }),
+  ).toHaveCount(0)
 
-  await modeSwitcher.getByRole('button', { name: /Paciente/ }).click()
+  await page
+    .getByRole('button', { name: 'Abrir menu do profissional' })
+    .click()
+  await page
+    .getByRole('button', { name: 'Visualizar como paciente' })
+    .click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(page.locator('.clinical-sidebar')).toHaveCount(0)
   await expect(
     page.getByText('VISÃO DO PACIENTE · PRÉVIA'),
   ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Voltar ao profissional' }),
+  ).toBeVisible()
 
-  const patientModeSwitcher = page.getByRole('group', {
-    name: 'Alternar visão do MedAtlas',
-  })
-  await patientModeSwitcher
-    .getByRole('button', { name: /Profissional/ })
+  await page
+    .getByRole('button', { name: 'Voltar ao profissional' })
     .click()
 
   await expect(page.locator('.clinical-sidebar')).toBeVisible()
@@ -576,3 +579,4 @@ test('professional and patient views are separated in the MVP', async ({
     page.getByRole('heading', { name: 'Seu fluxo clínico visual' }),
   ).toBeVisible()
 })
+
