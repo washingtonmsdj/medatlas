@@ -152,7 +152,11 @@ export function TopbarUtilityActions({
           <span aria-hidden="true">
             <BellIcon />
           </span>
-          {pendingSteps.length > 0 && <i />}
+          {pendingSteps.length > 0 && (
+            <i className="notification-count-badge" aria-hidden="true">
+              {pendingSteps.length > 9 ? '9+' : pendingSteps.length}
+            </i>
+          )}
         </button>
 
         {panel === 'tasks' && (
