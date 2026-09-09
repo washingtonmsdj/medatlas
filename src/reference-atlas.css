@@ -129,7 +129,7 @@
 .atlas-v3-patient-heading small {
   overflow: hidden;
   color: var(--atlas-muted);
-  font-size: 9px;
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -159,7 +159,7 @@
   color: #7d95ad;
   background: transparent;
   cursor: pointer;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .atlas-v3-case-tabs button.active {
@@ -214,7 +214,7 @@
 .atlas-v3-section-title strong,
 .atlas-v3-label {
   color: #dfeaf4;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -230,13 +230,13 @@
 
 .atlas-v3-report-title {
   color: #8fb2cf;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .atlas-v3-case-scroll section > p {
   margin: 0;
   color: #a8bdcf;
-  font-size: 9px;
+  font-size: 10.5px;
   line-height: 1.62;
 }
 
@@ -275,7 +275,7 @@
 .atlas-v3-structure-card strong {
   overflow: hidden;
   color: #eaf6ff;
-  font-size: 10px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -283,7 +283,7 @@
 .atlas-v3-structure-card small {
   overflow: hidden;
   color: #82a0b8;
-  font-size: 8px;
+  font-size: 9.5px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -304,7 +304,7 @@
   grid-template-columns: 7px minmax(0, 1fr);
   gap: 7px;
   color: #a9bdcf;
-  font-size: 8.5px;
+  font-size: 10px;
   line-height: 1.4;
 }
 
@@ -327,7 +327,7 @@
   padding: 5px 9px;
   border: 1px solid transparent;
   border-radius: 999px;
-  font-size: 7px;
+  font-size: 8.5px;
   font-weight: 800;
 }
 
@@ -361,7 +361,7 @@
   background: linear-gradient(135deg, #2f8cff, #2469ee);
   box-shadow: 0 14px 30px rgba(32, 101, 225, .24);
   cursor: pointer;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 850;
 }
 
@@ -388,7 +388,7 @@
   color: #a9bed0;
   background: rgba(11, 29, 48, .9);
   cursor: pointer;
-  font-size: 8px;
+  font-size: 9.5px;
   font-weight: 700;
 }
 
@@ -430,12 +430,12 @@
 
 .atlas-v3-review-banner strong {
   color: #e8f2f8;
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .atlas-v3-review-banner small {
   color: #8298a9;
-  font-size: 7px;
+  font-size: 8.5px;
   line-height: 1.45;
 }
 
@@ -477,7 +477,7 @@
   color: #869eb4;
   background: transparent;
   cursor: pointer;
-  font-size: 8px;
+  font-size: 9.5px;
   font-weight: 850;
 }
 
@@ -522,7 +522,7 @@
   background: rgba(6, 19, 33, .76);
   box-shadow: 0 12px 26px rgba(0, 0, 0, .18);
   backdrop-filter: blur(12px);
-  font-size: 8px;
+  font-size: 9.5px;
 }
 
 .atlas-v3-search input:focus {
@@ -561,7 +561,7 @@
 
 .atlas-v3-systems header strong {
   color: #dbeaf7;
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .atlas-v3-systems header span {
@@ -594,7 +594,7 @@
   background: transparent;
   cursor: pointer;
   text-align: left;
-  font-size: 7px;
+  font-size: 8.5px;
 }
 
 .atlas-v3-systems button:hover,
@@ -883,7 +883,7 @@
   padding: 0 13px;
   border-bottom: 1px solid var(--atlas-line);
   color: #657f97;
-  font-size: 7px;
+  font-size: 8.5px;
   white-space: nowrap;
 }
 
@@ -893,7 +893,7 @@
   color: #83a9c8;
   background: transparent;
   cursor: pointer;
-  font-size: 7px;
+  font-size: 8.5px;
 }
 
 .atlas-v3-detail-breadcrumb strong {
@@ -944,7 +944,7 @@
 
 .atlas-v3-detail-heading small {
   color: #738ca3;
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .atlas-v3-selection-state {
@@ -955,7 +955,7 @@
   border-radius: 999px;
   color: #9fc7e3;
   background: rgba(31, 83, 126, .28);
-  font-size: 6px;
+  font-size: 7.5px;
   font-weight: 800;
   letter-spacing: .03em;
 }
@@ -1032,7 +1032,7 @@
   color: #70889f;
   background: transparent;
   cursor: pointer;
-  font-size: 7px;
+  font-size: 8.5px;
 }
 
 .atlas-v3-detail-tabs button.active {
@@ -1051,7 +1051,7 @@
 .atlas-v3-tab-copy p {
   margin: 0;
   color: #a0b6c8;
-  font-size: 8px;
+  font-size: 9.5px;
   line-height: 1.55;
 }
 
@@ -1074,20 +1074,20 @@
 
 .atlas-v3-detail-metrics span {
   color: #6d879e;
-  font-size: 6px;
+  font-size: 7.5px;
 }
 
 .atlas-v3-detail-metrics strong {
   overflow: hidden;
   color: #e4f0f9;
-  font-size: 9px;
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .atlas-v3-detail-metrics small {
   color: #678298;
-  font-size: 6px;
+  font-size: 7.5px;
 }
 
 .atlas-v3-tab-copy {
@@ -1097,7 +1097,7 @@
 
 .atlas-v3-tab-copy strong {
   color: #dceaf5;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .atlas-v3-tab-copy button {
@@ -1151,13 +1151,13 @@
 
 .atlas-v3-patient-explanation strong {
   color: #e7f3fb;
-  font-size: 8px;
+  font-size: 9.5px;
 }
 
 .atlas-v3-patient-explanation p {
   margin: 0;
   color: #a5bacb;
-  font-size: 7.5px;
+  font-size: 9px;
   line-height: 1.5;
 }
 
@@ -1173,7 +1173,7 @@
   color: #aadfff;
   background: rgba(25, 75, 118, .50);
   cursor: pointer;
-  font-size: 7px;
+  font-size: 8.5px;
 }
 
 .atlas-v3-model-quality {
@@ -1208,13 +1208,13 @@
 
 .atlas-v3-model-quality strong {
   color: #bff4d9;
-  font-size: 8px;
+  font-size: 9px;
 }
 
 .atlas-v3-model-quality small {
   overflow: hidden;
   color: #77aa94;
-  font-size: 6.5px;
+  font-size: 7.5px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
