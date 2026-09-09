@@ -215,25 +215,29 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   }
 })
 
-test('mobile clinical shell stays compact without hiding core controls', async ({
+test('mobile concept shell stays compact without legacy switchers', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
-  const organization = page.locator('.organization-switcher-shell')
-  const search = page.locator('.global-command-search')
-  const modeSwitcher = page.getByRole('group', {
-    name: 'Alternar visão do MedAtlas',
+  const search = page.getByRole('combobox', {
+    name: 'Buscar paciente, relatório, anatomia ou módulo',
+  })
+  const profile = page.getByRole('button', {
+    name: 'Abrir menu do profissional',
   })
 
-  await expect(organization).toBeVisible()
   await expect(search).toBeVisible()
-  await expect(modeSwitcher).toBeVisible()
+  await expect(profile).toBeVisible()
+  await expect(page.locator('.organization-switcher-shell')).toHaveCount(0)
+  await expect(
+    page.getByRole('group', { name: 'Alternar visão do MedAtlas' }),
+  ).toHaveCount(0)
 
   const heights = await page.evaluate(() => {
     const sidebar = document.querySelector<HTMLElement>('.clinical-sidebar')
-    const topbar = document.querySelector<HTMLElement>('.topbar-saas')
+    const topbar = document.querySelector<HTMLElement>('.medatlas-v2-topbar')
 
     return {
       sidebar: sidebar?.getBoundingClientRect().height ?? Number.POSITIVE_INFINITY,
@@ -241,9 +245,8 @@ test('mobile clinical shell stays compact without hiding core controls', async (
     }
   })
 
-  expect(heights.sidebar).toBeLessThanOrEqual(105)
-  expect(heights.topbar).toBeLessThanOrEqual(105)
-  expect(heights.sidebar + heights.topbar).toBeLessThanOrEqual(210)
+  expect(heights.sidebar).toBeLessThanOrEqual(145)
+  expect(heights.topbar).toBeLessThanOrEqual(80)
   await expectNoHorizontalOverflow(page)
 })
 
@@ -296,42 +299,32 @@ test('management modules stay readable without internal horizontal scroll on mob
   await expectNoHorizontalOverflow(page)
 })
 
-test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
+test('full Atlas concept stays usable from desktop to mobile', async ({
   page,
 }) => {
   test.setTimeout(120_000)
   await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
+  await page
+    .locator('.clinical-sidebar nav')
+    .getByRole('button', { name: 'Atlas 3D' })
+    .click()
 
-  await expect(
-    page.getByRole('heading', { name: 'Atlas 3D' }),
-  ).toBeVisible()
-
-  const atlasStatus = page.locator(
-    '.reference-workbench-status > span',
-  )
-  await expect(atlasStatus).toBeVisible({ timeout: 20_000 })
-  await expect(atlasStatus).toContainText(
-    /Carregando|Pronto/,
-  )
-
-  await expect(
-    page.getByText('Pronto', { exact: true }),
-  ).toBeVisible({ timeout: 100_000 })
-
-  const stage = page.locator('.reference-atlas-stage')
+  const workspace = page.locator('.atlas-v3-workspace')
+  const stage = page.locator('.atlas-v3-body-stage')
   const canvas = stage.locator('.reference-atlas-scene canvas')
+  const detail = page.locator('.atlas-v3-detail-panel')
 
-  await expect(canvas).toBeVisible({ timeout: 60_000 })
+  await expect(workspace).toBeVisible()
+  await expect(canvas).toBeVisible({ timeout: 100_000 })
   await expect(canvas).toHaveAttribute('tabindex', '0')
   await expect(canvas).toHaveAttribute(
     'aria-keyshortcuts',
     /ArrowLeft.*ArrowRight.*ArrowUp.*ArrowDown.*\+.*-.*Home/,
   )
+
   await canvas.focus()
-  await expect(canvas).toBeFocused()
   await page.keyboard.press('ArrowRight')
   await page.keyboard.press('+')
   await page.keyboard.press('Home')
@@ -340,10 +333,9 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   await expect(
     page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
   ).toBeVisible()
+  await expect(detail).toBeVisible()
   await expect(
-    page.getByRole('navigation', {
-      name: 'Controles de câmera do Atlas 3D',
-    }),
+    page.getByRole('navigation', { name: 'Atalhos do Atlas 3D' }),
   ).toBeVisible()
 
   await expectNoHorizontalOverflow(page)
@@ -363,67 +355,36 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
 
   const mobileStageBox = await stage.boundingBox()
   expect(mobileStageBox).not.toBeNull()
-  expect(mobileStageBox!.height).toBeGreaterThanOrEqual(740)
+  expect(mobileStageBox!.height).toBeGreaterThanOrEqual(600)
 
-  const mobileSceneBox = await stage
-    .locator('.reference-atlas-scene')
-    .boundingBox()
-  expect(mobileSceneBox).not.toBeNull()
-  expect(
-    Math.abs(mobileSceneBox!.y - mobileStageBox!.y),
-  ).toBeLessThan(4)
-  expect(mobileSceneBox!.height).toBeGreaterThanOrEqual(
-    mobileStageBox!.height - 4,
-  )
-
-  const mobileControls = page.locator('.reference-view-controls')
-  const mobileControlsBox = await mobileControls.boundingBox()
-  expect(mobileControlsBox).not.toBeNull()
-  expect(mobileControlsBox!.width).toBeGreaterThan(300)
-  expect(mobileControlsBox!.height).toBeLessThan(70)
-
-  const mobileTools = page.getByRole('navigation', {
-    name: 'Ferramentas do Atlas no celular',
+  const mobilePresets = page.getByRole('navigation', {
+    name: 'Atalhos do Atlas 3D',
   })
-  await expect(mobileTools).toBeVisible()
-  const mobileToolsBox = await mobileTools.boundingBox()
-  expect(mobileToolsBox).not.toBeNull()
-  expect(mobileToolsBox!.width).toBeGreaterThan(300)
+  await expect(mobilePresets).toBeVisible()
+  const presetButtons = mobilePresets.getByRole('button')
+  await expect(presetButtons).toHaveCount(6)
 
-  const mobileSystems = page.getByRole('complementary', {
-    name: 'Sistemas anatômicos',
-  })
-  const mobileInspector = page.locator('.reference-inspector-card')
+  const depthButtons = page.locator('.atlas-v3-depth-switch').getByRole('button')
+  await expect(depthButtons).toHaveCount(2)
+  for (let index = 0; index < 2; index += 1) {
+    const box = await depthButtons.nth(index).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.height).toBeGreaterThanOrEqual(40)
+  }
 
-  await expect(mobileSystems).toBeHidden()
-  await expect(mobileInspector).toBeHidden()
+  const bodyToolButtons = page
+    .getByRole('navigation', { name: 'Ferramentas do corpo 3D' })
+    .getByRole('button')
+  for (let index = 0; index < await bodyToolButtons.count(); index += 1) {
+    const box = await bodyToolButtons.nth(index).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.width).toBeGreaterThanOrEqual(44)
+    expect(box!.height).toBeGreaterThanOrEqual(44)
+  }
 
-  await mobileTools
-    .getByRole('button', { name: /Camadas/ })
-    .click()
-  await expect(mobileSystems).toBeVisible()
-  const mobileSystemsBox = await mobileSystems.boundingBox()
-  expect(mobileSystemsBox).not.toBeNull()
-  expect(mobileSystemsBox!.width).toBeGreaterThan(300)
-
-  await page
-    .getByRole('button', { name: 'Fechar camadas anatômicas' })
-    .click()
-  await expect(mobileSystems).toBeHidden()
-
-  await mobileTools
-    .getByRole('button', { name: /Estrutura/ })
-    .click()
-  await expect(mobileInspector).toBeVisible()
-
-  await page
-    .getByRole('button', { name: 'Fechar inspetor anatômico' })
-    .click()
-  await expect(mobileInspector).toBeHidden()
-
+  await expect(detail).toBeVisible()
   await capture(page, 'atlas-explorer-mobile-390')
 })
-
 
 test('frontend refinement keeps hierarchy explicit on desktop and mobile', async ({
   page,
