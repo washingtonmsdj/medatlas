@@ -302,7 +302,7 @@ function ClinicianApp() {
   const reportPresentation = deriveReportPresentation(report)
 
   const reportWorkflow = (
-    <section className="module-v3 mvp-surface">
+    <section className="workspace-page mvp-surface">
       <WorkspacePageHeader
         eyebrow="RELATÓRIO VISUAL"
         title={report.title}
