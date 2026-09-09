@@ -11,11 +11,10 @@ import './styles/mvp-mode.css'
 import './module-workspaces.css'
 import './experience-surfaces.css'
 import './styles/clinical-sidebar.css'
+import './styles/concept-shell.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
-
-import './styles/concept-shell.css'
