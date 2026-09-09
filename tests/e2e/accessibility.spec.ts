@@ -82,11 +82,11 @@ test('patient handoff has no serious axe violations', async ({ page }) => {
     .click()
 
   await page
-    .getByRole('button', { name: 'Gerar explicação' })
+    .getByRole('button', { name: 'Gerar rascunho' })
     .click()
 
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
 
   await page
