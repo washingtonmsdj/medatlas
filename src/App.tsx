@@ -585,7 +585,7 @@ function ClinicianApp() {
   }
 
   return (
-    <div className="app-shell medatlas-v2-shell">
+    <div className="app-shell clinical-app-shell">
       <a className="skip-link" href="#clinical-workspace">
         Ir para o conteúdo principal
       </a>
@@ -597,8 +597,8 @@ function ClinicianApp() {
         onNavigate={setActive}
       />
 
-      <main className="workspace medatlas-v2-workspace" id="clinical-workspace" tabIndex={-1}>
-        <header className="medatlas-v2-topbar">
+      <main className="workspace clinical-workspace" id="clinical-workspace" tabIndex={-1}>
+        <header className="clinical-topbar">
           <GlobalCommandSearch actions={globalSearchActions} />
 
           <TopbarUtilityActions
@@ -627,7 +627,7 @@ function ClinicianApp() {
           />
         </header>
 
-        <div className="medatlas-v2-demo-boundary">
+        <div className="demo-privacy-boundary">
           <DemoPrivacyBanner />
         </div>
 
