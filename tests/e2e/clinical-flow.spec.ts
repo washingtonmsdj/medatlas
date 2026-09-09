@@ -161,7 +161,7 @@ test('all synthetic scenarios surface the expected anatomy first', async ({
     const firstSuggestion = page.locator('.suggestion-item').first()
 
     await expect(firstSuggestion).toContainText(scenario.displayName)
-    await expect(firstSuggestion).toContainText(scenario.conceptId)
+    await expect(firstSuggestion).not.toContainText(scenario.conceptId)
   }
 })
 
@@ -176,12 +176,12 @@ test('clinician review gate leads to a patient-facing visual report', async ({
 
   const heartSuggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await expect(heartSuggestion).toContainText('Coração')
   await expect(heartSuggestion).toContainText('Alta confiança')
   await heartSuggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   await expect(
@@ -406,8 +406,8 @@ test('canonical patient view follows the current report state', async ({
   await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
   await page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .filter({ hasText: 'Coração' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar explicação' }).click()
   await page.getByRole('button', { name: 'Ver como paciente' }).click()
@@ -450,8 +450,8 @@ test('canonical patient view follows the current report state', async ({
   await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
   await page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7203' })
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .filter({ hasText: 'Rins' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar explicação' }).click()
   await page.getByRole('button', { name: 'Ver como paciente' }).click()
@@ -473,8 +473,8 @@ test('patient view can explore detailed organ without exposing or changing the c
   await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
   await page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .filter({ hasText: 'Coração' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page.getByRole('button', { name: 'Gerar explicação' }).click()
   await page.getByRole('button', { name: 'Ver como paciente' }).click()
@@ -557,7 +557,10 @@ test('mobile workspace keeps the main clinical flow usable', async ({
 
   await expect(
     page.locator('.suggestion-item').first(),
-  ).toContainText('FMA7203')
+  ).toContainText('Rins')
+  await expect(
+    page.locator('.suggestion-item').first(),
+  ).not.toContainText('FMA7203')
 
   const mobileDock = page.locator('.clinical-atlas-view-dock')
   await expect(mobileDock).toBeVisible()
@@ -588,10 +591,10 @@ test('expired demo patient links fail closed', async ({ page }) => {
 
   const kidneySuggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7203' })
+    .filter({ hasText: 'Rins' })
 
   await kidneySuggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   await page
@@ -687,11 +690,11 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 
   const suggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await expect(suggestion).toContainText('Coração')
   await suggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   await expect(
@@ -728,10 +731,10 @@ test('demo settings can clear local patient shares', async ({ page }) => {
 
   const suggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await suggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page
     .getByRole('button', { name: 'Gerar explicação' })
@@ -809,7 +812,10 @@ test('synthetic text file import stays local and resolves anatomy', async ({
 
   await expect(
     page.locator('.suggestion-item').first(),
-  ).toContainText('FMA7088')
+  ).toContainText('Coração')
+  await expect(
+    page.locator('.suggestion-item').first(),
+  ).not.toContainText('FMA7088')
 })
 
 
@@ -878,10 +884,10 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 
   const suggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await suggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page
     .getByRole('button', { name: 'Gerar explicação' })
@@ -1051,8 +1057,8 @@ test('clinical workbench opens detailed organ and returns to the same confirmed 
 
   await page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .filter({ hasText: 'Coração' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   const stage = page.locator('.clinical-atlas-stage')
@@ -1111,8 +1117,8 @@ test('focused Human Atlas picking identifies a real part without changing the re
 
   await page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .filter({ hasText: 'Coração' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   const canvas = page.locator(
