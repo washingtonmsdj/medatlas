@@ -1,6 +1,7 @@
 import type { VisualReport } from '../domain/types'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   report: VisualReport
@@ -25,29 +26,25 @@ export function Overview({
 }: Props) {
   const presentation = deriveReportPresentation(report)
   const currentStep = presentation.currentStep
+  const scopeLabel = [organizationName, workspaceName, unitName]
+    .filter(Boolean)
+    .join(' · ')
+    .toUpperCase()
 
   return (
     <section className="overview-module overview-saas-v2 overview-3d-first module-v3 mvp-surface overview-mvp-v8">
-      <div className="overview-welcome workspace-hero-v3 mvp-page-hero overview-compact-hero">
-        <div>
-          <span className="section-kicker">
-            {organizationName.toUpperCase()} · {workspaceName.toUpperCase()}
-            {unitName ? ` · ${unitName.toUpperCase()}` : ''}
-          </span>
-          <h2>Seu fluxo clínico visual</h2>
-          <p>
-            Olá, {professionalDisplayName}. Continue o relatório atual ou
-            comece um novo atendimento.
-          </p>
-        </div>
-
-        <div className="overview-actions overview-actions-premium">
+      <WorkspacePageHeader
+        eyebrow={scopeLabel}
+        title="Seu fluxo clínico visual"
+        description={`Olá, ${professionalDisplayName}. Continue o relatório atual ou comece um novo atendimento.`}
+        className="overview-welcome overview-compact-hero"
+        actions={
           <button className="primary" type="button" onClick={onNewReport}>
             <span aria-hidden="true">＋</span>
             Novo relatório
           </button>
-        </div>
-      </div>
+        }
+      />
 
       <article className="continue-care-card overview-3d-hero">
         <div className="overview-3d-hero-heading">
