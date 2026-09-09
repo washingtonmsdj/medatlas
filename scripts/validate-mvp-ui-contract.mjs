@@ -9,6 +9,7 @@ const productSurfaces = [
   'src/components/PatientReportPage.tsx',
   'src/components/ReferenceAtlasExplorer.tsx',
   'src/components/AnatomyFocusPreview.tsx',
+  'src/components/AtlasViewport.tsx',
   'src/components/HumanAtlasScene.tsx',
   'src/components/PatientsModule.tsx',
   'src/components/TeamModule.tsx',
