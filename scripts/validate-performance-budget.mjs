@@ -23,6 +23,18 @@ const modelSource = await readFile(
   'src/atlas/model.ts',
   'utf8',
 )
+const anatomyFocusSource = await readFile(
+  'src/components/AnatomyFocusPreview.tsx',
+  'utf8',
+)
+const organDetailCatalogSource = await readFile(
+  'src/anatomy-detail/catalog.ts',
+  'utf8',
+)
+const organDetailSceneSource = await readFile(
+  'src/components/OrganDetailScene.tsx',
+  'utf8',
+)
 const staticRendererImport =
   /import\s*\{[^}]*HumanAtlasExplorerScene[^}]*\}\s*from\s*['"]\.\/HumanAtlasExplorerScene['"]/
 
@@ -33,6 +45,49 @@ if (
   failures.push(
     'atlas/model.ts must remain Three-free so focused slicing does not pull the renderer into the initial bundle',
   )
+}
+
+if (
+  organDetailCatalogSource.includes("from 'three'") ||
+  organDetailCatalogSource.includes('from "three"')
+) {
+  failures.push(
+    'anatomy-detail/catalog.ts must remain Three-free so organ detail stays out of the initial bundle',
+  )
+}
+
+if (
+  !anatomyFocusSource.includes("import('./OrganDetailScene')") ||
+  anatomyFocusSource.includes(
+    "import { OrganDetailScene } from './OrganDetailScene'",
+  )
+) {
+  failures.push(
+    'contextual organ detail renderer must be lazy-loaded from AnatomyFocusPreview',
+  )
+}
+
+if (
+  !explorerSource.includes("import('./OrganDetailScene')") ||
+  explorerSource.includes(
+    "import { OrganDetailScene } from './OrganDetailScene'",
+  )
+) {
+  failures.push(
+    'full-atlas organ detail renderer must be lazy-loaded from ReferenceAtlasExplorer',
+  )
+}
+
+for (const fragment of [
+  'GLTFLoader',
+  'IntersectionObserver',
+  "document.addEventListener('visibilitychange'",
+  'if (!viewportVisible || !pageVisible) return',
+  'renderer.dispose()',
+]) {
+  if (!organDetailSceneSource.includes(fragment)) {
+    failures.push('organ detail renderer performance contract missing: ' + fragment)
+  }
 }
 
 for (const [surface, source] of [
