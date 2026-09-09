@@ -75,10 +75,10 @@ test('patient handoff has no serious axe violations', async ({ page }) => {
 
   const heartSuggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await heartSuggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   await page
