@@ -43,13 +43,19 @@ must not be used.
 ## Runtime/network boundary
 
 The anatomy catalog and compressed Human Atlas/BodyParts3D assets required by
-the renderer are vendored under `public/atlas-assets/`.
+the canonical renderer are vendored under `public/atlas-assets/`.
+
+The supplementary detailed-organ GLBs are separately vendored under
+`public/organ-models/`. Their manifest pins the permitted
+`thebuggeddev/anatomy` checkpoint and records source Git blobs, byte sizes and
+SHA-256 digests.
 
 Normal application runtime no longer fetches anatomy from
-`raw.githubusercontent.com` or the upstream Human Atlas repository.
+`raw.githubusercontent.com` or either upstream repository. Detailed organ
+assets are lazy-loaded from the MedAtlas deployment only after explicit user
+navigation into organ detail.
 
-The vendored closure is pinned to the upstream commit, carries SHA-256
-provenance and is verified by CI.
+Both vendored closures are pinned and verified by CI.
 
 ## Browser/deployment hardening
 
@@ -78,7 +84,9 @@ invariants, including:
 - fail-closed token shape;
 - CSP/header baseline;
 - empty example credentials;
-- no external Human Atlas runtime dependency.
+- no external Human Atlas runtime dependency;
+- no external detailed-organ runtime dependency;
+- vendored organ-model provenance and SHA-256 closure.
 
 Browser E2E separately proves that an expired demo share fails closed.
 
