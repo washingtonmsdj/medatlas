@@ -19,6 +19,10 @@ interface Props {
   state: AtlasExplorerSceneState
   onSelect: (partId: string) => void
   inspectedPartId?: string
+  inspectedPartLabel?: string
+  inspectedPartMeta?: string
+  inspectedPartNote?: string
+  onClearInspection?: () => void
   onProgress: (progress: number) => void
   onError: (message: string) => void
   appearance?: AtlasSceneAppearance
@@ -29,6 +33,10 @@ export function HumanAtlasExplorerScene({
   state,
   onSelect,
   inspectedPartId,
+  inspectedPartLabel,
+  inspectedPartMeta,
+  inspectedPartNote,
+  onClearInspection,
   onProgress,
   onError,
   appearance = 'clinical',
@@ -37,10 +45,18 @@ export function HumanAtlasExplorerScene({
   const latest = useRef(state)
   const select = useRef(onSelect)
   const inspected = useRef(inspectedPartId)
+  const inspectionLabel = useRef(inspectedPartLabel)
+  const inspectionMeta = useRef(inspectedPartMeta)
+  const inspectionNote = useRef(inspectedPartNote)
+  const clearInspection = useRef(onClearInspection)
 
   latest.current = state
   select.current = onSelect
   inspected.current = inspectedPartId
+  inspectionLabel.current = inspectedPartLabel
+  inspectionMeta.current = inspectedPartMeta
+  inspectionNote.current = inspectedPartNote
+  clearInspection.current = onClearInspection
 
   useEffect(() => {
     const element = host.current
@@ -234,6 +250,9 @@ export function HumanAtlasExplorerScene({
         .add(new THREE.Vector3().fromArray(part.bounds[1]))
         .multiplyScalar(0.5),
     )
+    const partIndexById = new Map(
+      atlas.parts.map((part, index) => [part.id, index]),
+    )
     const bounds = atlas.parts.map(
       (part) =>
         new THREE.Box3(
@@ -281,6 +300,50 @@ export function HumanAtlasExplorerScene({
     hover.hidden = true
     element.appendChild(hover)
 
+    const inspectionCallout = document.createElement('aside')
+    inspectionCallout.className =
+      `reference-inspection-callout reference-inspection-callout-${appearance}`
+    inspectionCallout.setAttribute(
+      'aria-label',
+      'Estrutura anatômica inspecionada',
+    )
+    inspectionCallout.setAttribute('aria-live', 'polite')
+    inspectionCallout.hidden = true
+
+    const inspectionCard = document.createElement('div')
+    inspectionCard.className = 'reference-inspection-callout-card'
+
+    const inspectionClose = document.createElement('button')
+    inspectionClose.type = 'button'
+    inspectionClose.className = 'reference-inspection-callout-close'
+    inspectionClose.setAttribute(
+      'aria-label',
+      'Fechar identificação anatômica',
+    )
+    inspectionClose.textContent = '×'
+
+    const inspectionKicker = document.createElement('span')
+    inspectionKicker.textContent = 'ESTRUTURA INSPECIONADA'
+
+    const inspectionTitle = document.createElement('strong')
+    const inspectionMetaEl = document.createElement('small')
+    const inspectionNoteEl = document.createElement('em')
+
+    inspectionCard.append(
+      inspectionClose,
+      inspectionKicker,
+      inspectionTitle,
+      inspectionMetaEl,
+      inspectionNoteEl,
+    )
+    inspectionCallout.appendChild(inspectionCard)
+    element.appendChild(inspectionCallout)
+
+    const closeInspectionCallout = () => {
+      clearInspection.current?.()
+    }
+    inspectionClose.addEventListener('click', closeInspectionCallout)
+
     type ProjectedTarget = {
       index: number
       x: number
@@ -293,6 +356,59 @@ export function HumanAtlasExplorerScene({
 
     let targets: ProjectedTarget[] = []
     const projected = new THREE.Vector3()
+    const calloutProjected = new THREE.Vector3()
+    const calloutOffset = new THREE.Vector3()
+
+    const positionInspectionCallout = () => {
+      if (appearance === 'explorer') {
+        inspectionCallout.hidden = true
+        return
+      }
+
+      const partId = inspected.current
+      const index = partId ? partIndexById.get(partId) : undefined
+
+      if (
+        index === undefined ||
+        partStateData[index * 4 + 3] < 0.5
+      ) {
+        inspectionCallout.hidden = true
+        return
+      }
+
+      calloutOffset.set(
+        partStateData[index * 4],
+        partStateData[index * 4 + 1],
+        partStateData[index * 4 + 2],
+      )
+      calloutProjected
+        .copy(centers[index])
+        .add(calloutOffset)
+        .project(camera)
+
+      if (calloutProjected.z < -1 || calloutProjected.z > 1) {
+        inspectionCallout.hidden = true
+        return
+      }
+
+      const x =
+        ((calloutProjected.x + 1) * element.clientWidth) / 2
+      const y =
+        ((1 - calloutProjected.y) * element.clientHeight) / 2
+
+      inspectionTitle.textContent =
+        inspectionLabel.current ?? atlas.parts[index].name
+      inspectionMetaEl.textContent =
+        inspectionMeta.current ?? 'Inspeção visual'
+      inspectionNoteEl.textContent =
+        inspectionNote.current ?? ''
+
+      inspectionCallout.hidden = false
+      inspectionCallout.dataset.side =
+        x > element.clientWidth * 0.62 ? 'left' : 'right'
+      inspectionCallout.style.transform =
+        `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`
+    }
 
     const findProjectedTarget = (
       x: number,
@@ -903,6 +1019,7 @@ export function HumanAtlasExplorerScene({
             part.id === currentInspectedPartId ? 255 : 0
         })
         inspectionTexture.needsUpdate = true
+        inspectionCallout.hidden = !currentInspectedPartId
         lastInspectedPartId = currentInspectedPartId
         dirty = true
       }
@@ -1149,6 +1266,7 @@ export function HumanAtlasExplorerScene({
 
       if (dirty) {
         renderer.render(scene, camera)
+        positionInspectionCallout()
 
         targets = []
 
@@ -1279,6 +1397,11 @@ export function HumanAtlasExplorerScene({
       hoverTexture.dispose()
       markerGeometry.dispose()
       markerMaterial.dispose()
+      inspectionClose.removeEventListener(
+        'click',
+        closeInspectionCallout,
+      )
+      inspectionCallout.remove()
       hover.remove()
 
       scene.traverse((object) => {

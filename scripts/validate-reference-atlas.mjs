@@ -109,6 +109,10 @@ const requiredEngineFragments = [
   'RingGeometry',
   'markerPositions',
   'reference-part-hover',
+  'reference-inspection-callout',
+  'positionInspectionCallout',
+  'inspectionCallout.style.transform',
+  'partIndexById',
   'findProjectedTarget',
   'setViewOffset',
   'markers.visible',
@@ -236,6 +240,20 @@ for (const fragment of requiredFocusedFragments) {
   if (!focused.includes(fragment)) {
     failures.push(
       'focused clinical atlas is not using the reference engine: ' + fragment,
+    )
+  }
+}
+
+for (const fragment of [
+  'inspectedPartLabel',
+  'inspectedPartMeta',
+  'inspectedPartNote',
+  'onClearInspection',
+]) {
+  if (!focused.includes(fragment)) {
+    failures.push(
+      'focused Human Atlas anchored-inspection contract missing: ' +
+        fragment,
     )
   }
 }

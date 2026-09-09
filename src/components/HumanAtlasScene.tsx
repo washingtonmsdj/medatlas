@@ -272,39 +272,28 @@ export function HumanAtlasScene({
           state={sceneState}
           onSelect={inspectPart}
           inspectedPartId={inspectedPart?.partId}
+          inspectedPartLabel={inspectedPart?.label}
+          inspectedPartMeta={
+            inspectedPart
+              ? appearance === 'patient'
+                ? 'Anatomia humana de referência'
+                : `${inspectedPart.conceptId} · peça ${inspectedPart.partId}`
+              : undefined
+          }
+          inspectedPartNote={
+            inspectedPart
+              ? appearance === 'patient'
+                ? 'Referência visual. Não representa o corpo individual do paciente.'
+                : 'Inspeção visual apenas. A anatomia confirmada do relatório não foi alterada.'
+              : undefined
+          }
+          onClearInspection={() => setInspectedPart(null)}
           onProgress={handleProgress}
           onError={handleError}
           appearance={appearance}
         />
       </Suspense>
 
-      {inspectedPart && (
-        <aside
-          className="focused-reference-inspector"
-          aria-label="Estrutura anatômica inspecionada"
-          aria-live="polite"
-        >
-          <button
-            type="button"
-            aria-label="Fechar identificação anatômica"
-            onClick={() => setInspectedPart(null)}
-          >
-            ×
-          </button>
-          <span>ESTRUTURA INSPECIONADA</span>
-          <strong>{inspectedPart.label}</strong>
-          <small>
-            {appearance === 'patient'
-              ? 'Anatomia humana de referência'
-              : `${inspectedPart.conceptId} · peça ${inspectedPart.partId}`}
-          </small>
-          <em>
-            {appearance === 'patient'
-              ? 'Referência visual. Não representa o corpo individual do paciente.'
-              : 'Inspeção visual apenas. A anatomia confirmada do relatório não foi alterada.'}
-          </em>
-        </aside>
-      )}
     </div>
   )
 }

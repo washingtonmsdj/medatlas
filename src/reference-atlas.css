@@ -1101,3 +1101,164 @@
   outline: 2px solid rgba(106, 220, 255, .92);
   outline-offset: -3px;
 }
+
+
+/* Anchored inspection callout adapted from the permitted
+   thebuggeddev/anatomy interaction pattern; see docs/UPSTREAM_ANATOMY.md. */
+.reference-inspection-callout {
+  position: absolute;
+  z-index: 18;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.reference-inspection-callout-card {
+  position: absolute;
+  top: -34px;
+  width: min(220px, calc(100vw - 34px));
+  display: grid;
+  gap: 3px;
+  padding: 11px 30px 11px 13px;
+  border: 1px solid rgba(104, 190, 230, .34);
+  border-radius: 12px;
+  color: #eaf7ff;
+  background: rgba(5, 18, 29, .9);
+  box-shadow:
+    0 0 0 1px rgba(84, 199, 237, .08),
+    0 14px 34px rgba(0, 0, 0, .3);
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  animation: reference-inspection-callout-in .22s cubic-bezier(.2,.85,.3,1);
+}
+
+.reference-inspection-callout[data-side="right"]
+  .reference-inspection-callout-card {
+  left: 20px;
+}
+
+.reference-inspection-callout[data-side="left"]
+  .reference-inspection-callout-card {
+  right: 20px;
+}
+
+.reference-inspection-callout-card::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  width: 20px;
+  height: 1px;
+  background: #5ed5f2;
+  opacity: .7;
+}
+
+.reference-inspection-callout[data-side="right"]
+  .reference-inspection-callout-card::before {
+  right: 100%;
+}
+
+.reference-inspection-callout[data-side="left"]
+  .reference-inspection-callout-card::before {
+  left: 100%;
+}
+
+.reference-inspection-callout-card > span {
+  color: #66cce9;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.reference-inspection-callout-card strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-inspection-callout-card small {
+  color: #91aabd;
+  font-size: 7px;
+}
+
+.reference-inspection-callout-card em {
+  color: #819aaa;
+  font-size: 7px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.reference-inspection-callout-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #9bb5c6;
+  background: transparent;
+  cursor: pointer;
+}
+
+.reference-inspection-callout-close:hover,
+.reference-inspection-callout-close:focus-visible {
+  color: #fff;
+  background: rgba(91, 182, 220, .14);
+  outline: none;
+}
+
+.reference-inspection-callout-patient
+  .reference-inspection-callout-card {
+  color: #183d4d;
+  border-color: rgba(83, 143, 162, .3);
+  background: rgba(250, 254, 255, .94);
+  box-shadow:
+    0 0 0 1px rgba(84, 150, 170, .08),
+    0 14px 30px rgba(28, 73, 90, .16);
+}
+
+.reference-inspection-callout-patient
+  .reference-inspection-callout-card::before {
+  background: #458ca3;
+}
+
+.reference-inspection-callout-patient
+  .reference-inspection-callout-card > span {
+  color: #28768e;
+}
+
+.reference-inspection-callout-patient
+  .reference-inspection-callout-card small,
+.reference-inspection-callout-patient
+  .reference-inspection-callout-card em {
+  color: #617e89;
+}
+
+.reference-inspection-callout-patient
+  .reference-inspection-callout-close {
+  color: #54717d;
+}
+
+@keyframes reference-inspection-callout-in {
+  from {
+    opacity: 0;
+    transform: translateX(-5px) scale(.97);
+  }
+}
+
+@media (max-width: 520px) {
+  .reference-inspection-callout-card {
+    width: min(172px, calc(100vw - 28px));
+    padding: 9px 26px 9px 10px;
+  }
+
+  .reference-inspection-callout-card em {
+    display: none;
+  }
+}

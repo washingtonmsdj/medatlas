@@ -958,6 +958,10 @@ test('focused Human Atlas picking identifies a real part without changing the re
 
   const inspector = await inspectVisibleAnatomyPart(page, canvas)
   await expect(inspector).toBeVisible()
+  await expect(inspector).toHaveClass(/reference-inspection-callout/)
+  await expect(
+    inspector.locator('.reference-inspection-callout-card'),
+  ).toBeVisible()
   await expect(inspector).toContainText('ESTRUTURA INSPECIONADA')
   await expect(inspector).toContainText(
     'A anatomia confirmada do relatório não foi alterada.',
