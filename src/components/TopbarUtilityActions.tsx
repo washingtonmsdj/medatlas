@@ -141,7 +141,7 @@ export function TopbarUtilityActions({
 
       <div className="topbar-utility-anchor profile-anchor">
         <button
-          className="doctor-chip doctor-chip-button"
+          className="doctor-chip"
           type="button"
           aria-label="Abrir menu do profissional"
           aria-expanded={panel === 'profile'}
