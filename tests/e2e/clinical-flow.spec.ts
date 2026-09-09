@@ -151,7 +151,7 @@ test('all synthetic scenarios surface the expected anatomy first', async ({
       .click()
 
     await expect(
-      page.getByText('Reconfirmação anatômica necessária'),
+      page.getByText('RECONFIRMAÇÃO NECESSÁRIA'),
     ).toBeVisible()
 
     await page
@@ -376,7 +376,7 @@ test('stale contextual 3D stays visible but explicitly requires reconfirmation',
   await page.getByRole('button', { name: 'Rim', exact: true }).click()
 
   await expect(
-    page.getByText('Reconfirmação anatômica necessária').first(),
+    page.getByText('RECONFIRMAÇÃO NECESSÁRIA').first(),
   ).toBeVisible()
 
   await page.getByRole('button', { name: 'Pacientes', exact: true }).click()
@@ -426,7 +426,7 @@ test('canonical patient view follows the current report state', async ({
 
   await page.getByRole('button', { name: 'Rim', exact: true }).click()
   await expect(
-    page.getByText('Reconfirmação anatômica necessária').first(),
+    page.getByText('RECONFIRMAÇÃO NECESSÁRIA').first(),
   ).toBeVisible()
 
   await page.getByRole('button', { name: 'Abrir menu do profissional' }).click()
@@ -752,7 +752,7 @@ test('demo settings can clear local patient shares', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      name: 'Configurações',
+      name: 'Configurações do workspace',
     }),
   ).toBeVisible()
 
@@ -827,7 +827,7 @@ test('patients module reflects only the current synthetic report context', async
 
   await expect(
     page.getByRole('heading', {
-      name: 'Paciente atual',
+      name: 'Paciente demonstração',
     }),
   ).toBeVisible()
 
@@ -1284,7 +1284,7 @@ test('settings expose clinic branding without enabling unavailable mutations', a
 
   await expect(
     page.getByRole('heading', {
-      name: 'Configurações',
+      name: 'Configurações do workspace',
     }),
   ).toBeVisible()
 
@@ -1293,7 +1293,7 @@ test('settings expose clinic branding without enabling unavailable mutations', a
     page.getByText('Clínica Horizonte', { exact: true }).first(),
   ).toBeVisible()
   await expect(
-    page.getByText('Identidade usada na visão do paciente.'),
+    page.getByText('Identidade exibida na experiência do paciente.'),
   ).toBeVisible()
 
   await expect(
