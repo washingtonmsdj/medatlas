@@ -126,6 +126,100 @@ for (const [filename, digest] of checksumMap) {
   }
 }
 
+
+
+const organRoot = 'public/organ-models'
+const expectedOrganUpstream =
+  '8c0e6f321a47f895ae58ce098028b92774733ee9'
+const expectedOrganAssets = new Map([
+  ['brain.glb', '2cd5e7178f1e5de707bb97c2c06f6c34fb5aaad28132445c0afcb4f0fd67c811'],
+  ['eyeball.glb', '584337a2efc7d3c03d7326ca930217c4f7e5eca0a32a8cec141c7388ecc8a1c7'],
+  ['heart.glb', 'ef48b43442dbbe2819d6035f8bbf1391d2c3fefbe842863c9c7c1a22cc6cd748'],
+  ['intestine.glb', 'd4423ba0c8f08ac7652396e2530482f874e4964a9c3f1b71440f0493048bea26'],
+  ['kidneys.glb', 'e3e0a58372d794d68b181d1d453ff4362da972667c28711e153c5f34064cf165'],
+  ['liver.glb', 'e4f11a9c0762eb9dc4309dcd0d5c3e3958ccacab915267da4e7775894b674990'],
+  ['lungs.glb', '81617c9fc2f2b7bf1e7d874b89614c89b09f2f68318e64997c68c948cfa9abdc'],
+  ['pancreas.glb', 'e5213bf8ed66e8ed4eb2a9d1c7a6922fb926eac85de8c5979e780ca1abcaf1c3'],
+  ['skin.glb', '8183ffe3527b3f071c41c55e41ffaf673df8d02a1405e95e644ac5d89cd6f5f9'],
+])
+
+const organManifest = JSON.parse(
+  await readFile(path.join(organRoot, 'manifest.json'), 'utf8'),
+)
+
+if (organManifest.schema !== 'medatlas.organ-models/1') {
+  failures.push(
+    `unexpected organ model manifest schema: ${organManifest.schema}`,
+  )
+}
+
+if (organManifest.upstreamCommit !== expectedOrganUpstream) {
+  failures.push(
+    `organ models point to ${organManifest.upstreamCommit}, expected ${expectedOrganUpstream}`,
+  )
+}
+
+if (organManifest.upstreamRepository !== 'thebuggeddev/anatomy') {
+  failures.push(
+    `unexpected organ model upstream: ${organManifest.upstreamRepository}`,
+  )
+}
+
+if (organManifest.generatedFromPinnedSource !== true) {
+  failures.push('organ model manifest is not marked as generated from pinned source')
+}
+
+const organManifestByFile = new Map(
+  (organManifest.assets ?? []).map((asset) => [asset.file, asset]),
+)
+
+if (organManifestByFile.size !== expectedOrganAssets.size) {
+  failures.push(
+    `organ model manifest contains ${organManifestByFile.size} assets, expected ${expectedOrganAssets.size}`,
+  )
+}
+
+for (const [filename, expectedDigest] of expectedOrganAssets) {
+  const entry = organManifestByFile.get(filename)
+
+  if (!entry) {
+    failures.push(`missing organ model manifest entry: ${filename}`)
+    continue
+  }
+
+  if (entry.sha256 !== expectedDigest) {
+    failures.push(
+      `${filename} manifest SHA-256 differs from pinned expected digest`,
+    )
+  }
+
+  if (!/^[0-9a-f]{40}$/.test(entry.sourceGitBlob ?? '')) {
+    failures.push(`${filename} is missing its pinned upstream Git blob`)
+  }
+
+  const filePath = path.join(organRoot, filename)
+
+  try {
+    const info = await stat(filePath)
+
+    if (!info.isFile() || info.size !== entry.bytes || info.size < 1024) {
+      failures.push(
+        `${filename} size mismatch: manifest=${entry.bytes}, actual=${info.size}`,
+      )
+      continue
+    }
+
+    const actual = await sha256(filePath)
+    if (actual !== expectedDigest) {
+      failures.push(
+        `${filename} SHA-256 mismatch: expected ${expectedDigest}, got ${actual}`,
+      )
+    }
+  } catch {
+    failures.push(`missing vendored organ model: ${filename}`)
+  }
+}
+
 if (failures.length > 0) {
   console.error('MedAtlas vendored anatomy assets FAILED')
   for (const failure of failures) {
@@ -135,5 +229,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas vendored anatomy assets PASS: ${expectedFiles.length} immutable files verified against SHA-256 provenance.`,
+  `MedAtlas vendored anatomy assets PASS: ${expectedFiles.length} Human Atlas files + ${expectedOrganAssets.size} detailed organ models verified against pinned SHA-256 provenance.`,
 )
