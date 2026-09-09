@@ -986,11 +986,11 @@
     grid-column: auto;
   }
 
-  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-card-v2 {
+  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-composer {
     grid-template-columns: 1fr;
   }
 
-  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-card-v2 > * {
+  .clinical-report-studio[data-surface-priority="desktop-first"] .report-explanation-column .report-composer > * {
     grid-column: auto;
   }
 
