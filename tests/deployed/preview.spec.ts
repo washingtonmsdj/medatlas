@@ -49,11 +49,11 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   const heartSuggestion = page
     .locator('.suggestion-item')
-    .filter({ hasText: 'FMA7088' })
+    .filter({ hasText: 'Coração' })
 
   await expect(heartSuggestion).toContainText('Coração')
   await heartSuggestion
-    .getByRole('button', { name: 'Confirmar estrutura' })
+    .getByRole('button', { name: 'Usar estrutura' })
     .click()
 
   await expect(page.locator('.finding-card-studio.anatomy-confirmed')).toBeVisible()
