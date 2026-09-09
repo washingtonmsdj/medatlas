@@ -165,6 +165,7 @@ Hierarquia permanente:
 - [x] câmera de anatomia isolada usa fit por largura/altura/FOV e respeita a vista atual; Explorer completo preserva o próprio enquadramento.
 - [x] workflow publica artifact de visual QA também em runs verdes.
 - [x] gestão mobile sem scroll horizontal interno: matriz de permissões vira cards responsivos; Analytics/Equipe/Configurações possuem capturas dedicadas em 1600/1440/390 px.
+- [x] stylesheet órfão de convites removido do entrypoint e dos validadores; convites continuam fora do MVP sem CSS morto no bundle.
 - [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 
 Referências recentes de validação:

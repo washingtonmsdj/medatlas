@@ -9,7 +9,6 @@ import './styles/anatomy-responsive.css'
 import './styles/interaction-polish.css'
 import './styles/mvp-mode.css'
 import './module-workspaces.css'
-import './team-invitations.css'
 import './experience-surfaces.css'
 import './styles/clinical-sidebar.css'
 

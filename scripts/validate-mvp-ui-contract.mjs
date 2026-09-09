@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 
 const productSurfaces = [
   'src/App.tsx',
+  'src/main.tsx',
   'src/components/Overview.tsx',
   'src/components/ReportIntake.tsx',
   'src/components/ReportComposer.tsx',
@@ -65,6 +66,7 @@ for (const [file, source] of sources) {
 }
 
 const app = sources.get('src/App.tsx')
+const main = sources.get('src/main.tsx')
 const switcher = sources.get('src/components/ViewModeSwitcher.tsx')
 const patient = sources.get('src/components/PatientReportPage.tsx')
 const explorer = sources.get('src/components/ReferenceAtlasExplorer.tsx')
@@ -92,6 +94,12 @@ for (const removedModule of ['ConsultationsModule', 'DocumentsModule']) {
   if (app.includes(removedModule)) {
     failures.push(`App reintroduced out-of-scope standalone MVP module: ${removedModule}`)
   }
+}
+
+if (main.includes('team-invitations.css')) {
+  failures.push(
+    'App entrypoint must not load invitation UI styles while invitations are out of MVP scope',
+  )
 }
 
 for (const fragment of [

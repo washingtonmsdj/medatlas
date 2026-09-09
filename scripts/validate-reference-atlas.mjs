@@ -39,7 +39,6 @@ const styles = (
       'src/module-workspaces.css',
       'src/experience-surfaces.css',
       'src/reference-atlas.css',
-      'src/team-invitations.css',
     ].map((file) => readFile(file, 'utf8')),
   )
 ).join('\n')
