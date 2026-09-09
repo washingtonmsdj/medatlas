@@ -608,3 +608,21 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 2. remover `anatomy-context-meta-v3` e `document-step-rail-v3` de `module-workspaces.css` e adicioná-los ao gate de seletores mortos;
 3. revalidar CI + Browser + Pages no runtime resultante antes de declarar novo baseline;
 4. só então executar a migração semântica isolada do shell `medatlas-v2-*`, sem misturar com `atlas-v3-*` nem com mudanças no Human Atlas/órgão detalhado.
+
+### Checkpoint — Browser recuperado e baseline verde (2026-09-09)
+- [x] causa das falhas Browser isolada: drift de copy/heading/escopo E2E após a migração task-first + um breakpoint real de Analytics mobile que empilhava 4 KPIs em uma coluna;
+- [x] locators antigos removidos: heading `Analytics` → `Desempenho dos relatórios`; heading de Configurações → `Configurações do workspace`; assert de Pacientes escopado em `.patient-summary-card-mvp`; 3D de Pacientes escopado na superfície ativa `.patient-anatomy-live`;
+- [x] Analytics mobile mantém os 4 KPIs em grade **2×2** até 390 px; removido o override `max-width: 620px` que forçava uma coluna e aumentava desnecessariamente a altura da tela;
+- [x] Browser E2E deixou de depender de um único job serial: cobertura integral dividida em `clinical-flow`, `responsive-layout` e `supporting-contracts`, com `fail-fast: false`, artifacts independentes e o mesmo timeout por domínio;
+- [x] nenhuma cobertura foi removida e nenhum timeout foi aumentado;
+- [x] baseline funcional: **`4bdc91855ca9ace52324c70c3bc4acb1c01b6ae1`**;
+- [x] CI: run **`34396555469` PASS**;
+- [x] GitHub Pages: run **`34396556078` PASS**, incluindo verificação do fluxo 3D publicado;
+- [x] Browser E2E: run **`34396555564` PASS** — `clinical-flow` PASS, `responsive-layout` PASS e `supporting-contracts` PASS;
+- [x] Human Atlas e órgão detalhado permaneceram intactos durante toda a recuperação.
+
+### Próxima frente P0 após o baseline verde
+1. migrar de forma isolada o ownership do shell `medatlas-v2-*` para nomes semânticos estáveis, atualizando JSX + CSS + E2E + validator no mesmo lote;
+2. usar o mapa: `medatlas-v2-shell → clinical-app-shell`, `medatlas-v2-workspace → clinical-workspace`, `medatlas-v2-topbar → clinical-topbar`, `medatlas-v2-demo-boundary → demo-privacy-boundary`;
+3. não misturar essa migração com `atlas-v3-*` nem com mudanças em Human Atlas/Organ Detail;
+4. revalidar CI + Browser shards + Pages no mesmo runtime antes de iniciar qualquer nova limpeza do Reference Atlas.
