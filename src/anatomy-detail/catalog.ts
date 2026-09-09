@@ -138,7 +138,12 @@ export function resolveOrganDetail(
     ORGAN_DETAIL_CATALOG.find((detail) =>
       detail.matchTerms.some((term) => {
         const candidate = normalizeAnatomyText(term)
-        return normalized === candidate || normalized.includes(candidate)
+        if (!candidate) return false
+
+        return (
+          normalized === candidate ||
+          ` ${normalized} `.includes(` ${candidate} `)
+        )
       }),
     ) ?? null
   )
