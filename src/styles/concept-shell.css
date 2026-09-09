@@ -1,9 +1,9 @@
-.medatlas-v2-shell {
+.clinical-app-shell {
   color: var(--text-primary);
   background: var(--surface-app);
 }
 
-.medatlas-v2-workspace {
+.clinical-workspace {
   position: relative;
   min-width: 0;
   min-height: 100vh;
@@ -14,7 +14,7 @@
     var(--surface-workspace);
 }
 
-.medatlas-v2-topbar {
+.clinical-topbar {
   position: sticky;
   top: 0;
   z-index: 70;
@@ -32,14 +32,14 @@
   backdrop-filter: blur(18px);
 }
 
-.medatlas-v2-topbar .global-command-search {
+.clinical-topbar .global-command-search {
   position: relative;
   width: min(100%, 520px);
   min-width: 0;
   justify-self: center;
 }
 
-.medatlas-v2-topbar .global-command-search > span {
+.clinical-topbar .global-command-search > span {
   position: absolute;
   z-index: 2;
   left: 13px;
@@ -48,7 +48,7 @@
   color: var(--text-accent-muted);
 }
 
-.medatlas-v2-topbar .global-command-search input {
+.clinical-topbar .global-command-search input {
   width: 100%;
   min-height: 38px;
   padding: 0 48px 0 36px;
@@ -61,16 +61,16 @@
   font-size: var(--type-body);
 }
 
-.medatlas-v2-topbar .global-command-search input:focus {
+.clinical-topbar .global-command-search input:focus {
   border-color: var(--line-focus);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-.medatlas-v2-topbar .global-command-search input::placeholder {
+.clinical-topbar .global-command-search input::placeholder {
   color: var(--text-subtle);
 }
 
-.medatlas-v2-topbar .global-command-search kbd {
+.clinical-topbar .global-command-search kbd {
   position: absolute;
   z-index: 3;
   right: 10px;
@@ -84,7 +84,7 @@
   font-size: 8px;
 }
 
-.medatlas-v2-topbar .global-command-results {
+.clinical-topbar .global-command-results {
   position: absolute;
   z-index: 80;
   top: calc(100% + 8px);
@@ -97,8 +97,8 @@
   box-shadow: 0 24px 60px var(--shadow-command);
 }
 
-.medatlas-v2-topbar .global-command-results-heading,
-.medatlas-v2-topbar .global-command-results footer {
+.clinical-topbar .global-command-results-heading,
+.clinical-topbar .global-command-results footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -108,7 +108,7 @@
   font-size: var(--type-caption);
 }
 
-.medatlas-v2-topbar .global-command-options {
+.clinical-topbar .global-command-options {
   display: grid;
   gap: 3px;
   max-height: 330px;
@@ -116,7 +116,7 @@
   padding: 5px;
 }
 
-.medatlas-v2-topbar .global-command-options button {
+.clinical-topbar .global-command-options button {
   min-height: 48px;
   display: grid;
   grid-template-columns: 60px minmax(0, 1fr) auto;
@@ -131,25 +131,25 @@
   text-align: left;
 }
 
-.medatlas-v2-topbar .global-command-options button.active,
-.medatlas-v2-topbar .global-command-options button:hover {
+.clinical-topbar .global-command-options button.active,
+.clinical-topbar .global-command-options button:hover {
   background: var(--overlay-command-active);
 }
 
-.medatlas-v2-topbar .global-command-group {
+.clinical-topbar .global-command-group {
   color: var(--text-group);
   font-size: 8px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.medatlas-v2-topbar .global-command-options button > span:nth-child(2) {
+.clinical-topbar .global-command-options button > span:nth-child(2) {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.medatlas-v2-topbar .global-command-options strong {
+.clinical-topbar .global-command-options strong {
   overflow: hidden;
   color: var(--text-emphasis);
   font-size: 10px;
@@ -157,7 +157,7 @@
   white-space: nowrap;
 }
 
-.medatlas-v2-topbar .global-command-options small {
+.clinical-topbar .global-command-options small {
   overflow: hidden;
   color: var(--text-muted-deep);
   font-size: 8px;
@@ -165,7 +165,7 @@
   white-space: nowrap;
 }
 
-.medatlas-v2-topbar .global-command-empty {
+.clinical-topbar .global-command-empty {
   margin: 0;
   padding: 16px 13px;
   color: var(--text-muted-strong);
@@ -173,24 +173,24 @@
   line-height: 1.5;
 }
 
-.medatlas-v2-topbar .global-command-options button b {
+.clinical-topbar .global-command-options button b {
   color: var(--text-accent-soft);
   font-size: 9px;
 }
 
-.medatlas-v2-topbar .topbar-utility-actions,
-.medatlas-v2-topbar .topbar-actions {
+.clinical-topbar .topbar-utility-actions,
+.clinical-topbar .topbar-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.medatlas-v2-topbar .topbar-utility-anchor {
+.clinical-topbar .topbar-utility-anchor {
   position: relative;
 }
 
-.medatlas-v2-topbar .topbar-icon-button {
+.clinical-topbar .topbar-icon-button {
   width: 38px;
   height: 38px;
   display: grid;
@@ -202,21 +202,21 @@
   cursor: pointer;
 }
 
-.medatlas-v2-topbar .topbar-icon-button:hover,
-.medatlas-v2-topbar .topbar-icon-button[aria-expanded="true"] {
+.clinical-topbar .topbar-icon-button:hover,
+.clinical-topbar .topbar-icon-button[aria-expanded="true"] {
   color: var(--text-primary);
   background: var(--surface-control-hover);
 }
 
-.medatlas-v2-topbar .notification-button {
+.clinical-topbar .notification-button {
   position: relative;
 }
 
-.medatlas-v2-topbar .notification-button > span {
+.clinical-topbar .notification-button > span {
   font-size: 14px;
 }
 
-.medatlas-v2-topbar .notification-button .notification-count-badge {
+.clinical-topbar .notification-button .notification-count-badge {
   position: absolute;
   top: 1px;
   right: 1px;
@@ -237,7 +237,7 @@
   pointer-events: none;
 }
 
-.medatlas-v2-topbar .doctor-chip {
+.clinical-topbar .doctor-chip {
   min-height: 42px;
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) auto;
@@ -252,12 +252,12 @@
   text-align: left;
 }
 
-.medatlas-v2-topbar .doctor-chip:hover,
-.medatlas-v2-topbar .doctor-chip[aria-expanded="true"] {
+.clinical-topbar .doctor-chip:hover,
+.clinical-topbar .doctor-chip[aria-expanded="true"] {
   background: var(--overlay-profile-active);
 }
 
-.medatlas-v2-topbar .doctor-chip > span {
+.clinical-topbar .doctor-chip > span {
   width: 36px;
   height: 36px;
   display: grid;
@@ -270,13 +270,13 @@
   font-weight: 850;
 }
 
-.medatlas-v2-topbar .doctor-chip > div {
+.clinical-topbar .doctor-chip > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.medatlas-v2-topbar .doctor-chip strong {
+.clinical-topbar .doctor-chip strong {
   overflow: hidden;
   max-width: 160px;
   color: var(--text-primary);
@@ -285,7 +285,7 @@
   white-space: nowrap;
 }
 
-.medatlas-v2-topbar .doctor-chip small {
+.clinical-topbar .doctor-chip small {
   overflow: hidden;
   color: var(--text-muted);
   font-size: var(--type-caption);
@@ -293,12 +293,12 @@
   white-space: nowrap;
 }
 
-.medatlas-v2-topbar .doctor-chip b {
+.clinical-topbar .doctor-chip b {
   color: var(--text-muted);
   font-size: 9px;
 }
 
-.medatlas-v2-topbar .topbar-popover {
+.clinical-topbar .topbar-popover {
   position: absolute;
   z-index: 90;
   top: calc(100% + 9px);
@@ -312,7 +312,7 @@
   color: var(--text-secondary);
 }
 
-.medatlas-v2-topbar .topbar-popover header {
+.clinical-topbar .topbar-popover header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -321,24 +321,24 @@
   border-bottom: 1px solid var(--line-popover-section);
 }
 
-.medatlas-v2-topbar .topbar-popover header > div {
+.clinical-topbar .topbar-popover header > div {
   display: grid;
   gap: 2px;
 }
 
-.medatlas-v2-topbar .topbar-popover header strong {
+.clinical-topbar .topbar-popover header strong {
   color: var(--text-primary);
   font-size: var(--type-body);
 }
 
-.medatlas-v2-topbar .topbar-popover header small,
-.medatlas-v2-topbar .profile-popover-facts,
-.medatlas-v2-topbar .task-center-complete small {
+.clinical-topbar .topbar-popover header small,
+.clinical-topbar .profile-popover-facts,
+.clinical-topbar .task-center-complete small {
   color: var(--text-popover-muted);
   font-size: var(--type-caption);
 }
 
-.medatlas-v2-topbar .topbar-popover-count {
+.clinical-topbar .topbar-popover-count {
   min-width: 26px;
   height: 24px;
   display: grid;
@@ -353,8 +353,8 @@
   font-weight: 900;
 }
 
-.medatlas-v2-topbar .notification-item,
-.medatlas-v2-topbar .profile-popover-actions button {
+.clinical-topbar .notification-item,
+.clinical-topbar .profile-popover-actions button {
   width: 100%;
   min-height: 44px;
   border: 0;
@@ -364,12 +364,12 @@
   text-align: left;
 }
 
-.medatlas-v2-topbar .notification-item:hover,
-.medatlas-v2-topbar .profile-popover-actions button:hover {
+.clinical-topbar .notification-item:hover,
+.clinical-topbar .profile-popover-actions button:hover {
   background: var(--overlay-popover-hover);
 }
 
-.medatlas-v2-topbar .notification-item {
+.clinical-topbar .notification-item {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) auto;
   align-items: center;
@@ -377,23 +377,23 @@
   padding: 7px 9px;
 }
 
-.medatlas-v2-topbar .notification-item > div {
+.clinical-topbar .notification-item > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.medatlas-v2-topbar .notification-item strong {
+.clinical-topbar .notification-item strong {
   color: var(--text-strong);
   font-size: var(--type-small);
 }
 
-.medatlas-v2-topbar .notification-item small {
+.clinical-topbar .notification-item small {
   color: var(--text-muted);
   font-size: var(--type-caption);
 }
 
-.medatlas-v2-topbar .notification-item > span {
+.clinical-topbar .notification-item > span {
   width: 28px;
   height: 28px;
   display: grid;
@@ -405,21 +405,21 @@
   font-weight: 900;
 }
 
-.medatlas-v2-topbar .notification-item.urgent > span {
+.clinical-topbar .notification-item.urgent > span {
   color: var(--state-warning);
   background: var(--overlay-warning-icon);
 }
 
-.medatlas-v2-topbar .notification-item b {
+.clinical-topbar .notification-item b {
   color: var(--text-profile-muted);
   font-size: 9px;
 }
 
-.medatlas-v2-topbar .profile-popover-header {
+.clinical-topbar .profile-popover-header {
   justify-content: flex-start;
 }
 
-.medatlas-v2-topbar .profile-popover-header > span {
+.clinical-topbar .profile-popover-header > span {
   width: 36px;
   height: 36px;
   display: grid;
@@ -430,14 +430,14 @@
   font-size: 8px;
 }
 
-.medatlas-v2-topbar .profile-popover-facts {
+.clinical-topbar .profile-popover-facts {
   display: grid;
   gap: 6px;
   margin: 0;
   padding: 10px;
 }
 
-.medatlas-v2-topbar .profile-popover-facts > div {
+.clinical-topbar .profile-popover-facts > div {
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -445,36 +445,36 @@
   border-bottom: 1px solid var(--line-profile-section);
 }
 
-.medatlas-v2-topbar .profile-popover-facts > div:last-child {
+.clinical-topbar .profile-popover-facts > div:last-child {
   border-bottom: 0;
 }
 
-.medatlas-v2-topbar .profile-popover-facts dt,
-.medatlas-v2-topbar .profile-popover-facts dd {
+.clinical-topbar .profile-popover-facts dt,
+.clinical-topbar .profile-popover-facts dd {
   margin: 0;
 }
 
-.medatlas-v2-topbar .profile-popover-facts dt {
+.clinical-topbar .profile-popover-facts dt {
   color: var(--text-profile-term);
 }
 
-.medatlas-v2-topbar .profile-popover-facts dd {
+.clinical-topbar .profile-popover-facts dd {
   color: var(--text-profile-value);
   font-weight: 800;
   text-align: right;
 }
 
-.medatlas-v2-topbar .profile-popover-actions {
+.clinical-topbar .profile-popover-actions {
   display: grid;
   border-top: 1px solid var(--line-profile-actions);
 }
 
-.medatlas-v2-topbar .profile-popover-actions button {
+.clinical-topbar .profile-popover-actions button {
   padding: 0 11px;
   font-size: var(--type-small);
 }
 
-.medatlas-v2-demo-boundary {
+.demo-privacy-boundary {
   position: absolute;
   z-index: 35;
   top: 66px;
@@ -482,7 +482,7 @@
   pointer-events: none;
 }
 
-.medatlas-v2-demo-boundary .demo-privacy-banner {
+.demo-privacy-boundary .demo-privacy-banner {
   margin: 0;
   min-height: 24px;
   padding: 4px 8px;
@@ -496,32 +496,32 @@
   pointer-events: auto;
 }
 
-.medatlas-v2-demo-boundary .demo-privacy-banner strong {
+.demo-privacy-boundary .demo-privacy-banner strong {
   color: var(--text-demo-strong);
   font-size: 6px;
 }
 
-.medatlas-v2-demo-boundary .demo-privacy-banner span {
+.demo-privacy-boundary .demo-privacy-banner span {
   color: var(--text-demo-muted);
   font-size: 6px;
 }
 
 @media (max-width: 900px) {
-  .medatlas-v2-workspace {
+  .clinical-workspace {
     padding-inline: 8px;
   }
 
-  .medatlas-v2-topbar {
+  .clinical-topbar {
     grid-template-columns: minmax(0, 1fr) auto;
     margin-inline: -8px;
     padding-inline: 10px;
   }
 
-  .medatlas-v2-topbar .global-command-search {
+  .clinical-topbar .global-command-search {
     width: 100%;
   }
 
-  .medatlas-v2-topbar .global-command-results {
+  .clinical-topbar .global-command-results {
     position: fixed;
     top: 118px;
     left: 12px;
@@ -531,7 +531,7 @@
     overflow: auto;
   }
 
-  .medatlas-v2-topbar .topbar-popover {
+  .clinical-topbar .topbar-popover {
     position: fixed;
     top: 118px;
     left: 12px;
@@ -541,74 +541,74 @@
     overflow: auto;
   }
 
-  .medatlas-v2-topbar .doctor-chip > div,
-  .medatlas-v2-topbar .doctor-chip > b {
+  .clinical-topbar .doctor-chip > div,
+  .clinical-topbar .doctor-chip > b {
     display: none;
   }
 
-  .medatlas-v2-topbar .doctor-chip {
+  .clinical-topbar .doctor-chip {
     grid-template-columns: 36px;
     padding-right: 3px;
   }
 
-  .medatlas-v2-demo-boundary {
+  .demo-privacy-boundary {
     top: 64px;
     right: 10px;
   }
 
-  .medatlas-v2-demo-boundary .demo-privacy-banner span {
+  .demo-privacy-boundary .demo-privacy-banner span {
     display: none;
   }
 }
 
 @media (max-width: 560px) {
-  .medatlas-v2-topbar {
+  .clinical-topbar {
     min-height: 58px;
     gap: 7px;
   }
 
-  .medatlas-v2-topbar .global-command-search input {
+  .clinical-topbar .global-command-search input {
     min-height: 42px;
     padding-right: 10px;
   }
 
-  .medatlas-v2-topbar .global-command-search kbd {
+  .clinical-topbar .global-command-search kbd {
     display: none;
   }
 
-  .medatlas-v2-topbar .global-command-results,
-  .medatlas-v2-topbar .topbar-popover {
+  .clinical-topbar .global-command-results,
+  .clinical-topbar .topbar-popover {
     top: 108px;
     max-height: min(68vh, 480px);
   }
 
-  .medatlas-v2-topbar .global-command-options button {
+  .clinical-topbar .global-command-options button {
     min-height: 52px;
     grid-template-columns: 52px minmax(0, 1fr) auto;
   }
 
-  .medatlas-v2-topbar .global-command-results footer {
+  .clinical-topbar .global-command-results footer {
     position: sticky;
     bottom: 0;
     background: var(--surface-popover);
   }
 
-  .medatlas-v2-topbar .topbar-actions {
+  .clinical-topbar .topbar-actions {
     gap: 3px;
   }
 
-  .medatlas-v2-topbar .topbar-icon-button,
-  .medatlas-v2-topbar .doctor-chip > span {
+  .clinical-topbar .topbar-icon-button,
+  .clinical-topbar .doctor-chip > span {
     width: 40px;
     height: 40px;
   }
 
-  .medatlas-v2-topbar .doctor-chip {
+  .clinical-topbar .doctor-chip {
     min-height: 40px;
     grid-template-columns: 40px;
   }
 
-  .medatlas-v2-demo-boundary {
+  .demo-privacy-boundary {
     display: none;
   }
 }
