@@ -27,12 +27,12 @@ export function PatientsModule({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="patients-module patients-module-v2 module-v3 mvp-surface patients-mvp-v8">
+    <section className="patients-module module-v3 mvp-surface patients-mvp-v8">
       <WorkspacePageHeader
         eyebrow="PACIENTES"
         title="Paciente atual"
         description="Relatório, progresso e anatomia no mesmo contexto clínico."
-        className="patients-hero patients-hero-v2 patients-compact-hero"
+        className="patients-compact-hero"
         meta={
           <span
             className={
