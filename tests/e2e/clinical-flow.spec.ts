@@ -771,7 +771,14 @@ test('dashboard progress follows the current report', async ({ page }) => {
   ).toBeVisible()
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
-  await page.locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' }).click()
+  const globalSearch = page.getByRole('combobox', {
+    name: 'Buscar paciente, relatório, anatomia ou módulo',
+  })
+  await globalSearch.fill('Novo relatório')
+  await page
+    .getByRole('listbox', { name: 'Resultados da busca global' })
+    .getByRole('option', { name: /Novo relatório/ })
+    .click()
   await page
     .locator('.clinical-sidebar nav')
     .getByRole('button', { name: 'Visão geral', exact: true })
@@ -980,65 +987,64 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 })
 
 
-test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) => {
+test('Atlas 3D matches the canonical three-column clinical concept', async ({ page }) => {
+  test.setTimeout(90_000)
+  await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
-  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D', exact: true }).click()
+  await page
+    .locator('.clinical-sidebar nav')
+    .getByRole('button', { name: 'Atlas 3D', exact: true })
+    .click()
 
-  await expect(
-    page.getByRole('heading', { name: 'Atlas 3D' }),
-  ).toBeVisible()
+  const workspace = page.locator('.atlas-v3-workspace')
+  const casePanel = page.locator('.atlas-v3-case-panel')
+  const bodyPanel = page.locator('.atlas-v3-body-panel')
+  const detailPanel = page.locator('.atlas-v3-detail-panel')
 
-  await expect(
-    page.getByText('Pesquise, explore e escolha uma estrutura para o relatório.'),
-  ).toBeVisible()
-
+  await expect(workspace).toBeVisible()
+  await expect(casePanel).toContainText('Resumo do exame')
+  await expect(bodyPanel.locator('.reference-atlas-scene canvas')).toBeVisible({
+    timeout: 60_000,
+  })
+  await expect(detailPanel).toBeVisible()
   await expect(
     page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
   ).toBeVisible()
 
-  await expect(
-    page.getByRole('navigation', {
-      name: 'Controles de câmera do Atlas 3D',
-    }),
-  ).toBeVisible()
+  const [caseBox, bodyBox, detailBox] = await Promise.all([
+    casePanel.boundingBox(),
+    bodyPanel.boundingBox(),
+    detailPanel.boundingBox(),
+  ])
+  expect(caseBox).not.toBeNull()
+  expect(bodyBox).not.toBeNull()
+  expect(detailBox).not.toBeNull()
+  expect(bodyBox!.x).toBeGreaterThan(caseBox!.x)
+  expect(detailBox!.x).toBeGreaterThan(bodyBox!.x)
+  expect(bodyBox!.width).toBeGreaterThan(caseBox!.width)
 
-  const atlasSection = page.getByRole('button', {
+  const bodyCut = page.getByRole('button', {
     name: 'Ativar corte anatômico',
   })
-  await expect(atlasSection).toBeVisible()
-  await expect(atlasSection).toHaveAttribute('aria-pressed', 'false')
-  await atlasSection.click()
-  const activeAtlasSection = page.getByRole('button', {
-    name: 'Desativar corte anatômico',
-  })
-  await expect(activeAtlasSection).toHaveAttribute('aria-pressed', 'true')
-  await activeAtlasSection.click()
+  await expect(bodyCut).toHaveAttribute('aria-pressed', 'false')
+  await bodyCut.click()
   await expect(
-    page.getByRole('button', { name: 'Ativar corte anatômico' }),
-  ).toHaveAttribute('aria-pressed', 'false')
+    page.getByRole('button', { name: 'Desativar corte anatômico' }),
+  ).toHaveAttribute('aria-pressed', 'true')
 
+  await expect(page.getByRole('button', { name: 'Aproximar visualização' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Afastar visualização' })).toBeVisible()
   await expect(
-    page.getByLabel('Separar anatomia'),
-  ).toBeVisible()
-
-  await expect(
-    page.getByText(/estruturas visíveis/),
-  ).toBeVisible()
-
-  await expect(
-    page.locator('.reference-inspector-card'),
-  ).toBeVisible()
-
-  await expect(
-    page.getByRole('button', { name: 'Redefinir', exact: true }),
+    page.getByRole('navigation', { name: 'Atalhos do Atlas 3D' }),
   ).toBeVisible()
 })
 
-
-test('full Atlas moves from body context to detailed organ and back without changing FMA', async ({
+test('full Atlas keeps body and detailed organ visible together without changing FMA', async ({
   page,
 }) => {
+  test.setTimeout(90_000)
+  await page.setViewportSize({ width: 1600, height: 1000 })
   await page.goto('/')
 
   await page
@@ -1058,60 +1064,39 @@ test('full Atlas moves from body context to detailed organ and back without chan
   await expect(heartResult).toContainText('Coração')
   await heartResult.click()
 
-  const inspector = page.locator('.reference-inspector-card')
-  await expect(inspector).toContainText('Coração')
-  await expect(inspector).toContainText('FMA7088')
-
-  const openDetail = inspector.getByRole('button', {
-    name: 'Abrir Coração em detalhe',
-  })
-  await expect(openDetail).toBeVisible()
-  await openDetail.click()
-
-  const organCanvas = page.locator(
-    '.reference-atlas-stage .organ-detail-scene[data-organ="heart"] canvas',
+  const bodyCanvas = page.locator(
+    '.atlas-v3-body-stage .reference-atlas-scene canvas',
   )
+  const organCanvas = page.locator(
+    '.atlas-v3-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
+  )
+
+  await expect(bodyCanvas).toBeVisible({ timeout: 60_000 })
   await expect(organCanvas).toBeVisible({ timeout: 45_000 })
 
-  const breadcrumb = page.locator('.reference-organ-detail-breadcrumb')
-  await expect(breadcrumb).toContainText('Corpo completo')
-  await expect(breadcrumb).toContainText('Coração')
-  await expect(breadcrumb).toContainText('modelo detalhado')
+  const detailPanel = page.locator('.atlas-v3-detail-panel')
+  await expect(detailPanel).toHaveClass(/active/)
+  await expect(detailPanel).toContainText('Coração')
+  await expect(detailPanel).toContainText('FMA7088')
+  await expect(detailPanel).toContainText('Modelo anatômico detalhado')
 
-  const detailControls = page.getByRole('navigation', {
-    name: 'Controles do órgão detalhado',
-  })
-  await expect(detailControls).toBeVisible()
-
-  const section = detailControls.getByRole('button', {
-    name: 'Ativar corte anatômico',
-  })
-  await expect(section).toHaveAttribute('aria-pressed', 'false')
-  await section.click()
+  const organCut = page.getByRole('button', { name: 'Ativar corte do órgão' })
+  await expect(organCut).toHaveAttribute('aria-pressed', 'false')
+  await organCut.click()
   await expect(
-    detailControls.getByRole('button', {
-      name: 'Desativar corte anatômico',
-    }),
+    page.getByRole('button', { name: 'Desativar corte do órgão' }),
   ).toHaveAttribute('aria-pressed', 'true')
 
-  await detailControls.getByRole('button', { name: 'Corpo', exact: true }).click()
+  const depth = page.locator('.atlas-v3-depth-switch')
+  await depth.getByRole('button', { name: 'Corpo', exact: true }).click()
 
-  await expect(
-    page.locator('.reference-atlas-stage .reference-atlas-scene canvas'),
-  ).toBeVisible({ timeout: 45_000 })
-  await expect(
-    page.getByRole('navigation', {
-      name: 'Controles de câmera do Atlas 3D',
-    }),
-  ).toBeVisible()
+  await expect(bodyCanvas).toBeVisible()
+  await expect(organCanvas).toBeVisible()
+  await expect(detailPanel).not.toHaveClass(/active/)
+  await expect(detailPanel).toContainText('FMA7088')
 
-  await expect(inspector).toContainText('Coração')
-  await expect(inspector).toContainText('FMA7088')
-  await expect(
-    inspector.getByRole('button', {
-      name: 'Abrir Coração em detalhe',
-    }),
-  ).toBeVisible()
+  await depth.getByRole('button', { name: 'Órgão em detalhe' }).click()
+  await expect(detailPanel).toHaveClass(/active/)
 })
 
 test('clinical workbench opens detailed organ and returns to the same confirmed anatomy', async ({
@@ -1314,48 +1299,32 @@ test('team module presents roles and keeps unavailable membership writes blocked
   ).toBeVisible()
 })
 
-test('organization switcher changes the active clinical workspace locally', async ({
+test('concept shell keeps workspace context without the removed organization switcher', async ({
   page,
 }) => {
   await page.goto('/')
 
-  const switcher = page.getByRole('button', {
-    name: 'Organização ativa: Clínica Horizonte, Ortopedia',
-  })
-
-  await expect(switcher).toBeVisible()
-  await switcher.click()
-
-  const dialog = page.getByRole('dialog', {
-    name: 'Selecionar unidade e workspace',
-  })
-
-  await expect(dialog).toBeVisible()
-  await expect(dialog).toContainText('Unidade principal')
-  await expect(dialog).toContainText('Salvador · BA · BR')
-  await expect(dialog).toContainText('Ambiente demonstrativo')
-  await expect(dialog).toContainText('Dados fictícios')
-
-  const cardiology = dialog.getByRole('button', {
-    name: /Cardiologia/,
-  })
-  await expect(cardiology).toHaveAttribute('aria-pressed', 'false')
-  await cardiology.click()
-
+  await expect(page.locator('.clinical-sidebar-brand')).toContainText('MedAtlas')
+  await expect(page.locator('.clinical-sidebar-brand')).toContainText(
+    'Clinical 3D Workbench',
+  )
+  await expect(page.locator('.organization-switcher-shell')).toHaveCount(0)
+  await expect(page.locator('.medatlas-v2-topbar')).toBeVisible()
   await expect(
-    page.getByRole('button', {
-      name: 'Organização ativa: Clínica Horizonte, Cardiologia',
+    page.getByRole('combobox', {
+      name: 'Buscar paciente, relatório, anatomia ou módulo',
     }),
   ).toBeVisible()
 
+  await page.getByRole('button', { name: 'Abrir menu do profissional' }).click()
   await expect(
-    page.getByText(/CLÍNICA HORIZONTE · CARDIOLOGIA · UNIDADE PRINCIPAL/),
+    page.getByRole('button', { name: 'Visualizar como paciente' }),
   ).toBeVisible()
-
   await expect(
-    page.locator('.organization-switcher-shell').getByText(
-      /Cardiologia · Unidade principal/,
-    ),
+    page.getByRole('button', { name: 'Equipe e permissões' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Configurações' }),
   ).toBeVisible()
 })
 
@@ -1387,7 +1356,9 @@ test('settings expose clinic branding without enabling unavailable mutations', a
 
 
 
-test('Atlas 3D exposes canonical source links in the explorer', async ({ page }) => {
+test('Atlas detail reference tab keeps anatomy authority explicit without engineering UI', async ({
+  page,
+}) => {
   await page.goto('/')
 
   await page
@@ -1395,23 +1366,23 @@ test('Atlas 3D exposes canonical source links in the explorer', async ({ page })
     .getByRole('button', { name: 'Atlas 3D', exact: true })
     .click()
 
-  await page.locator('details.reference-atlas-source > summary').click()
+  const search = page.locator('#reference-atlas-search')
+  await search.fill('Coração')
+  await page
+    .locator('.reference-atlas-results button')
+    .filter({ hasText: 'FMA7088' })
+    .first()
+    .click()
 
-  await expect(
-    page.getByRole('navigation', { name: 'Fontes do Atlas 3D' }),
-  ).toBeVisible()
+  await page
+    .getByRole('navigation', { name: 'Informações do detalhe' })
+    .getByRole('button', { name: 'Referências' })
+    .click()
 
-  await expect(
-    page.getByRole('link', { name: 'Human Atlas', exact: true }),
-  ).toHaveAttribute(
-    'href',
-    'https://github.com/ashemag/human-atlas',
-  )
-
-  await expect(
-    page.getByRole('link', { name: 'Licença BodyParts3D', exact: true }),
-  ).toHaveAttribute(
-    'href',
-    'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html',
-  )
+  const detail = page.locator('.atlas-v3-detail-content')
+  await expect(detail).toContainText('Human Atlas / BodyParts3D')
+  await expect(detail).toContainText('fonte de verdade')
+  await expect(detail).not.toContainText('SHA-256')
+  await expect(detail).not.toContainText('provenance')
 })
+
