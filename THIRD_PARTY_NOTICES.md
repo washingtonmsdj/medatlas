@@ -50,8 +50,11 @@ to copy/adapt this repository. The public upstream checkpoint did not contain a
 standalone LICENSE/COPYING file, so MedAtlas does not represent that permission
 as a general open-source license.
 
-MedAtlas adapts selected interaction/rendering patterns and, on explicit user
-request, can load detailed organ GLB files from that immutable checkpoint.
+MedAtlas adapts selected interaction/rendering patterns. Nine detailed organ
+GLBs are vendored from that immutable checkpoint under `public/organ-models`
+and verified against pinned SHA-256 provenance. They are loaded only after
+explicit organ-detail navigation.
+
 Those models are supplementary visualization only; the confirmed report
 anatomy continues to be BodyParts3D/FMA.
 
