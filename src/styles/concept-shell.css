@@ -65,7 +65,7 @@
   color: #dceaf7;
   background: rgba(12, 30, 49, .78);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
-  font-size: 8.5px;
+  font-size: 10.5px;
 }
 
 .medatlas-v2-topbar .global-command-search input:focus {
@@ -88,7 +88,7 @@
   border-radius: 6px;
   color: #6f89a0;
   background: rgba(5, 16, 28, .66);
-  font-size: 6px;
+  font-size: 8px;
 }
 
 .medatlas-v2-topbar .global-command-results {
@@ -112,7 +112,7 @@
   gap: 8px;
   padding: 8px 10px;
   color: #6f8aa1;
-  font-size: 7px;
+  font-size: 8.5px;
 }
 
 .medatlas-v2-topbar .global-command-options {
@@ -145,7 +145,7 @@
 
 .medatlas-v2-topbar .global-command-group {
   color: #6298bd;
-  font-size: 6px;
+  font-size: 8px;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -159,7 +159,7 @@
 .medatlas-v2-topbar .global-command-options strong {
   overflow: hidden;
   color: #e8f3fb;
-  font-size: 8px;
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -167,7 +167,7 @@
 .medatlas-v2-topbar .global-command-options small {
   overflow: hidden;
   color: #71899e;
-  font-size: 6.5px;
+  font-size: 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -176,7 +176,7 @@
   margin: 0;
   padding: 16px 13px;
   color: #8299ad;
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.5;
 }
 
@@ -237,7 +237,7 @@
   color: #fff;
   background: #f15c70;
   box-shadow: 0 3px 9px rgba(241, 92, 112, .34);
-  font-size: 7px;
+  font-size: 8px;
   font-style: normal;
   font-weight: 900;
   line-height: 1;
@@ -287,7 +287,7 @@
   overflow: hidden;
   max-width: 160px;
   color: #eef6fd;
-  font-size: 8px;
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -295,7 +295,7 @@
 .medatlas-v2-topbar .doctor-chip small {
   overflow: hidden;
   color: #7891a7;
-  font-size: 6.5px;
+  font-size: 8.5px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -335,14 +335,14 @@
 
 .medatlas-v2-topbar .topbar-popover header strong {
   color: #e7f2fa;
-  font-size: 9px;
+  font-size: 10.5px;
 }
 
 .medatlas-v2-topbar .topbar-popover header small,
 .medatlas-v2-topbar .profile-popover-facts,
 .medatlas-v2-topbar .task-center-complete small {
-  color: #758da2;
-  font-size: 7px;
+  color: #8198ac;
+  font-size: 8.5px;
 }
 
 .medatlas-v2-topbar .topbar-popover-count {
@@ -356,7 +356,7 @@
   border-radius: 999px;
   color: #ff9cad;
   background: rgba(129, 40, 56, .26);
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 900;
 }
 
@@ -392,12 +392,12 @@
 
 .medatlas-v2-topbar .notification-item strong {
   color: #dcebf6;
-  font-size: 8px;
+  font-size: 9.5px;
 }
 
 .medatlas-v2-topbar .notification-item small {
   color: #70879a;
-  font-size: 6.5px;
+  font-size: 8.5px;
 }
 
 .medatlas-v2-topbar .notification-item > span {
@@ -478,7 +478,7 @@
 
 .medatlas-v2-topbar .profile-popover-actions button {
   padding: 0 11px;
-  font-size: 8px;
+  font-size: 9.5px;
 }
 
 .medatlas-v2-demo-boundary {
