@@ -189,7 +189,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   ).toBeVisible()
 
   const draftButton = page.getByRole('button', {
-    name: 'Gerar explicação',
+    name: 'Gerar rascunho',
   })
   await expect(draftButton).toBeEnabled()
   await draftButton.click()
@@ -201,7 +201,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   ).toBeVisible()
 
   const previewButton = page.getByRole('button', {
-    name: 'Ver como paciente',
+    name: 'Prévia do paciente',
   })
   await expect(previewButton).toBeVisible()
   await previewButton.click()
@@ -233,7 +233,7 @@ test('clinician review gate leads to a patient-facing visual report', async ({
   await expect(publishBeforeReview).toBeDisabled()
 
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
 
   const publish = page.getByRole('button', {
@@ -409,8 +409,8 @@ test('canonical patient view follows the current report state', async ({
     .filter({ hasText: 'Coração' })
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
-  await page.getByRole('button', { name: 'Gerar explicação' }).click()
-  await page.getByRole('button', { name: 'Ver como paciente' }).click()
+  await page.getByRole('button', { name: 'Gerar rascunho' }).click()
+  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
   await expect(
@@ -453,8 +453,8 @@ test('canonical patient view follows the current report state', async ({
     .filter({ hasText: 'Rins' })
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
-  await page.getByRole('button', { name: 'Gerar explicação' }).click()
-  await page.getByRole('button', { name: 'Ver como paciente' }).click()
+  await page.getByRole('button', { name: 'Gerar rascunho' }).click()
+  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
 
   await expect(
     page
@@ -476,8 +476,8 @@ test('patient view can explore detailed organ without exposing or changing the c
     .filter({ hasText: 'Coração' })
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
-  await page.getByRole('button', { name: 'Gerar explicação' }).click()
-  await page.getByRole('button', { name: 'Ver como paciente' }).click()
+  await page.getByRole('button', { name: 'Gerar rascunho' }).click()
+  await page.getByRole('button', { name: 'Prévia do paciente' }).click()
 
   const patient = page.locator('.patient-shell')
   await expect(patient).toBeVisible()
@@ -598,10 +598,10 @@ test('expired demo patient links fail closed', async ({ page }) => {
     .click()
 
   await page
-    .getByRole('button', { name: 'Gerar explicação' })
+    .getByRole('button', { name: 'Gerar rascunho' })
     .click()
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
   await page
     .getByRole('button', { name: 'Compartilhar com paciente' })
@@ -675,7 +675,7 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 
   await expect(
     page.getByRole('button', {
-      name: 'Gerar explicação',
+      name: 'Gerar rascunho',
     }),
   ).toBeDisabled()
 
@@ -699,7 +699,7 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 
   await expect(
     page.getByRole('button', {
-      name: 'Gerar explicação',
+      name: 'Gerar rascunho',
     }),
   ).toBeEnabled()
 })
@@ -737,10 +737,10 @@ test('demo settings can clear local patient shares', async ({ page }) => {
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page
-    .getByRole('button', { name: 'Gerar explicação' })
+    .getByRole('button', { name: 'Gerar rascunho' })
     .click()
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
   await page
     .getByRole('button', { name: 'Compartilhar com paciente' })
@@ -890,10 +890,10 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
     .getByRole('button', { name: 'Usar estrutura' })
     .click()
   await page
-    .getByRole('button', { name: 'Gerar explicação' })
+    .getByRole('button', { name: 'Gerar rascunho' })
     .click()
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
   await page
     .getByRole('button', { name: 'Compartilhar com paciente' })
