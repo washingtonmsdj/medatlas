@@ -82,8 +82,8 @@ export function ReportComposer({
       <details className="source-excerpt">
         <summary>
           <span>
-            <b>Ver laudo</b>
-            <small>texto de origem</small>
+            <b>Laudo de origem</b>
+            <small>ver texto</small>
           </span>
           <i aria-hidden="true">⌄</i>
         </summary>
@@ -109,14 +109,14 @@ export function ReportComposer({
               !report.finding.sourceText.trim()
             }
           >
-            {generatingDraft ? 'Gerando…' : 'Gerar explicação'}
+            {generatingDraft ? 'Gerando…' : 'Gerar rascunho'}
           </button>
         </div>
 
         {report.finding.anatomyReviewRequired && (
           <div className="explanation-blocked-note">
-            <strong>Confirme a anatomia primeiro</strong>
-            <span>A explicação será liberada depois da confirmação.</span>
+            <strong>Confirme a anatomia para continuar</strong>
+            <span>A explicação será liberada após a confirmação.</span>
           </div>
         )}
 
@@ -127,7 +127,7 @@ export function ReportComposer({
             value={report.finding.patientExplanation}
             onChange={(event) => onUpdateExplanation(event.target.value)}
             rows={9}
-            placeholder="Escreva ou gere uma explicação para o paciente."
+            placeholder="Escreva ou gere uma explicação clara para o paciente."
             disabled={!canWorkOnExplanation}
           />
           <div className="explanation-editor-meta">
@@ -141,8 +141,8 @@ export function ReportComposer({
           <div className="review-gate-heading">
             <span aria-hidden="true">!</span>
             <div>
-              <strong>Revise a explicação</strong>
-              <small>Confirme antes de compartilhar</small>
+              <strong>Revise antes de compartilhar</strong>
+              <small>Confirme o texto que o paciente verá</small>
             </div>
           </div>
           <button
@@ -150,14 +150,14 @@ export function ReportComposer({
             onClick={onApproveExplanation}
             disabled={!canWorkOnExplanation || !hasExplanation}
           >
-            Marcar como revisada
+            Aprovar explicação
           </button>
         </section>
       ) : (
         <section className="safety-box review-approved-v2">
           <span aria-hidden="true">✓</span>
           <div>
-            <strong>Explicação revisada</strong>
+            <strong>Explicação aprovada</strong>
             <p>Pronta para a visão do paciente.</p>
           </div>
         </section>
@@ -167,7 +167,7 @@ export function ReportComposer({
         <section className="patient-preview-control patient-view-control">
           <button type="button" onClick={onPreviewPatient}>
             <span aria-hidden="true">◉</span>
-            Ver como paciente
+            Prévia do paciente
           </button>
         </section>
       )}
@@ -183,7 +183,7 @@ export function ReportComposer({
           <div className="share-ready-heading">
             <span aria-hidden="true">✓</span>
             <div>
-              <strong>Link pronto</strong>
+              <strong>Link pronto para enviar</strong>
               <small>expira em {demoShareTtlLabel()}</small>
             </div>
           </div>
@@ -205,7 +205,7 @@ export function ReportComposer({
       ) : (
         <div className="publish-zone publish-zone-v3">
           <div>
-            <strong>Compartilhar</strong>
+            <strong>Compartilhar com o paciente</strong>
             <span>{presentation.publication.summary}</span>
           </div>
           <button
