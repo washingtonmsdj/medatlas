@@ -163,6 +163,7 @@
 
 .anatomy-showcase-v3 .anatomy-focus-preview-stage,
 .anatomy-showcase-v3 .human-atlas-scene,
+.anatomy-showcase-v3 .organ-detail-scene,
 .anatomy-showcase-v3 .focused-reference-loading,
 .anatomy-showcase-v3 .renderer-module-loading {
   min-height: 510px;
@@ -618,6 +619,7 @@
 
 .overview-3d-stage-shell .anatomy-focus-preview-compact .anatomy-focus-preview-stage,
 .overview-3d-stage-shell .anatomy-focus-preview-compact .anatomy-focus-preview-stage .human-atlas-scene,
+.overview-3d-stage-shell .anatomy-focus-preview-compact .anatomy-focus-preview-stage .organ-detail-scene,
 .overview-3d-stage-shell .anatomy-focus-preview-compact .anatomy-focus-preview-stage .focused-reference-loading,
 .overview-3d-stage-shell .anatomy-focus-preview-compact .anatomy-focus-preview-stage .renderer-module-loading {
   min-height: 430px;
