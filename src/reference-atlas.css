@@ -740,6 +740,14 @@
   line-height: 1.35;
 }
 
+.atlas-v3-body-callout.static {
+  cursor: default;
+}
+
+.atlas-v3-body-callout.static::before {
+  opacity: .55;
+}
+
 .atlas-v3-orientation {
   position: absolute;
   z-index: 8;
