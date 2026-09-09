@@ -100,13 +100,13 @@ function MedAtlasMark() {
     <svg viewBox="0 0 42 42" aria-hidden="true">
       <defs>
         <linearGradient id="medatlas-mark-a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#63b6ff" />
-          <stop offset="1" stopColor="#2f65ff" />
+          <stop offset="0" className="clinical-sidebar-logo-stop-start" />
+          <stop offset="1" className="clinical-sidebar-logo-stop-end" />
         </linearGradient>
       </defs>
       <path d="M20.5 4 6 30.8c-1.2 2.2.4 4.9 2.9 4.9h7.6L25.3 19 20.5 4Z" fill="url(#medatlas-mark-a)" />
-      <path d="m23 7.7 13 23.1c1.2 2.2-.4 4.9-2.9 4.9H25l-6.8-12.4L23 7.7Z" fill="#3e84ff" opacity=".92" />
-      <path d="M13.1 35.7h17.5L22 21.1l-8.9 14.6Z" fill="#74c9ff" opacity=".78" />
+      <path d="m23 7.7 13 23.1c1.2 2.2-.4 4.9-2.9 4.9H25l-6.8-12.4L23 7.7Z" className="clinical-sidebar-logo-wing" opacity=".92" />
+      <path d="M13.1 35.7h17.5L22 21.1l-8.9 14.6Z" className="clinical-sidebar-logo-core" opacity=".78" />
     </svg>
   )
 }
