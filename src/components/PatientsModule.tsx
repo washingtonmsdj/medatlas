@@ -1,6 +1,7 @@
 import type { VisualReport } from '../domain/types'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   report: VisualReport
@@ -27,13 +28,23 @@ export function PatientsModule({
 
   return (
     <section className="patients-module patients-module-v2 module-v3 mvp-surface patients-mvp-v8">
-      <div className="patients-hero patients-hero-v2 workspace-hero-v3 mvp-page-hero patients-compact-hero">
-        <div className="module-hero-copy">
-          <span className="section-kicker">PACIENTE</span>
-          <h2>Paciente atual</h2>
-          <p>Relatório e anatomia no mesmo contexto.</p>
-        </div>
-      </div>
+      <WorkspacePageHeader
+        eyebrow="PACIENTES"
+        title="Paciente atual"
+        description="Relatório, progresso e anatomia no mesmo contexto clínico."
+        className="patients-hero patients-hero-v2 patients-compact-hero"
+        meta={
+          <span
+            className={
+              presentation.completion.share
+                ? 'report-state-chip published'
+                : 'report-state-chip'
+            }
+          >
+            {presentation.statusLabel}
+          </span>
+        }
+      />
 
       <article className="patient-current-report patient-current-report-v2 workspace-panel patient-summary-card-mvp">
         <header className="patient-summary-heading-mvp">
@@ -47,16 +58,6 @@ export function PatientsModule({
               <p>{report.patient.age} anos · demonstração</p>
             </div>
           </div>
-
-          <span
-            className={
-              presentation.completion.share
-                ? 'report-state-chip published'
-                : 'report-state-chip'
-            }
-          >
-            {presentation.statusLabel}
-          </span>
         </header>
 
         <div className="patient-summary-report-mvp">
