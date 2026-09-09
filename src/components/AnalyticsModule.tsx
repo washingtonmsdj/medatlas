@@ -57,9 +57,8 @@ export function AnalyticsModule({ repository }: Props) {
     <section className="analytics-module module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow="ANALYTICS"
-        title="Analytics"
-        description="Acompanhe a abertura e o alcance dos relatórios compartilhados."
-        
+        title="Desempenho dos relatórios"
+        description="Aberturas, links ativos e alcance dos compartilhamentos."
         actions={
           <button
             type="button"
@@ -85,7 +84,7 @@ export function AnalyticsModule({ repository }: Props) {
         <>
           <div
             className={`analytics-metrics analytics-metrics-v3 ${status === 'loading' ? 'is-loading' : ''}`}
-            aria-label="Resumo de visualizações do demo"
+            aria-label="Resumo de visualizações dos relatórios"
             aria-busy={status === 'loading'}
           >
             <article>
@@ -104,7 +103,7 @@ export function AnalyticsModule({ repository }: Props) {
               <small>aberturas registradas</small>
             </article>
             <article>
-              <span className="label">RELATÓRIOS VISTOS</span>
+              <span className="label">COM VISUALIZAÇÃO</span>
               <strong>{summary.viewedReports}</strong>
               <small>Última abertura: {formatDate(summary.lastViewedAt)}</small>
             </article>
@@ -124,7 +123,7 @@ export function AnalyticsModule({ repository }: Props) {
                 <span aria-hidden="true">↗</span>
                 <div>
                   <strong>Nenhum relatório visualizado ainda.</strong>
-                  <p>Publique um relatório para começar.</p>
+                  <p>Compartilhe um relatório para começar.</p>
                 </div>
               </div>
             ) : (
