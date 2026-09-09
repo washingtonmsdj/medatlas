@@ -49,7 +49,13 @@ jobs:
         run: npm install --no-save --package-lock=false @playwright/test@1.63.0 @axe-core/playwright@4.13.0
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: |
+          # Playwright uses its own Chromium build. The hosted runner's
+          # unrelated Google Chrome apt source can temporarily publish an
+          # inconsistent index and make --with-deps fail before tests start.
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list.save
+          npx playwright install --with-deps chromium
 
       - name: Build test target
         run: npm run build
