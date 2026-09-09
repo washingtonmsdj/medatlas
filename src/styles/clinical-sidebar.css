@@ -17,7 +17,7 @@
   padding: 13px 12px 14px;
   border-right: 1px solid var(--line-subtle);
   background:
-    radial-gradient(circle at 18% 12%, rgba(28, 90, 153, .18), transparent 26%),
+    radial-gradient(circle at 18% 12%, var(--overlay-sidebar-glow), transparent 26%),
     linear-gradient(180deg, var(--surface-sidebar-start) 0%, var(--surface-sidebar-mid) 48%, var(--surface-sidebar-end) 100%);
 }
 
@@ -38,7 +38,7 @@
 }
 
 .clinical-sidebar-brand:hover {
-  background: rgba(47, 96, 147, .10);
+  background: var(--overlay-sidebar-hover);
 }
 
 .clinical-sidebar-brand-mark {
@@ -100,16 +100,16 @@
 
 .clinical-sidebar nav button:hover {
   color: var(--text-primary);
-  background: rgba(36, 77, 122, .20);
+  background: var(--overlay-sidebar-nav-hover);
 }
 
 .clinical-sidebar nav button.active {
-  color: #fff;
+  color: var(--text-primary);
   background:
     linear-gradient(90deg, var(--accent-surface), var(--accent-surface-deep));
   box-shadow:
     inset 3px 0 0 var(--accent-bright),
-    0 10px 24px rgba(8, 42, 83, .24);
+    0 10px 24px var(--shadow-sidebar-active);
 }
 
 .clinical-sidebar-nav-icon {
@@ -139,13 +139,13 @@
   display: grid;
   gap: 2px;
   padding: 18px 8px 22px;
-  color: #6e89a2;
+  color: var(--text-muted-deep);
   font-size: var(--type-small);
   line-height: 1.45;
 }
 
 .clinical-sidebar-message strong {
-  color: #7c9bb6;
+  color: var(--text-accent-muted);
   font-weight: 600;
 }
 
@@ -155,7 +155,7 @@
   align-items: start;
   gap: 8px;
   padding: 11px 8px 0;
-  border-top: 1px solid rgba(105, 151, 190, .16);
+  border-top: 1px solid var(--line-sidebar-context);
 }
 
 .clinical-sidebar-context > span {
@@ -232,7 +232,7 @@
     grid-template-columns: minmax(0, 1fr);
     padding: 9px 10px 8px;
     border-right: 0;
-    border-bottom: 1px solid rgba(86, 132, 177, .20);
+    border-bottom: 1px solid var(--line-sidebar-mobile);
   }
 
   .clinical-sidebar-brand {
