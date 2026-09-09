@@ -170,14 +170,14 @@ Hierarquia permanente:
 
 Referências recentes de validação:
 
-- **Baseline funcional validado de produto/frontend:** `7bfdd24203e88ccc272a884d44cb83e6e3deb4d9`.
-- **CI:** run `34266458229` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
-- **Browser E2E:** run `34266458277` — PASS completo, incluindo axe/WCAG, 1600/1440/390 px, Clinical Studio, Atlas, Patient view, portal e gestão mobile.
-- **GitHub Pages / Chromium remoto:** run `34266458118` — PASS contra `https://washingtonmsdj.github.io/medatlas/`, com build, deploy e verificação 3D remota verdes.
-- **Bundle atual:** entry `306.404 bytes`; Human Atlas lazy chunk `503,09 kB` minificado / `128,72 kB gzip`; total JS `809.500 bytes`; CSS principal `182,23 kB` / `34,39 kB gzip`; budget PASS.
+- **Último commit funcional validado de produto/frontend:** `3287374057ea3c41baef04256dcfd9ab0265b467`.
+- **CI:** run `34303977846` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
+- **Browser E2E:** run `34303977863` — PASS completo, incluindo axe/WCAG, 1600/1440/390 px, Clinical Studio, Atlas, Patient view, portal e gestão mobile.
+- **GitHub Pages / Chromium remoto:** run `34303978282` — PASS contra `https://washingtonmsdj.github.io/medatlas/`, com build, deploy e verificação 3D remota verdes.
+- **Bundle atual:** entry `304.865 bytes`; Human Atlas lazy chunk `503,09 kB` minificado / `128,72 kB gzip`; total JS `807.961 bytes`; CSS principal `177,08 kB` / `33,46 kB gzip`; budget PASS.
 - **Runtime:** Node `>=22.13.0 <23`, impedindo upgrade automático de major sem permitir versões 22 abaixo do mínimo.
 - **3D canônico:** Explorer completo + superfícies focadas clinical/patient compartilham o mesmo engine derivado diretamente do Human Atlas fixado; não existe renderer simplificado paralelo.
-- **Visual QA:** artifact `visual-qa-34266458277` (`10072200379`) — capturas do baseline funcional atual, cobrindo Dashboard, Clinical Studio, Atlas Explorer, Pacientes, preview/portal do paciente e módulos de gestão em desktop/mobile.
+- **Visual QA:** artifact `visual-qa-34303977863` (`10086089169`) — capturas do checkpoint funcional atual, cobrindo Dashboard, Clinical Studio, Atlas Explorer, Pacientes, preview/portal do paciente e módulos de gestão em desktop/mobile.
 - **Preview público:** `https://washingtonmsdj.github.io/medatlas/`.
 - **Vercel:** deployment API já funciona e não é blocker de arquitetura; GitHub Pages permanece a preview canônica porque executa verificação 3D remota automaticamente.
 
