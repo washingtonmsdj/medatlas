@@ -27,7 +27,7 @@ export function PatientsModule({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="module-v3 mvp-surface">
+    <section className="workspace-page mvp-surface">
       <WorkspacePageHeader
         eyebrow="PACIENTE ATUAL"
         title={report.patient.displayName}
