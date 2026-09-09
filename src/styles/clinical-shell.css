@@ -358,8 +358,10 @@ button:not(:disabled):active {
 
 /* Clinical Atlas 3D workbench — layout only, canonical theme tokens. */
 .clinical-atlas-card {
+  position: relative;
   overflow: visible;
-  border-color: var(--line-elevated);
+  border: 1px solid var(--line-elevated);
+  border-radius: var(--radius-panel);
   background: var(--surface-deep);
   box-shadow: var(--shadow-popover);
 }
@@ -544,6 +546,8 @@ button:not(:disabled):active {
 
 .clinical-atlas-stage {
   position: relative;
+  display: grid;
+  place-items: center;
   min-height: 500px;
   overflow: hidden;
   border: 0;
@@ -821,8 +825,25 @@ button:not(:disabled):active {
 }
 
 .clinical-atlas-error {
+  position: absolute;
   z-index: 30;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, calc(100% - 40px));
+  padding: 18px;
+  display: grid;
+  gap: 7px;
+  border: 1px solid var(--line-danger);
+  border-radius: 14px;
   background: var(--surface-danger);
+  text-align: center;
+}
+
+.clinical-atlas-error span {
+  color: var(--state-danger-soft);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .clinical-atlas-footer {
