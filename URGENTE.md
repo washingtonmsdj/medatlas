@@ -626,3 +626,22 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 2. usar o mapa: `medatlas-v2-shell → clinical-app-shell`, `medatlas-v2-workspace → clinical-workspace`, `medatlas-v2-topbar → clinical-topbar`, `medatlas-v2-demo-boundary → demo-privacy-boundary`;
 3. não misturar essa migração com `atlas-v3-*` nem com mudanças em Human Atlas/Organ Detail;
 4. revalidar CI + Browser shards + Pages no mesmo runtime antes de iniciar qualquer nova limpeza do Reference Atlas.
+
+### Checkpoint — shell semântico consolidado e baseline verde (2026-09-09)
+- [x] ownership do shell `medatlas-v2-*` foi migrado de forma coordenada, sem replace cego: `medatlas-v2-shell → clinical-app-shell`, `medatlas-v2-workspace → clinical-workspace`, `medatlas-v2-topbar → clinical-topbar`, `medatlas-v2-demo-boundary → demo-privacy-boundary`.
+- [x] migração funcional foi dividida em commits pequenos: `a8a04ca…` (JSX/superfícies), `52cac43…` (escopo do shell), `e722574…` (módulos sob workspace semântico).
+- [x] runtime canônico da migração: **`e722574558c935387eb5ee7e7f19d6b4ba74d3e5`**.
+- [x] os dois commits seguintes até o Browser verde (`fa48114…`, `f68c1dc…`) alteram somente testes E2E; nenhum runtime adicional.
+- [x] Browser E2E do runtime equivalente: run **`34397509743` PASS**, com `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes.
+- [x] GitHub Pages do runtime **`e722574…`**: run **`34397488701` PASS**, incluindo verificação publicada do fluxo 3D.
+- [x] HEAD atual de gates: **`604df60f50e569febd1a54c4eb7438a1e7063c46`**; desde `f68c1dc…` só `scripts/validate-mvp-ui-contract.mjs` mudou.
+- [x] CI do HEAD `604df60…`: run **`34397572964` PASS**.
+- [x] Human Atlas e Organ Detail permaneceram intactos durante a migração do shell.
+
+### Próxima frente P0 após o shell semântico
+1. auditar `atlas-v3-*` por ownership real dentro do Reference Atlas antes de renomear qualquer seletor;
+2. remover apenas aliases/classes sem consumidor comprovado; não usar busca por sufixo `v3` como critério de remoção;
+3. se a migração semântica do Reference Atlas for justificada, fazê-la em lote isolado JSX + `reference-atlas.css` + E2E + validator, sem alterar engine/câmera/modelos;
+4. preservar o baseline verde CI + Browser shards + Pages a cada mudança funcional;
+5. manter Human Atlas como corpo completo canônico e Organ Detail como detalhe complementar, sem renderer paralelo ou fallback fake.
+
