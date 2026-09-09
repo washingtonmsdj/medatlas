@@ -11,7 +11,7 @@
 }
 
 .medatlas-v2-workspace :is(
-  .module-v3,
+  .workspace-page,
   .clinical-report-studio,
   .report-workspace-shell
 ) {
