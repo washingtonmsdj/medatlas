@@ -34,9 +34,7 @@ const conceptModulesStyles = await readFile('src/styles/concept-modules.css', 'u
 const moduleWorkspaceStyles = await readFile('src/module-workspaces.css', 'utf8')
 const supportingModuleStyles = await readFile('src/styles/supporting-modules.css', 'utf8')
 const organizationAnalyticsStyles = await readFile('src/styles/organization-analytics.css', 'utf8')
-const mvpModeStyles = await readFile('src/styles/mvp-mode.css', 'utf8')
 const interactionPolishStyles = await readFile('src/styles/interaction-polish.css', 'utf8')
-const experienceSurfaceStyles = await readFile('src/experience-surfaces.css', 'utf8')
 const baseStyles = await readFile('src/styles.css', 'utf8')
 const clinicalShellStyles = await readFile('src/styles/clinical-shell.css', 'utf8')
 const anatomyResponsiveStyles = await readFile('src/styles/anatomy-responsive.css', 'utf8')
@@ -98,6 +96,8 @@ const requiredAppFragments = [
   'previewMode',
   'onOpenPatientPreview',
   'medatlas-v2-topbar',
+  '<WorkspacePageHeader',
+  'eyebrow="RELATÓRIO VISUAL"',
 ]
 
 for (const fragment of requiredAppFragments) {
@@ -135,6 +135,9 @@ if (!main.includes("import './styles/workspace-page-header.css'")) {
   )
 }
 
+if (main.includes('mvp-mode.css') || main.includes('experience-surfaces.css')) {
+  failures.push('Absorbed legacy MVP surface styles must not return to the app entrypoint')
+}
 
 if (!main.includes("import './styles/design-tokens.css'")) {
   failures.push('App entrypoint must load the canonical MVP design tokens')
@@ -181,9 +184,7 @@ for (const [name, stylesheet] of [
   ['module-workspaces.css', moduleWorkspaceStyles],
   ['supporting-modules.css', supportingModuleStyles],
   ['organization-analytics.css', organizationAnalyticsStyles],
-  ['mvp-mode.css', mvpModeStyles],
   ['interaction-polish.css', interactionPolishStyles],
-  ['experience-surfaces.css', experienceSurfaceStyles],
   ['clinical-shell.css', clinicalShellStyles],
   ['anatomy-responsive.css', anatomyResponsiveStyles],
   ['reference-atlas.css', referenceAtlasStyles],
@@ -260,9 +261,7 @@ for (const legacySelector of [
     moduleWorkspaceStyles.includes(legacySelector) ||
     supportingModuleStyles.includes(legacySelector) ||
     organizationAnalyticsStyles.includes(legacySelector) ||
-    mvpModeStyles.includes(legacySelector) ||
     interactionPolishStyles.includes(legacySelector) ||
-    experienceSurfaceStyles.includes(legacySelector) ||
     baseStyles.includes(legacySelector) ||
     clinicalShellStyles.includes(legacySelector) ||
     anatomyResponsiveStyles.includes(legacySelector)
