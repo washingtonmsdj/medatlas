@@ -514,6 +514,71 @@ test('canonical patient view follows the current report state', async ({
   await expect(page.locator('#patient-anatomy')).not.toContainText('FMA7203')
 })
 
+test('patient view can explore detailed organ without exposing or changing the confirmed FMA', async ({
+  page,
+}) => {
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
+  await page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+  await page.getByRole('button', { name: 'Gerar explicação' }).click()
+  await page.getByRole('button', { name: 'Ver como paciente' }).click()
+
+  const patient = page.locator('.patient-shell')
+  await expect(patient).toBeVisible()
+  await expect(patient).not.toContainText('FMA7088')
+
+  const depth = page.getByRole('navigation', {
+    name: 'Nível da anatomia 3D',
+  })
+  await expect(depth).toBeVisible()
+
+  await depth
+    .getByRole('button', { name: 'Ver Coração em detalhe' })
+    .click()
+
+  await expect(
+    page.locator(
+      '.patient-atlas-stage .organ-detail-scene[data-organ="heart"] canvas',
+    ),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(page.locator('.patient-organ-detail-safety')).toContainText(
+    'não representa o corpo individual do paciente',
+  )
+  await expect(patient).not.toContainText('FMA7088')
+
+  const controls = page.getByRole('navigation', {
+    name: 'Controles da anatomia 3D de referência',
+  })
+  const section = controls.getByRole('button', {
+    name: 'Ativar corte do órgão',
+  })
+  await expect(section).toHaveAttribute('aria-pressed', 'false')
+  await section.click()
+  await expect(
+    controls.getByRole('button', {
+      name: 'Desativar corte do órgão',
+    }),
+  ).toHaveAttribute('aria-pressed', 'true')
+
+  await depth
+    .getByRole('button', { name: 'Corpo completo' })
+    .click()
+
+  await expect(
+    page.locator('.patient-atlas-stage .human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(
+    depth.getByRole('button', { name: 'Ver Coração em detalhe' }),
+  ).toBeVisible()
+  await expect(patient).not.toContainText('FMA7088')
+})
+
 test('mobile workspace keeps the main clinical flow usable', async ({
   page,
 }) => {
