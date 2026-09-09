@@ -18,6 +18,62 @@ interface Props {
   onOpenPatientPreview: () => void
 }
 
+function BellIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </svg>
+  )
+}
+
+function ChevronIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m7 10 5 5 5-5" />
+    </svg>
+  )
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="m14 7 5 5-5 5" />
+    </svg>
+  )
+}
+
 export function TopbarUtilityActions({
   memberName,
   initials,
@@ -84,12 +140,18 @@ export function TopbarUtilityActions({
         <button
           type="button"
           className="topbar-icon-button notification-button"
-          aria-label="Ações pendentes"
+          aria-label={
+            pendingSteps.length > 0
+              ? `${pendingSteps.length} ações pendentes`
+              : 'Nenhuma ação pendente'
+          }
           aria-expanded={panel === 'tasks'}
           aria-controls="medatlas-tasks-panel"
           onClick={() => toggle('tasks')}
         >
-          <span aria-hidden="true">✓</span>
+          <span aria-hidden="true">
+            <BellIcon />
+          </span>
           {pendingSteps.length > 0 && <i />}
         </button>
 
@@ -123,7 +185,9 @@ export function TopbarUtilityActions({
                     <strong>{step.label}</strong>
                     <small>{step.detail}</small>
                   </div>
-                  <b aria-hidden="true">→</b>
+                  <b aria-hidden="true">
+                    <ArrowIcon />
+                  </b>
                 </button>
               ))
             ) : (
@@ -153,7 +217,9 @@ export function TopbarUtilityActions({
             <strong>{memberName}</strong>
             <small>{specialty}</small>
           </div>
-          <b aria-hidden="true">⌄</b>
+          <b aria-hidden="true">
+            <ChevronIcon />
+          </b>
         </button>
 
         {panel === 'profile' && (
