@@ -952,6 +952,84 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
 })
 
 
+test('full Atlas moves from body context to detailed organ and back without changing FMA', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page
+    .locator('.clinical-sidebar nav')
+    .getByRole('button', { name: 'Atlas 3D', exact: true })
+    .click()
+
+  const search = page.locator('#reference-atlas-search')
+  await expect(search).toBeVisible()
+  await search.fill('Coração')
+
+  const heartResult = page
+    .locator('.reference-atlas-results button')
+    .filter({ hasText: 'FMA7088' })
+    .first()
+
+  await expect(heartResult).toContainText('Coração')
+  await heartResult.click()
+
+  const inspector = page.locator('.reference-inspector-card')
+  await expect(inspector).toContainText('Coração')
+  await expect(inspector).toContainText('FMA7088')
+
+  const openDetail = inspector.getByRole('button', {
+    name: 'Abrir Coração em detalhe',
+  })
+  await expect(openDetail).toBeVisible()
+  await openDetail.click()
+
+  const organCanvas = page.locator(
+    '.reference-atlas-stage .organ-detail-scene[data-organ="heart"] canvas',
+  )
+  await expect(organCanvas).toBeVisible({ timeout: 45_000 })
+
+  const breadcrumb = page.locator('.reference-organ-detail-breadcrumb')
+  await expect(breadcrumb).toContainText('Corpo completo')
+  await expect(breadcrumb).toContainText('Coração')
+  await expect(breadcrumb).toContainText('modelo detalhado')
+
+  const detailControls = page.getByRole('navigation', {
+    name: 'Controles do órgão detalhado',
+  })
+  await expect(detailControls).toBeVisible()
+
+  const section = detailControls.getByRole('button', {
+    name: 'Ativar corte anatômico',
+  })
+  await expect(section).toHaveAttribute('aria-pressed', 'false')
+  await section.click()
+  await expect(
+    detailControls.getByRole('button', {
+      name: 'Desativar corte anatômico',
+    }),
+  ).toHaveAttribute('aria-pressed', 'true')
+
+  await detailControls.getByRole('button', { name: 'Corpo', exact: true }).click()
+
+  await expect(
+    page.locator('.reference-atlas-stage .human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(
+    page.getByRole('navigation', {
+      name: 'Controles de câmera do Atlas 3D',
+    }),
+  ).toBeVisible()
+
+  await expect(inspector).toContainText('Coração')
+  await expect(inspector).toContainText('FMA7088')
+  await expect(
+    inspector.getByRole('button', {
+      name: 'Abrir Coração em detalhe',
+    }),
+  ).toBeVisible()
+})
+
 test('focused Human Atlas picking identifies a real part without changing the report', async ({
   page,
 }) => {
