@@ -180,6 +180,8 @@ for (const fragment of [
   "aria-controls=\"medatlas-tasks-panel\"",
   "? `${pendingSteps.length} ações pendentes`",
   ": 'Nenhuma ação pendente'",
+  'notification-count-badge',
+  "pendingSteps.length > 9 ? '9+' : pendingSteps.length",
   'Ações pendentes',
   'Perfil do profissional',
 ]) {
@@ -203,7 +205,6 @@ if (
     'Global search copy must match the current MVP scope',
   )
 }
-
 
 for (const forbidden of [
   'Adicionar membro',
