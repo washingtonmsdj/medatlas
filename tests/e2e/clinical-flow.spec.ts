@@ -919,6 +919,21 @@ test('Atlas 3D uses the full Human Atlas reference explorer', async ({ page }) =
     }),
   ).toBeVisible()
 
+  const atlasSection = page.getByRole('button', {
+    name: 'Ativar corte anatômico',
+  })
+  await expect(atlasSection).toBeVisible()
+  await expect(atlasSection).toHaveAttribute('aria-pressed', 'false')
+  await atlasSection.click()
+  const activeAtlasSection = page.getByRole('button', {
+    name: 'Desativar corte anatômico',
+  })
+  await expect(activeAtlasSection).toHaveAttribute('aria-pressed', 'true')
+  await activeAtlasSection.click()
+  await expect(
+    page.getByRole('button', { name: 'Ativar corte anatômico' }),
+  ).toHaveAttribute('aria-pressed', 'false')
+
   await expect(
     page.getByLabel('Separar anatomia'),
   ).toBeVisible()
@@ -1010,6 +1025,20 @@ test('clinical report uses the same Human Atlas reference engine in focused mode
   await expect(
     page.getByRole('button', { name: 'Vista frontal' }),
   ).toBeVisible()
+
+  const focusedCanvas = page.locator(
+    '.clinical-atlas-stage .human-atlas-scene canvas',
+  )
+  await expect(focusedCanvas).toBeVisible({ timeout: 45_000 })
+
+  const clinicalSection = page.getByRole('button', {
+    name: 'Ativar corte visual 3D',
+  })
+  await expect(clinicalSection).toHaveAttribute('aria-pressed', 'false')
+  await clinicalSection.click()
+  await expect(
+    page.getByRole('button', { name: 'Desativar corte visual 3D' }),
+  ).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('team module presents roles and keeps unavailable membership writes blocked', async ({

@@ -394,7 +394,7 @@ export function AtlasViewport({
                 ? 'Desativar corte visual 3D'
                 : 'Ativar corte visual 3D'
             }
-            title="Corte visual de referência; não é reconstrução diagnóstica"
+            title="Corte visual 3D de referência; não é reconstrução diagnóstica"
             disabled={!activeConceptId}
             onClick={() => {
               setSection((current) => !current)
