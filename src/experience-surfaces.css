@@ -1,17 +1,19 @@
+/* MedAtlas patient and shared error-state surfaces. */
+
 .patient-shell {
   background:
-    radial-gradient(circle at 82% 0%, rgba(26, 128, 187, .08), transparent 30%),
-    linear-gradient(180deg, #f6fafc, #eef5f8);
+    radial-gradient(circle at 82% 0%, var(--overlay-workspace-glow), transparent 30%),
+    var(--surface-app);
 }
 
 .patient-hero-v3 {
   position: relative;
   overflow: hidden;
-  border-color: #d9e7ef;
+  border-color: var(--line-subtle);
   background:
-    radial-gradient(circle at 82% 5%, rgba(30, 145, 194, .12), transparent 30%),
-    linear-gradient(135deg, #ffffff, #f6fbfd);
-  box-shadow: 0 24px 56px rgba(39, 76, 102, .08);
+    radial-gradient(circle at 82% 5%, var(--overlay-header-glow), transparent 30%),
+    linear-gradient(135deg, var(--surface-panel), var(--surface-panel-deep));
+  box-shadow: var(--shadow-panel);
 }
 
 .patient-grid-v3 {
@@ -20,8 +22,8 @@
 
 .patient-grid-v3 .patient-atlas-card,
 .patient-grid-v3 .patient-explanation-card {
-  border-color: #dce8ef;
-  box-shadow: 0 20px 48px rgba(39, 71, 96, .07);
+  border-color: var(--line-subtle);
+  box-shadow: var(--shadow-panel);
 }
 
 .patient-grid-v3 .patient-atlas-stage {
@@ -29,11 +31,10 @@
 }
 
 .patient-next-step-v3 {
-  border-color: #dce8ef;
-  background: linear-gradient(135deg, #ffffff, #f7fbfd);
-  box-shadow: 0 18px 42px rgba(42, 73, 98, .055);
+  border-color: var(--line-subtle);
+  background: linear-gradient(135deg, var(--surface-panel), var(--surface-panel-deep));
+  box-shadow: var(--shadow-panel);
 }
-
 
 .task-center-complete {
   display: grid;
@@ -48,9 +49,10 @@
   height: 36px;
   display: grid;
   place-items: center;
+  border: 1px solid var(--line-success);
   border-radius: 10px;
-  color: #17725c;
-  background: #ddf3eb;
+  color: var(--state-success);
+  background: var(--surface-success-soft);
   font-weight: 900;
 }
 
@@ -59,36 +61,23 @@
   gap: 2px;
 }
 
-@media (max-width: 900px) {
-  .patient-grid-v3 .patient-atlas-stage {
-    min-height: 540px;
-  }
-}
-
-@media (max-width: 620px) {
-  .patient-grid-v3 .patient-atlas-stage {
-    min-height: 520px;
-  }
-}
-
-
 .atlas-retry-button {
-  min-height: 28px;
   width: fit-content;
+  min-height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(113, 199, 232, .34);
+  border: 1px solid var(--line-focus);
   border-radius: 8px;
-  color: #eaf9ff;
-  background: rgba(24, 105, 145, .72);
+  color: var(--text-primary);
+  background: var(--accent-surface);
   cursor: pointer;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .atlas-retry-button:hover,
 .atlas-retry-button:focus-visible {
-  border-color: rgba(142, 224, 252, .65);
-  background: rgba(29, 125, 168, .9);
+  border-color: var(--accent-bright);
+  background: var(--accent-surface-deep);
   outline: none;
 }
 
@@ -101,9 +90,16 @@
 }
 
 .patient-shell .atlas-retry-button {
-  color: #245f74;
-  border-color: #bdd7df;
-  background: rgba(255, 255, 255, .92);
+  color: var(--text-secondary);
+  border-color: var(--line-control);
+  background: var(--surface-control);
+}
+
+.patient-shell .atlas-retry-button:hover,
+.patient-shell .atlas-retry-button:focus-visible {
+  color: var(--accent-cyan);
+  border-color: var(--line-focus);
+  background: var(--surface-control-hover);
 }
 
 .patient-atlas-status .atlas-retry-button {
@@ -114,4 +110,16 @@
 .reference-atlas-error .atlas-retry-button,
 .clinical-atlas-error .atlas-retry-button {
   margin-top: 3px;
+}
+
+@media (max-width: 900px) {
+  .patient-grid-v3 .patient-atlas-stage {
+    min-height: 540px;
+  }
+}
+
+@media (max-width: 620px) {
+  .patient-grid-v3 .patient-atlas-stage {
+    min-height: 520px;
+  }
 }
