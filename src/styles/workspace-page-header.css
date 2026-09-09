@@ -5,12 +5,12 @@
   justify-content: space-between;
   gap: 28px;
   padding: 20px 22px;
-  border: 1px solid var(--concept-line, rgba(104, 158, 204, .20));
-  border-radius: 15px;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-panel);
   background:
     radial-gradient(circle at 92% 0%, rgba(39, 110, 177, .12), transparent 34%),
-    linear-gradient(180deg, rgba(14, 31, 49, .97), rgba(8, 21, 35, .98));
-  box-shadow: 0 18px 42px rgba(0, 0, 0, .16);
+    linear-gradient(180deg, var(--surface-panel), var(--surface-panel-deep));
+  box-shadow: var(--shadow-panel);
 }
 
 .workspace-page-header-copy {
@@ -25,8 +25,8 @@
 
 .workspace-page-header-copy h2 {
   margin: 0;
-  color: #edf7ff;
-  font-size: clamp(22px, 2vw, 30px);
+  color: var(--text-primary);
+  font-size: var(--type-title);
   line-height: 1.08;
   letter-spacing: -.025em;
   text-wrap: balance;
@@ -35,8 +35,8 @@
 .workspace-page-header-copy p {
   max-width: 720px;
   margin: 7px 0 0;
-  color: #a6bacb;
-  font-size: 10px;
+  color: var(--text-secondary);
+  font-size: var(--type-body);
   line-height: 1.55;
 }
 
@@ -66,16 +66,16 @@
   padding: 0 14px;
   border: 1px solid rgba(91, 142, 187, .24);
   border-radius: 10px;
-  color: #b7ccdc;
+  color: var(--text-secondary);
   background: rgba(13, 34, 54, .78);
   cursor: pointer;
-  font-size: 9px;
+  font-size: var(--type-small);
   font-weight: 800;
 }
 
 .workspace-page-header-actions > button.primary {
-  border-color: #3d91f5;
-  color: #fff;
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
   background: linear-gradient(135deg, #2e88fa, #245fd5);
   box-shadow: 0 12px 28px rgba(35, 101, 211, .22);
 }
