@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import '../reference-atlas.css'
@@ -72,6 +73,7 @@ function initialState(): AtlasExplorerSceneState {
     rotate: false,
     section: false,
     reset: 0,
+    zoomStep: 0,
   }
 }
 
@@ -142,6 +144,10 @@ export function ReferenceAtlasExplorer({
   const [detailRotate, setDetailRotate] = useState(false)
   const [detailSection, setDetailSection] = useState(false)
   const [detailReset, setDetailReset] = useState(0)
+  const [caseTab, setCaseTab] = useState<'summary' | 'exams' | 'history' | 'files'>(
+    'summary',
+  )
+  const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let active = true
@@ -304,6 +310,7 @@ export function ReferenceAtlasExplorer({
       rotate: false,
       section: false,
       view,
+      zoomStep: 0,
       reset: current.reset + 1,
     }))
   }
@@ -378,21 +385,68 @@ export function ReferenceAtlasExplorer({
         </header>
 
         <nav className="atlas-v3-case-tabs" aria-label="Seções do caso">
-          <button type="button" className="active">Resumo</button>
-          <button type="button">Exames</button>
-          <button type="button">Histórico</button>
-          <button type="button">Arquivos</button>
+          {[
+            ['summary', 'Resumo'],
+            ['exams', 'Exames'],
+            ['history', 'Histórico'],
+            ['files', 'Arquivos'],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={caseTab === id ? 'active' : ''}
+              aria-pressed={caseTab === id}
+              onClick={() =>
+                setCaseTab(id as 'summary' | 'exams' | 'history' | 'files')
+              }
+            >
+              {label}
+            </button>
+          ))}
         </nav>
 
         <div className="atlas-v3-case-scroll">
-          <section>
-            <div className="atlas-v3-section-title">
-              <strong>Resumo do exame</strong>
-              <span>{reportStatusLabel(report)}</span>
-            </div>
-            <small className="atlas-v3-report-title">{report.title}</small>
-            <p>{report.finding.sourceText || 'Nenhum texto clínico informado.'}</p>
-          </section>
+          {caseTab === 'summary' && (
+            <section>
+              <div className="atlas-v3-section-title">
+                <strong>Resumo do exame</strong>
+                <span>{reportStatusLabel(report)}</span>
+              </div>
+              <small className="atlas-v3-report-title">{report.title}</small>
+              <p>{report.finding.sourceText || 'Nenhum texto clínico informado.'}</p>
+            </section>
+          )}
+
+          {caseTab === 'exams' && (
+            <section className="atlas-v3-case-tab-content">
+              <span className="atlas-v3-label">Exame atual</span>
+              <strong>{report.title}</strong>
+              <p>{report.finding.sourceText || 'Sem descrição clínica disponível.'}</p>
+              <small>{reportStatusLabel(report)}</small>
+            </section>
+          )}
+
+          {caseTab === 'history' && (
+            <section className="atlas-v3-case-tab-content">
+              <span className="atlas-v3-label">Histórico deste fluxo</span>
+              <strong>{report.patient.displayName}</strong>
+              <p>
+                O relatório atual está em {reportStatusLabel(report).toLocaleLowerCase('pt-BR')}.
+                Alterações no texto ou na anatomia exigem nova revisão antes da publicação.
+              </p>
+            </section>
+          )}
+
+          {caseTab === 'files' && (
+            <section className="atlas-v3-case-tab-content">
+              <span className="atlas-v3-label">Arquivos do caso</span>
+              <strong>Fonte clínica atual</strong>
+              <p>
+                O conteúdo desta demonstração está vinculado ao relatório visual atual.
+                Nenhum arquivo adicional foi anexado.
+              </p>
+            </section>
+          )}
 
           <section>
             <span className="atlas-v3-label">Estrutura confirmada</span>
@@ -440,11 +494,15 @@ export function ReferenceAtlasExplorer({
             className="atlas-v3-primary-action"
             type="button"
             onClick={() => {
-              if (chosen) onConfirmConcept(chosen)
-              setFocusMode(detailAvailable ? 'detail' : 'body')
+              if (chosen) {
+                onConfirmConcept(chosen)
+                setFocusMode(detailAvailable ? 'detail' : 'body')
+              } else {
+                searchRef.current?.focus()
+              }
             }}
           >
-            {chosen ? 'Usar estrutura no relatório' : 'Explorar no Atlas 3D'}
+            {chosen ? 'Usar estrutura no relatório' : 'Buscar estrutura anatômica'}
             <span aria-hidden="true">→</span>
           </button>
 
@@ -506,6 +564,7 @@ export function ReferenceAtlasExplorer({
         <div className="atlas-v3-search">
           <span aria-hidden="true">⌕</span>
           <input
+            ref={searchRef}
             id="reference-atlas-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -561,14 +620,24 @@ export function ReferenceAtlasExplorer({
           <button
             type="button"
             aria-label="Aproximar visualização"
-            onClick={() => setState((current) => ({ ...current, reset: current.reset + 1 }))}
+            onClick={() =>
+              setState((current) => ({
+                ...current,
+                zoomStep: Math.min(8, (current.zoomStep ?? 0) + 1),
+              }))
+            }
           >
             +
           </button>
           <button
             type="button"
             aria-label="Afastar visualização"
-            onClick={() => setState((current) => ({ ...current, reset: current.reset + 1 }))}
+            onClick={() =>
+              setState((current) => ({
+                ...current,
+                zoomStep: Math.max(-5, (current.zoomStep ?? 0) - 1),
+              }))
+            }
           >
             −
           </button>
