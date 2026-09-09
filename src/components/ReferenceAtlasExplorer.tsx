@@ -319,7 +319,7 @@ export function ReferenceAtlasExplorer({
 
   const returnToBody = () => {
     setError('')
-    setProgress(0)
+    setProgress(100)
     setDetailMode(false)
     setState((current) => ({
       ...current,
@@ -354,7 +354,13 @@ export function ReferenceAtlasExplorer({
         </div>
       </header>
 
-      <div className="reference-atlas-stage">
+      <div
+        className={
+          detailMode && chosenDetail
+            ? 'reference-atlas-stage detail-active'
+            : 'reference-atlas-stage'
+        }
+      >
         {atlas && (
           <Suspense
             fallback={
@@ -365,36 +371,50 @@ export function ReferenceAtlasExplorer({
               >
                 <span className="focused-reference-loader" aria-hidden="true" />
                 <div>
-                  <strong>
-                    {detailMode ? 'Carregando órgão em detalhe' : 'Carregando Atlas 3D'}
-                  </strong>
+                  <strong>Carregando Atlas 3D</strong>
                   <small>Preparando anatomia interativa.</small>
                 </div>
               </div>
             }
           >
-            {detailMode && chosenDetail ? (
-              <OrganDetailScene
-                key={`${chosenDetail.id}-${loadAttempt}`}
-                organ={chosenDetail}
-                appearance="explorer"
-                rotate={state.rotate}
-                section={state.section}
-                reset={state.reset}
-                onReady={() => setProgress(100)}
-                onError={onError}
-              />
-            ) : (
-              <HumanAtlasExplorerScene
-                key={loadAttempt}
-                atlas={atlas}
-                state={state}
-                onSelect={choosePart}
-                onProgress={onProgress}
-                onError={onError}
-                appearance="explorer"
-              />
-            )}
+            <HumanAtlasExplorerScene
+              key={loadAttempt}
+              atlas={atlas}
+              state={state}
+              onSelect={choosePart}
+              onProgress={onProgress}
+              onError={onError}
+              appearance="explorer"
+            />
+          </Suspense>
+        )}
+
+        {atlas && detailMode && chosenDetail && (
+          <Suspense
+            fallback={
+              <div
+                className="reference-renderer-loading reference-organ-renderer-loading"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="focused-reference-loader" aria-hidden="true" />
+                <div>
+                  <strong>Carregando órgão em detalhe</strong>
+                  <small>Preparando {chosenDetail.label}.</small>
+                </div>
+              </div>
+            }
+          >
+            <OrganDetailScene
+              key={`${chosenDetail.id}-${loadAttempt}`}
+              organ={chosenDetail}
+              appearance="explorer"
+              rotate={state.rotate}
+              section={state.section}
+              reset={state.reset}
+              onReady={() => setProgress(100)}
+              onError={onError}
+            />
           </Suspense>
         )}
 
