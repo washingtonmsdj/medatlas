@@ -5,6 +5,7 @@ import type {
   ClinicalUsageSummary,
 } from '../data/clinical-repository'
 import { demoShareTtlLabel } from '../product/constraints'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   repository: ClinicalRepository
@@ -54,28 +55,31 @@ export function AnalyticsModule({ repository }: Props) {
 
   return (
     <section className="analytics-module module-v3 mvp-surface">
-      <div className="analytics-hero workspace-hero-v3 mvp-page-hero">
-        <div className="module-hero-copy">
-          <span className="section-kicker">ANALYTICS</span>
-          <h2>Analytics</h2>
-          <p>Veja como os relatórios compartilhados estão sendo abertos.</p>
-        </div>
-        <button
-          type="button"
-          className="analytics-refresh"
-          onClick={() => void load()}
-          disabled={status === 'loading'}
-        >
-          {status === 'loading' ? 'Atualizando…' : 'Atualizar'}
-        </button>
-      </div>
+      <WorkspacePageHeader
+        eyebrow="ANALYTICS"
+        title="Analytics"
+        description="Acompanhe a abertura e o alcance dos relatórios compartilhados."
+        className="analytics-hero"
+        actions={
+          <button
+            type="button"
+            className="analytics-refresh"
+            onClick={() => void load()}
+            disabled={status === 'loading'}
+          >
+            {status === 'loading' ? 'Atualizando…' : 'Atualizar'}
+          </button>
+        }
+      />
 
       {status === 'error' ? (
         <div className="analytics-error analytics-error-v3" role="alert">
           <div>
             <strong>Não foi possível carregar os dados.</strong>
           </div>
-          <button type="button" onClick={() => void load()}>Tentar novamente</button>
+          <button type="button" onClick={() => void load()}>
+            Tentar novamente
+          </button>
         </div>
       ) : (
         <>
