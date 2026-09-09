@@ -69,6 +69,7 @@ export function HumanAtlasExplorerScene({
     let lastState: AtlasExplorerSceneState | null = null
     let lastView = ''
     let lastReset = -1
+    let lastZoomStep = 0
     let lastIsolate = ''
     let lastInspectedPartId: string | undefined
     let layoutKey = ''
@@ -1216,6 +1217,27 @@ export function HumanAtlasExplorerScene({
         fit(current.view, amount)
         lastView = current.view
         lastReset = current.reset
+        lastZoomStep = 0
+      }
+
+      const zoomStep = current.zoomStep ?? 0
+      if (zoomStep !== lastZoomStep) {
+        keyboardOffset.copy(camera.position).sub(controls.target)
+        keyboardSpherical.setFromVector3(keyboardOffset)
+        keyboardSpherical.radius *= Math.pow(
+          0.88,
+          zoomStep - lastZoomStep,
+        )
+        keyboardSpherical.radius = THREE.MathUtils.clamp(
+          keyboardSpherical.radius,
+          controls.minDistance,
+          controls.maxDistance,
+        )
+        keyboardOffset.setFromSpherical(keyboardSpherical)
+        camera.position.copy(controls.target).add(keyboardOffset)
+        controls.update()
+        lastZoomStep = zoomStep
+        dirty = true
       }
 
       const isolateKey = current.isolate
