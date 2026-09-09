@@ -77,12 +77,21 @@ async function inspectVisibleAnatomyPart(
   expect(box).not.toBeNull()
 
   const candidatePoints = [
+    [0.5, 0.42],
+    [0.42, 0.42],
+    [0.58, 0.42],
+    [0.5, 0.5],
+    [0.38, 0.5],
+    [0.62, 0.5],
     [0.5, 0.58],
     [0.42, 0.58],
     [0.58, 0.58],
+    [0.32, 0.58],
+    [0.68, 0.58],
     [0.5, 0.68],
-    [0.36, 0.62],
-    [0.64, 0.62],
+    [0.36, 0.68],
+    [0.64, 0.68],
+    [0.5, 0.76],
   ] as const
 
   const inspector = page.getByLabel(
@@ -94,7 +103,7 @@ async function inspectVisibleAnatomyPart(
       box!.x + box!.width * x,
       box!.y + box!.height * y,
     )
-    await page.waitForTimeout(90)
+    await page.waitForTimeout(150)
 
     const cursor = await canvas.evaluate(
       (element) => getComputedStyle(element).cursor,
@@ -109,7 +118,7 @@ async function inspectVisibleAnatomyPart(
       },
       force: true,
     })
-    await page.waitForTimeout(180)
+    await page.waitForTimeout(240)
 
     if (await inspector.isVisible()) {
       return inspector
@@ -1092,6 +1101,68 @@ test('full Atlas moves from body context to detailed organ and back without chan
     inspector.getByRole('button', {
       name: 'Abrir Coração em detalhe',
     }),
+  ).toBeVisible()
+})
+
+test('clinical workbench opens detailed organ and returns to the same confirmed anatomy', async ({
+  page,
+}) => {
+  test.setTimeout(90_000)
+  await openReports(page)
+
+  await page.getByRole('button', { name: 'Coração', exact: true }).click()
+  await page.getByRole('button', { name: 'Encontrar anatomia' }).click()
+
+  await page
+    .locator('.suggestion-item')
+    .filter({ hasText: 'FMA7088' })
+    .getByRole('button', { name: 'Confirmar estrutura' })
+    .click()
+
+  const stage = page.locator('.clinical-atlas-stage')
+  const depth = page.getByRole('navigation', {
+    name: 'Nível anatômico do relatório',
+  })
+
+  await expect(depth).toBeVisible()
+  await expect(stage.locator('.human-atlas-scene canvas')).toBeVisible({
+    timeout: 45_000,
+  })
+  await expect(page.locator('.clinical-atlas-meta')).toContainText('FMA7088')
+
+  await depth.getByRole('button', { name: /Órgão em detalhe/ }).click()
+
+  await expect(
+    stage.locator('.organ-detail-scene[data-organ="heart"] canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(stage).toHaveClass(/detail-active/)
+  await expect(
+    page.getByText('ÓRGÃO EM DETALHE', { exact: true }),
+  ).toBeVisible()
+
+  const controls = page.getByRole('navigation', {
+    name: 'Controles da visualização clínica 3D',
+  })
+  const cut = controls.getByRole('button', {
+    name: 'Ativar corte do órgão',
+  })
+  await expect(cut).toHaveAttribute('aria-pressed', 'false')
+  await cut.click()
+  await expect(
+    controls.getByRole('button', {
+      name: 'Desativar corte do órgão',
+    }),
+  ).toHaveAttribute('aria-pressed', 'true')
+
+  await depth.getByRole('button', { name: /^Corpo/ }).click()
+
+  await expect(stage).not.toHaveClass(/detail-active/)
+  await expect(stage.locator('.human-atlas-scene canvas')).toBeVisible({
+    timeout: 10_000,
+  })
+  await expect(page.locator('.clinical-atlas-meta')).toContainText('FMA7088')
+  await expect(
+    page.getByText('ESTRUTURA EM FOCO', { exact: true }),
   ).toBeVisible()
 })
 
