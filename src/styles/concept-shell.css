@@ -172,6 +172,19 @@
   white-space: nowrap;
 }
 
+.medatlas-v2-topbar .global-command-empty {
+  margin: 0;
+  padding: 16px 13px;
+  color: #8299ad;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.medatlas-v2-topbar .global-command-options button b {
+  color: #79a1bf;
+  font-size: 9px;
+}
+
 .medatlas-v2-topbar .topbar-utility-actions,
 .medatlas-v2-topbar .topbar-actions {
   display: flex;
@@ -332,6 +345,21 @@
   font-size: 7px;
 }
 
+.medatlas-v2-topbar .topbar-popover-count {
+  min-width: 26px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  padding: 0 7px;
+  border: 1px solid rgba(241, 92, 112, .24);
+  border-radius: 999px;
+  color: #ff9cad;
+  background: rgba(129, 40, 56, .26);
+  font-size: 7px;
+  font-weight: 900;
+}
+
 .medatlas-v2-topbar .notification-item,
 .medatlas-v2-topbar .profile-popover-actions button {
   width: 100%;
@@ -372,6 +400,28 @@
   font-size: 6.5px;
 }
 
+.medatlas-v2-topbar .notification-item > span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #8dc8f2;
+  background: rgba(35, 92, 143, .34);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.medatlas-v2-topbar .notification-item.urgent > span {
+  color: #f2bd80;
+  background: rgba(133, 80, 30, .28);
+}
+
+.medatlas-v2-topbar .notification-item b {
+  color: #7999b3;
+  font-size: 9px;
+}
+
 .medatlas-v2-topbar .profile-popover-header {
   justify-content: flex-start;
 }
@@ -398,11 +448,27 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  padding: 7px 2px;
+  border-bottom: 1px solid rgba(88, 131, 170, .12);
+}
+
+.medatlas-v2-topbar .profile-popover-facts > div:last-child {
+  border-bottom: 0;
 }
 
 .medatlas-v2-topbar .profile-popover-facts dt,
 .medatlas-v2-topbar .profile-popover-facts dd {
   margin: 0;
+}
+
+.medatlas-v2-topbar .profile-popover-facts dt {
+  color: #728aa0;
+}
+
+.medatlas-v2-topbar .profile-popover-facts dd {
+  color: #b8cad8;
+  font-weight: 800;
+  text-align: right;
 }
 
 .medatlas-v2-topbar .profile-popover-actions {
@@ -462,6 +528,26 @@
     width: 100%;
   }
 
+  .medatlas-v2-topbar .global-command-results {
+    position: fixed;
+    top: 118px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: min(64vh, 520px);
+    overflow: auto;
+  }
+
+  .medatlas-v2-topbar .topbar-popover {
+    position: fixed;
+    top: 118px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: min(66vh, 520px);
+    overflow: auto;
+  }
+
   .medatlas-v2-topbar .doctor-chip > div,
   .medatlas-v2-topbar .doctor-chip > b {
     display: none;
@@ -495,6 +581,23 @@
 
   .medatlas-v2-topbar .global-command-search kbd {
     display: none;
+  }
+
+  .medatlas-v2-topbar .global-command-results,
+  .medatlas-v2-topbar .topbar-popover {
+    top: 108px;
+    max-height: min(68vh, 480px);
+  }
+
+  .medatlas-v2-topbar .global-command-options button {
+    min-height: 52px;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+  }
+
+  .medatlas-v2-topbar .global-command-results footer {
+    position: sticky;
+    bottom: 0;
+    background: rgba(5, 16, 28, .98);
   }
 
   .medatlas-v2-topbar .topbar-actions {
