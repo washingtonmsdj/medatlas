@@ -837,10 +837,6 @@ button:not(:disabled):active {
     display: none;
   }
 
-  .topbar-saas {
-    flex-wrap: wrap;
-  }
-
   .global-search {
     order: 3;
     flex-basis: 100%;
@@ -849,32 +845,6 @@ button:not(:disabled):active {
 }
 
 @media (max-width: 900px) {
-  .app-shell {
-    display: block;
-  }
-
-  .workspace {
-    padding-inline: 14px;
-  }
-
-  .topbar-saas {
-    position: relative;
-    margin-inline: -14px;
-    padding-inline: 14px;
-  }
-
-  .org-switcher {
-    min-width: 0;
-  }
-
-  .doctor-chip-button {
-    min-width: 0;
-  }
-
-  .doctor-chip-button div {
-    display: none;
-  }
-
   .module-heading,
   .overview-welcome {
     align-items: flex-start;
@@ -909,14 +879,8 @@ button:not(:disabled):active {
     grid-template-columns: 1fr;
   }
 
-  .synthetic-badge,
-  .global-search kbd,
-  .topbar-icon-button {
+  .synthetic-badge {
     display: none;
-  }
-
-  .global-search {
-    min-width: 0;
   }
 
   .overview-welcome,
