@@ -40,6 +40,7 @@ const experienceSurfaceStyles = await readFile('src/experience-surfaces.css', 'u
 const baseStyles = await readFile('src/styles.css', 'utf8')
 const clinicalShellStyles = await readFile('src/styles/clinical-shell.css', 'utf8')
 const anatomyResponsiveStyles = await readFile('src/styles/anatomy-responsive.css', 'utf8')
+const referenceAtlasStyles = await readFile('src/reference-atlas.css', 'utf8')
 
 const failures = []
 
@@ -185,6 +186,7 @@ for (const [name, stylesheet] of [
   ['experience-surfaces.css', experienceSurfaceStyles],
   ['clinical-shell.css', clinicalShellStyles],
   ['anatomy-responsive.css', anatomyResponsiveStyles],
+  ['reference-atlas.css', referenceAtlasStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -268,6 +270,10 @@ for (const legacySelector of [
       `Dead workspace selectors must not return: ${legacySelector}`,
     )
   }
+}
+
+if (referenceAtlasStyles.includes('--atlas-')) {
+  failures.push('Parallel Reference Atlas palette must not return')
 }
 
 if (clinicalShellStyles.includes('--saas-')) {
