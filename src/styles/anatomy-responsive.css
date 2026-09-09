@@ -485,7 +485,8 @@
   }
 
   .patient-atlas-stage,
-  .patient-atlas-stage .human-atlas-scene {
+  .patient-atlas-stage .human-atlas-scene,
+  .patient-atlas-stage .organ-detail-scene {
     min-height: 640px;
   }
 
