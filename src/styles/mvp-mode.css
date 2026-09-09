@@ -198,14 +198,6 @@
     min-width: 0;
   }
 
-  .mvp-next-step-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .mvp-next-step-card button {
-    width: 100%;
-  }
 }
 
 /* Product-facing provenance disclosure: licensing stays accessible without

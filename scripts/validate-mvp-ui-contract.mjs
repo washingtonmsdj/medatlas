@@ -24,6 +24,7 @@ const sources = new Map(
     productSurfaces.map(async (file) => [file, await readFile(file, 'utf8')]),
   ),
 )
+const readme = await readFile('README.md', 'utf8')
 
 const failures = []
 
@@ -150,6 +151,14 @@ for (const fragment of [
   }
 }
 
+for (const removedLabel of ["'Consultas'", "'Exames'"]) {
+  if (sidebar.includes(removedLabel)) {
+    failures.push(
+      `ClinicalSidebar reintroduced out-of-scope standalone MVP module: ${removedLabel}`,
+    )
+  }
+}
+
 if (sidebar.includes('clinic-card-chevron')) {
   failures.push('ClinicalSidebar must not imply a clickable workspace card without an action')
 }
@@ -202,6 +211,29 @@ for (const required of [
   }
 }
 
+for (const forbiddenDocFragment of [
+  '- **Consultas**',
+  '- **Exames**',
+  'módulo Exames funcional',
+  'módulos Pacientes e Consultas funcionais',
+]) {
+  if (readme.includes(forbiddenDocFragment)) {
+    failures.push(
+      `README reintroduced out-of-scope standalone MVP module: ${forbiddenDocFragment}`,
+    )
+  }
+}
+
+if (
+  !readme.includes(
+    'Consultas e exames não são módulos independentes no MVP; esse contexto pertence ao fluxo de **Relatórios visuais**.',
+  )
+) {
+  failures.push(
+    'README must keep consultations/exams inside the Relatórios visuais MVP flow',
+  )
+}
+
 if (focusPreview.includes('atlasRef')) {
   failures.push(
     'Shared contextual 3D preview must not expose atlasRef/provenance copy in the primary MVP surface',
@@ -224,5 +256,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas MVP UI contract PASS: professional/patient views stay separated, primary UI stays task-first, and engineering copy remains outside product surfaces.',
+  'MedAtlas MVP UI contract PASS: professional/patient views stay separated, primary UI stays task-first, standalone consultations/exams stay out of scope, and engineering copy remains outside product surfaces.',
 )

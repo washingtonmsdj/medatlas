@@ -32,15 +32,15 @@ Hoje a geometria real BodyParts3D aparece em:
 
 - **Visão geral** — atendimento atual;
 - **Pacientes** — contexto visual do relatório;
-- **Consultas** — foco anatômico durante a sessão;
-- **Exames** — referência FMA ligada ao texto;
-- **Relatórios visuais** — Clinical 3D Workbench;
+- **Relatórios visuais** — laudo/exame, contexto da consulta e Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
   - mantém recursos do Human Atlas de referência como camadas, picking, explode, marcadores, hover por peça no inventário, vistas e enquadramento respeitando os painéis;
 - **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;
 - **link do paciente** — experiência simplificada com o mesmo engine.
 
 `Equipe`, `Analytics` e `Configurações` não recebem canvas 3D por decoração: nessas telas não existe uma tarefa anatômica.
+
+Consultas e exames não são módulos independentes no MVP; esse contexto pertence ao fluxo de **Relatórios visuais**.
 
 O preview público do MVP está em:
 
@@ -55,14 +55,14 @@ O MVP já possui:
 - fluxo clínico em português;
 - edição/colagem de texto de laudo;
 - importação local de arquivo sintético .txt/.md (máx. 64 KB), sem upload;
-- módulo Exames funcional para iniciar ingestão local, com PDF/imagem explicitamente bloqueados nesta fase;
-- módulos Pacientes e Consultas funcionais no modo sintético, derivados do relatório atual e sem persistência paralela;
+- Relatórios visuais concentram ingestão local de laudo/exame e o contexto da consulta; PDF/imagem permanecem explicitamente bloqueados nesta fase;
+- módulo Pacientes funcional no modo sintético, derivado do relatório atual e sem persistência paralela;
 - triagem determinística de referências anatômicas;
 - sugestões limitadas a conceitos que realmente existem no atlas;
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
 - explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
-- Dashboard, Pacientes, Consultas, Exames, relatório clínico e página do paciente reutilizam o mesmo engine 3D canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
+- Dashboard, Pacientes, Relatórios visuais e página do paciente reutilizam o mesmo engine 3D canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;

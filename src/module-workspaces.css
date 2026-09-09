@@ -661,69 +661,6 @@
   line-height: 1.5;
 }
 
-.overview-3d-current-anatomy {
-  display: grid;
-  gap: 4px;
-  padding: 14px 15px;
-  border: 1px solid rgba(105, 173, 207, .18);
-  border-radius: 14px;
-  background: rgba(7, 26, 41, .58);
-}
-
-.overview-3d-current-anatomy > span {
-  color: #79a9c0;
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-}
-
-.overview-3d-current-anatomy > strong {
-  color: #f4fbff;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-.overview-3d-current-anatomy > small {
-  color: #86a1b2;
-  font-size: 7px;
-  line-height: 1.45;
-}
-
-.overview-3d-proof-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.overview-3d-proof-grid > div {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-  padding: 11px;
-  border: 1px solid rgba(111, 174, 207, .15);
-  border-radius: 12px;
-  background: rgba(7, 27, 43, .44);
-}
-
-.overview-3d-proof-grid strong {
-  color: #8fe8e0;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.overview-3d-proof-grid span {
-  color: #dcebf3;
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.overview-3d-proof-grid small {
-  color: #7894a7;
-  font-size: 6px;
-  line-height: 1.35;
-}
-
 .overview-3d-progress-copy {
   display: grid;
   gap: 8px;
@@ -766,22 +703,6 @@
 }
 
 .overview-3d-hero-actions button,
-.product-position-card-v5 button {
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 0 13px;
-  border: 1px solid rgba(128, 174, 200, .28);
-  border-radius: 10px;
-  color: #c8dce7;
-  background: rgba(13, 43, 62, .66);
-  cursor: pointer;
-  font-size: 8px;
-  font-weight: 900;
-}
-
 .overview-3d-hero-actions button:hover {
   border-color: rgba(106, 203, 228, .46);
   background: rgba(20, 61, 84, .78);
@@ -795,83 +716,6 @@
   box-shadow: 0 14px 26px rgba(6, 103, 187, .24);
 }
 
-.overview-3d-safety {
-  color: #728fa2;
-  font-size: 6px;
-  line-height: 1.45;
-}
-
-.overview-command-grid-v5 {
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, .65fr);
-  align-items: stretch;
-}
-
-.overview-command-grid-v5 > .premium-flow,
-.overview-command-grid-v5 > .work-queue-card {
-  height: 100%;
-}
-
-.queue-3d-note {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 9px;
-  align-items: center;
-  margin-top: 12px;
-  padding: 10px;
-  border: 1px solid #d9e9f2;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f5fbff, #eef8fb);
-}
-
-.queue-3d-note > span {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  color: #126b92;
-  background: #dff3fb;
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.queue-3d-note > div {
-  display: grid;
-  gap: 2px;
-}
-
-.queue-3d-note strong {
-  color: #234b64;
-  font-size: 8px;
-}
-
-.queue-3d-note small {
-  color: #6b8393;
-  font-size: 7px;
-  line-height: 1.35;
-}
-
-.product-position-card-v5 button {
-  width: max-content;
-  margin-top: 14px;
-  color: #24617e;
-  border-color: #c9dfe9;
-  background: #f0f8fb;
-}
-
-.product-position-card-v5 button:hover {
-  border-color: #a9cfdf;
-  background: #e9f6fa;
-  transform: translateY(-1px);
-}
-
-
-
-
-
-
-
-
 @media (max-width: 1180px) {
   .overview-3d-hero-grid {
     grid-template-columns: minmax(430px, 1.15fr) minmax(300px, .85fr);
@@ -884,9 +728,6 @@
     min-height: 390px;
   }
 
-  .overview-command-grid-v5 {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 900px) {
@@ -909,9 +750,6 @@
   .overview-3d-story-copy,
   .overview-3d-progress-copy,
   .overview-3d-hero-actions,
-  .overview-3d-safety {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 700px) {
@@ -968,14 +806,6 @@
   .overview-3d-story-copy,
   .overview-3d-progress-copy,
   .overview-3d-hero-actions,
-  .overview-3d-safety {
-    grid-column: auto;
-  }
-
-  .overview-3d-proof-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .overview-3d-hero-actions button {
     flex: 1 1 150px;
   }
@@ -1000,18 +830,6 @@
 
   .overview-3d-hero-heading h2 {
     font-size: 28px;
-  }
-
-  .overview-3d-proof-grid {
-    gap: 6px;
-  }
-
-  .overview-3d-proof-grid > div {
-    padding: 9px;
-  }
-
-  .overview-3d-proof-grid strong {
-    font-size: 16px;
   }
 
   .overview-3d-story {
