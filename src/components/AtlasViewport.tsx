@@ -200,8 +200,6 @@ export function AtlasViewport({
 
   const detailReady = useCallback((label: string) => {
     setSourceLabel(label)
-    setSelectedPartCount(1)
-    setContextPartCount(0)
     setStatus('ready')
   }, [])
 
@@ -235,14 +233,11 @@ export function AtlasViewport({
   const chooseAnatomyDepth = (detail: boolean) => {
     if (detail && !activeDetail) return
     setDetailMode(detail)
-    setStatus('loading')
+    setStatus(detail ? 'loading' : activeConceptId ? 'ready' : 'idle')
     setError('')
-    setSourceLabel('')
-    setSelectedPartCount(0)
-    setContextPartCount(0)
+    if (detail) setSourceLabel('')
     setRotate(false)
     setSection(false)
-    setReset((current) => current + 1)
   }
 
   const toggleFullscreen = async () => {
@@ -331,56 +326,62 @@ export function AtlasViewport({
       </div>
 
       <div
-        className="atlas-stage real-stage clinical-atlas-stage"
+        className={
+          detailActive
+            ? 'atlas-stage real-stage clinical-atlas-stage detail-active'
+            : 'atlas-stage real-stage clinical-atlas-stage'
+        }
         ref={stageRef}
       >
         {activeConceptId ? (
-          detailActive && activeDetail ? (
-            <Suspense
-              fallback={
-                <div
-                  className="focused-reference-loading renderer-module-loading"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <div className="focused-reference-loading-card">
-                    <span
-                      className="focused-reference-loader"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <strong>Carregando órgão em detalhe</strong>
-                      <small>Preparando {activeDetail.label}.</small>
-                    </div>
-                  </div>
-                </div>
-              }
-            >
-              <OrganDetailScene
-                key={`${activeDetail.id}-${loadAttempt}`}
-                organ={activeDetail}
-                appearance="clinical"
-                rotate={rotate}
-                section={section}
-                reset={reset}
-                onReady={detailReady}
-                onError={failed}
-              />
-            </Suspense>
-          ) : (
+          <>
             <HumanAtlasScene
               key={`${activeConceptId}-${contextMode}-${loadAttempt}`}
               conceptId={activeConceptId}
               contextMode={contextMode}
               view={view}
-              rotate={rotate}
-              section={section}
+              rotate={detailActive ? false : rotate}
+              section={detailActive ? false : section}
               reset={reset}
               appearance="clinical"
               onReady={ready}
               onError={failed}
             />
-          )
+
+            {detailActive && activeDetail && (
+              <Suspense
+                fallback={
+                  <div
+                    className="focused-reference-loading renderer-module-loading clinical-organ-renderer-loading"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <div className="focused-reference-loading-card">
+                      <span
+                        className="focused-reference-loader"
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <strong>Carregando órgão em detalhe</strong>
+                        <small>Preparando {activeDetail.label}.</small>
+                      </div>
+                    </div>
+                  </div>
+                }
+              >
+                <OrganDetailScene
+                  key={`${activeDetail.id}-${loadAttempt}`}
+                  organ={activeDetail}
+                  appearance="clinical"
+                  rotate={rotate}
+                  section={section}
+                  reset={reset}
+                  onReady={detailReady}
+                  onError={failed}
+                />
+              </Suspense>
+            )}
+          </>
         ) : (
           <div className="atlas-empty-state clinical-atlas-empty">
             <span aria-hidden="true">3D</span>
@@ -442,7 +443,7 @@ export function AtlasViewport({
                   : 'Carregando anatomia 3D…'}
           </small>
 
-          {status === 'ready' && (
+          {status === 'ready' && !detailActive && (
             <div className="clinical-atlas-focus-metrics">
               <span>
                 <b>{selectedPartCount}</b>
@@ -453,7 +454,7 @@ export function AtlasViewport({
                 contexto
               </span>
               <span>
-                <b>{detailActive ? 'Detalhe' : activeContextLabel}</b>
+                <b>{activeContextLabel}</b>
                 modo
               </span>
             </div>
