@@ -570,3 +570,26 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 4. revisar aliases de versão ainda ativos (`v2/v3/premium`) somente quando houver substituto semântico e migração completa de JSX + CSS + gates;
 5. manter o 3D real como diferencial do MVP nas superfícies anatômicas e evitar qualquer regressão para placeholder, thumbnail ou fallback fake.
 
+### Checkpoint MVP — task-first, cascata consolidada e aliases semânticos (2026-09-09)
+- [x] fluxo visual principal alinhado à copy task-first: **Atendimento em andamento → Adicionar laudo → Encontrar anatomia → Usar estrutura → Gerar rascunho → Aprovar explicação → Compartilhar**;
+- [x] testes Browser/Pages deixaram de localizar cards de sugestão por FMA interno; IDs continuam validados em dados/Referências profissionais e continuam proibidos na superfície do paciente;
+- [x] teste de revisão humana continua bloqueante e agora acompanha a ação real `Aprovar explicação`;
+- [x] falso negativo do preview foi corrigido por escopo semântico `.patient-preview-control`, sem usar `.first()` arbitrário;
+- [x] `interaction-polish.css`, `experience-surfaces.css` e `mvp-mode.css` permanecem absorvidos e ausentes do entrypoint;
+- [x] aliases do portal do paciente removidos: `patient-hero-premium`, `patient-hero-v3`, `patient-grid-v3`, `patient-next-step-v3`;
+- [x] aliases de Pacientes/Analytics/Configurações removidos e protegidos pelo gate: `patient-current-report-v2`, `anatomy-showcase-v3`, `anatomy-showcase-copy-v3`, `analytics-error-v3`, `analytics-metrics-v3`, `analytics-report-card-v3`, `settings-grid-v2`, `settings-grid-v3`, `settings-actions-v2`, `module-action-bar-v3`;
+- [x] aliases de Intake/Composer removidos: `intake-card-v2`, `intake-heading-v2`, `intake-actions-v2`, `suggestion-list-v2`, `report-card-v2`, `report-composer-v3`, `explanation-heading-v2`, `review-gate-v2`, `review-approved-v2`, `share-box-v2`, `publish-zone-v3`;
+- [x] o Composer usa agora o escopo semântico único `report-composer`;
+- [x] `anatomy-responsive.css` e `reference-atlas.css` foram auditados por consumidor: nenhum seletor anatômico ativo foi removido só por parecer legado;
+- [x] workflows Browser E2E e Pages foram endurecidos contra o repositório APT externo do Google Chrome que estava falhando com `Hash Sum mismatch`; Playwright continua usando `--with-deps chromium`, sem redução de cobertura;
+- [x] CI do HEAD funcional/gates **`29497ff1013ea7749234efcd009a33b595dfb443`**: run **`34385743604` PASS completo**;
+- [x] GitHub Pages do runtime equivalente **`9818355d2094ca1d89ae7246d46ca3606a972a3b`**: run **`34385736338` PASS**, incluindo verificação remota 3D;
+- [ ] Browser E2E do mesmo runtime **`9818355d…`**: run **`34385736328`** ainda em execução no momento deste checkpoint.
+
+### Próxima frente P0 após este checkpoint
+1. fechar o Browser E2E `34385736328` e registrar o resultado exato;
+2. avaliar `module-v3` para migração semântica para um wrapper estável de página, somente após o baseline E2E verde;
+3. tratar `medatlas-v2-*` como migração de shell/tema, não como replace mecânico;
+4. tratar `atlas-v3-*` separadamente dentro do domínio do Reference Atlas; não misturar essa renomeação com mudanças no renderer;
+5. continuar removendo legado somente com consumidor/ownership comprovados e sempre preservar Human Atlas + órgão detalhado como engines reais.
+
