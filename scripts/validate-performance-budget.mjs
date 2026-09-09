@@ -35,6 +35,10 @@ const organDetailSceneSource = await readFile(
   'src/components/OrganDetailScene.tsx',
   'utf8',
 )
+const patientReportSource = await readFile(
+  'src/components/PatientReportPage.tsx',
+  'utf8',
+)
 const staticRendererImport =
   /import\s*\{[^}]*HumanAtlasExplorerScene[^}]*\}\s*from\s*['"]\.\/HumanAtlasExplorerScene['"]/
 
@@ -75,6 +79,17 @@ if (
 ) {
   failures.push(
     'full-atlas organ detail renderer must be lazy-loaded from ReferenceAtlasExplorer',
+  )
+}
+
+if (
+  !patientReportSource.includes("import('./OrganDetailScene')") ||
+  patientReportSource.includes(
+    "import { OrganDetailScene } from './OrganDetailScene'",
+  )
+) {
+  failures.push(
+    'patient organ detail renderer must be lazy-loaded from PatientReportPage',
   )
 }
 
