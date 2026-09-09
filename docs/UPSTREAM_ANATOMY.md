@@ -27,11 +27,17 @@ MedAtlas selectively adapts implementation patterns without replacing its
 canonical anatomy authority:
 
 - keyboard interaction for the canonical 3D canvas;
+- interaction-aware automatic rotation that pauses during manual navigation and
+  while a focused structure is being inspected;
+- a camera-oriented visual cross-section implemented with Three.js local
+  clipping planes, including clipping-aware picking;
 - an imperatively positioned DOM callout that follows the inspected anatomical
   structure without triggering a React re-render on every animation frame.
 
-The callout is adapted to MedAtlas' own BodyParts3D bounds, offsets, Portuguese
-labels, clinical/patient modes and review semantics.
+These mechanisms are adapted to MedAtlas' own BodyParts3D bounds, offsets,
+Portuguese labels, clinical/patient modes and review semantics. The cross-section
+is explicitly a visual reference tool, not a diagnostic reconstruction or a
+patient-specific volumetric slice.
 
 ## Not imported by this checkpoint
 

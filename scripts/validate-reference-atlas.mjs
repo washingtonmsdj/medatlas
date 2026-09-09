@@ -98,6 +98,15 @@ const requiredEngineFragments = [
   "'pointerleave'",
   "style.cursor =",
   'controls.autoRotate',
+  'renderer.localClippingEnabled = true',
+  'sectionPlane',
+  'setFromNormalAndCoplanarPoint',
+  'material.clippingPlanes',
+  'sectionPlane.distanceToPoint(hit.point)',
+  'interactionUntil',
+  "addEventListener('start', pauseAutoRotate)",
+  '!currentInspectedPartId',
+  '!current.section',
   'renderer.domElement.tabIndex = 0',
   "'aria-keyshortcuts'",
   "addEventListener('keydown', keyDown)",
@@ -153,6 +162,7 @@ const requiredExplorerFragments = [
   'Separar anatomia',
   'Usar no relatório',
   'Isolar estrutura',
+  'Corte anatômico',
   'searchAtlasConcepts',
   'Camadas anatômicas',
   'INSPETOR ANATÔMICO',
@@ -295,6 +305,8 @@ const requiredClinicalWorkbenchFragments = [
   'Contexto anatômico',
   'HUMAN ATLAS · FOCO CLÍNICO',
   'appearance="clinical"',
+  'section={section}',
+  'Corte visual 3D',
 ]
 
 for (const fragment of requiredClinicalWorkbenchFragments) {

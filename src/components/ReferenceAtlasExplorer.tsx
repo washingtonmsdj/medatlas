@@ -58,6 +58,7 @@ function initialState(): AtlasExplorerSceneState {
     isolate: false,
     view: 'three-quarter',
     rotate: false,
+    section: false,
     reset: 0,
   }
 }
@@ -609,6 +610,26 @@ export function ReferenceAtlasExplorer({
           >
             ↻
           </button>
+          <button
+            type="button"
+            className={state.section ? 'active' : ''}
+            aria-pressed={state.section}
+            aria-label={
+              state.section
+                ? 'Desativar corte anatômico'
+                : 'Ativar corte anatômico'
+            }
+            title="Corte anatômico visual de referência"
+            onClick={() =>
+              setState((current) => ({
+                ...current,
+                section: !current.section,
+                rotate: false,
+              }))
+            }
+          >
+            ◐
+          </button>
           <button type="button" aria-label="Resetar Atlas 3D" onClick={reset}>
             ↺
           </button>
@@ -633,6 +654,7 @@ export function ReferenceAtlasExplorer({
                 explode,
                 view: explode > 0.8 ? 'front' : current.view,
                 rotate: false,
+                section: explode > 0.05 ? false : current.section,
               }))
             }}
           />
@@ -648,11 +670,13 @@ export function ReferenceAtlasExplorer({
             {chosen ? conceptDisplayName(chosen) : 'Nenhuma seleção'}
           </span>
           <span>
-            {state.isolate
-              ? 'Estrutura isolada'
-              : state.explode > 0.05
-                ? 'Anatomia separada'
-                : 'Exploração livre'}
+            {state.section
+              ? 'Corte anatômico ativo'
+              : state.isolate
+                ? 'Estrutura isolada'
+                : state.explode > 0.05
+                  ? 'Anatomia separada'
+                  : 'Exploração livre'}
           </span>
         </div>
 

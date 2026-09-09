@@ -73,6 +73,7 @@ export function AtlasViewport({
     useState<AtlasContextMode>('system')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
+  const [section, setSection] = useState(false)
   const [reset, setReset] = useState(0)
   const [loadAttempt, setLoadAttempt] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -130,6 +131,7 @@ export function AtlasViewport({
     setStatus(activeConceptId ? 'loading' : 'idle')
     setAtlas(null)
     setRotate(false)
+    setSection(false)
     setReset((current) => current + 1)
     setLoadAttempt((current) => current + 1)
   }
@@ -142,6 +144,7 @@ export function AtlasViewport({
       setSelectedPartCount(0)
       setContextPartCount(0)
       setRotate(false)
+      setSection(false)
       return
     }
 
@@ -176,6 +179,7 @@ export function AtlasViewport({
     setPreview(candidate)
     setQuery('')
     setRotate(false)
+    setSection(false)
     setReset((current) => current + 1)
   }
 
@@ -193,6 +197,7 @@ export function AtlasViewport({
   const resetScene = () => {
     setView('three-quarter')
     setRotate(false)
+    setSection(false)
     setReset((current) => current + 1)
   }
 
@@ -292,6 +297,7 @@ export function AtlasViewport({
             contextMode={contextMode}
             view={view}
             rotate={rotate}
+            section={section}
             reset={reset}
             appearance="clinical"
             onReady={ready}
@@ -378,6 +384,24 @@ export function AtlasViewport({
             onClick={() => setRotate((current) => !current)}
           >
             ↻
+          </button>
+          <button
+            type="button"
+            className={section ? 'active' : ''}
+            aria-pressed={section}
+            aria-label={
+              section
+                ? 'Desativar corte visual 3D'
+                : 'Ativar corte visual 3D'
+            }
+            title="Corte visual de referência; não é reconstrução diagnóstica"
+            disabled={!activeConceptId}
+            onClick={() => {
+              setSection((current) => !current)
+              setRotate(false)
+            }}
+          >
+            ◐
           </button>
           <button
             type="button"

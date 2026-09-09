@@ -31,6 +31,7 @@ interface Props {
   contextMode: AtlasContextMode
   view?: AtlasView
   rotate?: boolean
+  section?: boolean
   reset?: number
   appearance?: AtlasSceneAppearance
   onReady?: (
@@ -64,6 +65,7 @@ export function HumanAtlasScene({
   contextMode,
   view = 'three-quarter',
   rotate = false,
+  section = false,
   reset = 0,
   appearance = 'clinical',
   onReady,
@@ -167,6 +169,7 @@ export function HumanAtlasScene({
         isolate: true,
         view,
         rotate,
+        section,
         reset,
       }
     }
@@ -185,9 +188,10 @@ export function HumanAtlasScene({
       isolate: contextMode === 'none',
       view,
       rotate,
+      section,
       reset,
     }
-  }, [contextMode, prepared, reset, rotate, view])
+  }, [contextMode, prepared, reset, rotate, section, view])
 
   const handleProgress = useCallback(
     (progress: number) => {

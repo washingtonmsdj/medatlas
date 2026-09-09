@@ -73,6 +73,7 @@ export function HumanAtlasExplorerScene({
     let lastInspectedPartId: string | undefined
     let layoutKey = ''
     let amount = 0
+    let interactionUntil = 0
 
     let renderer: THREE.WebGLRenderer
 
@@ -100,6 +101,7 @@ export function HumanAtlasExplorerScene({
     renderer.setClearColor(clearColor)
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.localClippingEnabled = true
     renderer.toneMappingExposure = isLightSurface ? 1.1 : 1.22
     const canvasLabel =
       appearance === 'patient'
@@ -133,6 +135,11 @@ export function HumanAtlasExplorerScene({
     controls.addEventListener('change', () => {
       dirty = true
     })
+    const pauseAutoRotate = () => {
+      interactionUntil = performance.now() + 3000
+      dirty = true
+    }
+    controls.addEventListener('start', pauseAutoRotate)
 
     const pmrem = new THREE.PMREMGenerator(renderer)
     const room = new RoomEnvironment()
@@ -266,6 +273,21 @@ export function HumanAtlasExplorerScene({
     )
     const atlasCenter = atlasBounds.getCenter(new THREE.Vector3())
     const atlasSize = atlasBounds.getSize(new THREE.Vector3())
+    const sectionPlane = new THREE.Plane()
+    const sectionNormal = new THREE.Vector3()
+    const updateSectionPlane = () => {
+      sectionNormal.copy(controls.target).sub(camera.position)
+      if (sectionNormal.lengthSq() < 1e-8) {
+        sectionNormal.set(-1, 0, 0)
+      } else {
+        sectionNormal.normalize()
+      }
+      sectionPlane.setFromNormalAndCoplanarPoint(
+        sectionNormal,
+        controls.target,
+      )
+    }
+    updateSectionPlane()
     const offsets: THREE.Vector3[] = []
 
     const markerPositions = new Float32Array(atlas.parts.length * 3)
@@ -358,6 +380,7 @@ export function HumanAtlasExplorerScene({
     const projected = new THREE.Vector3()
     const calloutProjected = new THREE.Vector3()
     const calloutOffset = new THREE.Vector3()
+    const calloutWorld = new THREE.Vector3()
 
     const positionInspectionCallout = () => {
       if (appearance === 'explorer') {
@@ -381,10 +404,17 @@ export function HumanAtlasExplorerScene({
         partStateData[index * 4 + 1],
         partStateData[index * 4 + 2],
       )
-      calloutProjected
-        .copy(centers[index])
-        .add(calloutOffset)
-        .project(camera)
+      calloutWorld.copy(centers[index]).add(calloutOffset)
+
+      if (
+        latest.current.section &&
+        sectionPlane.distanceToPoint(calloutWorld) < 0
+      ) {
+        inspectionCallout.hidden = true
+        return
+      }
+
+      calloutProjected.copy(calloutWorld).project(camera)
 
       if (calloutProjected.z < -1 || calloutProjected.z > 1) {
         inspectionCallout.hidden = true
@@ -815,10 +845,17 @@ export function HumanAtlasExplorerScene({
         if (!raycaster.ray.intersectBox(worldBox, hitPoint)) return
 
         const hits = raycaster.intersectObject(mesh, false)
-        if (hits[0] && hits[0].distance < nearest) {
-          nearest = hits[0].distance
-          found = index
+        const hit = hits[0]
+        if (!hit || hit.distance >= nearest) return
+        if (
+          latest.current.section &&
+          sectionPlane.distanceToPoint(hit.point) < 0
+        ) {
+          return
         }
+
+        nearest = hit.distance
+        found = index
       })
 
       return found
@@ -940,6 +977,7 @@ export function HumanAtlasExplorerScene({
 
       event.preventDefault()
       clearHover()
+      pauseAutoRotate()
 
       if (event.key === 'Home') {
         fit(latest.current.view, amount)
@@ -999,10 +1037,12 @@ export function HumanAtlasExplorerScene({
       const delta = Math.min(clock.getDelta(), 0.05)
       const current = latest.current
 
+      const sectionChanged = lastState?.section !== current.section
       const stateChanged =
         lastState?.visible !== current.visible ||
         lastState?.selected !== current.selected ||
-        lastState?.isolate !== current.isolate
+        lastState?.isolate !== current.isolate ||
+        sectionChanged
 
       const moving = Math.abs(amount - current.explode) > 0.0001
       const currentInspectedPartId = inspected.current
@@ -1031,6 +1071,16 @@ export function HumanAtlasExplorerScene({
           8,
           delta,
         )
+        dirty = true
+      }
+
+      if (sectionChanged) {
+        updateSectionPlane()
+        const clippingPlanes = current.section ? [sectionPlane] : null
+        materials.forEach((material) => {
+          material.clippingPlanes = clippingPlanes
+          material.needsUpdate = true
+        })
         dirty = true
       }
 
@@ -1245,10 +1295,14 @@ export function HumanAtlasExplorerScene({
       controls.autoRotate =
         current.rotate &&
         !current.isolate &&
+        !current.section &&
+        !currentInspectedPartId &&
+        performance.now() >= interactionUntil &&
         amount < 0.4
       controls.autoRotateSpeed = 0.65
       controls.update()
 
+      if (current.section) updateSectionPlane()
       if (controls.autoRotate) dirty = true
 
       ground.visible =
@@ -1360,6 +1414,7 @@ export function HumanAtlasExplorerScene({
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
+      controls.removeEventListener('start', pauseAutoRotate)
       controls.dispose()
 
       renderer.domElement.removeEventListener(
