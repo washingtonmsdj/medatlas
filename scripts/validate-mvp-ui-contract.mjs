@@ -325,6 +325,10 @@ for (const deadBaseSelector of [
   '.confidence-high',
   '.confidence-medium',
   '.provenance-note',
+  '.atlas-card {',
+  '.atlas-stage {',
+  '.real-stage {',
+  '.atlas-error {',
 ]) {
   if (
     baseStyles.includes(deadBaseSelector) ||
@@ -355,6 +359,9 @@ for (const [file, obsoleteClass] of [
   ['src/components/TeamModule.tsx', 'module-v3'],
   ['src/components/AnalyticsModule.tsx', 'module-v3'],
   ['src/components/DemoSettings.tsx', 'module-v3'],
+  ['src/components/AtlasViewport.tsx', 'atlas-card clinical-atlas-card'],
+  ['src/components/AtlasViewport.tsx', 'atlas-stage real-stage clinical-atlas-stage'],
+  ['src/components/AtlasViewport.tsx', 'atlas-error clinical-atlas-error'],
   ['src/components/PatientReportPage.tsx', 'patient-hero-premium'],
   ['src/components/PatientReportPage.tsx', 'patient-hero-v3'],
   ['src/components/PatientReportPage.tsx', 'patient-grid-v3'],
