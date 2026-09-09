@@ -1,3 +1,173 @@
+/* MedAtlas workflow and clinical-studio layout refinements. */
+
+.workflow-strip-premium {
+  position: sticky;
+  z-index: 38;
+  top: 72px;
+  padding: 10px 0 9px;
+  background: linear-gradient(
+    180deg,
+    var(--surface-workspace) 0%,
+    var(--surface-workspace) 76%,
+    transparent 100%
+  );
+  backdrop-filter: blur(12px);
+}
+
+.workflow-strip-premium > div {
+  position: relative;
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 9px;
+  row-gap: 1px;
+  align-content: center;
+  padding: 9px 12px;
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease,
+    background .18s ease;
+}
+
+.workflow-strip-premium > div > span {
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+.workflow-strip-premium > div > p {
+  margin: 0;
+  color: inherit;
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+
+.workflow-strip-premium > div > small {
+  color: var(--accent-text);
+  font-size: var(--type-caption);
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.workflow-strip-premium > div.current {
+  color: var(--text-primary);
+  border-color: var(--line-focus);
+  background: var(--surface-control-hover);
+  box-shadow: var(--shadow-panel);
+  transform: translateY(-1px);
+}
+
+.workflow-strip-premium > div.current > span {
+  color: var(--accent-cyan);
+  border-color: var(--line-focus);
+  background: var(--surface-control);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.workflow-strip-premium > div.pending {
+  color: var(--text-muted);
+  background: var(--surface-control);
+}
+
+.clinical-report-studio {
+  grid-template-columns:
+    minmax(270px, .72fr)
+    minmax(500px, 1.42fr)
+    minmax(330px, .86fr);
+  gap: 14px;
+}
+
+.report-atlas-column {
+  border-color: var(--line-elevated);
+  box-shadow: var(--shadow-popover);
+}
+
+.report-atlas-column .studio-panel-label {
+  min-height: 62px;
+}
+
+.clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
+  min-height: 600px;
+}
+
+.continue-care-card {
+  padding: 22px;
+}
+
+@media (max-width: 1450px) {
+  .clinical-report-studio {
+    grid-template-columns:
+      minmax(260px, .74fr)
+      minmax(460px, 1.34fr);
+  }
+
+  .clinical-report-studio .report-explanation-column {
+    grid-column: 1 / -1;
+  }
+
+  .clinical-report-studio .report-explanation-column .report-card-v2 {
+    grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr);
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
+    min-height: 570px;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    padding-inline: 14px;
+  }
+
+  .workflow-strip-premium {
+    position: static;
+    padding-top: 0;
+    backdrop-filter: none;
+    background: transparent;
+  }
+
+  .clinical-report-studio {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-report-studio .report-explanation-column {
+    grid-column: auto;
+  }
+
+  .clinical-report-studio .report-explanation-column .report-card-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 620px) {
+  .workflow-strip-premium {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+
+  .workflow-strip-premium > div {
+    min-height: 56px;
+    padding: 8px 10px;
+  }
+
+  .continue-care-card {
+    padding: 14px;
+  }
+
+  .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
+    min-height: 520px;
+  }
+}
+
+/* Canonical MVP workspace layout continues below. */
+
 /* MedAtlas MVP workspace layout.
    Visual color authority lives in design-tokens.css + concept-modules.css. */
 
