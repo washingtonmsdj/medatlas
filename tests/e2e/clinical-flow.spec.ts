@@ -1004,10 +1004,26 @@ test('full Atlas keeps body and detailed organ visible together without changing
   await expect(organCanvas).toBeVisible({ timeout: 45_000 })
 
   const detailPanel = page.locator('.atlas-v3-detail-panel')
-  await expect(detailPanel).toHaveClass(/active/)
+  const depth = page.locator('.atlas-v3-depth-switch')
+  const bodyDepth = depth.getByRole('button', { name: 'Corpo', exact: true })
+  const organDepth = depth.getByRole('button', { name: 'Órgão em detalhe' })
+
+  await expect(detailPanel).not.toHaveClass(/active/)
+  await expect(bodyDepth).toHaveAttribute('aria-pressed', 'true')
+  await expect(organDepth).toHaveAttribute('aria-pressed', 'false')
   await expect(detailPanel).toContainText('Coração')
-  await expect(detailPanel).toContainText('FMA7088')
   await expect(detailPanel).toContainText('Modelo anatômico detalhado')
+  await expect(detailPanel).not.toContainText('FMA7088')
+
+  await detailPanel
+    .getByRole('navigation', { name: 'Informações do detalhe' })
+    .getByRole('button', { name: 'Referências' })
+    .click()
+  await expect(detailPanel).toContainText('Identificador anatômico · FMA7088')
+
+  await organDepth.click()
+  await expect(detailPanel).toHaveClass(/active/)
+  await expect(organDepth).toHaveAttribute('aria-pressed', 'true')
 
   const organCut = page.getByRole('button', { name: 'Ativar corte do órgão' })
   await expect(organCut).toHaveAttribute('aria-pressed', 'false')
@@ -1016,16 +1032,12 @@ test('full Atlas keeps body and detailed organ visible together without changing
     page.getByRole('button', { name: 'Desativar corte do órgão' }),
   ).toHaveAttribute('aria-pressed', 'true')
 
-  const depth = page.locator('.atlas-v3-depth-switch')
-  await depth.getByRole('button', { name: 'Corpo', exact: true }).click()
+  await bodyDepth.click()
 
   await expect(bodyCanvas).toBeVisible()
   await expect(organCanvas).toBeVisible()
   await expect(detailPanel).not.toHaveClass(/active/)
-  await expect(detailPanel).toContainText('FMA7088')
-
-  await depth.getByRole('button', { name: 'Órgão em detalhe' }).click()
-  await expect(detailPanel).toHaveClass(/active/)
+  await expect(bodyDepth).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('clinical workbench opens detailed organ and returns to the same confirmed anatomy', async ({
