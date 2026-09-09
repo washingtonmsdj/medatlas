@@ -39,6 +39,7 @@ const interactionPolishStyles = await readFile('src/styles/interaction-polish.cs
 const experienceSurfaceStyles = await readFile('src/experience-surfaces.css', 'utf8')
 const baseStyles = await readFile('src/styles.css', 'utf8')
 const clinicalShellStyles = await readFile('src/styles/clinical-shell.css', 'utf8')
+const anatomyResponsiveStyles = await readFile('src/styles/anatomy-responsive.css', 'utf8')
 
 const failures = []
 
@@ -183,6 +184,7 @@ for (const [name, stylesheet] of [
   ['interaction-polish.css', interactionPolishStyles],
   ['experience-surfaces.css', experienceSurfaceStyles],
   ['clinical-shell.css', clinicalShellStyles],
+  ['anatomy-responsive.css', anatomyResponsiveStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -245,6 +247,10 @@ for (const legacySelector of [
   'integration-note',
   'invalid-share',
   'context-mode-group',
+  'continue-care-body',
+  'focused-reference-inspector',
+  'reference-renderer-loading',
+  'patient-clarity-strip',
 ]) {
   if (
     conceptModulesStyles.includes(legacySelector) ||
@@ -255,7 +261,8 @@ for (const legacySelector of [
     interactionPolishStyles.includes(legacySelector) ||
     experienceSurfaceStyles.includes(legacySelector) ||
     baseStyles.includes(legacySelector) ||
-    clinicalShellStyles.includes(legacySelector)
+    clinicalShellStyles.includes(legacySelector) ||
+    anatomyResponsiveStyles.includes(legacySelector)
   ) {
     failures.push(
       `Dead workspace selectors must not return: ${legacySelector}`,
