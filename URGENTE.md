@@ -546,3 +546,27 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 2. continuar `clinical-shell.css` pelo Clinical Studio ativo, convertendo blocos ainda claros em tokens sem substituir a estrutura 3D;
 3. auditar `anatomy-responsive.css` e `reference-atlas.css` por ownership real do Atlas/órgão detalhado;
 4. somente depois revisar os imports do `main.tsx` e fundir/remover folhas cujo ownership tenha sido totalmente absorvido.
+
+### Continuação do checkpoint visual — consolidação de cascata e fluxo MVP (2026-09-09)
+- [x] páginas principais foram revisadas para linguagem task-first; Visão geral, Pacientes, Equipe, Analytics e Configurações mantêm o mesmo shell canônico;
+- [x] **Relatórios visuais** agora usa `WorkspacePageHeader` como as demais páginas principais, sem criar etapa intermediária antes do Clinical Report Studio;
+- [x] fluxo central permanece explícito: **laudo → anatomia 3D → confirmação → explicação → revisão → compartilhamento**;
+- [x] identificador anatômico interno foi retirado da superfície principal de sugestões; continua disponível apenas onde tem função profissional/técnica;
+- [x] seletor órfão `patient-clarity-strip` removido; o gate continuou bloqueante e não foi afrouxado;
+- [x] `experience-surfaces.css` foi totalmente absorvido por `concept-modules.css` e apagado;
+- [x] `mvp-mode.css` foi totalmente absorvido por `concept-modules.css` e apagado;
+- [x] `interaction-polish.css` foi absorvido por `module-workspaces.css` preservando a ordem efetiva da cascata e apagado;
+- [x] `main.tsx` não carrega mais nenhuma dessas três folhas-patch;
+- [x] `validate:reference-atlas` e `validate:mvp-ui` seguem o novo ownership e bloqueiam a reintrodução das folhas absorvidas;
+- [x] baseline funcional consolidado: **`224315d0f478e703a27adece531cc57a9b5e7bab`**;
+- [x] CI do baseline `224315d0…`: run **`34381042235` PASS completo**, incluindo contratos clínicos, Human Atlas, MVP UI, TypeScript, build e bundle budget;
+- [ ] Browser E2E do baseline `224315d0…`: run **`34381042190`** aguardando executor no momento deste checkpoint;
+- [ ] GitHub Pages do baseline `224315d0…`: run **`34381042166`** em deploy/verificação no momento deste checkpoint.
+
+### Próxima frente P0 após a consolidação
+1. fechar Browser E2E + Pages do baseline funcional `224315d0…`;
+2. auditar `anatomy-responsive.css` por consumidor e breakpoint real; remover apenas regras sem uso comprovado;
+3. auditar `reference-atlas.css` por ownership do Explorer completo, sem tocar no engine 3D nem criar renderer alternativo;
+4. revisar aliases de versão ainda ativos (`v2/v3/premium`) somente quando houver substituto semântico e migração completa de JSX + CSS + gates;
+5. manter o 3D real como diferencial do MVP nas superfícies anatômicas e evitar qualquer regressão para placeholder, thumbnail ou fallback fake.
+
