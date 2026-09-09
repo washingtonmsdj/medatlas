@@ -270,10 +270,6 @@
     padding:8px 10px 9px;
   }
 
-  .organization-switcher-shell {
-    min-width:0;
-  }
-
   .org-switcher {
     min-height:38px;
     gap:7px;
