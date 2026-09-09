@@ -3099,7 +3099,7 @@ button:not(:disabled):active {
   z-index: 13;
   top: 14px;
   left: 50%;
-  width: min(260px, calc(100% - 590px));
+  width: min(320px, calc(100% - 180px));
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
@@ -3113,9 +3113,11 @@ button:not(:disabled):active {
 }
 
 .clinical-anatomy-depth-switch button {
+  box-sizing: border-box;
   min-width: 0;
   min-height: 34px;
   display: grid;
+  overflow: hidden;
   align-content: center;
   gap: 1px;
   padding: 5px 8px;
