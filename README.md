@@ -35,6 +35,7 @@ Hoje a geometria real BodyParts3D aparece em:
 - **Relatórios visuais** — laudo/exame, contexto da consulta e Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
   - mantém recursos do Human Atlas de referência como camadas, picking, explode, marcadores, hover por peça no inventário, vistas e enquadramento respeitando os painéis;
+  - estruturas compatíveis podem aprofundar para **Órgão em detalhe** sem perder o FMA/BodyParts3D selecionado;
 - **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;
 - **link do paciente** — experiência simplificada com o mesmo engine.
 
@@ -62,12 +63,14 @@ O MVP já possui:
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
 - explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
-- Dashboard, Pacientes, Relatórios visuais e página do paciente reutilizam o mesmo engine 3D canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
+- Dashboard, Pacientes, Relatórios visuais e página do paciente reutilizam o mesmo Human Atlas canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
+- navegação em dois níveis `Corpo → Órgão em detalhe`, com detalhe suplementar para cérebro, olho, coração, intestino, rins, fígado, pulmões, pâncreas e pele;
+- os 9 GLBs detalhados ficam no próprio MedAtlas, são verificados por SHA-256 e carregados somente quando o usuário abre o detalhe;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
-- 34,3 MB de assets anatômicos comprimidos vendorizados no próprio MedAtlas;
-- provenance + SHA-256 verificados no CI;
+- 34,3 MB da closure Human Atlas + cerca de 30,0 MB de modelos detalhados vendorizados no próprio MedAtlas; o payload inicial continua limitado porque os órgãos detalhados são lazy-loaded;
+- provenance + SHA-256 verificados no CI para Human Atlas e modelos detalhados;
 - atribuição BodyParts3D CC BY 4.0 + Human Atlas MIT visível na UI clínica e na página do paciente;
 - Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
 - gate axe/WCAG para violações serious/critical;
@@ -150,6 +153,25 @@ Three.js
 ```
 
 A anatomia é **referência educacional**, não reconstrução do corpo individual do paciente.
+
+### Profundidade de órgão
+
+Quando a estrutura selecionada possui um modelo detalhado compatível, a interface
+oferece uma segunda profundidade:
+
+```text
+Corpo completo / Human Atlas
+        ↓
+estrutura FMA confirmada
+        ↓
+Órgão em detalhe
+        ↓
+voltar ao corpo preservando a seleção
+```
+
+O detalhe é complementar. Ele não confirma FMA, não altera o relatório e não
+substitui BodyParts3D como fonte de verdade clínica. Os arquivos ficam em
+`public/organ-models/` e são carregados sob demanda.
 
 ## Triagem do laudo
 
@@ -237,6 +259,7 @@ O workflow `.github/workflows/pages.yml` publica a aplicação, valida shell/ass
 
 - Human Atlas: MIT.
 - BodyParts3D 4.0: CC BY 4.0.
+- `thebuggeddev/anatomy`: integração e modelos detalhados sob permissão específica registrada em `docs/UPSTREAM_ANATOMY.md`; não é tratada como licença open-source geral.
 
 Veja:
 
