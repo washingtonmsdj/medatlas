@@ -14,7 +14,7 @@ export function TeamModule() {
   )
 
   return (
-    <section className="team-module module-v3 mvp-surface">
+    <section className="team-module workspace-page mvp-surface">
       <WorkspacePageHeader
         eyebrow="EQUIPE"
         title="Equipe e acessos"
