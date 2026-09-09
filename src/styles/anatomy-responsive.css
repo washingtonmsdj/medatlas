@@ -139,12 +139,14 @@
 }
 
 .anatomy-focus-preview-stage .human-atlas-scene,
+.anatomy-focus-preview-stage .organ-detail-scene,
 .anatomy-focus-preview-stage .focused-reference-loading {
   min-height: 360px;
 }
 
 .anatomy-focus-preview-compact .anatomy-focus-preview-stage,
 .anatomy-focus-preview-compact .anatomy-focus-preview-stage .human-atlas-scene,
+.anatomy-focus-preview-compact .anatomy-focus-preview-stage .organ-detail-scene,
 .anatomy-focus-preview-compact .anatomy-focus-preview-stage .focused-reference-loading {
   min-height: 285px;
 }
@@ -470,6 +472,7 @@
 }
 
 .patient-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+.patient-anatomy-live > .anatomy-focus-preview .organ-detail-scene,
 .patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
   min-height: 430px;
 }
@@ -514,9 +517,11 @@
 
   .anatomy-focus-preview-stage,
   .anatomy-focus-preview-stage .human-atlas-scene,
+  .anatomy-focus-preview-stage .organ-detail-scene,
   .anatomy-focus-preview-stage .focused-reference-loading,
   .patient-anatomy-live > .anatomy-focus-preview .anatomy-focus-preview-stage,
   .patient-anatomy-live > .anatomy-focus-preview .human-atlas-scene,
+  .patient-anatomy-live > .anatomy-focus-preview .organ-detail-scene,
   .patient-anatomy-live > .anatomy-focus-preview .focused-reference-loading {
     min-height: 340px;
   }
@@ -762,6 +767,7 @@
 @media (max-width: 620px) {
   .continue-care-body > .anatomy-focus-preview .anatomy-focus-preview-stage,
   .continue-care-body > .anatomy-focus-preview .human-atlas-scene,
+  .continue-care-body > .anatomy-focus-preview .organ-detail-scene,
   .continue-care-body > .anatomy-focus-preview .focused-reference-loading,
   .continue-care-body > .anatomy-focus-preview .renderer-module-loading {
     min-height: 420px;
@@ -999,5 +1005,229 @@
 
   .clinical-report-studio[data-surface-priority="desktop-first"] .studio-panel-label {
     min-height: 60px;
+  }
+}
+
+
+/* MEDATLAS_ANATOMY_DEPTH_V1
+ * Human Atlas remains the orientation/clinical authority. Detailed organ GLBs
+ * are a second, explicit depth reached from the selected body context.
+ */
+.organ-detail-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.organ-detail-scene canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.anatomy-focus-preview-badges .has-detail {
+  color: #9ddcf0;
+  border-color: rgba(86, 183, 220, .36);
+  background: rgba(19, 98, 131, .22);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-preview-badges .has-detail {
+  color: #26798c;
+  border-color: #bddde4;
+  background: #edf8fa;
+}
+
+.anatomy-focus-level-switch {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  left: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(108px, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(101, 164, 197, .3);
+  border-radius: 12px;
+  background: rgba(5, 17, 28, .78);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+  backdrop-filter: blur(12px);
+}
+
+.anatomy-focus-level-switch button {
+  min-width: 0;
+  min-height: 38px;
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 8px;
+  color: #8fa9ba;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.anatomy-focus-level-switch button:hover,
+.anatomy-focus-level-switch button.active {
+  color: #eefaff;
+  background: linear-gradient(135deg, #17678f, #174967);
+}
+
+.anatomy-focus-level-switch span {
+  overflow: hidden;
+  font-size: 8px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anatomy-focus-level-switch small {
+  overflow: hidden;
+  color: #7895a7;
+  font-size: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anatomy-focus-level-switch button.active small {
+  color: #9dc9db;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-level-switch {
+  border-color: rgba(86, 135, 151, .22);
+  background: rgba(250, 254, 255, .9);
+  box-shadow: 0 12px 28px rgba(36, 76, 91, .1);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-level-switch button {
+  color: #557584;
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-level-switch button:hover,
+.anatomy-focus-preview-patient .anatomy-focus-level-switch button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2f8095, #29677a);
+}
+
+.anatomy-focus-preview-patient .anatomy-focus-level-switch button.active small {
+  color: #d7edf2;
+}
+
+.anatomy-detail-breadcrumb {
+  position: absolute;
+  z-index: 7;
+  top: 64px;
+  left: 16px;
+  max-width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid rgba(100, 157, 190, .2);
+  border-radius: 999px;
+  color: #83a1b4;
+  background: rgba(5, 17, 28, .56);
+  backdrop-filter: blur(9px);
+  pointer-events: none;
+  font-size: 7px;
+}
+
+.anatomy-detail-breadcrumb strong {
+  color: #dcf3ff;
+  font-size: 7px;
+}
+
+.anatomy-detail-breadcrumb em {
+  padding-left: 6px;
+  border-left: 1px solid rgba(116, 171, 200, .2);
+  color: #69c5e5;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.anatomy-focus-preview-patient .anatomy-detail-breadcrumb {
+  color: #688592;
+  border-color: rgba(87, 133, 149, .2);
+  background: rgba(250, 254, 255, .84);
+}
+
+.anatomy-focus-preview-patient .anatomy-detail-breadcrumb strong {
+  color: #224f60;
+}
+
+.anatomy-focus-preview-patient .anatomy-detail-breadcrumb em {
+  color: #28798e;
+  border-left-color: #cbdfe5;
+}
+
+.anatomy-focus-preview-detail-active .anatomy-focus-preview-stage {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(91, 62, 61, .28), rgba(10, 27, 43, .96) 48%, #06111c 80%);
+}
+
+.anatomy-focus-preview-patient.anatomy-focus-preview-detail-active
+  .anatomy-focus-preview-stage {
+  background:
+    radial-gradient(circle at 50% 38%, #fff 0, #f2f5f4 44%, #e3ecee 100%);
+}
+
+.anatomy-detail-safety-note {
+  max-width: 680px;
+  color: #557988;
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.anatomy-focus-preview-detail-active .anatomy-focus-preview-hud {
+  max-width: min(62%, 360px);
+}
+
+@media (max-width: 700px) {
+  .anatomy-focus-level-switch {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .anatomy-focus-preview-has-detail .anatomy-focus-preview-controls {
+    top: 64px;
+  }
+
+  .anatomy-detail-breadcrumb {
+    top: 108px;
+    left: 10px;
+    right: 10px;
+    width: fit-content;
+    max-width: calc(100% - 20px);
+  }
+
+  .anatomy-focus-preview-detail-active .anatomy-focus-preview-hud {
+    max-width: none;
+  }
+
+  .organ-detail-scene {
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 460px) {
+  .anatomy-focus-level-switch button {
+    min-height: 36px;
+    padding-inline: 7px;
+  }
+
+  .anatomy-focus-level-switch small {
+    display: none;
+  }
+
+  .anatomy-detail-breadcrumb em {
+    display: none;
   }
 }
