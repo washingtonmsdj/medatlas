@@ -26,6 +26,10 @@ const sources = new Map(
   ),
 )
 const readme = await readFile('README.md', 'utf8')
+const designTokens = await readFile('src/styles/design-tokens.css', 'utf8')
+const conceptShellStyles = await readFile('src/styles/concept-shell.css', 'utf8')
+const sidebarStyles = await readFile('src/styles/clinical-sidebar.css', 'utf8')
+const pageHeaderStyles = await readFile('src/styles/workspace-page-header.css', 'utf8')
 
 const failures = []
 
@@ -118,6 +122,53 @@ if (!main.includes("import './styles/workspace-page-header.css'")) {
   failures.push(
     'App entrypoint must load the canonical WorkspacePageHeader stylesheet',
   )
+}
+
+
+if (!main.includes("import './styles/design-tokens.css'")) {
+  failures.push('App entrypoint must load the canonical MVP design tokens')
+}
+
+if (
+  main.indexOf("import './styles/design-tokens.css'") >
+  main.indexOf("import './styles.css'")
+) {
+  failures.push('Canonical design tokens must load before legacy/base styles')
+}
+
+for (const token of [
+  '--font-sans',
+  '--surface-app',
+  '--surface-workspace',
+  '--text-primary',
+  '--text-secondary',
+  '--line-subtle',
+  '--accent-primary',
+]) {
+  if (!designTokens.includes(token)) {
+    failures.push(`Design foundation is missing semantic token: ${token}`)
+  }
+}
+
+if (conceptShellStyles.includes('font-family:')) {
+  failures.push(
+    'Concept shell must inherit the canonical font token instead of redefining a font stack',
+  )
+}
+
+if (/#[0-9a-f]{3,8}/i.test(sidebar)) {
+  failures.push(
+    'ClinicalSidebar JSX must not contain hardcoded visual hex colors',
+  )
+}
+
+for (const [name, stylesheet] of [
+  ['clinical-sidebar.css', sidebarStyles],
+  ['workspace-page-header.css', pageHeaderStyles],
+]) {
+  if (!stylesheet.includes('var(--')) {
+    failures.push(`${name} must consume semantic design tokens`)
+  }
 }
 
 for (const fragment of [
