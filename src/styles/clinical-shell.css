@@ -1124,7 +1124,7 @@ button:not(:disabled):active {
   background: var(--surface-control-hover);
 }
 
-.patient-hero-premium {
+.patient-hero {
   max-width: none;
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
@@ -1417,7 +1417,7 @@ button:not(:disabled):active {
 }
 
 @media (max-width: 900px) {
-  .patient-hero-premium {
+  .patient-hero {
     grid-template-columns: 1fr;
     gap: 18px;
   }
@@ -1468,7 +1468,7 @@ button:not(:disabled):active {
     padding-inline: 14px;
   }
 
-  .patient-hero-premium {
+  .patient-hero {
     padding-top: 30px;
   }
 
