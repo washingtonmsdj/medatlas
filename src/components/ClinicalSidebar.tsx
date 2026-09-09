@@ -168,13 +168,9 @@ export function ClinicalSidebar({
       <footer className="clinical-sidebar-context">
         <span aria-hidden="true" />
         <div>
-          <strong>MedAtlas</strong>
-          <small>v2.2.0</small>
-          <p>
-            {workspaceName}
-            {unitName ? ` · ${unitName}` : ''}
-          </p>
-          <p>{organizationName}</p>
+          <strong>{organizationName}</strong>
+          <small>{workspaceName}</small>
+          {unitName && <p>{unitName}</p>}
         </div>
       </footer>
     </aside>
