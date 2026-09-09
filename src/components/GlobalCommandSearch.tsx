@@ -19,6 +19,43 @@ interface Props {
   actions: GlobalSearchAction[]
 }
 
+function SearchIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </svg>
+  )
+}
+
+function EnterIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 4v8H7" />
+      <path d="m11 8-4 4 4 4" />
+    </svg>
+  )
+}
+
 function normalize(value: string) {
   return value
     .normalize('NFD')
@@ -135,7 +172,9 @@ export function GlobalCommandSearch({ actions }: Props) {
         }
       }}
     >
-      <span aria-hidden="true">⌕</span>
+      <span aria-hidden="true">
+        <SearchIcon />
+      </span>
       <input
         ref={inputRef}
         type="search"
@@ -156,7 +195,7 @@ export function GlobalCommandSearch({ actions }: Props) {
           setOpen(true)
         }}
         onKeyDown={onKeyDown}
-        placeholder="Buscar paciente, relatório, anatomia ou módulo..."
+        placeholder="Buscar pacientes, exames, estruturas anatômicas..."
       />
       <kbd aria-hidden="true">⌘ K</kbd>
 
@@ -193,7 +232,9 @@ export function GlobalCommandSearch({ actions }: Props) {
                     <strong>{action.label}</strong>
                     <small>{action.description}</small>
                   </span>
-                  <b aria-hidden="true">↵</b>
+                  <b aria-hidden="true">
+                    <EnterIcon />
+                  </b>
                 </button>
               ))
             ) : (
