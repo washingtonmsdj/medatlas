@@ -1,0 +1,62 @@
+{
+  "schema": "medatlas.organ-models/1",
+  "upstreamRepository": "thebuggeddev/anatomy",
+  "upstreamCommit": "8c0e6f321a47f895ae58ce098028b92774733ee9",
+  "generatedFromPinnedSource": true,
+  "assets": [
+    {
+      "file": "brain.glb",
+      "bytes": 2570592,
+      "sha256": "2cd5e7178f1e5de707bb97c2c06f6c34fb5aaad28132445c0afcb4f0fd67c811",
+      "sourceGitBlob": "d551379e516afb2e4b2d78c6364de7ef03378824"
+    },
+    {
+      "file": "eyeball.glb",
+      "bytes": 2203616,
+      "sha256": "584337a2efc7d3c03d7326ca930217c4f7e5eca0a32a8cec141c7388ecc8a1c7",
+      "sourceGitBlob": "110d6bf28928d4665fdb55ae7ce4e2d7f4dc1649"
+    },
+    {
+      "file": "heart.glb",
+      "bytes": 3321148,
+      "sha256": "ef48b43442dbbe2819d6035f8bbf1391d2c3fefbe842863c9c7c1a22cc6cd748",
+      "sourceGitBlob": "613df32ebb5e2b73c59312b3b2c81fc63ece4884"
+    },
+    {
+      "file": "intestine.glb",
+      "bytes": 1980780,
+      "sha256": "d4423ba0c8f08ac7652396e2530482f874e4964a9c3f1b71440f0493048bea26",
+      "sourceGitBlob": "d5e06c9253401f77ac5d41c6ab6a03cefa456f33"
+    },
+    {
+      "file": "kidneys.glb",
+      "bytes": 2190764,
+      "sha256": "e3e0a58372d794d68b181d1d453ff4362da972667c28711e153c5f34064cf165",
+      "sourceGitBlob": "50c54b9081ff372d3ae7f33a5c283b1ae8d63974"
+    },
+    {
+      "file": "liver.glb",
+      "bytes": 2660384,
+      "sha256": "e4f11a9c0762eb9dc4309dcd0d5c3e3958ccacab915267da4e7775894b674990",
+      "sourceGitBlob": "ddeaac74267b485d10f3e0d99f5c2b6d7895abba"
+    },
+    {
+      "file": "lungs.glb",
+      "bytes": 4455976,
+      "sha256": "81617c9fc2f2b7bf1e7d874b89614c89b09f2f68318e64997c68c948cfa9abdc",
+      "sourceGitBlob": "6ff0e23b33ab5d7a3c68eebe5ae26ce72550c8c6"
+    },
+    {
+      "file": "pancreas.glb",
+      "bytes": 4848556,
+      "sha256": "e5213bf8ed66e8ed4eb2a9d1c7a6922fb926eac85de8c5979e780ca1abcaf1c3",
+      "sourceGitBlob": "0359caeaca6d3359a51aecfda04d45cf46c17351"
+    },
+    {
+      "file": "skin.glb",
+      "bytes": 5789160,
+      "sha256": "8183ffe3527b3f071c41c55e41ffaf673df8d02a1405e95e644ac5d89cd6f5f9",
+      "sourceGitBlob": "0ee35f355c3d46ea6e95f22ca2597d754e8aea9f"
+    }
+  ]
+}
