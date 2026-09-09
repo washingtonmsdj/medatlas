@@ -5,27 +5,6 @@
  * - mobile navigation split into clean brand + scroll rail
  * - stronger KPI affordances without adding a UI dependency
  */
-.metric-icon {
-  display:grid;
-  place-items:center;
-  color:#1b6fc4;
-  font-size:15px;
-  font-weight:900;
-  line-height:1;
-}
-
-.metric-amber .metric-icon {
-  color:#a56c11;
-}
-
-.metric-violet .metric-icon {
-  color:#7054bd;
-}
-
-.metric-mint .metric-icon {
-  color:#168b73;
-}
-
 .workflow-strip-premium {
   position:sticky;
   z-index:38;
@@ -127,53 +106,6 @@
   padding:22px;
 }
 
-.continue-care-body {
-  min-height:286px;
-  grid-template-columns:
-    minmax(330px,1.12fr)
-    minmax(245px,.88fr);
-  gap:24px;
-  padding:18px;
-  background:
-    radial-gradient(circle at 29% 48%,rgba(46,143,255,.19),transparent 31%),
-    linear-gradient(135deg,#f8fbff,#edf5fc);
-}
-
-.continue-care-body > .anatomy-focus-preview {
-  min-width:0;
-  box-shadow:0 20px 42px rgba(20,67,111,.16);
-}
-
-.continue-care-body > .anatomy-focus-preview .anatomy-focus-preview-stage,
-.continue-care-body > .anatomy-focus-preview .human-atlas-scene,
-.continue-care-body > .anatomy-focus-preview .focused-reference-loading,
-.continue-care-body > .anatomy-focus-preview .renderer-module-loading {
-  min-height:300px;
-}
-
-.continue-care-copy {
-  padding:8px 2px;
-}
-
-.continue-care-copy > strong {
-  font-size:clamp(21px,1.65vw,27px);
-  line-height:1.05;
-}
-
-.overview-metrics.premium-metrics .metric-card {
-  min-height:96px;
-  border-radius:18px;
-  box-shadow:
-    0 12px 32px rgba(58,81,109,.055),
-    inset 0 1px 0 rgba(255,255,255,.9);
-}
-
-.overview-metrics.premium-metrics .metric-card:hover {
-  border-color:#c9dcec;
-  box-shadow:0 18px 38px rgba(58,81,109,.09);
-  transform:translateY(-1px);
-}
-
 .module-heading {
   padding-top:28px;
 }
@@ -230,10 +162,6 @@
   .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
     min-height:560px;
   }
-
-  .continue-care-body {
-    grid-template-columns:1fr;
-  }
 }
 
 @media (max-width:620px) {
@@ -258,37 +186,11 @@
     min-height:56px;
     padding:8px 10px;
   }
-
   .continue-care-card {
     padding:14px;
   }
 
-  .continue-care-body {
-    padding:10px;
-    gap:14px;
-  }
 
-  .continue-care-body > .anatomy-focus-preview .anatomy-focus-preview-stage,
-  .continue-care-body > .anatomy-focus-preview .human-atlas-scene,
-  .continue-care-body > .anatomy-focus-preview .focused-reference-loading,
-  .continue-care-body > .anatomy-focus-preview .renderer-module-loading {
-    min-height:440px;
-  }
-
-  .overview-metrics.premium-metrics {
-    grid-template-columns:1fr 1fr;
-  }
-
-  .overview-metrics.premium-metrics .metric-card {
-    min-height:88px;
-    padding:13px;
-  }
-
-  .metric-icon {
-    width:34px;
-    height:34px;
-    font-size:13px;
-  }
 
   .clinical-report-studio[data-surface-priority="desktop-first"] .clinical-atlas-stage {
     min-height:520px;
