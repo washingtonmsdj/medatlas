@@ -372,12 +372,19 @@ export function ReferenceAtlasExplorer({
     [chosen],
   )
 
-  const bodyLabel = chosen
+  const activeLabel = chosen
     ? conceptDisplayName(chosen)
     : report.finding.anatomicalStructure
+  const confirmedLabel =
+    report.finding.anatomicalStructure || 'Aguardando confirmação'
 
   const selectedMatchesReport =
     Boolean(chosen) && chosen?.id === report.finding.atlasConceptId
+  const selectionState = !chosen
+    ? 'Nenhuma seleção'
+    : selectedMatchesReport
+      ? 'Confirmada no relatório'
+      : 'Exploração'
 
   const sourceHighlights = useMemo(() => {
     return report.finding.sourceText
@@ -469,6 +476,19 @@ export function ReferenceAtlasExplorer({
       chooseConcept(findAtlasConcept(atlas, 'FMA7088'))
     } catch {
       // Curated catalog gate guarantees FMA7088 in normal builds.
+    }
+  }
+
+  const focusConfirmedAnatomy = () => {
+    if (!atlas || !report.finding.atlasConceptId) {
+      searchRef.current?.focus()
+      return
+    }
+
+    try {
+      chooseConcept(findAtlasConcept(atlas, report.finding.atlasConceptId))
+    } catch {
+      searchRef.current?.focus()
     }
   }
 
@@ -575,16 +595,18 @@ export function ReferenceAtlasExplorer({
                 <button
                   type="button"
                   className="atlas-v3-structure-card"
-                  onClick={() =>
-                    setFocusMode(detailAvailable ? 'detail' : 'body')
-                  }
+                  onClick={focusConfirmedAnatomy}
                 >
                   <span aria-hidden="true">
                     <AtlasIcon name="heart" size={18} />
                   </span>
                   <div>
-                    <strong>{bodyLabel}</strong>
-                    <small>{selectedSystem?.name ?? 'Human Atlas 3D'}</small>
+                    <strong>{confirmedLabel}</strong>
+                    <small>
+                      {report.finding.atlasConceptId
+                        ? 'Vinculada ao relatório'
+                        : 'Aguardando confirmação'}
+                    </small>
                   </div>
                   <b aria-hidden="true">
                     <AtlasIcon name="chevron" size={15} />
@@ -616,7 +638,9 @@ export function ReferenceAtlasExplorer({
                       : 'Selecionar anatomia'}
                   </span>
                   {selectedSystem && (
-                    <span className="rose">{selectedSystem.name}</span>
+                    <span className="rose">
+                      {selectedMatchesReport ? selectedSystem.name : `Explorando · ${selectedSystem.name}`}
+                    </span>
                   )}
                   <span className="green">{reportStatusLabel(report)}</span>
                 </div>
@@ -660,8 +684,13 @@ export function ReferenceAtlasExplorer({
           )}
 
           <button
-            className="atlas-v3-primary-action"
+            className={
+              selectedMatchesReport
+                ? 'atlas-v3-primary-action confirmed'
+                : 'atlas-v3-primary-action'
+            }
             type="button"
+            disabled={Boolean(chosen && selectedMatchesReport)}
             onClick={() => {
               if (chosen) {
                 onConfirmConcept(chosen)
@@ -671,18 +700,23 @@ export function ReferenceAtlasExplorer({
               }
             }}
           >
-            {chosen
-              ? 'Usar estrutura no relatório'
-              : 'Buscar estrutura anatômica'}
-            <AtlasIcon name="chevron" size={14} />
+            {!chosen
+              ? 'Buscar estrutura anatômica'
+              : selectedMatchesReport
+                ? 'Estrutura já confirmada'
+                : 'Usar estrutura no relatório'}
+            <AtlasIcon
+              name={selectedMatchesReport ? 'quality' : 'chevron'}
+              size={14}
+            />
           </button>
 
           <div className="atlas-v3-secondary-actions">
             <button type="button" onClick={onOpenReport}>
-              Gerar relatório
+              Abrir relatório
             </button>
             <button type="button" onClick={onOpenPatientPreview}>
-              Compartilhar
+              Prévia do paciente
             </button>
           </div>
 
@@ -1039,12 +1073,21 @@ export function ReferenceAtlasExplorer({
             />
           </span>
           <div>
-            <strong>{chosenDetail?.label ?? bodyLabel}</strong>
+            <strong>{chosenDetail?.label ?? activeLabel}</strong>
             <small>
               {detailAvailable
                 ? 'Modelo anatômico detalhado'
                 : 'Detalhe indisponível para esta estrutura'}
             </small>
+            <span
+              className={
+                selectedMatchesReport
+                  ? 'atlas-v3-selection-state confirmed'
+                  : 'atlas-v3-selection-state'
+              }
+            >
+              {selectionState}
+            </span>
           </div>
           <select
             aria-label="Vista do modelo detalhado"
@@ -1169,22 +1212,28 @@ export function ReferenceAtlasExplorer({
         <div className="atlas-v3-detail-content">
           {detailTab === 'info' && (
             <>
-              <p>{organSummary(chosenDetail?.label ?? bodyLabel)}</p>
+              <p>{organSummary(chosenDetail?.label ?? activeLabel)}</p>
               <div className="atlas-v3-detail-metrics">
                 <article>
                   <span>Sistema</span>
                   <strong>{selectedSystem?.name ?? 'Anatomia'}</strong>
-                  <small>Human Atlas</small>
+                  <small>Contexto anatômico</small>
                 </article>
                 <article>
-                  <span>Referência</span>
-                  <strong>{chosen?.id ?? '—'}</strong>
-                  <small>FMA confirmado</small>
+                  <span>Vínculo</span>
+                  <strong>
+                    {selectedMatchesReport ? 'Confirmado' : 'Exploração'}
+                  </strong>
+                  <small>
+                    {selectedMatchesReport
+                      ? 'Ligado ao relatório'
+                      : 'Sem alterar o relatório'}
+                  </small>
                 </article>
                 <article>
-                  <span>Modelo</span>
-                  <strong>{detailAvailable ? 'Detalhado' : 'Corpo'}</strong>
-                  <small>{detailAvailable ? 'GLB local' : 'BodyParts3D'}</small>
+                  <span>Visualização</span>
+                  <strong>{detailAvailable ? 'Detalhada' : 'Corpo'}</strong>
+                  <small>Referência anatômica</small>
                 </article>
               </div>
             </>
@@ -1233,6 +1282,11 @@ export function ReferenceAtlasExplorer({
                 modelo de órgão é uma visualização suplementar validada e
                 vinculada ao contexto anatômico.
               </p>
+              {chosen && (
+                <small className="atlas-v3-reference-id">
+                  Identificador anatômico · {chosen.id}
+                </small>
+              )}
             </div>
           )}
         </div>
