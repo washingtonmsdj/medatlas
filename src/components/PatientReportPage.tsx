@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react'
+import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
+import { resolveOrganDetail } from '../anatomy-detail/catalog'
 import type { VisualReport } from '../domain/types'
 import { PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
 import {
@@ -11,6 +12,11 @@ import {
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
 import { ViewModeSwitcher } from './ViewModeSwitcher'
+
+const OrganDetailScene = lazy(async () => {
+  const module = await import('./OrganDetailScene')
+  return { default: module.OrganDetailScene }
+})
 
 interface Props {
   report: VisualReport
@@ -32,8 +38,23 @@ export function PatientReportPage({
   const [sourceLabel, setSourceLabel] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
+  const [section, setSection] = useState(false)
   const [reset, setReset] = useState(0)
   const [sceneAttempt, setSceneAttempt] = useState(0)
+  const [anatomyLevel, setAnatomyLevel] = useState<'body' | 'detail'>('body')
+
+  const organDetail = useMemo(
+    () =>
+      resolveOrganDetail(
+        report.finding.atlasConceptId || undefined,
+        report.finding.anatomicalStructure,
+      ),
+    [
+      report.finding.atlasConceptId,
+      report.finding.anatomicalStructure,
+    ],
+  )
+  const detailActive = anatomyLevel === 'detail' && Boolean(organDetail)
 
   const ready = useCallback((label: string) => {
     setSourceLabel(label)
@@ -48,6 +69,7 @@ export function PatientReportPage({
     setAtlasStatus('loading')
     setSourceLabel('')
     setRotate(false)
+    setSection(false)
     setSceneAttempt((current) => current + 1)
     setReset((current) => current + 1)
   }
@@ -182,19 +204,91 @@ export function PatientReportPage({
             </span>
           </div>
 
-          <div className="patient-atlas-stage">
+          <div className={detailActive ? 'patient-atlas-stage detail-active' : 'patient-atlas-stage'}>
+            {hasAnatomy && organDetail && (
+              <nav
+                className="patient-anatomy-depth-switch"
+                aria-label="Nível da anatomia 3D"
+              >
+                <button
+                  type="button"
+                  className={anatomyLevel === 'body' ? 'active' : ''}
+                  aria-pressed={anatomyLevel === 'body'}
+                  onClick={() => {
+                    setAnatomyLevel('body')
+                    setAtlasStatus('loading')
+                    setSourceLabel('')
+                    setRotate(false)
+                    setSection(false)
+                    setReset((current) => current + 1)
+                  }}
+                >
+                  Corpo completo
+                </button>
+                <button
+                  type="button"
+                  className={detailActive ? 'active' : ''}
+                  aria-pressed={detailActive}
+                  onClick={() => {
+                    setAnatomyLevel('detail')
+                    setAtlasStatus('loading')
+                    setSourceLabel('')
+                    setRotate(false)
+                    setSection(false)
+                    setReset((current) => current + 1)
+                  }}
+                >
+                  Ver {organDetail.label} em detalhe
+                </button>
+              </nav>
+            )}
+
             {hasAnatomy ? (
-              <HumanAtlasScene
-                key={`${report.finding.atlasConceptId}-${sceneAttempt}`}
-                conceptId={report.finding.atlasConceptId}
-                contextMode="system"
-                view={view}
-                rotate={rotate}
-                reset={reset}
-                appearance="patient"
-                onReady={ready}
-                onError={failed}
-              />
+              detailActive && organDetail ? (
+                <Suspense
+                  fallback={
+                    <div
+                      className="focused-reference-loading renderer-module-loading"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <div className="focused-reference-loading-card">
+                        <span
+                          className="focused-reference-loader"
+                          aria-hidden="true"
+                        />
+                        <div>
+                          <strong>Carregando detalhe 3D</strong>
+                          <small>Preparando {organDetail.label}.</small>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                >
+                  <OrganDetailScene
+                    key={`${organDetail.id}-${sceneAttempt}`}
+                    organ={organDetail}
+                    appearance="patient"
+                    rotate={rotate}
+                    section={section}
+                    reset={reset}
+                    onReady={ready}
+                    onError={failed}
+                  />
+                </Suspense>
+              ) : (
+                <HumanAtlasScene
+                  key={`${report.finding.atlasConceptId}-${sceneAttempt}`}
+                  conceptId={report.finding.atlasConceptId}
+                  contextMode="system"
+                  view={view}
+                  rotate={rotate}
+                  reset={reset}
+                  appearance="patient"
+                  onReady={ready}
+                  onError={failed}
+                />
+              )
             ) : (
               <div className="patient-atlas-empty">
                 <span aria-hidden="true">3D</span>
@@ -231,26 +325,45 @@ export function PatientReportPage({
                 className="patient-atlas-controls"
                 aria-label="Controles da anatomia 3D de referência"
               >
-                {([
-                  ['three-quarter', '3/4', 'Vista 3/4'],
-                  ['front', 'Frente', 'Vista frontal'],
-                  ['side', 'Lado', 'Vista lateral'],
-                ] as const).map(([nextView, label, ariaLabel]) => (
+                {!detailActive &&
+                  ([
+                    ['three-quarter', '3/4', 'Vista 3/4'],
+                    ['front', 'Frente', 'Vista frontal'],
+                    ['side', 'Lado', 'Vista lateral'],
+                  ] as const).map(([nextView, label, ariaLabel]) => (
+                    <button
+                      key={nextView}
+                      type="button"
+                      className={view === nextView ? 'active' : ''}
+                      aria-pressed={view === nextView}
+                      aria-label={ariaLabel}
+                      onClick={() => {
+                        setView(nextView)
+                        setRotate(false)
+                        setReset((current) => current + 1)
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                {detailActive && (
                   <button
-                    key={nextView}
                     type="button"
-                    className={view === nextView ? 'active' : ''}
-                    aria-pressed={view === nextView}
-                    aria-label={ariaLabel}
+                    className={section ? 'active' : ''}
+                    aria-pressed={section}
+                    aria-label={
+                      section
+                        ? 'Desativar corte do órgão'
+                        : 'Ativar corte do órgão'
+                    }
                     onClick={() => {
-                      setView(nextView)
+                      setSection((current) => !current)
                       setRotate(false)
-                      setReset((current) => current + 1)
                     }}
                   >
-                    {label}
+                    Corte
                   </button>
-                ))}
+                )}
                 <button
                   type="button"
                   className={rotate ? 'active' : ''}
@@ -270,6 +383,7 @@ export function PatientReportPage({
                   onClick={() => {
                     setView('three-quarter')
                     setRotate(false)
+                    setSection(false)
                     setReset((current) => current + 1)
                   }}
                 >
@@ -280,9 +394,18 @@ export function PatientReportPage({
           </div>
 
           {hasAnatomy && (
-            <p className="patient-interaction-hint">
-              Arraste para girar · pince ou role para aproximar · toque para identificar
-            </p>
+            <>
+              <p className="patient-interaction-hint">
+                {detailActive
+                  ? 'Arraste para girar · pince ou role para aproximar · use Corte para explorar'
+                  : 'Arraste para girar · pince ou role para aproximar · toque para identificar'}
+              </p>
+              {detailActive && (
+                <p className="patient-organ-detail-safety">
+                  O modelo detalhado é uma referência anatômica e não representa o corpo individual do paciente.
+                </p>
+              )}
+            </>
           )}
         </section>
 
