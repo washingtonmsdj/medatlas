@@ -29,6 +29,8 @@ canonical anatomy authority:
 - keyboard interaction for the canonical 3D canvas;
 - interaction-aware automatic rotation that pauses during manual navigation and
   while a focused structure is being inspected;
+- viewport/page visibility suspension so off-screen or hidden 3D surfaces stop
+  doing per-frame camera/render work until they become relevant again;
 - a camera-oriented visual cross-section implemented with Three.js local
   clipping planes, including clipping-aware picking;
 - an imperatively positioned DOM callout that follows the inspected anatomical

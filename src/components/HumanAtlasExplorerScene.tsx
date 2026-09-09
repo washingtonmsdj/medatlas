@@ -74,6 +74,8 @@ export function HumanAtlasExplorerScene({
     let layoutKey = ''
     let amount = 0
     let interactionUntil = 0
+    let viewportVisible = true
+    let pageVisible = !document.hidden
 
     let renderer: THREE.WebGLRenderer
 
@@ -815,6 +817,21 @@ export function HumanAtlasExplorerScene({
     observer.observe(element)
     resize()
 
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        viewportVisible = entry.isIntersecting
+        if (viewportVisible) dirty = true
+      },
+      { rootMargin: '160px' },
+    )
+    visibilityObserver.observe(element)
+
+    const visibilityChange = () => {
+      pageVisible = !document.hidden
+      if (pageVisible) dirty = true
+    }
+    document.addEventListener('visibilitychange', visibilityChange)
+
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
     const tap = new PointerTap()
@@ -1034,6 +1051,8 @@ export function HumanAtlasExplorerScene({
       if (disposed) return
 
       frame = requestAnimationFrame(animate)
+      if (!viewportVisible || !pageVisible) return
+
       const delta = Math.min(clock.getDelta(), 0.05)
       const current = latest.current
 
@@ -1414,6 +1433,8 @@ export function HumanAtlasExplorerScene({
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
+      visibilityObserver.disconnect()
+      document.removeEventListener('visibilitychange', visibilityChange)
       controls.removeEventListener('start', pauseAutoRotate)
       controls.dispose()
 
