@@ -96,6 +96,32 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
     page.locator('#patient-anatomy .human-atlas-scene canvas'),
   ).toBeVisible({ timeout: 45_000 })
 
+  const patientDepth = page.getByRole('navigation', {
+    name: 'Nível da anatomia 3D',
+  })
+  await expect(patientDepth).toBeVisible()
+
+  await patientDepth
+    .getByRole('button', { name: 'Ver Coração em detalhe' })
+    .click()
+
+  await expect(
+    page.locator(
+      '#patient-anatomy .organ-detail-scene[data-organ="heart"] canvas',
+    ),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(page.locator('.patient-organ-detail-safety')).toContainText(
+    'não representa o corpo individual do paciente',
+  )
+  await expect(page.locator('.patient-shell')).not.toContainText('FMA7088')
+
+  await patientDepth
+    .getByRole('button', { name: 'Corpo completo' })
+    .click()
+  await expect(
+    page.locator('#patient-anatomy .human-atlas-scene canvas'),
+  ).toBeVisible({ timeout: 45_000 })
+
   await page
     .getByRole('group', { name: 'Alternar visão do MedAtlas' })
     .getByRole('button', { name: /Profissional/ })
