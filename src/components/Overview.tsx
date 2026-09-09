@@ -32,7 +32,7 @@ export function Overview({
     .toUpperCase()
 
   return (
-    <section className="overview-module overview-saas-v2 overview-3d-first module-v3 mvp-surface overview-mvp-v8">
+    <section className="overview-3d-first module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow={scopeLabel}
         title="Seu fluxo clínico visual"
