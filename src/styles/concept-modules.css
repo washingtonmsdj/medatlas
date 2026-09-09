@@ -1,0 +1,215 @@
+.medatlas-v2-workspace :is(
+  .module-v3,
+  .clinical-report-studio,
+  .report-workspace-shell
+) {
+  color: #d9e7f3;
+}
+
+.medatlas-v2-workspace :is(
+  .workspace-hero-v3,
+  .mvp-page-hero,
+  .continue-care-card,
+  .patient-current-report,
+  .workspace-panel,
+  .team-roster,
+  .permission-matrix,
+  .analytics-report-card,
+  .settings-branding-card,
+  .settings-card,
+  .report-source-column,
+  .report-atlas-column,
+  .report-explanation-column
+) {
+  border-color: rgba(100, 150, 196, .18) !important;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(39, 110, 177, .10), transparent 34%),
+    linear-gradient(180deg, rgba(14, 31, 49, .97), rgba(8, 21, 35, .98)) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .16) !important;
+}
+
+.medatlas-v2-workspace :is(
+  .module-v3,
+  .clinical-report-studio,
+  .workspace-panel,
+  .team-roster,
+  .permission-matrix,
+  .analytics-report-card,
+  .settings-card,
+  .settings-branding-card
+) :is(h1, h2, h3, h4, strong) {
+  color: #e7f1f9;
+}
+
+.medatlas-v2-workspace :is(
+  .module-v3,
+  .clinical-report-studio
+) :is(p, small, .label, .section-kicker) {
+  color: #8098ad;
+}
+
+.medatlas-v2-workspace .section-kicker {
+  color: #68a7d6 !important;
+  letter-spacing: .08em;
+}
+
+.medatlas-v2-workspace :is(
+  .workspace-hero-v3,
+  .mvp-page-hero
+) {
+  border-radius: 15px !important;
+}
+
+.medatlas-v2-workspace :is(
+  .workspace-hero-v3,
+  .mvp-page-hero
+) h1 {
+  color: #edf7ff !important;
+}
+
+.medatlas-v2-workspace :is(
+  .workspace-hero-v3,
+  .mvp-page-hero
+) p {
+  color: #89a0b3 !important;
+}
+
+.medatlas-v2-workspace :is(
+  button.primary,
+  .primary
+) {
+  border-color: #3d91f5 !important;
+  color: #fff !important;
+  background: linear-gradient(135deg, #2e88fa, #245fd5) !important;
+  box-shadow: 0 12px 28px rgba(35, 101, 211, .22) !important;
+}
+
+.medatlas-v2-workspace :is(
+  .team-roster,
+  .permission-matrix,
+  .analytics-report-card
+) > header {
+  border-bottom-color: rgba(100, 147, 187, .16) !important;
+  background: rgba(9, 23, 38, .84) !important;
+}
+
+.medatlas-v2-workspace :is(
+  .team-member-list article,
+  .permission-row,
+  .analytics-report-row
+) {
+  border-color: rgba(102, 145, 183, .12) !important;
+}
+
+.medatlas-v2-workspace :is(
+  .team-member-copy strong,
+  .team-member-role strong,
+  .permission-row > strong,
+  .analytics-report-row strong
+) {
+  color: #d9e8f4 !important;
+}
+
+.medatlas-v2-workspace :is(
+  .team-member-copy span,
+  .team-member-copy small,
+  .team-member-role small,
+  .permission-row > *,
+  .analytics-report-row > *
+) {
+  color: #8199ad !important;
+}
+
+.medatlas-v2-workspace .team-avatar {
+  border-color: rgba(86, 152, 213, .24) !important;
+  color: #9ed7ff !important;
+  background: linear-gradient(145deg, #143858, #102b45) !important;
+}
+
+.medatlas-v2-workspace :is(
+  .role-chip,
+  .environment-badge,
+  .workspace-hero-badge
+) {
+  border-color: rgba(95, 151, 198, .22) !important;
+  color: #a3c7e0 !important;
+  background: rgba(30, 71, 106, .36) !important;
+}
+
+.medatlas-v2-workspace .permission-granted {
+  color: #6dd8af !important;
+  background: rgba(28, 91, 69, .22) !important;
+}
+
+.medatlas-v2-workspace .permission-denied {
+  color: #8295a5 !important;
+  background: rgba(15, 29, 43, .48) !important;
+}
+
+.medatlas-v2-workspace :is(
+  input,
+  textarea,
+  select
+) {
+  border-color: rgba(95, 145, 190, .24);
+  color: #dbe8f3;
+  background: rgba(7, 20, 34, .82);
+}
+
+.medatlas-v2-workspace :is(input, textarea)::placeholder {
+  color: #607b91;
+}
+
+.medatlas-v2-workspace :is(
+  .finding-card-studio,
+  .suggestion-item,
+  .report-step,
+  .settings-card-state,
+  .analytics-metrics article
+) {
+  border-color: rgba(95, 143, 184, .17) !important;
+  background: rgba(12, 29, 47, .78) !important;
+  color: #a8bfd1;
+}
+
+.medatlas-v2-workspace .analytics-metrics strong {
+  color: #77c7ff !important;
+}
+
+.medatlas-v2-workspace :is(
+  .settings-grid button,
+  .analytics-refresh,
+  .patient-workspace-actions button,
+  .overview-actions button
+):not(.primary) {
+  border-color: rgba(91, 142, 187, .22) !important;
+  color: #aac1d3 !important;
+  background: rgba(13, 34, 54, .74) !important;
+}
+
+.medatlas-v2-workspace details.mvp-technical-details {
+  border-color: rgba(98, 143, 181, .16);
+  color: #8199ad;
+  background: rgba(7, 20, 33, .64);
+}
+
+.medatlas-v2-workspace details.mvp-technical-details summary {
+  color: #9db5c7;
+}
+
+@media (max-width: 700px) {
+  .medatlas-v2-workspace :is(
+    .workspace-hero-v3,
+    .mvp-page-hero,
+    .continue-care-card,
+    .patient-current-report,
+    .workspace-panel,
+    .team-roster,
+    .permission-matrix,
+    .analytics-report-card,
+    .settings-card,
+    .settings-branding-card
+  ) {
+    border-radius: 12px !important;
+  }
+}
