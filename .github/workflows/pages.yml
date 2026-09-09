@@ -84,7 +84,7 @@ jobs:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
         run: |
           node <<'NODE'
-          const { createHash } = require('node:crypto')
+          const { createHash } = await import('node:crypto')
           const pageUrl = process.env.PAGE_URL
 
           if (!pageUrl) {
