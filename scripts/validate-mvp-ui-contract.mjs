@@ -15,7 +15,6 @@ const productSurfaces = [
   'src/components/AnalyticsModule.tsx',
   'src/components/DemoSettings.tsx',
   'src/components/TopbarUtilityActions.tsx',
-  'src/components/ViewModeSwitcher.tsx',
   'src/components/ClinicalSidebar.tsx',
   'src/components/GlobalCommandSearch.tsx',
 ]
@@ -67,7 +66,6 @@ for (const [file, source] of sources) {
 
 const app = sources.get('src/App.tsx')
 const main = sources.get('src/main.tsx')
-const switcher = sources.get('src/components/ViewModeSwitcher.tsx')
 const patient = sources.get('src/components/PatientReportPage.tsx')
 const explorer = sources.get('src/components/ReferenceAtlasExplorer.tsx')
 const sidebar = sources.get('src/components/ClinicalSidebar.tsx')
@@ -101,6 +99,7 @@ for (const legacyShell of [
   '<OrganizationSwitcher',
   '<ViewModeSwitcher',
   'topbar topbar-saas',
+  'doctor-chip-button',
 ]) {
   if (app.includes(legacyShell)) {
     failures.push(`App reintroduced legacy shell UI: ${legacyShell}`)
@@ -114,21 +113,12 @@ if (main.includes('team-invitations.css')) {
 }
 
 for (const fragment of [
-  "'professional' | 'patient'",
-  'Profissional',
-  'Paciente',
-  'aria-label="Alternar visão do MedAtlas"',
-]) {
-  if (!switcher.includes(fragment)) {
-    failures.push(`ViewModeSwitcher is missing MVP view contract: ${fragment}`)
-  }
-}
-
-for (const fragment of [
   'data-surface-priority="mobile-first"',
   'HUMAN ATLAS 3D',
   'Explicação',
   'Perguntas',
+  'patient-return-professional',
+  'Voltar ao profissional',
 ]) {
   if (!patient.includes(fragment)) {
     failures.push(`Patient view is missing task-first content: ${fragment}`)
@@ -260,6 +250,12 @@ if (
 if (focusPreview.includes('atlasRef')) {
   failures.push(
     'Shared contextual 3D preview must not expose atlasRef/provenance copy in the primary MVP surface',
+  )
+}
+
+if (patient.includes('ViewModeSwitcher')) {
+  failures.push(
+    'Patient preview must use the canonical single return action, not the removed view switcher',
   )
 }
 
