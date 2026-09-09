@@ -46,6 +46,10 @@ async function openReports(page: import('@playwright/test').Page) {
   ).toBeVisible()
 }
 
+async function startNewReportThroughSearch(page: Page) {
+  await startNewReportThroughSearch(page)
+}
+
 async function expectRealContextual3D(
   page: import('@playwright/test').Page,
   selector: string,
@@ -703,9 +707,7 @@ test('expired demo patient links fail closed', async ({ page }) => {
 test('new visual report starts empty and fail-closed', async ({ page }) => {
   await page.goto('/')
 
-  await page
-    .locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' })
-    .click()
+  await startNewReportThroughSearch(page)
 
   await expect(
     page.getByRole('heading', {
@@ -771,14 +773,7 @@ test('dashboard progress follows the current report', async ({ page }) => {
   ).toBeVisible()
   await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
 
-  const globalSearch = page.getByRole('combobox', {
-    name: 'Buscar paciente, relatório, anatomia ou módulo',
-  })
-  await globalSearch.fill('Novo relatório')
-  await page
-    .getByRole('listbox', { name: 'Resultados da busca global' })
-    .getByRole('option', { name: /Novo relatório/ })
-    .click()
+  await startNewReportThroughSearch(page)
   await page
     .locator('.clinical-sidebar nav')
     .getByRole('button', { name: 'Visão geral', exact: true })
@@ -850,9 +845,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
 }) => {
   await page.goto('/')
 
-  await page
-    .locator('.clinical-sidebar').getByRole('button', { name: 'Novo relatório' })
-    .click()
+  await startNewReportThroughSearch(page)
 
   await page
     .getByLabel('Importar laudo de texto sintético')
