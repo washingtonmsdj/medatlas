@@ -109,10 +109,9 @@ export const ORGAN_DETAIL_CATALOG: OrganDetailDefinition[] = [
 ]
 
 const configuredBase = import.meta.env.VITE_ORGAN_DETAIL_ASSET_BASE?.trim()
+const vendoredBase = `${import.meta.env.BASE_URL}organ-models`
 
-export const ORGAN_DETAIL_ASSET_BASE =
-  configuredBase ||
-  `https://raw.githubusercontent.com/thebuggeddev/anatomy/${ORGAN_DETAIL_UPSTREAM_SHA}/public/models`
+export const ORGAN_DETAIL_ASSET_BASE = configuredBase || vendoredBase
 
 export function organDetailModelUrl(detail: OrganDetailDefinition) {
   return `${ORGAN_DETAIL_ASSET_BASE.replace(/\/+$/, '')}/${detail.modelFile}`
