@@ -320,6 +320,7 @@ for (const deadBaseSelector of [
   '.eyebrow',
   '.atlas-actions',
   '.local-file-note',
+  '.context-legend {',
 ]) {
   if (
     baseStyles.includes(deadBaseSelector) ||
