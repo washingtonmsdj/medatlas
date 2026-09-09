@@ -971,7 +971,11 @@ test('focused Human Atlas picking identifies a real part without changing the re
     page.locator('.clinical-atlas-stage .human-atlas-scene canvas'),
   ).toHaveAttribute(
     'aria-label',
-    /clique em uma estrutura para inspecionar/i,
+    /clique para inspecionar/i,
+  )
+  await expect(canvas).toHaveAttribute(
+    'aria-keyshortcuts',
+    /ArrowLeft.*ArrowRight.*ArrowUp.*ArrowDown.*\+.*-.*Home/,
   )
 
   const confirmedFinding = page.locator(
