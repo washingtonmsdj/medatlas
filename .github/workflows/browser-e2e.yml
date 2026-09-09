@@ -32,8 +32,23 @@ permissions:
 
 jobs:
   chromium:
+    name: chromium / ${{ matrix.suite }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: clinical-flow
+            tests: tests/e2e/clinical-flow.spec.ts
+          - suite: responsive-layout
+            tests: tests/e2e/responsive-layout.spec.ts
+          - suite: supporting-contracts
+            tests: >-
+              tests/e2e/accessibility.spec.ts
+              tests/e2e/anatomy-depth-layout.spec.ts
+              tests/e2e/invitations-contract.spec.ts
+              tests/e2e/patient-localization.spec.ts
 
     steps:
       - uses: actions/checkout@v4
@@ -64,13 +79,13 @@ jobs:
         run: npm run build
 
       - name: Run browser E2E
-        run: npx playwright test --project=chromium
+        run: npx playwright test ${{ matrix.tests }} --project=chromium
 
       - name: Upload visual QA captures
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: visual-qa-${{ github.run_id }}
+          name: visual-qa-${{ github.run_id }}-${{ matrix.suite }}
           path: test-results/visual-qa/
           if-no-files-found: ignore
           retention-days: 7
@@ -79,7 +94,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.suite }}
           path: |
             playwright-report/
             test-results/
