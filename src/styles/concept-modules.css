@@ -297,7 +297,7 @@
     var(--surface-app);
 }
 
-.patient-hero-v3 {
+.patient-hero {
   position: relative;
   overflow: hidden;
   border-color: var(--line-subtle);
@@ -307,21 +307,21 @@
   box-shadow: var(--shadow-panel);
 }
 
-.patient-grid-v3 {
+.patient-grid {
   align-items: stretch;
 }
 
-.patient-grid-v3 .patient-atlas-card,
-.patient-grid-v3 .patient-explanation-card {
+.patient-grid .patient-atlas-card,
+.patient-grid .patient-explanation-card {
   border-color: var(--line-subtle);
   box-shadow: var(--shadow-panel);
 }
 
-.patient-grid-v3 .patient-atlas-stage {
+.patient-grid .patient-atlas-stage {
   min-height: 590px;
 }
 
-.patient-next-step-v3 {
+.patient-next-step {
   border-color: var(--line-subtle);
   background: linear-gradient(135deg, var(--surface-panel), var(--surface-panel-deep));
   box-shadow: var(--shadow-panel);
@@ -404,13 +404,13 @@
 }
 
 @media (max-width: 900px) {
-  .patient-grid-v3 .patient-atlas-stage {
+  .patient-grid .patient-atlas-stage {
     min-height: 540px;
   }
 }
 
 @media (max-width: 620px) {
-  .patient-grid-v3 .patient-atlas-stage {
+  .patient-grid .patient-atlas-stage {
     min-height: 520px;
   }
 }
