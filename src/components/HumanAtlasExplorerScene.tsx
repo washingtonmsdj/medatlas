@@ -85,9 +85,21 @@ export function HumanAtlasExplorerScene({
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = isLightSurface ? 1.1 : 1.22
+    const canvasLabel =
+      appearance === 'patient'
+        ? 'Anatomia 3D interativa de referência.'
+        : appearance === 'clinical'
+          ? 'Anatomia 3D clínica interativa de referência.'
+          : 'Atlas anatômico humano 3D interativo.'
+
+    renderer.domElement.tabIndex = 0
     renderer.domElement.setAttribute(
       'aria-label',
-      'Atlas anatômico humano interativo completo. Arraste para girar, use zoom e clique em uma estrutura para inspecionar.',
+      `${canvasLabel} Arraste para girar, use zoom, clique para inspecionar ou use as setas do teclado. Mais e menos ajustam o zoom; Home reenquadra.`,
+    )
+    renderer.domElement.setAttribute(
+      'aria-keyshortcuts',
+      'ArrowLeft ArrowRight ArrowUp ArrowDown + - Home',
     )
     element.appendChild(renderer.domElement)
 
@@ -790,11 +802,77 @@ export function HumanAtlasExplorerScene({
       if (found >= 0) select.current(atlas.parts[found].id)
     }
 
+    const keyboardOffset = new THREE.Vector3()
+    const keyboardSpherical = new THREE.Spherical()
+
+    const keyDown = (event: KeyboardEvent) => {
+      if (!ready) return
+
+      const handled = [
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+        '+',
+        '=',
+        '-',
+        '_',
+        'Home',
+      ].includes(event.key)
+
+      if (!handled) return
+
+      event.preventDefault()
+      clearHover()
+
+      if (event.key === 'Home') {
+        fit(latest.current.view, amount)
+        return
+      }
+
+      keyboardOffset.copy(camera.position).sub(controls.target)
+      keyboardSpherical.setFromVector3(keyboardOffset)
+
+      const rotationStep = event.shiftKey ? 0.18 : 0.1
+      const zoomFactor = event.shiftKey ? 0.78 : 0.88
+
+      if (event.key === 'ArrowLeft') {
+        keyboardSpherical.theta -= rotationStep
+      } else if (event.key === 'ArrowRight') {
+        keyboardSpherical.theta += rotationStep
+      } else if (event.key === 'ArrowUp') {
+        keyboardSpherical.phi -= rotationStep
+      } else if (event.key === 'ArrowDown') {
+        keyboardSpherical.phi += rotationStep
+      } else if (event.key === '+' || event.key === '=') {
+        keyboardSpherical.radius *= zoomFactor
+      } else if (event.key === '-' || event.key === '_') {
+        keyboardSpherical.radius /= zoomFactor
+      }
+
+      keyboardSpherical.phi = THREE.MathUtils.clamp(
+        keyboardSpherical.phi,
+        0.08,
+        Math.PI * 0.94,
+      )
+      keyboardSpherical.radius = THREE.MathUtils.clamp(
+        keyboardSpherical.radius,
+        controls.minDistance,
+        controls.maxDistance,
+      )
+
+      keyboardOffset.setFromSpherical(keyboardSpherical)
+      camera.position.copy(controls.target).add(keyboardOffset)
+      controls.update()
+      dirty = true
+    }
+
     renderer.domElement.addEventListener('pointerdown', pointerDown)
     renderer.domElement.addEventListener('pointermove', pointerMove)
     renderer.domElement.addEventListener('pointerup', pointerUp)
     renderer.domElement.addEventListener('pointercancel', pointerCancel)
     renderer.domElement.addEventListener('pointerleave', pointerLeave)
+    renderer.domElement.addEventListener('keydown', keyDown)
 
     const clock = new THREE.Clock()
 
@@ -1186,6 +1264,7 @@ export function HumanAtlasExplorerScene({
         'pointerleave',
         pointerLeave,
       )
+      renderer.domElement.removeEventListener('keydown', keyDown)
       renderer.domElement.removeEventListener(
         'webglcontextlost',
         contextLost,

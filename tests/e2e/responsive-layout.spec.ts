@@ -325,6 +325,18 @@ test('full Atlas 3D workbench stays usable from desktop to mobile', async ({
   const canvas = stage.locator('.reference-atlas-scene canvas')
 
   await expect(canvas).toBeVisible({ timeout: 60_000 })
+  await expect(canvas).toHaveAttribute('tabindex', '0')
+  await expect(canvas).toHaveAttribute(
+    'aria-keyshortcuts',
+    /ArrowLeft.*ArrowRight.*ArrowUp.*ArrowDown.*\+.*-.*Home/,
+  )
+  await canvas.focus()
+  await expect(canvas).toBeFocused()
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('+')
+  await page.keyboard.press('Home')
+  await expect(canvas).toBeFocused()
+
   await expect(
     page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
   ).toBeVisible()

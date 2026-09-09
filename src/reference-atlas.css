@@ -1095,3 +1095,9 @@
     transition: none;
   }
 }
+
+
+.reference-atlas-scene canvas:focus-visible {
+  outline: 2px solid rgba(106, 220, 255, .92);
+  outline-offset: -3px;
+}
