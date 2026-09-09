@@ -30,6 +30,8 @@ const designTokens = await readFile('src/styles/design-tokens.css', 'utf8')
 const conceptShellStyles = await readFile('src/styles/concept-shell.css', 'utf8')
 const sidebarStyles = await readFile('src/styles/clinical-sidebar.css', 'utf8')
 const pageHeaderStyles = await readFile('src/styles/workspace-page-header.css', 'utf8')
+const conceptModulesStyles = await readFile('src/styles/concept-modules.css', 'utf8')
+const moduleWorkspaceStyles = await readFile('src/module-workspaces.css', 'utf8')
 
 const failures = []
 
@@ -166,6 +168,8 @@ for (const [name, stylesheet] of [
   ['concept-shell.css', conceptShellStyles],
   ['clinical-sidebar.css', sidebarStyles],
   ['workspace-page-header.css', pageHeaderStyles],
+  ['concept-modules.css', conceptModulesStyles],
+  ['module-workspaces.css', moduleWorkspaceStyles],
 ]) {
   if (!stylesheet.includes('var(--')) {
     failures.push(`${name} must consume semantic design tokens`)
@@ -174,6 +178,25 @@ for (const [name, stylesheet] of [
   if (/#[0-9a-f]{3,8}\b|rgba?\(/i.test(stylesheet)) {
     failures.push(
       `${name} must not define visual color literals outside design-tokens.css`,
+    )
+  }
+}
+
+for (const legacySelector of [
+  'workspace-hero-v3',
+  'module-hero-copy',
+  'workspace-context-grid',
+  'status-facts-v3',
+  'module-boundary-v3',
+  'settings-governance-v3',
+  'mvp-page-hero',
+]) {
+  if (
+    conceptModulesStyles.includes(legacySelector) ||
+    moduleWorkspaceStyles.includes(legacySelector)
+  ) {
+    failures.push(
+      `Dead workspace selectors must not return: ${legacySelector}`,
     )
   }
 }
