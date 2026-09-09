@@ -115,6 +115,9 @@
   --type-nav: 0.8125rem;
   --type-title: clamp(1.625rem, 2vw, 2.125rem);
 
+  --print-background: #ffffff;
+  --print-text: #17202a;
+
   font-family: var(--font-sans);
   color: var(--text-primary);
   background: var(--surface-app);
