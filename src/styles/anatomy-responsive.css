@@ -835,7 +835,7 @@
     font-weight: 800;
   }
 
-  .patient-shell[data-surface-priority="mobile-first"] .patient-hero-premium {
+  .patient-shell[data-surface-priority="mobile-first"] .patient-hero {
     gap: 12px;
     padding: 20px 0 16px;
   }
