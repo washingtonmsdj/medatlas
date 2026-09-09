@@ -84,6 +84,7 @@ jobs:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
         run: |
           node <<'NODE'
+          const { createHash } = require('node:crypto')
           const pageUrl = process.env.PAGE_URL
 
           if (!pageUrl) {
@@ -159,8 +160,44 @@ jobs:
             throw new Error('published_atlas_index_too_small')
           }
 
+          const organManifestResponse = await fetchOk(
+            new URL('organ-models/manifest.json', pageUrl),
+          )
+          const organManifest = await organManifestResponse.json()
+
+          if (
+            organManifest?.schema !== 'medatlas.organ-models/1' ||
+            organManifest?.upstreamCommit !==
+              '8c0e6f321a47f895ae58ce098028b92774733ee9' ||
+            !Array.isArray(organManifest?.assets) ||
+            organManifest.assets.length !== 9
+          ) {
+            throw new Error('published_organ_manifest_invalid')
+          }
+
+          for (const asset of organManifest.assets) {
+            const response = await fetchOk(
+              new URL(`organ-models/${asset.file}`, pageUrl),
+            )
+            const buffer = Buffer.from(await response.arrayBuffer())
+
+            if (
+              buffer.length !== asset.bytes ||
+              buffer.subarray(0, 4).toString('ascii') !== 'glTF'
+            ) {
+              throw new Error(`published_organ_asset_invalid:${asset.file}`)
+            }
+
+            const digest = createHash('sha256').update(buffer).digest('hex')
+            if (digest !== asset.sha256) {
+              throw new Error(`published_organ_asset_sha256_mismatch:${asset.file}`)
+            }
+          }
+
           console.log(`MedAtlas Pages preview PASS: ${pageUrl}`)
-          console.log(`Validated ${assetRefs.length} JS/CSS asset(s) + atlas provenance/index.`)
+          console.log(
+            `Validated ${assetRefs.length} JS/CSS asset(s) + Human Atlas provenance/index + 9 organ GLBs.`,
+          )
           NODE
 
       - name: Verify deployed 3D clinical flow in Chromium
