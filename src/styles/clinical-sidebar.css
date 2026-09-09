@@ -1,8 +1,8 @@
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 208px minmax(0, 1fr);
-  background: #06111d;
+  grid-template-columns: 224px minmax(0, 1fr);
+  background: var(--surface-app);
 }
 
 .clinical-sidebar {
@@ -15,10 +15,10 @@
   flex-direction: column;
   overflow: hidden;
   padding: 13px 12px 14px;
-  border-right: 1px solid rgba(102, 151, 197, .16);
+  border-right: 1px solid var(--line-subtle);
   background:
     radial-gradient(circle at 18% 12%, rgba(28, 90, 153, .18), transparent 26%),
-    linear-gradient(180deg, #07182a 0%, #061524 48%, #06121f 100%);
+    linear-gradient(180deg, var(--surface-sidebar-start) 0%, var(--surface-sidebar-mid) 48%, var(--surface-sidebar-end) 100%);
 }
 
 .clinical-sidebar-brand {
@@ -31,7 +31,7 @@
   padding: 4px 5px;
   border: 0;
   border-radius: 11px;
-  color: #f6fbff;
+  color: var(--text-primary);
   background: transparent;
   cursor: pointer;
   text-align: left;
@@ -67,11 +67,11 @@
 }
 
 .clinical-sidebar-brand-copy strong span {
-  color: #4d91ff;
+  color: var(--accent-primary);
 }
 
 .clinical-sidebar-brand-copy small {
-  color: #8ca1b5;
+  color: var(--text-muted);
   font-size: 8px;
   letter-spacing: .01em;
 }
@@ -92,23 +92,23 @@
   padding: 6px 9px;
   border: 0;
   border-radius: 9px;
-  color: #a3b7c9;
+  color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
   text-align: left;
 }
 
 .clinical-sidebar nav button:hover {
-  color: #f1f8ff;
+  color: var(--text-primary);
   background: rgba(36, 77, 122, .20);
 }
 
 .clinical-sidebar nav button.active {
   color: #fff;
   background:
-    linear-gradient(90deg, rgba(37, 111, 218, .82), rgba(28, 74, 141, .66));
+    linear-gradient(90deg, var(--accent-surface), var(--accent-surface-deep));
   box-shadow:
-    inset 3px 0 0 #62b4ff,
+    inset 3px 0 0 var(--accent-bright),
     0 10px 24px rgba(8, 42, 83, .24);
 }
 
@@ -117,18 +117,18 @@
   height: 28px;
   display: grid;
   place-items: center;
-  color: #88a8c2;
+  color: var(--text-muted);
 }
 
 .clinical-sidebar nav button.active .clinical-sidebar-nav-icon,
 .clinical-sidebar nav button:hover .clinical-sidebar-nav-icon {
-  color: #d8eeff;
+  color: var(--text-strong);
 }
 
 .clinical-sidebar-nav-text {
   min-width: 0;
   overflow: hidden;
-  font-size: 10.5px;
+  font-size: var(--type-nav);
   font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -140,7 +140,7 @@
   gap: 2px;
   padding: 18px 8px 22px;
   color: #6e89a2;
-  font-size: 9.5px;
+  font-size: var(--type-small);
   line-height: 1.45;
 }
 
@@ -162,7 +162,7 @@
   width: 28px;
   height: 1px;
   margin-top: 8px;
-  background: #4f8ec3;
+  background: var(--accent-primary);
 }
 
 .clinical-sidebar-context > div {
@@ -172,15 +172,15 @@
 }
 
 .clinical-sidebar-context strong {
-  color: #d9e8f5;
-  font-size: 9px;
+  color: var(--text-strong);
+  font-size: var(--type-caption);
 }
 
 .clinical-sidebar-context small,
 .clinical-sidebar-context p {
   margin: 0;
-  color: #718aa0;
-  font-size: 7.5px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
   line-height: 1.4;
 }
 
@@ -302,3 +302,9 @@
     min-height: 44px;
   }
 }
+
+
+.clinical-sidebar-logo-stop-start { stop-color: var(--accent-cyan); }
+.clinical-sidebar-logo-stop-end { stop-color: var(--accent-strong); }
+.clinical-sidebar-logo-wing { fill: var(--accent-primary); }
+.clinical-sidebar-logo-core { fill: var(--accent-cyan); }
