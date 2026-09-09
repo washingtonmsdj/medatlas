@@ -196,8 +196,10 @@
   cursor: pointer;
 }
 
-.medatlas-v2-topbar .topbar-icon-button:hover {
-  background: rgba(46, 90, 137, .22);
+.medatlas-v2-topbar .topbar-icon-button:hover,
+.medatlas-v2-topbar .topbar-icon-button[aria-expanded="true"] {
+  color: #edf7ff;
+  background: rgba(46, 90, 137, .28);
 }
 
 .medatlas-v2-topbar .notification-button {
@@ -208,15 +210,25 @@
   font-size: 14px;
 }
 
-.medatlas-v2-topbar .notification-button i {
+.medatlas-v2-topbar .notification-button .notification-count-badge {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 9px;
-  height: 9px;
+  top: 1px;
+  right: 1px;
+  min-width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
   border: 2px solid #071522;
-  border-radius: 50%;
+  border-radius: 999px;
+  color: #fff;
   background: #f15c70;
+  box-shadow: 0 3px 9px rgba(241, 92, 112, .34);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .medatlas-v2-topbar .doctor-chip {
@@ -234,8 +246,9 @@
   text-align: left;
 }
 
-.medatlas-v2-topbar .doctor-chip:hover {
-  background: rgba(45, 85, 126, .18);
+.medatlas-v2-topbar .doctor-chip:hover,
+.medatlas-v2-topbar .doctor-chip[aria-expanded="true"] {
+  background: rgba(45, 85, 126, .22);
 }
 
 .medatlas-v2-topbar .doctor-chip > span {
