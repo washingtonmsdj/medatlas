@@ -702,7 +702,22 @@
   gap: 8px;
 }
 
-.overview-3d-hero-actions button,
+.overview-3d-hero-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 13px;
+  border: 1px solid rgba(128, 174, 200, .28);
+  border-radius: 10px;
+  color: #c8dce7;
+  background: rgba(13, 43, 62, .66);
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 900;
+}
+
 .overview-3d-hero-actions button:hover {
   border-color: rgba(106, 203, 228, .46);
   background: rgba(20, 61, 84, .78);
@@ -749,7 +764,9 @@
 
   .overview-3d-story-copy,
   .overview-3d-progress-copy,
-  .overview-3d-hero-actions,
+  .overview-3d-hero-actions {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 700px) {
@@ -805,7 +822,10 @@
 
   .overview-3d-story-copy,
   .overview-3d-progress-copy,
-  .overview-3d-hero-actions,
+  .overview-3d-hero-actions {
+    grid-column: auto;
+  }
+
   .overview-3d-hero-actions button {
     flex: 1 1 150px;
   }
