@@ -161,7 +161,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 })
 
 
-test('published full Atlas keeps the real 3D viewport primary on mobile', async ({
+test('published Atlas uses the concept body-plus-detail layout on mobile', async ({
   page,
 }) => {
   test.setTimeout(120_000)
@@ -169,55 +169,50 @@ test('published full Atlas keeps the real 3D viewport primary on mobile', async 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./')
 
-  await page.locator('.clinical-sidebar nav').getByRole('button', { name: 'Atlas 3D' }).click()
-
-  await expect(
-    page.getByRole('heading', { name: 'Atlas 3D' }),
-  ).toBeVisible()
-
-  await expect(
-    page.getByText('Pronto', { exact: true }),
-  ).toBeVisible({ timeout: 100_000 })
-
-  const stage = page.locator('.reference-atlas-stage')
-  const scene = stage.locator('.reference-atlas-scene')
-  const canvas = scene.locator('canvas')
-
-  await expect(canvas).toBeVisible({ timeout: 60_000 })
-
-  const [stageBox, sceneBox] = await Promise.all([
-    stage.boundingBox(),
-    scene.boundingBox(),
-  ])
-
-  expect(stageBox).not.toBeNull()
-  expect(sceneBox).not.toBeNull()
-  expect(Math.abs(sceneBox!.y - stageBox!.y)).toBeLessThan(4)
-  expect(sceneBox!.height).toBeGreaterThanOrEqual(
-    stageBox!.height - 4,
-  )
-
-  const mobileTools = page.getByRole('navigation', {
-    name: 'Ferramentas do Atlas no celular',
-  })
-  await expect(mobileTools).toBeVisible()
-
-  const systems = page.getByRole('complementary', {
-    name: 'Sistemas anatômicos',
-  })
-  const inspector = page.locator('.reference-inspector-card')
-
-  await expect(systems).toBeHidden()
-  await expect(inspector).toBeHidden()
-
-  await mobileTools.getByRole('button', { name: /Camadas/ }).click()
-  await expect(systems).toBeVisible()
-
   await page
-    .getByRole('button', { name: 'Fechar camadas anatômicas' })
+    .locator('.clinical-sidebar nav')
+    .getByRole('button', { name: 'Atlas 3D' })
     .click()
-  await expect(systems).toBeHidden()
 
-  await mobileTools.getByRole('button', { name: /Estrutura/ }).click()
-  await expect(inspector).toBeVisible()
+  const workspace = page.locator('.atlas-v3-workspace')
+  const stage = page.locator('.atlas-v3-body-stage')
+  const canvas = stage.locator('.reference-atlas-scene canvas')
+
+  await expect(workspace).toBeVisible()
+  await expect(canvas).toBeVisible({ timeout: 100_000 })
+
+  const stageBox = await stage.boundingBox()
+  expect(stageBox).not.toBeNull()
+  expect(stageBox!.height).toBeGreaterThanOrEqual(600)
+
+  await expect(
+    page.getByRole('complementary', { name: 'Sistemas anatômicos' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('navigation', { name: 'Atalhos do Atlas 3D' }),
+  ).toBeVisible()
+  await expect(page.locator('.atlas-v3-detail-panel')).toBeVisible()
+
+  const search = page.locator('#reference-atlas-search')
+  await search.fill('Coração')
+  await page
+    .locator('.reference-atlas-results button')
+    .filter({ hasText: 'FMA7088' })
+    .first()
+    .click()
+
+  await expect(canvas).toBeVisible()
+  await expect(
+    page.locator(
+      '.atlas-v3-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
+    ),
+  ).toBeVisible({ timeout: 45_000 })
+
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth + 1,
+  )
+  expect(overflow).toBe(false)
 })
+
