@@ -134,6 +134,11 @@ for (const fragment of [
   'atlas-v3-body-panel',
   'atlas-v3-detail-panel',
   'Explicação para o paciente',
+  'confirmedLabel',
+  'selectionState',
+  'Estrutura já confirmada',
+  'Explorando ·',
+  'Identificador anatômico ·',
 ]) {
   if (!explorer.includes(fragment)) {
     failures.push(`Atlas MVP surface is missing task-first interaction: ${fragment}`)
