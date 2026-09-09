@@ -1,8 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import type { AtlasContextMode } from '../atlas/model'
 import type { AtlasView } from '../atlas/systems'
+import { resolveOrganDetail } from '../anatomy-detail/catalog'
 import type { AtlasSceneAppearance } from './HumanAtlasExplorerScene'
 import { HumanAtlasScene } from './HumanAtlasScene'
+
+const OrganDetailScene = lazy(async () => {
+  const module = await import('./OrganDetailScene')
+  return { default: module.OrganDetailScene }
+})
 
 interface Props {
   conceptId?: string
@@ -26,6 +39,8 @@ const VIEW_OPTIONS: Array<{
   { value: 'side', label: 'Vista lateral', short: 'Lado' },
 ]
 
+type AnatomyLevel = 'body' | 'detail'
+
 export function AnatomyFocusPreview({
   conceptId,
   label,
@@ -43,14 +58,24 @@ export function AnatomyFocusPreview({
   const [sourceLabel, setSourceLabel] = useState('')
   const [view, setView] = useState<AtlasView>('three-quarter')
   const [rotate, setRotate] = useState(false)
+  const [section, setSection] = useState(false)
   const [reset, setReset] = useState(0)
   const [sceneAttempt, setSceneAttempt] = useState(0)
+  const [level, setLevel] = useState<AnatomyLevel>('body')
+
+  const organDetail = useMemo(
+    () => resolveOrganDetail(conceptId, label),
+    [conceptId, label],
+  )
+  const detailActive = level === 'detail' && Boolean(organDetail)
 
   useEffect(() => {
     setStatus(conceptId ? 'loading' : 'idle')
     setSourceLabel('')
     setView('three-quarter')
     setRotate(false)
+    setSection(false)
+    setLevel('body')
     setReset((current) => current + 1)
   }, [conceptId, contextMode])
 
@@ -67,6 +92,7 @@ export function AnatomyFocusPreview({
     setStatus('loading')
     setSourceLabel('')
     setRotate(false)
+    setSection(false)
     setSceneAttempt((current) => current + 1)
     setReset((current) => current + 1)
   }
@@ -77,6 +103,16 @@ export function AnatomyFocusPreview({
     setReset((current) => current + 1)
   }
 
+  const chooseLevel = (nextLevel: AnatomyLevel) => {
+    if (nextLevel === 'detail' && !organDetail) return
+    setLevel(nextLevel)
+    setStatus('loading')
+    setSourceLabel('')
+    setRotate(false)
+    setSection(false)
+    setReset((current) => current + 1)
+  }
+
   return (
     <section
       className={[
@@ -84,10 +120,15 @@ export function AnatomyFocusPreview({
         compact ? 'anatomy-focus-preview-compact' : '',
         appearance === 'patient' ? 'anatomy-focus-preview-patient' : '',
         reviewRequired ? 'anatomy-focus-preview-review' : '',
+        detailActive ? 'anatomy-focus-preview-detail-active' : '',
       ]
         .filter(Boolean)
         .join(' ')}
-      aria-label={conceptId ? `Anatomia 3D: ${label}` : 'Anatomia 3D ainda não selecionada'}
+      aria-label={
+        conceptId
+          ? `Anatomia 3D: ${label}`
+          : 'Anatomia 3D ainda não selecionada'
+      }
     >
       <header className="anatomy-focus-preview-header">
         <div>
@@ -95,14 +136,23 @@ export function AnatomyFocusPreview({
           <strong>{conceptId ? label : 'Anatomia ainda não confirmada'}</strong>
           <small>
             {conceptId
-              ? appearance === 'patient'
-                ? 'Referência visual do relatório'
-                : 'Anatomia de referência'
+              ? detailActive
+                ? appearance === 'patient'
+                  ? 'Detalhe anatômico de referência'
+                  : 'Detalhe anatômico complementar'
+                : appearance === 'patient'
+                  ? 'Referência visual do relatório'
+                  : 'Anatomia de referência'
               : 'Selecione uma estrutura para visualizar em 3D.'}
           </small>
         </div>
 
         <div className="anatomy-focus-preview-badges">
+          {organDetail && (
+            <span className="has-detail">
+              detalhe disponível
+            </span>
+          )}
           <span className={status === 'ready' ? 'is-live' : ''}>
             {status === 'ready'
               ? '3D carregado'
@@ -131,18 +181,90 @@ export function AnatomyFocusPreview({
       )}
 
       <div className="anatomy-focus-preview-stage">
+        {conceptId && organDetail && (
+          <nav
+            className="anatomy-focus-level-switch"
+            aria-label="Nível de detalhe anatômico"
+          >
+            <button
+              type="button"
+              className={level === 'body' ? 'active' : ''}
+              aria-pressed={level === 'body'}
+              onClick={() => chooseLevel('body')}
+            >
+              <span>Corpo</span>
+              <small>contexto completo</small>
+            </button>
+            <button
+              type="button"
+              className={detailActive ? 'active' : ''}
+              aria-pressed={detailActive}
+              onClick={() => chooseLevel('detail')}
+            >
+              <span>Órgão em detalhe</span>
+              <small>{organDetail.label}</small>
+            </button>
+          </nav>
+        )}
+
+        {detailActive && organDetail && (
+          <div
+            className="anatomy-detail-breadcrumb"
+            aria-label="Contexto do detalhe anatômico"
+          >
+            <span>Corpo completo</span>
+            <b aria-hidden="true">›</b>
+            <strong>{organDetail.label}</strong>
+            <em>modelo detalhado</em>
+          </div>
+        )}
+
         {conceptId ? (
-          <HumanAtlasScene
-            key={`${conceptId}-${contextMode}-${sceneAttempt}`}
-            conceptId={conceptId}
-            contextMode={contextMode}
-            view={view}
-            rotate={rotate}
-            reset={reset}
-            appearance={appearance}
-            onReady={ready}
-            onError={failed}
-          />
+          detailActive && organDetail ? (
+            <Suspense
+              fallback={
+                <div
+                  className="focused-reference-loading renderer-module-loading"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="focused-reference-loading-card">
+                    <span
+                      className="focused-reference-loader"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <strong>Carregando detalhe 3D</strong>
+                      <small>Preparando {organDetail.label}.</small>
+                    </div>
+                  </div>
+                </div>
+              }
+            >
+              <OrganDetailScene
+                key={`${organDetail.id}-${sceneAttempt}`}
+                organ={organDetail}
+                appearance={appearance}
+                rotate={rotate}
+                section={section}
+                reset={reset}
+                onReady={ready}
+                onError={failed}
+              />
+            </Suspense>
+          ) : (
+            <HumanAtlasScene
+              key={`${conceptId}-${contextMode}-${sceneAttempt}`}
+              conceptId={conceptId}
+              contextMode={contextMode}
+              view={view}
+              rotate={rotate}
+              reset={reset}
+              appearance={appearance}
+              onReady={ready}
+              onError={failed}
+            />
+          )
         ) : (
           <div className="anatomy-focus-preview-empty">
             <span aria-hidden="true">3D</span>
@@ -166,7 +288,11 @@ export function AnatomyFocusPreview({
                 <span className="live-dot" aria-hidden="true" />
                 <div>
                   <strong>{sourceLabel || label}</strong>
-                  <small>Anatomia de referência</small>
+                  <small>
+                    {detailActive
+                      ? 'Detalhe anatômico complementar'
+                      : 'Anatomia humana de referência'}
+                  </small>
                 </div>
               </>
             ) : status === 'error' ? (
@@ -183,7 +309,11 @@ export function AnatomyFocusPreview({
               </div>
             ) : (
               <div>
-                <strong>Carregando anatomia 3D</strong>
+                <strong>
+                  {detailActive
+                    ? 'Carregando detalhe anatômico'
+                    : 'Carregando anatomia 3D'}
+                </strong>
                 <small>Preparando visualização.</small>
               </div>
             )}
@@ -195,23 +325,46 @@ export function AnatomyFocusPreview({
             className="anatomy-focus-preview-controls"
             aria-label={`Controles do 3D de ${label}`}
           >
-            {VIEW_OPTIONS.map((option) => (
+            {!detailActive &&
+              VIEW_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={view === option.value ? 'active' : ''}
+                  aria-pressed={view === option.value}
+                  aria-label={option.label}
+                  onClick={() => chooseView(option.value)}
+                >
+                  {option.short}
+                </button>
+              ))}
+            {detailActive && (
               <button
-                key={option.value}
                 type="button"
-                className={view === option.value ? 'active' : ''}
-                aria-pressed={view === option.value}
-                aria-label={option.label}
-                onClick={() => chooseView(option.value)}
+                className={section ? 'active' : ''}
+                aria-pressed={section}
+                aria-label={
+                  section
+                    ? 'Desativar corte do órgão'
+                    : 'Ativar corte do órgão'
+                }
+                onClick={() => {
+                  setSection((current) => !current)
+                  setRotate(false)
+                }}
               >
-                {option.short}
+                Corte
               </button>
-            ))}
+            )}
             <button
               type="button"
               className={rotate ? 'active' : ''}
               aria-pressed={rotate}
-              aria-label={rotate ? 'Pausar rotação automática' : 'Ativar rotação automática'}
+              aria-label={
+                rotate
+                  ? 'Pausar rotação automática'
+                  : 'Ativar rotação automática'
+              }
               onClick={() => setRotate((current) => !current)}
             >
               ↻
@@ -222,6 +375,7 @@ export function AnatomyFocusPreview({
               onClick={() => {
                 setView('three-quarter')
                 setRotate(false)
+                setSection(false)
                 setReset((current) => current + 1)
               }}
             >
@@ -237,7 +391,15 @@ export function AnatomyFocusPreview({
           {conceptId && status === 'ready' && (
             <span className="anatomy-focus-preview-interaction-hint">
               <b>INTERATIVO</b>
-              Arraste para girar · clique para identificar
+              {detailActive
+                ? 'Arraste para girar · role para aproximar · use corte para explorar'
+                : 'Arraste para girar · clique para identificar'}
+            </span>
+          )}
+          {detailActive && appearance === 'patient' && (
+            <span className="anatomy-detail-safety-note">
+              O modelo detalhado é uma referência anatômica e não representa o
+              corpo individual do paciente.
             </span>
           )}
         </div>
