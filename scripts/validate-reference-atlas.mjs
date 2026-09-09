@@ -43,9 +43,8 @@ const styles = (
       'src/styles/organization-analytics.css',
       'src/styles/anatomy-responsive.css',
       'src/styles/interaction-polish.css',
-      'src/styles/mvp-mode.css',
       'src/module-workspaces.css',
-      'src/experience-surfaces.css',
+      'src/styles/concept-modules.css',
       'src/reference-atlas.css',
     ].map((file) => readFile(file, 'utf8')),
   )
@@ -72,7 +71,6 @@ if (!atlasSource.includes('atlasPromise = undefined')) {
     'rejected atlas loads must clear the cached Promise so retry can perform a real reload',
   )
 }
-
 
 for (const fragment of [
   'isolatedHorizontalFov',
@@ -369,7 +367,6 @@ for (const fragment of requiredPatient3dFragments) {
   }
 }
 
-
 for (const [surface, source] of [
   ['contextual-preview', anatomyFocus],
   ['patient-view', patient],
@@ -434,7 +431,6 @@ for (const fragment of requiredOrganDetailCatalogFragments) {
     failures.push('organ detail catalog missing contract: ' + fragment)
   }
 }
-
 
 if (organDetailCatalog.includes('normalized.includes(candidate)')) {
   failures.push(
