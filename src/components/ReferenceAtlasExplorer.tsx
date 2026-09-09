@@ -379,9 +379,9 @@ export function ReferenceAtlasExplorer({
               {report.patient.age} anos · {report.patient.id}
             </small>
           </div>
-          <button type="button" aria-label="Mais ações do paciente">
+          <span className="atlas-v3-patient-more" aria-hidden="true">
             ⋮
-          </button>
+          </span>
         </header>
 
         <nav className="atlas-v3-case-tabs" aria-label="Seções do caso">
