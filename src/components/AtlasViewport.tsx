@@ -1,7 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type { AtlasContextMode } from '../atlas/model'
 import type { AtlasView } from '../atlas/systems'
 import type { AtlasConcept, HumanAtlas } from '../atlas/types'
+import { resolveOrganDetail } from '../anatomy-detail/catalog'
 import {
   conceptDisplayName,
   findAtlasConcept,
@@ -9,6 +18,11 @@ import {
   searchAtlasConcepts,
 } from '../atlas/source'
 import { HumanAtlasScene } from './HumanAtlasScene'
+
+const OrganDetailScene = lazy(async () => {
+  const module = await import('./OrganDetailScene')
+  return { default: module.OrganDetailScene }
+})
 
 interface Props {
   selected: string
@@ -81,6 +95,7 @@ export function AtlasViewport({
   const [atlas, setAtlas] = useState<HumanAtlas | null>(null)
   const [query, setQuery] = useState('')
   const [preview, setPreview] = useState<AtlasConcept | null>(null)
+  const [detailMode, setDetailMode] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -93,9 +108,11 @@ export function AtlasViewport({
 
         if (conceptId) {
           setPreview(findAtlasConcept(loadedAtlas, conceptId))
+          setDetailMode(false)
           setStatus('loading')
         } else {
           setPreview(null)
+          setDetailMode(false)
           setStatus('idle')
         }
       })
@@ -125,6 +142,11 @@ export function AtlasViewport({
 
   const activeConceptId = preview?.id ?? conceptId
   const activeLabel = preview ? conceptDisplayName(preview) : selected
+  const activeDetail = useMemo(
+    () => resolveOrganDetail(activeConceptId || undefined, activeLabel),
+    [activeConceptId, activeLabel],
+  )
+  const detailActive = detailMode && Boolean(activeDetail)
 
   const retryAtlas = () => {
     setError('')
@@ -132,6 +154,7 @@ export function AtlasViewport({
     setAtlas(null)
     setRotate(false)
     setSection(false)
+    setDetailMode(false)
     setReset((current) => current + 1)
     setLoadAttempt((current) => current + 1)
   }
@@ -153,7 +176,7 @@ export function AtlasViewport({
     setSourceLabel('')
     setSelectedPartCount(0)
     setContextPartCount(0)
-  }, [activeConceptId, contextMode])
+  }, [activeConceptId, contextMode, detailMode])
 
   const results = useMemo(
     () => (atlas ? searchAtlasConcepts(atlas, query) : []),
@@ -175,9 +198,17 @@ export function AtlasViewport({
     setStatus('error')
   }, [])
 
+  const detailReady = useCallback((label: string) => {
+    setSourceLabel(label)
+    setSelectedPartCount(1)
+    setContextPartCount(0)
+    setStatus('ready')
+  }, [])
+
   const chooseConcept = (candidate: AtlasConcept) => {
     setPreview(candidate)
     setQuery('')
+    setDetailMode(false)
     setRotate(false)
     setSection(false)
     setReset((current) => current + 1)
@@ -196,6 +227,19 @@ export function AtlasViewport({
 
   const resetScene = () => {
     setView('three-quarter')
+    setRotate(false)
+    setSection(false)
+    setReset((current) => current + 1)
+  }
+
+  const chooseAnatomyDepth = (detail: boolean) => {
+    if (detail && !activeDetail) return
+    setDetailMode(detail)
+    setStatus('loading')
+    setError('')
+    setSourceLabel('')
+    setSelectedPartCount(0)
+    setContextPartCount(0)
     setRotate(false)
     setSection(false)
     setReset((current) => current + 1)
@@ -291,24 +335,84 @@ export function AtlasViewport({
         ref={stageRef}
       >
         {activeConceptId ? (
-          <HumanAtlasScene
-            key={`${activeConceptId}-${contextMode}-${loadAttempt}`}
-            conceptId={activeConceptId}
-            contextMode={contextMode}
-            view={view}
-            rotate={rotate}
-            section={section}
-            reset={reset}
-            appearance="clinical"
-            onReady={ready}
-            onError={failed}
-          />
+          detailActive && activeDetail ? (
+            <Suspense
+              fallback={
+                <div
+                  className="focused-reference-loading renderer-module-loading"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="focused-reference-loading-card">
+                    <span
+                      className="focused-reference-loader"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <strong>Carregando órgão em detalhe</strong>
+                      <small>Preparando {activeDetail.label}.</small>
+                    </div>
+                  </div>
+                </div>
+              }
+            >
+              <OrganDetailScene
+                key={`${activeDetail.id}-${loadAttempt}`}
+                organ={activeDetail}
+                appearance="clinical"
+                rotate={rotate}
+                section={section}
+                reset={reset}
+                onReady={detailReady}
+                onError={failed}
+              />
+            </Suspense>
+          ) : (
+            <HumanAtlasScene
+              key={`${activeConceptId}-${contextMode}-${loadAttempt}`}
+              conceptId={activeConceptId}
+              contextMode={contextMode}
+              view={view}
+              rotate={rotate}
+              section={section}
+              reset={reset}
+              appearance="clinical"
+              onReady={ready}
+              onError={failed}
+            />
+          )
         ) : (
           <div className="atlas-empty-state clinical-atlas-empty">
             <span aria-hidden="true">3D</span>
             <strong>Nenhuma anatomia selecionada</strong>
             <p>Pesquise uma estrutura ou use um atalho.</p>
           </div>
+        )}
+
+        {activeConceptId && activeDetail && (
+          <nav
+            className="clinical-anatomy-depth-switch"
+            aria-label="Nível anatômico do relatório"
+          >
+            <button
+              type="button"
+              className={!detailActive ? 'active' : ''}
+              aria-pressed={!detailActive}
+              onClick={() => chooseAnatomyDepth(false)}
+            >
+              <span>Corpo</span>
+              <small>{activeContextLabel}</small>
+            </button>
+            <button
+              type="button"
+              className={detailActive ? 'active' : ''}
+              aria-pressed={detailActive}
+              onClick={() => chooseAnatomyDepth(true)}
+            >
+              <span>Órgão em detalhe</span>
+              <small>{activeDetail.label}</small>
+            </button>
+          </nav>
         )}
 
         <div className="clinical-atlas-ambient" aria-hidden="true" />
@@ -319,7 +423,11 @@ export function AtlasViewport({
           aria-live="polite"
         >
           <span className="section-kicker">
-            {status === 'ready' ? 'ESTRUTURA EM FOCO' : 'STATUS'}
+            {status === 'ready'
+              ? detailActive
+                ? 'ÓRGÃO EM DETALHE'
+                : 'ESTRUTURA EM FOCO'
+              : 'STATUS'}
           </span>
           <strong>
             {activeConceptId ? activeLabel : 'Aguardando seleção'}
@@ -345,7 +453,7 @@ export function AtlasViewport({
                 contexto
               </span>
               <span>
-                <b>{activeContextLabel}</b>
+                <b>{detailActive ? 'Detalhe' : activeContextLabel}</b>
                 modo
               </span>
             </div>
@@ -356,21 +464,22 @@ export function AtlasViewport({
           className="clinical-atlas-view-dock"
           aria-label="Controles da visualização clínica 3D"
         >
-          {VIEW_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={view === option.value ? 'active' : ''}
-              aria-pressed={view === option.value}
-              aria-label={option.label}
-              title={option.label}
-              disabled={!activeConceptId}
-              onClick={() => chooseView(option.value)}
-            >
-              {option.short}
-            </button>
-          ))}
-          <i />
+          {!detailActive &&
+            VIEW_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={view === option.value ? 'active' : ''}
+                aria-pressed={view === option.value}
+                aria-label={option.label}
+                title={option.label}
+                disabled={!activeConceptId}
+                onClick={() => chooseView(option.value)}
+              >
+                {option.short}
+              </button>
+            ))}
+          {!detailActive && <i />}
           <button
             type="button"
             className={rotate ? 'active' : ''}
@@ -380,7 +489,9 @@ export function AtlasViewport({
                 ? 'Pausar rotação automática'
                 : 'Ativar rotação automática'
             }
-            disabled={!activeConceptId || contextMode === 'none'}
+            disabled={
+              !activeConceptId || (!detailActive && contextMode === 'none')
+            }
             onClick={() => setRotate((current) => !current)}
           >
             ↻
@@ -390,9 +501,13 @@ export function AtlasViewport({
             className={section ? 'active' : ''}
             aria-pressed={section}
             aria-label={
-              section
-                ? 'Desativar corte visual 3D'
-                : 'Ativar corte visual 3D'
+              detailActive
+                ? section
+                  ? 'Desativar corte do órgão'
+                  : 'Ativar corte do órgão'
+                : section
+                  ? 'Desativar corte visual 3D'
+                  : 'Ativar corte visual 3D'
             }
             title="Corte visual 3D de referência; não é reconstrução diagnóstica"
             disabled={!activeConceptId}
@@ -420,32 +535,35 @@ export function AtlasViewport({
           </button>
         </nav>
 
-        <div
-          className="clinical-context-switcher"
-          role="group"
-          aria-label="Contexto anatômico"
-        >
-          {CONTEXT_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              className={contextMode === option.value ? 'active-context' : ''}
-              type="button"
-              title={option.description}
-              aria-pressed={contextMode === option.value}
-              onClick={() => {
-                setContextMode(option.value)
-                setRotate(false)
-                setReset((current) => current + 1)
-              }}
-              disabled={!activeConceptId}
-            >
-              <span>{option.label}</span>
-              <small>{option.description}</small>
-            </button>
-          ))}
-        </div>
+        {!detailActive && (
+          <div
+            className="clinical-context-switcher"
+            role="group"
+            aria-label="Contexto anatômico"
+          >
+            {CONTEXT_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                className={contextMode === option.value ? 'active-context' : ''}
+                type="button"
+                title={option.description}
+                aria-pressed={contextMode === option.value}
+                onClick={() => {
+                  setContextMode(option.value)
+                  setRotate(false)
+                  setReset((current) => current + 1)
+                }}
+                disabled={!activeConceptId}
+              >
+                <span>{option.label}</span>
+                <small>{option.description}</small>
+              </button>
+            ))}
+          </div>
+        )}
 
-        {contextMode !== 'none' &&
+        {!detailActive &&
+          contextMode !== 'none' &&
           status === 'ready' &&
           contextPartCount > 0 && (
             <div className="clinical-context-legend" aria-hidden="true">
@@ -473,8 +591,14 @@ export function AtlasViewport({
 
       <footer className="clinical-atlas-footer">
         <div>
-          <strong>Anatomia de referência</strong>
-          <span>Arraste para girar · role para aproximar · clique para identificar</span>
+          <strong>
+            {detailActive ? 'Detalhe anatômico complementar' : 'Anatomia de referência'}
+          </strong>
+          <span>
+            {detailActive
+              ? 'Arraste para girar · role para aproximar · use Corte para explorar'
+              : 'Arraste para girar · role para aproximar · clique para identificar'}
+          </span>
         </div>
 
         {preview && preview.id !== conceptId && (
