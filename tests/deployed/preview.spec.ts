@@ -123,8 +123,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   ).toBeVisible({ timeout: 45_000 })
 
   await page
-    .getByRole('group', { name: 'Alternar visão do MedAtlas' })
-    .getByRole('button', { name: /Profissional/ })
+    .getByRole('button', { name: 'Voltar ao profissional' })
     .click()
 
   await expect(
