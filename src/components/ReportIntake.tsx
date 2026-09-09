@@ -43,7 +43,7 @@ export function ReportIntake({
     if (analyzing) {
       return {
         label: 'Analisando',
-        detail: 'Procurando estruturas anatômicas.',
+        detail: 'Localizando estruturas anatômicas.',
         tone: 'working',
       }
     }
@@ -51,14 +51,14 @@ export function ReportIntake({
     if (suggestions.length > 0) {
       return {
         label: `${suggestions.length} correspondência${suggestions.length === 1 ? '' : 's'}`,
-        detail: 'Escolha a estrutura correta.',
+        detail: 'Confirme a estrutura correta.',
         tone: 'ready',
       }
     }
 
     if (sourceText.trim().length >= 3) {
       return {
-        label: 'Texto pronto',
+        label: 'Laudo pronto',
         detail: 'Pronto para localizar a anatomia.',
         tone: 'ready',
       }
@@ -66,7 +66,7 @@ export function ReportIntake({
 
     return {
       label: 'Aguardando laudo',
-      detail: 'Cole um texto ou use um exemplo.',
+      detail: 'Cole o texto ou importe um arquivo.',
       tone: 'idle',
     }
   }, [analyzing, sourceText, suggestions.length])
@@ -83,16 +83,12 @@ export function ReportIntake({
     setFileName('')
 
     if (!hasAllowedTextExtension(file.name)) {
-      setFileError(
-        'Formato não suportado. Use um arquivo .txt ou .md.',
-      )
+      setFileError('Formato não suportado. Use um arquivo .txt ou .md.')
       return
     }
 
     if (file.size > DEMO_CONSTRAINTS.localText.maxBytes) {
-      setFileError(
-        `Arquivo acima do limite de ${formatDemoTextLimit()}.`,
-      )
+      setFileError(`Arquivo acima do limite de ${formatDemoTextLimit()}.`)
       return
     }
 
@@ -117,7 +113,7 @@ export function ReportIntake({
         <div>
           <span className="section-kicker">LAUDO / EXAME</span>
           <h2>Adicionar laudo</h2>
-          <p>Cole o texto ou importe um arquivo.</p>
+          <p>Cole o texto do exame ou importe um arquivo.</p>
         </div>
 
         <div className="intake-status-cluster">
@@ -138,7 +134,7 @@ export function ReportIntake({
 
       <div className="intake-example-strip">
         <div className="example-row" aria-label="Exemplos sintéticos">
-          <span>Cenários rápidos</span>
+          <span>Exemplos</span>
           {REPORT_EXAMPLES.map((example) => (
             <button
               key={example.id}
@@ -158,13 +154,13 @@ export function ReportIntake({
             onChange={(event) => void importLocalText(event)}
           />
           <span aria-hidden="true">↑</span>
-          Importar texto
+          Importar arquivo
         </label>
       </div>
 
       <div className="intake-editor-shell">
         <div className="intake-editor-toolbar">
-          <span>Laudo / relatório</span>
+          <span>Texto do laudo</span>
           <div>
             {fileName && <strong>{fileName}</strong>}
             <small>{sourceText.length.toLocaleString('pt-BR')} caracteres</small>
@@ -189,16 +185,19 @@ export function ReportIntake({
             <i aria-hidden="true">◉</i>
             Processado localmente
           </span>
-          <small>Máx. {formatDemoTextLimit()} em {DEMO_CONSTRAINTS.localText.extensions.join('/')}</small>
+          <small>
+            Máx. {formatDemoTextLimit()} em{' '}
+            {DEMO_CONSTRAINTS.localText.extensions.join('/')}
+          </small>
         </div>
       </div>
 
       {anatomyReviewRequired && (
         <div className="anatomy-reconfirm-note">
-          <strong>Reconfirmação anatômica necessária</strong>
+          <strong>Confirme novamente a anatomia</strong>
           <span>
-            O texto mudou. O último 3D continua visível apenas para comparação
-            até uma estrutura ser confirmada novamente.
+            O texto mudou. A estrutura anterior continua visível somente para
+            comparação até uma nova confirmação.
           </span>
         </div>
       )}
@@ -212,7 +211,7 @@ export function ReportIntake({
         >
           {analyzing ? 'Analisando…' : 'Encontrar anatomia'}
         </button>
-        <span>Confirme uma estrutura para continuar.</span>
+        <span>Depois, confirme a estrutura correta no Atlas.</span>
       </div>
 
       {(error || fileError) && (
@@ -226,9 +225,9 @@ export function ReportIntake({
           <div className="suggestion-list-heading">
             <div>
               <span className="section-kicker">ESTRUTURAS ENCONTRADAS</span>
-              <strong>Escolha a anatomia correta</strong>
+              <strong>Confirme a anatomia do laudo</strong>
             </div>
-            <span>{suggestions.length} sugestão(ões)</span>
+            <span>{suggestions.length} opção(ões)</span>
           </div>
 
           {suggestions.map((suggestion, index) => {
@@ -256,28 +255,24 @@ export function ReportIntake({
                 <div className="suggestion-copy">
                   <div>
                     <strong>{suggestion.displayName}</strong>
-                    <code>{suggestion.concept.id}</code>
                   </div>
                   <span>{suggestion.concept.name}</span>
-                  <small>
-                    encontrado por “{suggestion.evidence}”
-                  </small>
+                  <small>correspondência: “{suggestion.evidence}”</small>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => onConfirmSuggestion(suggestion)}
                 >
-                  Confirmar estrutura
+                  Usar estrutura
                 </button>
               </article>
             )
           })}
 
           <p className="suggestion-safety-note">
-            A confiança indica apenas a força da correspondência textual com o
-            atlas. Não representa certeza clínica, diagnóstico ou relevância do
-            achado.
+            A correspondência ajuda a localizar a anatomia e precisa ser
+            confirmada pelo profissional.
           </p>
         </div>
       )}
