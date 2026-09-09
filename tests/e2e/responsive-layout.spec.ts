@@ -20,7 +20,7 @@ const MODULES = [
   },
   {
     button: 'Analytics',
-    heading: 'Analytics',
+    heading: 'Desempenho dos relatórios',
   },
   {
     button: 'Configurações',
@@ -265,8 +265,8 @@ test('management modules stay readable without internal horizontal scroll on mob
     clientWidth: element.clientWidth,
   }))
   expect(matrixSize.scrollWidth).toBeLessThanOrEqual(matrixSize.clientWidth + 1)
-  await openModule(page, { button: 'Analytics', heading: 'Analytics' })
-  await expect(page.getByText('RELATÓRIOS VISTOS', { exact: true })).toBeVisible()
+  await openModule(page, { button: 'Analytics', heading: 'Desempenho dos relatórios' })
+  await expect(page.getByText('COM VISUALIZAÇÃO', { exact: true })).toBeVisible()
   await expect(page.getByText(/Última abertura:/)).toBeVisible()
 
   const metricCards = page.locator('.analytics-metrics > article')
@@ -290,7 +290,7 @@ test('management modules stay readable without internal horizontal scroll on mob
     analyticsCardSize.clientWidth + 1,
   )
 
-  await openModule(page, { button: 'Configurações', heading: 'Configurações' })
+  await openModule(page, { button: 'Configurações', heading: 'Configurações do workspace' })
   await expect(
     page.locator('.settings-card-heading').getByText('Clínica Horizonte', {
       exact: true,
