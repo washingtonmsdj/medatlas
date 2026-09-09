@@ -3291,3 +3291,108 @@ button:not(:disabled):active {
     animation: none;
   }
 }
+
+
+/* MEDATLAS_CLINICAL_ANATOMY_DEPTH_V1 */
+.clinical-atlas-stage.detail-active .human-atlas-scene {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.clinical-atlas-stage > .organ-detail-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  min-height: 100%;
+}
+
+.clinical-atlas-stage > .clinical-organ-renderer-loading {
+  z-index: 3;
+}
+
+.clinical-anatomy-depth-switch {
+  position: absolute;
+  z-index: 13;
+  top: 14px;
+  left: 50%;
+  width: min(260px, calc(100% - 590px));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  transform: translateX(-50%);
+  padding: 5px;
+  border: 1px solid rgba(116, 165, 210, .20);
+  border-radius: 12px;
+  background: rgba(6, 20, 34, .84);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(15px);
+}
+
+.clinical-anatomy-depth-switch button {
+  min-width: 0;
+  min-height: 34px;
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #9db4c8;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.clinical-anatomy-depth-switch button:hover,
+.clinical-anatomy-depth-switch button.active {
+  color: #f4fbff;
+  border-color: #317eb9;
+  background: linear-gradient(145deg, #135a91, #123d63);
+}
+
+.clinical-anatomy-depth-switch span {
+  overflow: hidden;
+  font-size: 8px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-anatomy-depth-switch small {
+  overflow: hidden;
+  color: #829fb5;
+  font-size: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clinical-anatomy-depth-switch button.active small {
+  color: #b9d9e9;
+}
+
+.clinical-atlas-stage.detail-active {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(146, 78, 72, .20), transparent 36%),
+    linear-gradient(180deg, #071522 0%, #06111c 100%);
+}
+
+@media (max-width: 1180px) {
+  .clinical-anatomy-depth-switch {
+    top: 78px;
+    width: min(310px, calc(100% - 170px));
+  }
+}
+
+@media (max-width: 620px) {
+  .clinical-anatomy-depth-switch {
+    top: 122px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    transform: none;
+  }
+
+  .clinical-anatomy-depth-switch button {
+    min-height: 38px;
+  }
+}
