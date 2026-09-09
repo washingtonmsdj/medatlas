@@ -1429,10 +1429,6 @@ button:not(:disabled):active {
   .patient-grid {
     grid-template-columns: 1fr;
   }
-
-  .patient-clarity-strip {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 760px) {
