@@ -194,6 +194,8 @@ const requiredExplorerFragments = [
   'Abrir ',
   ' em detalhe',
   'Voltar ao corpo completo',
+  'bodySceneState',
+  'reference-atlas-stage detail-active',
 ]
 
 for (const fragment of requiredExplorerFragments) {
@@ -210,6 +212,8 @@ const requiredMobileExplorerCss = [
   '.reference-inspector-card.mobile-open',
   '.reference-atlas-stage > .reference-atlas-scene',
   'min-height: 790px',
+  'MEDATLAS_REFERENCE_DETAIL_PERSISTENCE_V1',
+  '.reference-atlas-stage.detail-active > .reference-atlas-scene',
 ]
 
 for (const fragment of requiredMobileExplorerCss) {
