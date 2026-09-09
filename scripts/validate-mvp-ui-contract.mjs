@@ -17,6 +17,7 @@ const productSurfaces = [
   'src/components/TopbarUtilityActions.tsx',
   'src/components/ClinicalSidebar.tsx',
   'src/components/GlobalCommandSearch.tsx',
+  'src/components/WorkspacePageHeader.tsx',
 ]
 
 const sources = new Map(
@@ -73,6 +74,7 @@ const focusPreview = sources.get('src/components/AnatomyFocusPreview.tsx')
 const globalSearch = sources.get('src/components/GlobalCommandSearch.tsx')
 const topbar = sources.get('src/components/TopbarUtilityActions.tsx')
 const team = sources.get('src/components/TeamModule.tsx')
+const workspaceHeader = sources.get('src/components/WorkspacePageHeader.tsx')
 
 const requiredAppFragments = [
   "useState<'professional' | 'patient'>('professional')",
@@ -110,6 +112,35 @@ if (main.includes('team-invitations.css')) {
   failures.push(
     'App entrypoint must not load invitation UI styles while invitations are out of MVP scope',
   )
+}
+
+if (!main.includes("import './styles/workspace-page-header.css'")) {
+  failures.push(
+    'App entrypoint must load the canonical WorkspacePageHeader stylesheet',
+  )
+}
+
+for (const fragment of [
+  'workspace-page-header',
+  'workspace-page-header-copy',
+  'workspace-page-header-tools',
+  'workspace-page-header-actions',
+]) {
+  if (!workspaceHeader.includes(fragment)) {
+    failures.push(`WorkspacePageHeader is missing canonical structure: ${fragment}`)
+  }
+}
+
+for (const file of [
+  'src/components/Overview.tsx',
+  'src/components/PatientsModule.tsx',
+  'src/components/TeamModule.tsx',
+  'src/components/AnalyticsModule.tsx',
+  'src/components/DemoSettings.tsx',
+]) {
+  if (!sources.get(file).includes('<WorkspacePageHeader')) {
+    failures.push(`${file} must use the canonical WorkspacePageHeader`)
+  }
 }
 
 for (const fragment of [
@@ -283,5 +314,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas MVP UI contract PASS: professional/patient views stay separated, primary UI stays task-first, standalone consultations/exams stay out of scope, and engineering copy remains outside product surfaces.',
+  'MedAtlas MVP UI contract PASS: professional/patient views stay separated, core modules share one canonical page-header system, primary UI stays task-first, standalone consultations/exams stay out of scope, and engineering copy remains outside product surfaces.',
 )
