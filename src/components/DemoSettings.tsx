@@ -30,8 +30,8 @@ export function DemoSettings({ onNewReport }: Props) {
     <section className="module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow="CONFIGURAÇÕES"
-        title="Configurações"
-        description="Preferências da clínica, privacidade e links compartilhados."
+        title="Configurações do workspace"
+        description="Identidade da clínica, dados de demonstração e links ativos."
         className="settings-hero"
         meta={
           <div className="environment-badge workspace-hero-badge">
@@ -59,7 +59,7 @@ export function DemoSettings({ onNewReport }: Props) {
               <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
             </div>
           </div>
-          <p>Identidade usada na visão do paciente.</p>
+          <p>Identidade exibida na experiência do paciente.</p>
           <button type="button" disabled>
             Editar identidade
           </button>
@@ -75,7 +75,7 @@ export function DemoSettings({ onNewReport }: Props) {
               <strong>Somente fictícios</strong>
             </div>
           </div>
-          <p>Nenhum dado real deve ser usado nesta versão.</p>
+          <p>Uso de dados reais permanece bloqueado neste ambiente.</p>
           <span className="settings-card-state enabled">ativo</span>
         </article>
 
@@ -85,7 +85,7 @@ export function DemoSettings({ onNewReport }: Props) {
               L
             </span>
             <div>
-              <span className="label">LINKS</span>
+              <span className="label">LINKS ATIVOS</span>
               <strong>{shareCount}</strong>
             </div>
           </div>
@@ -109,7 +109,7 @@ export function DemoSettings({ onNewReport }: Props) {
       <div className="settings-actions settings-actions-v2 module-action-bar-v3">
         <div>
           <strong>Novo relatório</strong>
-          <span>Reinicia o fluxo atual.</span>
+          <span>Inicie um novo fluxo clínico visual.</span>
         </div>
         <button className="primary" type="button" onClick={onNewReport}>
           Criar relatório
