@@ -231,7 +231,7 @@ const requiredFocusedFragments = [
   "contextMode === 'none'",
   'onSelect={inspectPart}',
   'inspectedPartId={inspectedPart?.partId}',
-  'focused-reference-inspector',
+  'inspectedPartLabel={inspectedPart?.label}',
   'A anatomia confirmada do relatório não foi',
   'Referência visual. Não representa o corpo individual do paciente.',
 ]
