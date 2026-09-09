@@ -87,6 +87,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   )
 
   await page
+    .locator('.patient-preview-control')
     .getByRole('button', { name: 'Prévia do paciente' })
     .click()
 
