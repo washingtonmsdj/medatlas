@@ -8,7 +8,7 @@
   border: 1px solid var(--line-subtle);
   border-radius: var(--radius-panel);
   background:
-    radial-gradient(circle at 92% 0%, rgba(39, 110, 177, .12), transparent 34%),
+    radial-gradient(circle at 92% 0%, var(--overlay-header-glow), transparent 34%),
     linear-gradient(180deg, var(--surface-panel), var(--surface-panel-deep));
   box-shadow: var(--shadow-panel);
 }
@@ -64,10 +64,10 @@
   justify-content: center;
   gap: 7px;
   padding: 0 14px;
-  border: 1px solid rgba(91, 142, 187, .24);
-  border-radius: 10px;
+  border: 1px solid var(--line-header-control);
+  border-radius: var(--radius-control);
   color: var(--text-secondary);
-  background: rgba(13, 34, 54, .78);
+  background: var(--overlay-header-control);
   cursor: pointer;
   font-size: var(--type-small);
   font-weight: 800;
@@ -76,8 +76,8 @@
 .workspace-page-header-actions > button.primary {
   border-color: var(--accent-primary);
   color: var(--text-primary);
-  background: linear-gradient(135deg, #2e88fa, #245fd5);
-  box-shadow: 0 12px 28px rgba(35, 101, 211, .22);
+  background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  box-shadow: 0 12px 28px var(--shadow-primary);
 }
 
 .workspace-page-header-actions > button:disabled {
@@ -111,7 +111,7 @@
 
 @media (max-width: 520px) {
   .workspace-page-header {
-    border-radius: 12px;
+    border-radius: var(--radius-popover);
   }
 
   .workspace-page-header-copy h2 {
