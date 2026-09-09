@@ -63,7 +63,7 @@ export function ReportComposer({
   }
 
   return (
-    <aside className="report-card report-card-v2 report-composer-v3">
+    <aside className="report-card report-composer">
       <header className="report-composer-header">
         <div>
           <span className="section-kicker">EXPLICAÇÃO</span>
@@ -93,7 +93,7 @@ export function ReportComposer({
       </details>
 
       <section className="report-section explanation-workspace">
-        <div className="explanation-heading explanation-heading-v2">
+        <div className="explanation-heading">
           <div>
             <span className="label">Explicação para o paciente</span>
             <small>{provenanceLabel(report)}</small>
@@ -137,7 +137,7 @@ export function ReportComposer({
       </section>
 
       {report.finding.explanationReviewRequired ? (
-        <section className="review-required-box review-gate-v2">
+        <section className="review-required-box">
           <div className="review-gate-heading">
             <span aria-hidden="true">!</span>
             <div>
@@ -154,7 +154,7 @@ export function ReportComposer({
           </button>
         </section>
       ) : (
-        <section className="safety-box review-approved-v2">
+        <section className="safety-box">
           <span aria-hidden="true">✓</span>
           <div>
             <strong>Explicação aprovada</strong>
@@ -179,7 +179,7 @@ export function ReportComposer({
       )}
 
       {presentation.completion.share && shareUrl ? (
-        <section className="share-box share-box-v2">
+        <section className="share-box">
           <div className="share-ready-heading">
             <span aria-hidden="true">✓</span>
             <div>
@@ -203,7 +203,7 @@ export function ReportComposer({
           </div>
         </section>
       ) : (
-        <div className="publish-zone publish-zone-v3">
+        <div className="publish-zone">
           <div>
             <strong>Compartilhar com o paciente</strong>
             <span>{presentation.publication.summary}</span>
