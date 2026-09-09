@@ -1,0 +1,124 @@
+.workspace-page-header {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 20px 22px;
+  border: 1px solid var(--concept-line, rgba(104, 158, 204, .20));
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(39, 110, 177, .12), transparent 34%),
+    linear-gradient(180deg, rgba(14, 31, 49, .97), rgba(8, 21, 35, .98));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .16);
+}
+
+.workspace-page-header-copy {
+  min-width: 0;
+  max-width: 820px;
+}
+
+.workspace-page-header-copy .section-kicker {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.workspace-page-header-copy h2 {
+  margin: 0;
+  color: #edf7ff;
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.08;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+
+.workspace-page-header-copy p {
+  max-width: 720px;
+  margin: 7px 0 0;
+  color: #a6bacb;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.workspace-page-header-tools {
+  min-width: 0;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.workspace-page-header-meta,
+.workspace-page-header-actions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.workspace-page-header-actions > button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 14px;
+  border: 1px solid rgba(91, 142, 187, .24);
+  border-radius: 10px;
+  color: #b7ccdc;
+  background: rgba(13, 34, 54, .78);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.workspace-page-header-actions > button.primary {
+  border-color: #3d91f5;
+  color: #fff;
+  background: linear-gradient(135deg, #2e88fa, #245fd5);
+  box-shadow: 0 12px 28px rgba(35, 101, 211, .22);
+}
+
+.workspace-page-header-actions > button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+@media (max-width: 760px) {
+  .workspace-page-header {
+    min-height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 17px;
+  }
+
+  .workspace-page-header-tools {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .workspace-page-header-actions {
+    width: 100%;
+  }
+
+  .workspace-page-header-actions > button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 520px) {
+  .workspace-page-header {
+    border-radius: 12px;
+  }
+
+  .workspace-page-header-copy h2 {
+    font-size: 22px;
+  }
+
+  .workspace-page-header-actions > button {
+    width: 100%;
+  }
+}
