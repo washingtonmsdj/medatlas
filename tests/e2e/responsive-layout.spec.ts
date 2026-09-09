@@ -237,7 +237,7 @@ test('mobile concept shell stays compact without legacy switchers', async ({
 
   const heights = await page.evaluate(() => {
     const sidebar = document.querySelector<HTMLElement>('.clinical-sidebar')
-    const topbar = document.querySelector<HTMLElement>('.medatlas-v2-topbar')
+    const topbar = document.querySelector<HTMLElement>('.clinical-topbar')
 
     return {
       sidebar: sidebar?.getBoundingClientRect().height ?? Number.POSITIVE_INFINITY,
@@ -565,7 +565,7 @@ test('professional and patient views are separated in the MVP', async ({
   await page.goto('/')
 
   await expect(page.locator('.clinical-sidebar')).toBeVisible()
-  await expect(page.locator('.medatlas-v2-topbar')).toBeVisible()
+  await expect(page.locator('.clinical-topbar')).toBeVisible()
   await expect(
     page.getByRole('group', { name: 'Alternar visão do MedAtlas' }),
   ).toHaveCount(0)
