@@ -179,6 +179,18 @@ export function ReferenceAtlasExplorer({
     [chosen],
   )
 
+  const bodySceneState = useMemo(
+    () =>
+      detailMode
+        ? {
+            ...state,
+            rotate: false,
+            section: false,
+          }
+        : state,
+    [detailMode, state],
+  )
+
   const visibleCount = useMemo(() => {
     if (!atlas) return 0
 
@@ -313,7 +325,6 @@ export function ReferenceAtlasExplorer({
       explode: 0,
       rotate: false,
       section: false,
-      reset: current.reset + 1,
     }))
   }
 
@@ -325,7 +336,6 @@ export function ReferenceAtlasExplorer({
       ...current,
       rotate: false,
       section: false,
-      reset: current.reset + 1,
     }))
   }
 
@@ -380,7 +390,7 @@ export function ReferenceAtlasExplorer({
             <HumanAtlasExplorerScene
               key={loadAttempt}
               atlas={atlas}
-              state={state}
+              state={bodySceneState}
               onSelect={choosePart}
               onProgress={onProgress}
               onError={onError}
