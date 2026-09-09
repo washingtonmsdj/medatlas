@@ -166,7 +166,6 @@ button:not(:disabled):active {
 }
 
 .report-source-column .intake-heading p,
-.report-source-column .local-file-note p,
 .report-explanation-column .muted,
 .finding-card-studio p {
   color: var(--text-secondary);
