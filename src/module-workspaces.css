@@ -107,7 +107,7 @@
     grid-column: 1 / -1;
   }
 
-  .clinical-report-studio .report-explanation-column .report-card-v2 {
+  .clinical-report-studio .report-explanation-column .report-composer {
     grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr);
   }
 
@@ -136,7 +136,7 @@
     grid-column: auto;
   }
 
-  .clinical-report-studio .report-explanation-column .report-card-v2 {
+  .clinical-report-studio .report-explanation-column .report-composer {
     grid-template-columns: 1fr;
   }
 
@@ -325,22 +325,22 @@
   font-size: var(--type-caption);
 }
 
-.report-composer-v3 .report-composer-header {
+.report-composer .report-composer-header {
   padding-bottom: 14px;
   border-bottom-color: var(--line-subtle);
 }
 
-.report-composer-v3 .composer-progress {
+.report-composer .composer-progress {
   gap: 8px;
 }
 
-.report-composer-v3 .composer-progress > div {
+.report-composer .composer-progress > div {
   border: 1px solid var(--line-subtle);
   border-radius: var(--radius-popover);
   background: var(--surface-control);
 }
 
-.report-composer-v3 .composer-progress > div.done {
+.report-composer .composer-progress > div.done {
   border-color: var(--line-success);
   background: var(--surface-success-soft);
 }
