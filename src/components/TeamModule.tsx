@@ -6,6 +6,7 @@ import {
   ROLE_LABELS,
   ROLE_ORDER,
 } from '../organization/demo-organization'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 export function TeamModule() {
   const activeMembers = DEMO_ORGANIZATION.members.filter(
@@ -14,18 +15,20 @@ export function TeamModule() {
 
   return (
     <section className="team-module module-v3 mvp-surface">
-      <div className="team-hero workspace-hero-v3 mvp-page-hero">
-        <div className="module-hero-copy">
-          <span className="section-kicker">EQUIPE</span>
-          <h2>Equipe</h2>
-          <p>Membros e acessos da clínica.</p>
-        </div>
-
-        <div className="team-hero-summary workspace-hero-badge">
-          <strong>{activeMembers.length}</strong>
-          <span><small>membros ativos</small></span>
-        </div>
-      </div>
+      <WorkspacePageHeader
+        eyebrow="EQUIPE"
+        title="Equipe"
+        description="Membros ativos, papéis e acessos da clínica."
+        className="team-hero"
+        meta={
+          <div className="team-hero-summary workspace-hero-badge">
+            <strong>{activeMembers.length}</strong>
+            <span>
+              <small>membros ativos</small>
+            </span>
+          </div>
+        }
+      />
 
       <section className="team-roster" aria-label="Membros da organização">
         <header>
@@ -65,7 +68,11 @@ export function TeamModule() {
           </div>
         </header>
 
-        <div className="permission-table" role="table" aria-label="Matriz de permissões da equipe">
+        <div
+          className="permission-table"
+          role="table"
+          aria-label="Matriz de permissões da equipe"
+        >
           <div className="permission-row permission-head" role="row">
             <span role="columnheader">Papel</span>
             {CAPABILITIES.map((capability) => (
@@ -83,9 +90,15 @@ export function TeamModule() {
                 {CAPABILITIES.map((capability) => (
                   <span
                     role="cell"
-                    className={granted.has(capability.id) ? 'permission-granted' : 'permission-denied'}
+                    className={
+                      granted.has(capability.id)
+                        ? 'permission-granted'
+                        : 'permission-denied'
+                    }
                     key={capability.id}
-                    aria-label={granted.has(capability.id) ? 'Permitido' : 'Não permitido'}
+                    aria-label={
+                      granted.has(capability.id) ? 'Permitido' : 'Não permitido'
+                    }
                   >
                     <small className="permission-mobile-label">
                       {capability.label}
