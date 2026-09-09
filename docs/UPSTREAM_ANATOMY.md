@@ -34,23 +34,43 @@ canonical anatomy authority:
 - a camera-oriented visual cross-section implemented with Three.js local
   clipping planes, including clipping-aware picking;
 - an imperatively positioned DOM callout that follows the inspected anatomical
-  structure without triggering a React re-render on every animation frame.
+  structure without triggering a React re-render on every animation frame;
+- an explicit second-depth organ viewer reached from a selected Human Atlas
+  structure instead of running as a competing anatomy surface.
 
-These mechanisms are adapted to MedAtlas' own BodyParts3D bounds, offsets,
-Portuguese labels, clinical/patient modes and review semantics. The cross-section
-is explicitly a visual reference tool, not a diagnostic reconstruction or a
+These mechanisms are adapted to MedAtlas' own BodyParts3D/FMA selection,
+Portuguese labels, clinical/patient modes and review semantics. Cross-section
+remains a visual reference tool, not a diagnostic reconstruction or a
 patient-specific volumetric slice.
+
+## Detailed organ models
+
+The supplementary detail catalog currently covers heart, brain, lungs, liver,
+kidneys, eyeball, intestine, pancreas and skin. Exact MedAtlas/FMA mappings are
+used where already curated. Label matching is only a navigation aid and never
+changes the report's confirmed FMA concept.
+
+Detailed GLBs load only after the user explicitly enters organ detail. They are
+currently requested from the immutable upstream checkpoint above, so they do
+not increase the MedAtlas initial anatomy payload. Deployments can set
+`VITE_ORGAN_DETAIL_ASSET_BASE` to a controlled MedAtlas asset origin that
+contains the same model filenames.
+
+The detailed model is supplementary visualization. Human Atlas / BodyParts3D /
+FMA remains the report anatomy authority and the full-body context remains the
+primary orientation surface.
 
 ## Not imported by this checkpoint
 
-- upstream GLB organ models;
 - upstream illustrations;
 - upstream educational/clinical prose;
-- upstream quiz content.
+- upstream quiz content;
+- upstream database/application shell.
 
-Those assets/content are not needed for the current MedAtlas architecture and
-may carry provenance or third-party rights separate from the repository owner's
-code permission.
+The project-specific permission communicated by the MedAtlas owner is recorded
+above. Before a public/commercial production release, the detailed GLB asset
+provenance should still be audited and archived alongside the permission record
+rather than inferred from the absence of a standalone upstream license file.
 
 ## Canonical MedAtlas anatomy remains unchanged
 
