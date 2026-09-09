@@ -357,12 +357,12 @@ button:not(:disabled):active {
 }
 
 
-/* MEDATLAS_CLINICAL_3D_WORKBENCH_V2 */
+/* Clinical Atlas 3D workbench — layout only, canonical theme tokens. */
 .clinical-atlas-card {
   overflow: visible;
-  border-color: #1f3854;
-  background: #071422;
-  box-shadow: 0 28px 64px rgba(0, 0, 0, .34);
+  border-color: var(--line-elevated);
+  background: var(--surface-deep);
+  box-shadow: var(--shadow-popover);
 }
 
 .clinical-atlas-header {
@@ -372,10 +372,10 @@ button:not(:disabled):active {
   justify-content: space-between;
   gap: 16px;
   padding: 11px 13px;
-  border-bottom: 1px solid rgba(120, 164, 207, .16);
+  border-bottom: 1px solid var(--line-subtle);
   background:
-    radial-gradient(circle at 10% 0%, rgba(40, 149, 255, .12), transparent 35%),
-    linear-gradient(180deg, #10253b, #0b1c2f);
+    radial-gradient(circle at 10% 0%, var(--overlay-workspace-glow), transparent 35%),
+    linear-gradient(180deg, var(--surface-control), var(--surface-panel-deep));
 }
 
 .clinical-atlas-title {
@@ -393,14 +393,14 @@ button:not(:disabled):active {
 
 .clinical-atlas-title strong {
   overflow: hidden;
-  color: #edf7ff;
-  font-size: 11px;
+  color: var(--text-primary);
+  font-size: var(--type-small);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .clinical-atlas-title .section-kicker {
-  color: #69bff1;
+  color: var(--accent-text);
 }
 
 .clinical-atlas-meta {
@@ -412,15 +412,15 @@ button:not(:disabled):active {
 .clinical-atlas-meta span,
 .clinical-atlas-meta code {
   padding: 5px 7px;
-  border: 1px solid rgba(126, 170, 211, .18);
+  border: 1px solid var(--line-control);
   border-radius: 999px;
-  color: #a7c5dd;
-  background: rgba(8, 27, 46, .76);
-  font-size: 8px;
+  color: var(--text-secondary);
+  background: var(--surface-control);
+  font-size: var(--type-caption);
 }
 
 .clinical-atlas-meta code {
-  color: #79d9ff;
+  color: var(--accent-cyan);
 }
 
 .clinical-atlas-commandbar {
@@ -430,8 +430,8 @@ button:not(:disabled):active {
   grid-template-columns: minmax(220px, 1fr) auto;
   gap: 10px;
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(119, 161, 203, .13);
-  background: #0a192a;
+  border-bottom: 1px solid var(--line-subtle);
+  background: var(--surface-workspace);
 }
 
 .clinical-atlas-search {
@@ -442,15 +442,15 @@ button:not(:disabled):active {
   align-items: center;
   gap: 8px;
   padding: 0 10px;
-  border: 1px solid #294763;
+  border: 1px solid var(--line-control);
   border-radius: 11px;
-  color: #7fa1bb;
-  background: #071421;
+  color: var(--text-muted);
+  background: var(--surface-deep);
 }
 
 .clinical-atlas-search:focus-within {
-  border-color: #4a8ccc;
-  box-shadow: 0 0 0 3px rgba(56, 150, 239, .10);
+  border-color: var(--line-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .clinical-atlas-search input {
@@ -458,13 +458,13 @@ button:not(:disabled):active {
   width: 100%;
   border: 0;
   outline: 0;
-  color: #eef8ff;
+  color: var(--text-primary);
   background: transparent;
-  font-size: 10px;
+  font-size: var(--type-small);
 }
 
 .clinical-atlas-search input::placeholder {
-  color: #7890a5;
+  color: var(--text-muted);
 }
 
 .clinical-atlas-results {
@@ -476,10 +476,10 @@ button:not(:disabled):active {
   max-height: 300px;
   overflow: auto;
   padding: 6px;
-  border: 1px solid #2d4a67;
-  border-radius: 12px;
-  background: rgba(7, 20, 34, .98);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, .42);
+  border: 1px solid var(--line-elevated);
+  border-radius: var(--radius-popover);
+  background: var(--surface-popover);
+  box-shadow: var(--shadow-command);
   backdrop-filter: blur(18px);
 }
 
@@ -490,26 +490,26 @@ button:not(:disabled):active {
   padding: 9px 10px;
   border: 0;
   border-radius: 9px;
-  color: #ecf7ff;
+  color: var(--text-primary);
   background: transparent;
   text-align: left;
   cursor: pointer;
 }
 
 .clinical-atlas-results button:hover {
-  background: #102b45;
+  background: var(--surface-control-hover);
 }
 
 .clinical-atlas-results button span {
-  font-size: 10px;
+  font-size: var(--type-small);
   font-weight: 800;
 }
 
 .clinical-atlas-results button small,
 .clinical-atlas-results p {
   margin: 0;
-  color: #96adc1;
-  font-size: 8px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
 }
 
 .clinical-atlas-quick {
@@ -528,19 +528,19 @@ button:not(:disabled):active {
   min-height: 32px;
   flex: 0 0 auto;
   padding: 0 9px;
-  border: 1px solid #29435e;
+  border: 1px solid var(--line-control);
   border-radius: 9px;
-  color: #b6cbe0;
-  background: #0e2237;
+  color: var(--text-secondary);
+  background: var(--surface-control);
   cursor: pointer;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 700;
 }
 
 .clinical-atlas-quick button:hover {
-  color: white;
-  border-color: #3d78ae;
-  background: #13314f;
+  color: var(--text-primary);
+  border-color: var(--line-focus);
+  background: var(--surface-control-hover);
 }
 
 .clinical-atlas-stage {
@@ -550,8 +550,8 @@ button:not(:disabled):active {
   border: 0;
   border-radius: 0;
   background:
-    radial-gradient(circle at 50% 42%, rgba(33, 115, 201, .18), transparent 34%),
-    linear-gradient(180deg, #071522 0%, #06111c 100%);
+    radial-gradient(circle at 50% 42%, var(--overlay-workspace-glow), transparent 34%),
+    linear-gradient(180deg, var(--surface-deep), var(--surface-app));
 }
 
 .clinical-atlas-stage .human-atlas-scene,
@@ -572,11 +572,11 @@ button:not(:disabled):active {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(82, 151, 220, .035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(82, 151, 220, .035) 1px, transparent 1px),
-    radial-gradient(circle at 50% 42%, transparent 0 34%, rgba(3, 10, 18, .16) 68%, rgba(2, 8, 14, .46) 100%);
+    linear-gradient(var(--line-profile-section) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-profile-section) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, transparent 0 34%, var(--surface-shortcut) 68%, var(--surface-popover) 100%);
   background-size: 46px 46px, 46px 46px, auto;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,.72), rgba(0,0,0,.22));
+  mask-image: linear-gradient(to bottom, var(--surface-popover-elevated), transparent);
 }
 
 .clinical-atlas-focus {
@@ -588,28 +588,28 @@ button:not(:disabled):active {
   display: grid;
   gap: 4px;
   padding: 11px 12px;
-  border: 1px solid rgba(111, 165, 214, .20);
+  border: 1px solid var(--line-control);
   border-radius: 13px;
-  color: #dceeff;
-  background: rgba(7, 22, 36, .80);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, .22);
+  color: var(--text-strong);
+  background: var(--surface-popover-elevated);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(16px);
   pointer-events: none;
 }
 
 .clinical-atlas-focus .section-kicker {
-  color: #66c7f2;
+  color: var(--accent-cyan);
 }
 
 .clinical-atlas-focus > strong {
-  color: white;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.15;
 }
 
 .clinical-atlas-focus > small {
-  color: #a8bfd2;
-  font-size: 8px;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
   line-height: 1.45;
 }
 
@@ -624,17 +624,17 @@ button:not(:disabled):active {
   display: grid;
   gap: 1px;
   padding: 6px;
-  border: 1px solid rgba(116, 161, 203, .13);
+  border: 1px solid var(--line-subtle);
   border-radius: 8px;
-  color: #90a9bf;
-  background: rgba(13, 39, 62, .55);
-  font-size: 7px;
+  color: var(--text-muted);
+  background: var(--surface-control);
+  font-size: var(--type-caption);
 }
 
 .clinical-atlas-focus-metrics b {
   overflow: hidden;
-  color: #e4f6ff;
-  font-size: 9px;
+  color: var(--text-primary);
+  font-size: var(--type-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -647,10 +647,10 @@ button:not(:disabled):active {
   display: grid;
   gap: 4px;
   padding: 5px;
-  border: 1px solid rgba(116, 165, 210, .20);
-  border-radius: 12px;
-  background: rgba(6, 20, 34, .82);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, .24);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-popover);
+  background: var(--surface-popover-elevated);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(15px);
 }
 
@@ -659,23 +659,22 @@ button:not(:disabled):active {
   height: 32px;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: #9db4c8;
+  color: var(--text-muted-strong);
   background: transparent;
   cursor: pointer;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .clinical-atlas-view-dock button:hover:not(:disabled) {
-  color: white;
-  background: #13324f;
+  color: var(--text-primary);
+  background: var(--surface-control-hover);
 }
 
 .clinical-atlas-view-dock button.active {
-  color: #f4fbff;
-  border-color: #317eb9;
-  background: linear-gradient(145deg, #135a91, #123d63);
-  box-shadow: inset 0 0 0 1px rgba(97, 210, 255, .08);
+  color: var(--text-primary);
+  border-color: var(--line-focus);
+  background: linear-gradient(145deg, var(--accent-surface), var(--accent-surface-deep));
 }
 
 .clinical-atlas-view-dock button:disabled {
@@ -686,7 +685,7 @@ button:not(:disabled):active {
 .clinical-atlas-view-dock i {
   height: 1px;
   margin: 2px 4px;
-  background: #29425a;
+  background: var(--line-control);
 }
 
 .clinical-context-switcher {
@@ -700,10 +699,10 @@ button:not(:disabled):active {
   gap: 4px;
   transform: translateX(-50%);
   padding: 5px;
-  border: 1px solid rgba(114, 165, 210, .19);
+  border: 1px solid var(--line-control);
   border-radius: 14px;
-  background: rgba(6, 20, 34, .84);
-  box-shadow: 0 17px 42px rgba(0, 0, 0, .24);
+  background: var(--surface-popover-elevated);
+  box-shadow: var(--shadow-panel);
   backdrop-filter: blur(16px);
 }
 
@@ -714,20 +713,20 @@ button:not(:disabled):active {
   padding: 7px 8px;
   border: 1px solid transparent;
   border-radius: 9px;
-  color: #aac0d4;
+  color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
   text-align: left;
 }
 
 .clinical-context-switcher button:hover:not(:disabled) {
-  background: #102b45;
+  background: var(--surface-control-hover);
 }
 
 .clinical-context-switcher button.active-context {
-  color: white;
-  border-color: #2e77b2;
-  background: linear-gradient(145deg, #124a78, #0f3353);
+  color: var(--text-primary);
+  border-color: var(--line-focus);
+  background: linear-gradient(145deg, var(--accent-surface), var(--accent-surface-deep));
 }
 
 .clinical-context-switcher button:disabled {
@@ -736,20 +735,20 @@ button:not(:disabled):active {
 }
 
 .clinical-context-switcher span {
-  font-size: 9px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .clinical-context-switcher small {
   overflow: hidden;
-  color: #8da6bb;
-  font-size: 7px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .clinical-context-switcher .active-context small {
-  color: #c1d7e8;
+  color: var(--text-secondary);
 }
 
 .clinical-context-legend {
@@ -760,8 +759,8 @@ button:not(:disabled):active {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #a9bfd2;
-  font-size: 7px;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
 }
 
 .clinical-context-legend span {
@@ -771,12 +770,12 @@ button:not(:disabled):active {
 }
 
 .clinical-context-legend .legend-selected {
-  background: #35c6f2;
-  box-shadow: 0 0 10px rgba(53, 198, 242, .6);
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--focus-ring);
 }
 
 .clinical-context-legend .legend-context {
-  background: #72879a;
+  background: var(--text-muted);
 }
 
 .clinical-atlas-empty {
@@ -788,11 +787,11 @@ button:not(:disabled):active {
   justify-items: center;
   gap: 8px;
   padding: 28px;
-  color: #aac0d2;
+  color: var(--text-secondary);
   text-align: center;
   background:
-    radial-gradient(circle, rgba(31, 116, 202, .16), transparent 35%),
-    linear-gradient(180deg, #071522, #06111c);
+    radial-gradient(circle, var(--overlay-workspace-glow), transparent 35%),
+    linear-gradient(180deg, var(--surface-deep), var(--surface-app));
 }
 
 .clinical-atlas-empty > span {
@@ -800,31 +799,31 @@ button:not(:disabled):active {
   height: 72px;
   display: grid;
   place-items: center;
-  border: 1px solid #2c5d86;
+  border: 1px solid var(--line-focus);
   border-radius: 50%;
-  color: #6ad4ff;
-  background: rgba(15, 54, 88, .55);
-  box-shadow: 0 0 0 14px rgba(45, 139, 222, .05);
+  color: var(--accent-cyan);
+  background: var(--surface-control);
+  box-shadow: 0 0 0 14px var(--focus-ring);
   font-size: 16px;
   font-weight: 900;
 }
 
 .clinical-atlas-empty strong {
-  color: #eef8ff;
-  font-size: 13px;
+  color: var(--text-primary);
+  font-size: var(--type-body);
 }
 
 .clinical-atlas-empty p {
   max-width: 390px;
   margin: 0;
-  color: #9eb4c7;
-  font-size: 9px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
   line-height: 1.5;
 }
 
 .clinical-atlas-error {
   z-index: 30;
-  background: rgba(65, 16, 24, .94);
+  background: var(--surface-danger);
 }
 
 .clinical-atlas-footer {
@@ -833,8 +832,8 @@ button:not(:disabled):active {
   justify-content: space-between;
   gap: 15px;
   padding: 11px 13px;
-  border-top: 1px solid rgba(115, 160, 201, .13);
-  background: #091827;
+  border-top: 1px solid var(--line-subtle);
+  background: var(--surface-workspace);
 }
 
 .clinical-atlas-footer > div {
@@ -844,14 +843,14 @@ button:not(:disabled):active {
 }
 
 .clinical-atlas-footer strong {
-  color: #b9cee1;
-  font-size: 8px;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
 }
 
 .clinical-atlas-footer > div > span {
   max-width: 650px;
-  color: #829bb0;
-  font-size: 7px;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
   line-height: 1.45;
 }
 
@@ -862,18 +861,18 @@ button:not(:disabled):active {
   align-items: center;
   gap: 7px;
   padding: 0 12px;
-  border: 1px solid #248bc7;
-  border-radius: 10px;
-  color: white;
-  background: linear-gradient(135deg, #1377b8, #195c96);
-  box-shadow: 0 12px 28px rgba(10, 106, 169, .24);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  box-shadow: var(--shadow-primary);
   cursor: pointer;
-  font-size: 8px;
+  font-size: var(--type-caption);
   font-weight: 800;
 }
 
 .clinical-atlas-footer .confirm-anatomy:hover {
-  background: linear-gradient(135deg, #1686ca, #1e6ca8);
+  border-color: var(--accent-bright);
 }
 
 .clinical-atlas-stage:fullscreen {
@@ -881,7 +880,7 @@ button:not(:disabled):active {
   height: 100vh;
   min-height: 100vh;
   border-radius: 0;
-  background: #06111c;
+  background: var(--surface-app);
 }
 
 .clinical-atlas-stage:fullscreen .clinical-context-switcher {
@@ -946,7 +945,7 @@ button:not(:disabled):active {
   }
 
   .clinical-atlas-focus-metrics {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .clinical-atlas-view-dock {
@@ -962,7 +961,7 @@ button:not(:disabled):active {
   }
 
   .clinical-atlas-view-dock button::first-letter {
-    font-size: 9px;
+    font-size: var(--type-caption);
   }
 
   .clinical-context-switcher button {
@@ -981,6 +980,7 @@ button:not(:disabled):active {
     transition: none;
   }
 }
+
 /* MEDATLAS_PATIENT_3D_CONTROLS_V1 */
 .patient-atlas-stage {
   background:
