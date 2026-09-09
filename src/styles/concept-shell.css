@@ -1,5 +1,13 @@
 .medatlas-v2-shell {
   background: #06111d;
+  font-family:
+    Inter,
+    "SF Pro Display",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
 .medatlas-v2-workspace {
