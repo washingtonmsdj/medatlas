@@ -35,8 +35,8 @@ export function Overview({
     <section className="overview-3d-first module-v3 mvp-surface">
       <WorkspacePageHeader
         eyebrow={scopeLabel}
-        title="Seu fluxo clínico visual"
-        description={`Olá, ${professionalDisplayName}. Continue o relatório atual ou comece um novo atendimento.`}
+        title="Atendimento em andamento"
+        description={`Olá, ${professionalDisplayName}. Continue de onde parou ou crie um novo relatório visual.`}
         className="overview-welcome overview-compact-hero"
         actions={
           <button className="primary" type="button" onClick={onNewReport}>
@@ -105,9 +105,7 @@ export function Overview({
               <span className="section-kicker">
                 {currentStep ? 'PRÓXIMA ETAPA' : 'RELATÓRIO'}
               </span>
-              <strong>
-                {currentStep?.label ?? 'Relatório concluído'}
-              </strong>
+              <strong>{currentStep?.label ?? 'Relatório concluído'}</strong>
               <small>
                 {currentStep?.detail ??
                   'Todas as etapas do relatório atual foram concluídas.'}
