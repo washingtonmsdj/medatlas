@@ -70,6 +70,12 @@ O wedge vencedor continua sendo:
 16. **Não reintroduzir `OrganizationSwitcher` ou qualquer switcher de organização/workspace no shell atual.** O contexto ativo é informativo no rodapé/perfil; mudança de workspace só volta quando houver fluxo de produto deliberado e validado.
 17. **Não reintroduzir `ViewModeSwitcher` nem seletor global Profissional/Paciente.** A prévia do paciente abre pelo menu do profissional e retorna por uma única ação explícita.
 18. **Não recolocar “Novo relatório” na sidebar.** A criação é uma ação da busca global/dashboard; a sidebar permanece navegação de módulos.
+19. **Exploração anatômica e anatomia confirmada são estados distintos.** Buscar/clicar uma estrutura no Atlas nunca altera silenciosamente o card “Estrutura confirmada” nem o relatório; somente a ação explícita de confirmação faz isso.
+20. **O Atlas completo segue o concept de três colunas enquanto houver largura útil:** caso clínico à esquerda, corpo completo no centro e órgão detalhado à direita. Em desktop compacto, preservar as três colunas até o breakpoint canônico antes de empilhar.
+21. **Selecionar um órgão mantém `Corpo` como contexto primário.** O órgão detalhado pode estar carregado/visível ao lado, mas o modo “Órgão em detalhe” só fica ativo por ação explícita.
+22. **IDs FMA e detalhes de implementação não pertencem à superfície primária.** No Atlas profissional, identificador anatômico fica em Referências; no paciente, não expor FMA.
+23. **`concept-shell.css` é a autoridade única do shell escuro.** Não recriar versões claras/paralelas de busca global, popovers, topbar ou perfil em stylesheets de polish.
+24. **Não restaurar CSS morto do Dashboard antigo** (`premium-metrics`, fila premium, `premium-flow`, `continue-care-body/copy`, cards de posicionamento etc.) sem reintrodução deliberada e comprovada do respectivo componente.
 
 ---
 
@@ -153,14 +159,14 @@ Hierarquia permanente:
 - [x] Dashboard usa foco isolado da anatomia confirmada; contexto amplo permanece para superfícies clínicas/paciente onde ajuda orientação;
 - [x] CSS do Explorer completo é escopado ao stage canônico e não pode alterar o renderer focado/paciente;
 - [x] CI de browser usa um único worker para evitar competição entre cenas WebGL pesadas; Atlas completo ainda precisa chegar a estado pronto.
-- [x] Atlas completo em 390 px é 3D-first: canvas ocupa o palco desde o início; Camadas e Inspector ficam fechados por padrão e abrem como overlays acionáveis, sem empurrar a anatomia para baixo.
+- [x] Atlas completo em 390 px é 3D-first no concept atual: corpo 3D permanece como palco principal, Sistemas é painel flutuante recolhível, atalhos ficam acessíveis e o painel de órgão detalhado empilha abaixo sem substituir o corpo nem criar overlays legados de Camadas/Inspector.
 - [x] Skip-link permanece no accessibility tree e aparece por teclado, mas fica visualmente oculto sem foco para não sobrepor o workbench/capturas.
 - [x] capturas desktop/mobile geradas por Playwright.
 - [x] capturas revisadas visualmente.
-- [x] refinamento visual V4 orientado pelas capturas reais: 3D mais dominante no Dashboard/Studio, etapa atual explícita e KPIs com affordance.
+- [x] concept atual consolidado: shell navy profissional, sidebar/topbar canônicas, Atlas em três colunas, corpo completo + órgão detalhado simultâneos, estados de exploração/confirmação explícitos e tipografia clínica legível.
 - [x] refinamento MVP V5/V6: copy técnica removida das superfícies de produto, Profissional/Paciente separados, módulos fora do escopo retirados do shell e Atlas convertido em ferramenta task-first.
 - [x] sidebar V7 reconstruída como componente dedicado; sem card clicável falso, sem launcher 3D duplicado e com comportamento desktop/tablet/mobile explícito.
-- [x] `ClinicalSidebar` desacoplada da classe `.sidebar` legada; seletores antigos removidos de cinco stylesheets, eliminando **7.005 bytes** de CSS morto e dependência de cascade/import order.
+- [x] `ClinicalSidebar` desacoplada da classe `.sidebar` legada; switchers antigos removidos. Na consolidação do concept de 2026-09-09, foram removidos também ~**16,9 kB** adicionais de CSS morto/sobreposto do Dashboard e do shell (incluindo versões claras antigas de busca/popovers), reduzindo dependência de cascade/import order.
 - [x] axe/WCAG voltou a PASS após correção de contraste específica no seletor de visão e próximo passo; gate não foi desabilitado.
 - [x] busca global deixou de ser decorativa: command search local com Ctrl/⌘ K, módulos, paciente demo, ações rápidas e cenários sintéticos, com teclado e E2E.
 - [x] topbar task-first: tutorial explicativo removido; permanecem **Ações pendentes** e **Perfil**, com navegação real do MVP; busca global alinhada ao escopo atual (paciente, relatório, anatomia, módulo).
@@ -173,6 +179,8 @@ Hierarquia permanente:
 - [x] gate pós-build de bundle impede regressão para renderer pesado dentro do JS inicial.
 
 Referências recentes de validação:
+
+> **Checkpoint do concept em validação (2026-09-09):** source atual em `ee87e71ddaf166a0bd971c7079151d211fc6ead4` após consolidação de shell, limpeza de CSS, separação exploração/confirmação, três colunas em desktop compacto e escala tipográfica. Não promover este SHA a baseline final até CI + Browser E2E + Pages do mesmo source fecharem verdes.
 
 - **Último commit funcional validado de produto/frontend:** `3287374057ea3c41baef04256dcfd9ab0265b467`.
 - **CI:** run `34303977846` — PASS completo, incluindo `validate:mvp-ui`, `validate:reference-atlas`, TypeScript, build e bundle budget.
