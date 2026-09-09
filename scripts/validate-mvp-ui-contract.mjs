@@ -97,6 +97,7 @@ const requiredAppFragments = [
   'medatlas-v2-topbar',
   '<WorkspacePageHeader',
   'eyebrow="RELATÓRIO VISUAL"',
+  'workspace-page',
 ]
 
 for (const fragment of requiredAppFragments) {
@@ -210,6 +211,7 @@ for (const [name, stylesheet] of [
 }
 
 for (const legacySelector of [
+  'module-v3',
   'workspace-hero-v3',
   'module-hero-copy',
   'workspace-context-grid',
@@ -329,6 +331,12 @@ if (clinicalShellStyles.includes('--saas-')) {
 }
 
 for (const [file, obsoleteClass] of [
+  ['src/App.tsx', 'module-v3'],
+  ['src/components/Overview.tsx', 'module-v3'],
+  ['src/components/PatientsModule.tsx', 'module-v3'],
+  ['src/components/TeamModule.tsx', 'module-v3'],
+  ['src/components/AnalyticsModule.tsx', 'module-v3'],
+  ['src/components/DemoSettings.tsx', 'module-v3'],
   ['src/components/PatientReportPage.tsx', 'patient-hero-premium'],
   ['src/components/PatientReportPage.tsx', 'patient-hero-v3'],
   ['src/components/PatientReportPage.tsx', 'patient-grid-v3'],
@@ -395,6 +403,13 @@ for (const file of [
   if (!sources.get(file).includes('<WorkspacePageHeader')) {
     failures.push(`${file} must use the canonical WorkspacePageHeader`)
   }
+  if (!sources.get(file).includes('workspace-page')) {
+    failures.push(`${file} must use the canonical workspace-page wrapper`)
+  }
+}
+
+if (!moduleWorkspaceStyles.includes('.workspace-page {')) {
+  failures.push('module-workspaces.css must own the canonical workspace-page layout')
 }
 
 for (const fragment of [
