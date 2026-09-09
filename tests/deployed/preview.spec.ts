@@ -77,7 +77,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   ).toBeVisible({ timeout: 45_000 })
 
   const draftButton = page.getByRole('button', {
-    name: 'Gerar explicação',
+    name: 'Gerar rascunho',
   })
   await expect(draftButton).toBeEnabled()
   await draftButton.click()
@@ -87,7 +87,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   )
 
   await page
-    .getByRole('button', { name: 'Ver como paciente' })
+    .getByRole('button', { name: 'Prévia do paciente' })
     .click()
 
   await expect(page.locator('.patient-shell')).toBeVisible()
@@ -131,7 +131,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   ).toBeVisible()
 
   await page
-    .getByRole('button', { name: 'Marcar como revisada' })
+    .getByRole('button', { name: 'Aprovar explicação' })
     .click()
 
   const publish = page.getByRole('button', {
