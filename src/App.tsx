@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import type { AtlasConcept } from './atlas/types'
 import {
   conceptDisplayName,
@@ -35,7 +35,10 @@ import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
-import { reportWorkflowReducer } from './domain/report-workflow'
+import {
+  reportWorkflowReducer,
+  type ReportWorkflowAction,
+} from './domain/report-workflow'
 import { deriveReportPresentation } from './domain/report-presentation'
 import type { VisualReport } from './domain/types'
 import { ROLE_LABELS } from './organization/roles'
@@ -133,6 +136,58 @@ function ClinicianApp() {
   const [analyzing, setAnalyzing] = useState(false)
   const [intakeError, setIntakeError] = useState('')
   const [suggestions, setSuggestions] = useState<AnatomySuggestion[]>([])
+  const revokedPublishedVersions = useRef(new Set<string>())
+  const shareRevocations = useRef(new Map<string, Promise<void>>())
+
+  const applyReportMutation = async (action: ReportWorkflowAction) => {
+    const nextReport = reportWorkflowReducer(report, action)
+
+    if (nextReport === report) return false
+
+    const invalidatesPublishedVersion =
+      report.status === 'published' && nextReport.version > report.version
+
+    if (!invalidatesPublishedVersion) {
+      dispatchReport(action)
+      return true
+    }
+
+    const revocationKey = `${report.id}:v${report.version}`
+
+    if (!revokedPublishedVersions.current.has(revocationKey)) {
+      let revocation = shareRevocations.current.get(revocationKey)
+
+      if (!revocation) {
+        revocation = clinicalData.repository
+          .revokeReportShares(report.id)
+          .then(() => {
+            revokedPublishedVersions.current.add(revocationKey)
+            shareRevocations.current.delete(revocationKey)
+          })
+          .catch((error) => {
+            shareRevocations.current.delete(revocationKey)
+            throw error
+          })
+        shareRevocations.current.set(revocationKey, revocation)
+      }
+
+      setPublishError('')
+
+      try {
+        await revocation
+      } catch (error) {
+        setPublishError(
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível revogar os links da versão publicada. A alteração foi bloqueada.',
+        )
+        return false
+      }
+    }
+
+    dispatchReport(action)
+    return true
+  }
 
   const startNewReport = () => {
     dispatchReport({
@@ -182,37 +237,35 @@ function ClinicianApp() {
   const confirmConcept = (concept: AtlasConcept) => {
     const displayName = conceptDisplayName(concept)
 
-    dispatchReport({
+    setSuggestions([])
+    setPublishError('')
+    setIntakeError('')
+    void applyReportMutation({
       type: 'anatomy-confirmed',
       conceptId: concept.id,
       displayName,
     })
-    setSuggestions([])
-    setPublishError('')
-    setIntakeError('')
   }
 
   const updateSourceText = (value: string) => {
-    dispatchReport({
-      type: 'source-text-changed',
-      value,
-    })
-
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
+    void applyReportMutation({
+      type: 'source-text-changed',
+      value,
+    })
   }
 
   const loadExample = (example: ReportExample) => {
-    dispatchReport({
-      type: 'example-loaded',
-      example,
-    })
-
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
     setActive('Relatórios visuais')
+    void applyReportMutation({
+      type: 'example-loaded',
+      example,
+    })
   }
 
   const analyzeSourceText = async () => {
@@ -258,7 +311,7 @@ function ClinicianApp() {
       const generated =
         await patientExplanationGenerator.generate(report)
 
-      dispatchReport({
+      await applyReportMutation({
         type: 'draft-generated',
         draft: generated,
       })
@@ -276,11 +329,11 @@ function ClinicianApp() {
   const updateExplanation = (value: string) => {
     if (report.finding.anatomyReviewRequired) return
 
-    dispatchReport({
+    setPublishError('')
+    void applyReportMutation({
       type: 'explanation-edited',
       value,
     })
-    setPublishError('')
   }
 
   const approveExplanation = () => {
