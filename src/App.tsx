@@ -43,6 +43,10 @@ import {
 import { deriveReportPresentation } from './domain/report-presentation'
 import { ROLE_LABELS } from './organization/roles'
 import { organizationRuntime } from './organization/runtime'
+import {
+  formatDemoTextLimit,
+  validateDemoReportSource,
+} from './product/constraints'
 
 type ModuleName = ClinicalModuleName
 
@@ -248,6 +252,13 @@ function ClinicianApp() {
   }
 
   const updateSourceText = (value: string) => {
+    const validation = validateDemoReportSource(value)
+
+    if (!validation.ok && validation.reason === 'too-large') {
+      setIntakeError(`Texto acima do limite de ${formatDemoTextLimit()}.`)
+      return
+    }
+
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
@@ -258,6 +269,18 @@ function ClinicianApp() {
   }
 
   const loadExample = (example: ReportExample) => {
+    const validation = validateDemoReportSource(example.sourceText)
+
+    if (!validation.ok) {
+      setSuggestions([])
+      setIntakeError(
+        validation.reason === 'too-large'
+          ? `Exemplo acima do limite de ${formatDemoTextLimit()}.`
+          : 'O exemplo não contém texto suficiente para análise.',
+      )
+      return
+    }
+
     setSuggestions([])
     setIntakeError('')
     setPublishError('')
@@ -269,9 +292,18 @@ function ClinicianApp() {
   }
 
   const analyzeSourceText = async () => {
-    const sourceText = report.finding.sourceText.trim()
+    const sourceValidation = validateDemoReportSource(
+      report.finding.sourceText,
+    )
 
-    if (sourceText.length < 3 || analyzing) return
+    if (!sourceValidation.ok || analyzing) {
+      if (!sourceValidation.ok && sourceValidation.reason === 'too-large') {
+        setIntakeError(`Texto acima do limite de ${formatDemoTextLimit()}.`)
+      }
+      return
+    }
+
+    const sourceText = report.finding.sourceText.trim()
 
     setAnalyzing(true)
     setIntakeError('')
@@ -619,30 +651,14 @@ function ClinicianApp() {
       label: 'Abrir Atlas 3D',
       description: 'Abrir o Human Atlas completo.',
       group: 'Ação',
-      keywords: 'anatomia corpo fma human atlas',
+      keywords: 'anatomia corpo fma bodyparts3d',
       onSelect: () => setActive('Atlas 3D'),
     },
-    {
-      id: 'patient-demo',
-      label: report.patient.displayName,
-      description: 'Abrir o paciente atual.',
-      group: 'Paciente',
-      keywords: report.title,
-      onSelect: () => setActive('Pacientes'),
-    },
-    ...CLINICAL_NAV_ITEMS.map((item) => ({
-      id: 'module-' + item,
-      label: item,
-      description: moduleMeta[item].title,
-      group: 'Módulo' as const,
-      keywords: item,
-      onSelect: () => setActive(item),
-    })),
     ...REPORT_EXAMPLES.map((example) => ({
-      id: 'scenario-' + example.id,
+      id: `scenario-${example.id}`,
       label: example.label,
       description: example.title,
-      group: 'Cenário' as const,
+      group: 'Exemplo sintético',
       keywords: example.sourceText,
       onSelect: () => loadExample(example),
     })),
@@ -650,77 +666,74 @@ function ClinicianApp() {
 
   if (viewMode === 'patient') {
     return (
-      <PatientReportPage
-        report={report}
-        previewMode
-        onSwitchToProfessional={() => setViewMode('professional')}
-      />
+      <div className="patient-preview-shell">
+        <button
+          className="patient-preview-return"
+          type="button"
+          onClick={() => setViewMode('professional')}
+        >
+          ← Voltar ao profissional
+        </button>
+        <PatientReportPage
+          report={clinicalData.repository.previewPatientReport(report)}
+          preview
+        />
+      </div>
     )
   }
 
   return (
-    <div className="app-shell clinical-app-shell">
-      <a className="skip-link" href="#clinical-workspace">
+    <div className="clinical-app-shell">
+      <a className="skip-link" href="#clinical-main">
         Ir para o conteúdo principal
       </a>
       <ClinicalSidebar
         active={active}
+        items={CLINICAL_NAV_ITEMS}
+        onSelect={setActive}
         organizationName={organizationRuntime.organization.name}
         workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
-        unitName={activeUnit?.name}
-        onNavigate={setActive}
+        roleLabel={
+          currentMember
+            ? ROLE_LABELS[currentMember.role]
+            : 'Profissional demo'
+        }
       />
-
-      <main className="workspace clinical-workspace" id="clinical-workspace" tabIndex={-1}>
+      <div className="clinical-workspace">
         <header className="clinical-topbar">
-          <GlobalCommandSearch actions={globalSearchActions} />
-
+          <GlobalCommandSearch
+            actions={globalSearchActions}
+            report={report}
+            onNavigate={setActive}
+          />
           <TopbarUtilityActions
             report={report}
-            memberName={
-              currentMember?.displayName ?? 'Profissional demo'
-            }
-            initials={currentMember?.initials ?? 'MD'}
-            specialty={
-              currentMember?.professional?.specialty ??
-              'Workspace clínico'
-            }
-            roleLabel={
-              currentMember
-                ? ROLE_LABELS[currentMember.role]
-                : 'Profissional demonstrativo'
-            }
-            workspaceName={
-              activeWorkspace?.name ?? 'Workspace clínico'
-            }
-            onOpenReports={() => setActive('Relatórios visuais')}
-            onOpenAtlas={() => setActive('Atlas 3D')}
-            onOpenTeam={() => setActive('Equipe')}
-            onOpenSettings={() => setActive('Configurações')}
+            organizationName={organizationRuntime.organization.name}
+            workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
+            professionalName={currentMember?.displayName ?? 'Profissional demo'}
+            specialty={currentMember?.specialty}
+            onOpenReport={() => setActive('Relatórios visuais')}
             onOpenPatientPreview={() => setViewMode('patient')}
           />
         </header>
 
-        <div className="demo-privacy-boundary">
-          <DemoPrivacyBanner />
-        </div>
+        <DemoPrivacyBanner />
 
-        {renderModule()}
-      </main>
+        <main id="clinical-main" className="workspace-content" tabIndex={-1}>
+          <div className="workspace-context-bar" aria-label="Contexto do workspace">
+            <span>{moduleMeta[active].title}</span>
+            <strong>{activeWorkspace?.name ?? 'Workspace clínico'}</strong>
+            {activeUnit?.name && <small>{activeUnit.name}</small>}
+          </div>
+          {renderModule()}
+        </main>
+      </div>
     </div>
   )
 }
 
-function App() {
-  const querySlug = new URLSearchParams(window.location.search).get('patient')
-  const patientMatch = window.location.pathname.match(/^\/p\/([^/]+)\/?$/)
-  const patientSlug = querySlug ?? patientMatch?.[1] ?? null
+export default function App() {
+  const patientSlug = window.location.pathname.match(/\/p\/([^/?#]+)/)?.[1]
 
-  if (patientSlug) {
-    return <PatientRoute slug={decodeURIComponent(patientSlug)} />
-  }
-
-  return <ClinicianApp />
+  return patientSlug ? <PatientRoute slug={patientSlug} /> : <ClinicianApp />
 }
-
-export default App
