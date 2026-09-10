@@ -43,6 +43,7 @@ jobs:
             tests: >-
               tests/e2e/clinical-flow.spec.ts
               tests/e2e/report-intake.spec.ts
+              tests/e2e/report-explanation.spec.ts
               tests/e2e/share-revocation.spec.ts
           - suite: responsive-layout
             tests: tests/e2e/responsive-layout.spec.ts
