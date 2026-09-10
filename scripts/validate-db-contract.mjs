@@ -300,7 +300,7 @@ if (
   failures.push('A raw share/invitation token appears to be persisted as a table column')
 }
 
-if (/grant\s+all\s+on\s+table[\s\S]*?\bto\s+anon\b/i.test(sql)) {
+if (/grant\s+all\s+on\s+table[^;]*?\bto\s+anon\b/i.test(sql)) {
   failures.push('Anonymous table-wide grant detected')
 }
 
@@ -313,13 +313,13 @@ if (
 }
 
 if (
-  /grant execute on function public\.medatlas_(create|accept|revoke)_organization_invitation[\s\S]*?\bto\s+anon\b/i.test(sql)
+  /grant execute on function public\.medatlas_(create|accept|revoke)_organization_invitation[^;]*?\bto\s+anon\b/i.test(sql)
 ) {
   failures.push('Organization invitation mutation RPC exposed to anon')
 }
 
 if (
-  /grant execute on function public\.medatlas_revoke_report_shares\(uuid\)[\s\S]*?\bto\s+anon\b/i.test(sql)
+  /grant execute on function public\.medatlas_revoke_report_shares\(uuid\)[^;]*?\bto\s+anon\b/i.test(sql)
 ) {
   failures.push('Report share revocation RPC exposed to anon')
 }
