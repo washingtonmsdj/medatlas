@@ -1,4 +1,5 @@
 import type { ReportPublicationIdentity } from '../domain/types'
+import { roleHasCapability } from './roles'
 import type { OrganizationRuntime } from './runtime'
 
 export function createReportPublicationIdentity(
@@ -15,7 +16,8 @@ export function createReportPublicationIdentity(
     runtime.branding.organizationId !== runtime.organization.id ||
     !runtime.organization.members.some(
       (member) => member.id === professional.id && member.active,
-    )
+    ) ||
+    !roleHasCapability(professional.role, 'clinical-write')
   ) {
     return null
   }

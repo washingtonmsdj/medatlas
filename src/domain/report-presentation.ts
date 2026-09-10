@@ -54,12 +54,17 @@ function explanationDone(report: VisualReport) {
   return (
     anatomyDone(report) &&
     Boolean(report.finding.patientExplanation.trim()) &&
-    !report.finding.explanationReviewRequired
+    !report.finding.explanationReviewRequired &&
+    Boolean(report.reviewApproval)
   )
 }
 
 function shareDone(report: VisualReport) {
-  return report.status === 'published' && Boolean(report.shareSlug)
+  return (
+    report.status === 'published' &&
+    Boolean(report.shareSlug) &&
+    Boolean(report.publicationIdentity)
+  )
 }
 
 export function deriveReportPresentation(report: VisualReport) {
@@ -86,7 +91,7 @@ export function deriveReportPresentation(report: VisualReport) {
         ? 'Confirme novamente a estrutura'
         : 'Selecione uma estrutura',
     explanation: completion.explanation
-      ? 'Explicação revisada'
+      ? `Revisada por ${report.reviewApproval?.approvedBy.displayName ?? 'profissional'}`
       : report.finding.patientExplanation.trim()
         ? 'Revisão pendente'
         : 'Crie a explicação',
@@ -190,7 +195,7 @@ export function deriveReportPresentation(report: VisualReport) {
           : 'Não criada',
       detail: report.finding.patientExplanation.trim()
         ? completion.explanation
-          ? 'Pronta para compartilhar'
+          ? detailByStep.explanation
           : 'Revise antes de compartilhar'
         : 'Aguardando explicação',
     },

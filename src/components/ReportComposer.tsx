@@ -136,7 +136,7 @@ export function ReportComposer({
         </div>
       </section>
 
-      {report.finding.explanationReviewRequired ? (
+      {!reviewComplete ? (
         <section className="review-required-box">
           <div className="review-gate-heading">
             <span aria-hidden="true">!</span>
@@ -158,7 +158,9 @@ export function ReportComposer({
           <span aria-hidden="true">✓</span>
           <div>
             <strong>Explicação aprovada</strong>
-            <p>Pronta para a visão do paciente.</p>
+            <p>
+              Revisada por {report.reviewApproval?.approvedBy.displayName}.
+            </p>
           </div>
         </section>
       )}

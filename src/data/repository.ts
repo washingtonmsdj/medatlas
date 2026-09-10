@@ -16,13 +16,31 @@ export interface ActiveClinicalRepository {
 
 const organizationBoundDemoRepository: ClinicalRepository = {
   async publishReport(report) {
+    const reviewApproval = report.reviewApproval
+
+    if (!reviewApproval) {
+      throw new Error(
+        'A revisão clínica precisa registrar o profissional responsável antes da publicação.',
+      )
+    }
+
     const publicationIdentity = createReportPublicationIdentity(
       organizationRuntime,
+      reviewApproval.workspaceId,
     )
 
     if (!publicationIdentity) {
       throw new Error(
         'Não foi possível confirmar a organização, o workspace e o profissional responsáveis pela publicação.',
+      )
+    }
+
+    if (
+      reviewApproval.organizationId !== publicationIdentity.organizationId ||
+      reviewApproval.workspaceId !== publicationIdentity.workspaceId
+    ) {
+      throw new Error(
+        'A revisão clínica não pertence ao mesmo contexto organizacional da publicação.',
       )
     }
 

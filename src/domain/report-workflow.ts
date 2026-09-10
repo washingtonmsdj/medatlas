@@ -16,9 +16,36 @@ export type ReportWorkflowAction =
       draft: PatientExplanationDraft
     }
   | { type: 'explanation-edited'; value: string }
-  | { type: 'explanation-approved'; approval?: ReportReviewApproval }
+  | { type: 'explanation-approved'; approval: ReportReviewApproval }
   | { type: 'published'; report: VisualReport }
   | { type: 'shares-cleared' }
+
+function hasValidReviewApproval(report: VisualReport) {
+  const approval = report.reviewApproval
+
+  return Boolean(
+    approval &&
+      approval.organizationId &&
+      approval.workspaceId &&
+      approval.approvedBy.id &&
+      approval.approvedBy.displayName &&
+      Number.isFinite(Date.parse(approval.approvedAt)),
+  )
+}
+
+function sameReviewApproval(left: VisualReport, right: VisualReport) {
+  const leftApproval = left.reviewApproval
+  const rightApproval = right.reviewApproval
+
+  return Boolean(
+    leftApproval &&
+      rightApproval &&
+      leftApproval.organizationId === rightApproval.organizationId &&
+      leftApproval.workspaceId === rightApproval.workspaceId &&
+      leftApproval.approvedBy.id === rightApproval.approvedBy.id &&
+      leftApproval.approvedAt === rightApproval.approvedAt,
+  )
+}
 
 function invalidatePublication(report: VisualReport): VisualReport {
   return {
@@ -60,7 +87,8 @@ function canReviewExplanation(report: VisualReport) {
 function canPublish(report: VisualReport) {
   return (
     canReviewExplanation(report) &&
-    !report.finding.explanationReviewRequired
+    !report.finding.explanationReviewRequired &&
+    hasValidReviewApproval(report)
   )
 }
 
@@ -160,18 +188,25 @@ export function reportWorkflowReducer(
       }
     }
 
-    case 'explanation-approved':
+    case 'explanation-approved': {
       if (!canReviewExplanation(report)) return report
 
-      return {
+      const approved = {
         ...report,
+        reviewApproval: action.approval,
+      }
+
+      if (!hasValidReviewApproval(approved)) return report
+
+      return {
+        ...approved,
         status: 'clinician_review',
-        reviewApproval: action.approval ?? report.reviewApproval,
         finding: {
-          ...report.finding,
+          ...approved.finding,
           explanationReviewRequired: false,
         },
       }
+    }
 
     case 'published':
       if (
@@ -180,7 +215,8 @@ export function reportWorkflowReducer(
         action.report.version !== report.version ||
         action.report.status !== 'published' ||
         !action.report.shareSlug ||
-        !action.report.publicationIdentity
+        !action.report.publicationIdentity ||
+        !sameReviewApproval(report, action.report)
       ) {
         return report
       }
