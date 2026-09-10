@@ -1,24 +1,26 @@
-# MedAtlas — piloto sintético
+# MedAtlas — piloto sintético do MVP
 
 ## Objetivo
 
-Validar o MVP de ponta a ponta sem dados reais e sem depender do backend ativo.
+Validar o MedAtlas de ponta a ponta **sem dados reais** e sem depender de backend clínico ativo. O piloto mede clareza de tarefa, qualidade do 3D, gates humanos, responsividade e confiança do fluxo profissional → paciente.
 
-O piloto sintético existe para responder:
+Ele não autoriza uso clínico real nem substitui validação de segurança, privacidade ou compliance.
 
-- o profissional consegue entrar no contexto correto de organização/workspace?
-- o profissional consegue iniciar um relatório do zero?
-- o texto clínico encontra anatomia conhecida?
-- a estrutura precisa ser confirmada explicitamente?
-- a explicação permanece bloqueada até revisão?
-- o link do paciente só nasce depois do gate humano?
-- a página do paciente abre com a mesma anatomia?
-- abrir o link realmente aparece no Analytics local?
-- papéis/permissões continuam legíveis e sem mutações fake?
-- branding e contexto da clínica chegam ao paciente sem confundir anatomia de referência com reconstrução individual?
-- mobile, acessibilidade, expiração e performance continuam dentro dos gates?
+## Perguntas que o piloto deve responder
 
-## Cenários canônicos
+- O profissional entende rapidamente onde iniciar e continuar um relatório?
+- O texto do laudo encontra uma estrutura anatômica plausível sem afirmar diagnóstico?
+- A anatomia só é adotada depois de confirmação explícita?
+- O Human Atlas 3D permanece dominante e útil, não decorativo?
+- Exploração temporária de uma peça fica distinta da anatomia clinicamente confirmada?
+- A explicação ao paciente permanece bloqueada até a revisão necessária?
+- A prévia do paciente é claramente separada da interface profissional?
+- O link só nasce depois do gate humano e abre a mesma anatomia revisada?
+- O paciente entende que vê anatomia humana de referência, não uma reconstrução do próprio corpo?
+- Analytics mostra somente eventos realmente observados no demo local?
+- Desktop profissional e smartphone do paciente continuam operáveis sem overflow ou controles sobrepostos?
+
+## Cenários anatômicos canônicos
 
 | Cenário | Conceito esperado |
 | --- | --- |
@@ -27,194 +29,146 @@ O piloto sintético existe para responder:
 | Coração | FMA7088 |
 | Ombro / supraespinal | FMA9629 |
 
-A SSOT dos textos e IDs é:
+A SSOT dos textos e IDs é `src/clinical/demo-scenarios.json`.
 
-`src/clinical/demo-scenarios.json`
+## Contexto SaaS sintético
 
-## Contexto SaaS sintético canônico
+O preview usa uma organização fictícia e um workspace clínico fixo. O contexto ativo aparece como informação do produto; **não existe troca fake de organização/workspace no shell atual**.
 
-O piloto atual também exercita uma organização fictícia:
-
-```text
-Clínica Horizonte
-└── Unidade principal
-    ├── Ortopedia
-    ├── Cardiologia
-    └── Fisioterapia
-```
-
-Papéis source-first usados na superfície Equipe:
+Papéis demonstrativos permanecem source-first e alinhados às políticas projetadas:
 
 - `admin`;
 - `clinician`;
 - `staff`.
 
-Esses papéis precisam continuar espelhando as policies SQL. O modo demo não pode habilitar convites, alteração de papel ou persistência de membership.
+No modo demo, Equipe não deve executar convites, alteração real de papel ou persistência de membership.
+
+## Fronteira de ingestão do MVP atual
+
+O browser MVP aceita somente:
+
+- texto digitado/colado;
+- `.txt`;
+- `.md`;
+- no máximo **64 KiB medidos em bytes UTF-8**.
+
+O limite é compartilhado pelo importador, pelo editor e pelo controlador do fluxo. PDF, imagem e OCR continuam fora desta fase e não devem ser simulados.
+
+Durante o piloto, nunca usar nomes, exames, identificadores ou qualquer dado real de paciente.
 
 ## Aceite automatizado
 
-O Browser E2E cobre:
+O Browser E2E protege, entre outros pontos:
 
-1. os quatro cenários anatômicos acima;
-2. criação de relatório visual vazio;
-3. sugestão anatômica;
-4. confirmação explícita;
-5. rascunho educacional;
-6. revisão;
-7. publicação;
-8. abertura da visão do paciente;
-9. contagem observável da abertura no Analytics local;
-10. organização/workspace ativo e troca local de especialidade;
-11. Equipe com matriz de permissões source-first;
-12. branding da clínica presente sem mutações fake;
-13. contrato visual de convites com transporte bloqueado;
-14. mobile sem overflow horizontal;
-15. link demo expirado falhando fechado;
-16. axe/WCAG nas superfícies principais;
-17. Human Atlas completo e modo clínico focado usando o mesmo engine canônico.
+1. cenários anatômicos determinísticos;
+2. criação de relatório vazio fail-closed;
+3. importação TXT/MD e limite de 64 KiB;
+4. sugestão e confirmação anatômica explícita;
+5. Human Atlas real no fluxo profissional e paciente;
+6. rascunho educacional, revisão e publicação;
+7. preview pré-publicação e link temporário;
+8. expiração/revogação de share;
+9. Analytics local;
+10. shell profissional separado da experiência paciente;
+11. Equipe/permissões sem mutações fake;
+12. axe/WCAG;
+13. ausência de overflow e hit areas protegidas em desktop/mobile;
+14. arquitetura de profundidade `Corpo → Órgão em detalhe`;
+15. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
-CI adicional cobre:
+O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, segurança, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget.
 
-- contrato do banco;
-- RLS source-first;
-- convites de organização com token hash, admin gate, e-mail vinculado, expiração/revogação e auditoria;
-- anatomia curada;
-- cenário → FMA;
-- integridade SHA-256 dos assets;
-- budget de payload;
-- privacy/security;
-- analytics demo sem telemetria externa;
-- contrato de IA;
-- gate de revisão clínica;
-- licenças/proveniência.
+## Critérios 3D-first
 
-## Critérios 3D-first do piloto
+Em qualquer cenário anatômico, validar manualmente:
 
-Em qualquer cenário anatômico, validar explicitamente:
-
-- o canvas real aparece no Dashboard/contexto atual, módulo clínico correspondente, preview pré-publicação e portal do paciente;
-- o 3D é visualmente dominante onde existe tarefa anatômica e não vira um thumbnail decorativo;
-- rotação por arraste, zoom e vistas 3/4/frente/lado respondem sem quebrar o layout;
-- o mesmo conceito FMA confirmado acompanha profissional → preview → paciente;
-- o deploy não apresenta erro de `atlas.json`, chunk, descompressão ou WebGL;
-- mudar o laudo/anatomia reabre a confirmação e exibe **reconfirmação anatômica necessária** enquanto a referência anterior ainda estiver visível;
-- nenhum texto sugere que BodyParts3D seja reconstrução ou “corpo/modelo do paciente”;
-- em 390 px, os controles clínicos de câmera permanecem horizontais, legíveis e sem overflow;
-- trocar de módulo não mantém canvases/renderers anteriores vivos.
-
-## Checkpoint de pré-piloto automatizado — 2026-09-07
-
-O pré-piloto automatizado está **concluído** no baseline atual.
-
-Evidências:
-
-- HEAD de prova: `419d8e7c9bf8f80fc8ba1f216c20d44690633412`;
-- produção correspondente: `770d4f6fc2700f660bd4e1547a867cfb2ffd5752`;
-- CI `34117852517` — PASS;
-- Browser E2E `34189680315` — **PASS** após refinamento frontend V4;
-- Pages/Chromium remoto `34117434772` — PASS;
-- Explorer completo responsivo — PASS em **28,3 s** no runner;
-- artifact `visual-qa-34189680315` (`10041842621`) — **19 screenshots revisados**;
-- portal do paciente validado em 390 px com canvas real, controles horizontais, picking e ausência de overflow;
-- inspeção focada validada com destaque de alto contraste sem alterar a anatomia confirmada;
-- JS inicial ~324,35 kB e renderer lazy ~496,01 kB sob gate de bundle.
-
-**Importante:** isto não substitui o piloto manual abaixo. O item manual continua aberto até uma pessoa navegar no preview, executar o fluxo e registrar percepção/atrito real.
+- canvas real aparece onde há tarefa anatômica;
+- estrutura confirmada continua visualmente distinguível de uma peça apenas inspecionada;
+- rotação, zoom, vistas e reset não quebram layout;
+- corpo completo permanece contexto primário quando um órgão detalhado é aberto;
+- o órgão em detalhe nunca muda sozinho a anatomia confirmada;
+- o mesmo conceito confirmado acompanha Clinical Studio → preview → paciente;
+- nenhuma copy sugere reconstrução individual do paciente;
+- trocar de módulo não deixa renderers/canvases antigos interferindo na interface;
+- em 390 px, controles continuam tocáveis, legíveis e sem overflow.
 
 ## Fluxo manual sintético recomendado
 
-Executar pelo menos um cenário completo em desktop e mobile:
+Executar pelo menos um cenário completo em desktop profissional e depois conferir a experiência paciente em smartphone:
 
 ```text
 1. abrir Visão geral
-2. confirmar organização/workspace ativo
-3. abrir Relatórios visuais
-4. carregar cenário sintético
-5. sugerir anatomia
-6. confirmar estrutura
-7. validar o 3D focado: enquadramento, rotação, zoom e vistas
-8. clicar em uma peça e confirmar identificação visual sem mudar a anatomia aprovada
-9. gerar rascunho educacional
-10. revisar explicitamente
-11. pré-visualizar paciente e confirmar Human Atlas real
-12. publicar link demo
-13. abrir visão do paciente
-14. confirmar branding + 3D + explicação + perguntas
-15. clicar em uma peça no portal e confirmar linguagem de anatomia de referência
-16. voltar ao ambiente clínico
-17. alterar o texto do laudo e confirmar banner de reconfirmação anatômica
-18. abrir Analytics
-19. confirmar que a visualização foi observada
-20. abrir Equipe
-21. confirmar papéis, unidade/workspaces e boundary de convites
+2. confirmar clínica/workspace exibidos como contexto informativo
+3. iniciar Novo relatório pela busca global ou ação canônica do dashboard
+4. colar um texto sintético válido e confirmar que “Encontrar anatomia” habilita
+5. tentar um texto sintético > 64 KiB e confirmar: erro visível + texto válido anterior preservado + análise bloqueada
+6. voltar a um texto válido; opcionalmente importar um .txt/.md sintético
+7. executar “Encontrar anatomia”
+8. confirmar que a estrutura esperada aparece como sugestão, sem confirmação automática
+9. confirmar explicitamente a anatomia
+10. validar enquadramento, rotação, zoom, vistas e picking no 3D
+11. abrir/fechar órgão em detalhe quando aplicável e confirmar que “Corpo” segue como contexto primário
+12. gerar o rascunho educacional
+13. revisar/editar e aprovar explicitamente
+14. abrir a prévia do paciente e retornar pela única ação “Voltar ao profissional”
+15. publicar o link demo
+16. abrir o link do paciente e validar branding + 3D + explicação revisada + perguntas
+17. confirmar linguagem de anatomia de referência no portal
+18. voltar ao ambiente clínico e alterar o laudo
+19. confirmar reconfirmação anatômica obrigatória e invalidação das etapas dependentes
+20. abrir Analytics e verificar a visualização observada
+21. abrir Equipe e confirmar papéis/limites sem mutações de produção
 ```
 
-Registrar somente observações de produto, por exemplo:
+## O que registrar
 
-- estrutura encontrada foi a esperada?
-- explicação ficou compreensível?
-- profissional entendeu quando precisava confirmar?
-- houve confusão entre anatomia de referência e corpo do paciente?
-- o destaque temporário da peça clicada ficou visualmente óbvio sem parecer nova confirmação clínica?
-- o banner de reconfirmação apareceu de forma inequívoca quando o laudo mudou?
-- o FMA/anatomia permaneceu consistente entre Clinical Studio, preview pré-publicação e portal do paciente?
-- em 390 px o dock de câmera ficou horizontal, legível e sem cobrir o foco anatômico?
-- página do paciente ficou clara?
-- organização/workspace ficaram compreensíveis sem parecer complexidade desnecessária?
-- papéis da Equipe ficaram compreensíveis?
-- usuário entende que convites estão source-ready, mas ainda não ativos?
-- Analytics comunica somente eventos realmente observados?
-- qual etapa pareceu lenta ou desnecessária?
+Registrar apenas observações concretas de produto, por exemplo:
 
-Não registrar nomes reais, exames reais ou qualquer identificador real.
+- estrutura sugerida foi a esperada?
+- houve algum momento em que exploração pareceu confirmação clínica?
+- o 3D ajudou a entender a anatomia ou pareceu decorativo?
+- houve confusão entre referência anatômica e corpo do paciente?
+- a reconfirmação após mudar o laudo ficou inequívoca?
+- a explicação ficou clara depois da revisão?
+- paciente entendeu o que estava vendo?
+- alguma etapa ficou escondida, duplicada ou desnecessariamente longa?
+- houve overflow, controle sobreposto, alvo pequeno ou perda de contexto em 390 px?
+- Analytics exibiu apenas eventos realmente realizados?
 
-## Critério de conclusão do piloto sintético
+Não registrar PHI nem dados clínicos reais.
 
-O piloto sintético automatizado pode ser considerado concluído quando:
+## Evidência automatizada mais recente
 
-- CI completo passa no mesmo baseline funcional;
-- Browser E2E passa o fluxo clínico, paciente, organização, Equipe e Analytics;
-- gate responsivo passa em desktop e mobile;
-- nenhuma violação axe serious/critical é introduzida;
-- nenhum caminho demo transmite dados para telemetria externa;
-- nenhum botão de produção cria a falsa impressão de backend ativo;
-- BodyParts3D continua identificado como anatomia de referência.
-- inspeção temporária nunca altera silenciosamente a anatomia confirmada;
-- stale anatomy permanece visível apenas com aviso explícito de reconfirmação;
-- controles do 3D permanecem legíveis e operáveis em 390 px;
-- o mesmo conceito FMA chega ao preview e ao portal do paciente.
+Source funcional desta atualização: `b5c2ca3d5c332432f7417513b19d1f8d06b290fe`.
 
-Isso **não autoriza dados reais**.
+- CI `34481648367` — PASS completo.
+- GitHub Pages Preview `34481648389` — build, deploy e verificação Chromium do fluxo 3D publicado — PASS.
+- Browser E2E `34481648442` — `responsive-layout` e `supporting-contracts` PASS; o shard `clinical-flow` ainda estava executando no instante desta edição. Só registrar o run inteiro como PASS quando esse shard concluir verde.
 
-## Etapa clínica controlada — futura
+## Critério de conclusão do MVP sintético
 
-Permanece bloqueada até:
+O candidato pode avançar para avaliação de MVP quando:
+
+- CI, Browser E2E e Pages estiverem verdes sobre o mesmo source funcional;
+- piloto manual sintético não revelar bloqueador P0;
+- fluxo laudo → anatomia → confirmação → 3D → explicação → revisão → paciente funcionar sem atalhos fake;
+- portal e Clinical Studio permanecerem coerentes entre desktop/mobile;
+- nenhum dado sair da fronteira synthetic-only;
+- nenhuma superfície prometer diagnóstico automático, reconstrução do paciente, PDF/OCR ou backend inexistente.
+
+## Produção clínica — etapa futura e separada
+
+Dados reais continuam bloqueados até existir, no mínimo:
 
 - backend dedicado;
 - autenticação;
-- migrations aplicadas no projeto de produção;
-- testes reais de isolamento cross-tenant;
-- RLS provada por papel;
-- Storage privado;
-- política de retenção;
-- compartilhamentos de produção;
+- isolamento cross-tenant/RLS provado;
+- Storage privado e testes de negação;
+- retenção/backup definidos;
+- share de produção com expiração/revogação/auditoria;
 - transporte seguro de convites;
+- observabilidade e resposta a incidentes;
 - revisão jurídica/privacidade para o uso pretendido;
-- protocolo de suporte/incidente;
-- definição formal do escopo do piloto.
+- protocolo de piloto clínico controlado.
 
-Essa fase não está concluída e não deve ser simulada no produto.
-
-
-## Frontend V4 — visual QA 2026-09-08
-
-Baseline aprovado no artifact `visual-qa-34189680315`:
-
-- Dashboard desktop: 3D do atendimento ampliado e KPIs com affordance visual;
-- Dashboard 390 px: KPIs em grade 2×2, reduzindo comprimento da página sem remover informação;
-- navegação mobile: marca e rail de módulos em duas linhas, sem card redundante da organização;
-- Clinical Studio desktop: Human Atlas mais dominante sem perder as três colunas;
-- workflow clínico: etapa atual distinguível de etapas concluídas e futuras;
-- Clinical Studio 390 px: fluxo permanece funcional e sem overflow horizontal.
-
-Gates do HEAD: CI, Browser E2E e GitHub Pages Preview — PASS.
+Esta fase não deve ser simulada no produto browser atual.
