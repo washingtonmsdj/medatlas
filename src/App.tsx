@@ -299,6 +299,11 @@ function ClinicianApp() {
     setPublishError('')
   }
 
+  const clearShareState = () => {
+    dispatchReport({ type: 'shares-cleared' })
+    setPublishError('')
+  }
+
   const reportPresentation = deriveReportPresentation(report)
 
   const reportWorkflow = (
@@ -515,7 +520,12 @@ function ClinicianApp() {
         return <AnalyticsModule repository={clinicalData.repository} />
 
       case 'Configurações':
-        return <DemoSettings onNewReport={startNewReport} />
+        return (
+          <DemoSettings
+            onNewReport={startNewReport}
+            onSharesCleared={clearShareState}
+          />
+        )
     }
   }
 

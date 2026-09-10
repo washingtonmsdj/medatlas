@@ -18,6 +18,7 @@ export type ReportWorkflowAction =
   | { type: 'explanation-edited'; value: string }
   | { type: 'explanation-approved' }
   | { type: 'published'; report: VisualReport }
+  | { type: 'shares-cleared' }
 
 function invalidatePublication(report: VisualReport): VisualReport {
   return {
@@ -176,5 +177,16 @@ export function reportWorkflowReducer(
       }
 
       return action.report
+
+    case 'shares-cleared':
+      if (report.status !== 'published' && !report.shareSlug) {
+        return report
+      }
+
+      return {
+        ...report,
+        status: canPublish(report) ? 'clinician_review' : 'draft',
+        shareSlug: undefined,
+      }
   }
 }

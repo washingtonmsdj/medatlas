@@ -770,6 +770,12 @@ test('demo settings can clear local patient shares', async ({ page }) => {
     page.getByText(/link\(s\) removido\(s\)/),
   ).toBeVisible()
 
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+  await expect(page.getByText('Link pronto para enviar')).toHaveCount(0)
+  await expect(
+    page.getByRole('button', { name: 'Compartilhar com paciente' }),
+  ).toBeEnabled()
+
   await page.goto(shareUrl)
 
   await expect(

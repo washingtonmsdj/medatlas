@@ -156,6 +156,14 @@ const published = reportWorkflowReducer(approved, {
 assert.equal(published.status, 'published')
 assert.equal(published.shareSlug, 'c'.repeat(64))
 
+const sharesCleared = reportWorkflowReducer(published, {
+  type: 'shares-cleared',
+})
+
+assert.equal(sharesCleared.status, 'clinician_review')
+assert.equal(sharesCleared.shareSlug, undefined)
+assert.equal(sharesCleared.finding.explanationReviewRequired, false)
+
 const edited = reportWorkflowReducer(published, {
   type: 'explanation-edited',
   value: 'Texto editado pelo profissional.',

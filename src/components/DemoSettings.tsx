@@ -10,14 +10,19 @@ import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   onNewReport: () => void
+  onSharesCleared: () => void
 }
 
-export function DemoSettings({ onNewReport }: Props) {
+export function DemoSettings({
+  onNewReport,
+  onSharesCleared,
+}: Props) {
   const [shareCount, setShareCount] = useState(() => getStoredDemoShareCount())
   const [message, setMessage] = useState('')
 
   const clear = () => {
     const removed = clearDemoShares()
+    onSharesCleared()
     setShareCount(0)
     setMessage(
       removed > 0
