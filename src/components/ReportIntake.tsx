@@ -172,7 +172,7 @@ export function ReportIntake({
 
         <label className="file-import-button">
           <input
-            aria-label="Importar laudo sintético em TXT ou MD"
+            aria-label="Importar laudo de texto sintético em TXT ou MD"
             type="file"
             accept=".txt,.md,text/plain,text/markdown"
             onChange={(event) => void importLocalText(event)}
