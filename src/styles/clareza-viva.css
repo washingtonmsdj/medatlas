@@ -813,8 +813,16 @@ button.overview-report-row:hover {
   }
 
   .overview-atlas-stage {
-    min-height: 360px;
+    min-height: 420px;
     padding: 7px;
+  }
+
+  .overview-atlas-stage .anatomy-focus-preview-compact .anatomy-focus-preview-stage,
+  .overview-atlas-stage .anatomy-focus-preview-compact .human-atlas-scene,
+  .overview-atlas-stage .anatomy-focus-preview-compact .organ-detail-scene,
+  .overview-atlas-stage .focused-reference-loading,
+  .overview-atlas-stage .renderer-module-loading {
+    min-height: 400px;
   }
 
   .overview-flow-list > button {
