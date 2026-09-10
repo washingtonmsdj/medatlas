@@ -207,10 +207,16 @@
   gap: 2px;
 }
 
-.overview-case-patient span,
-.overview-next-action span {
+.overview-case-patient span {
   color: var(--text-muted);
   font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.overview-next-action > span {
+  color: var(--text-secondary);
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .12em;
 }
