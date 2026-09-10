@@ -23,27 +23,11 @@ jobs:
 
           path = Path('scripts/validate-reference-atlas.mjs')
           source = path.read_text()
-          old = """  {
-    surface: 'dashboard',
-    source: overview,
-    required: ['<AnatomyFocusPreview', 'contextMode=\"none\"'],
-  },
-"""
-          new = """  {
-    surface: 'dashboard',
-    source: overview,
-    required: [
-      '<AnatomyFocusPreview',
-      'contextMode=\"region\"',
-      'data-clinical-focus=',
-      'FOCO CLÍNICO · HUMAN ATLAS 3D',
-    ],
-  },
-"""
+          old = "  {\n    surface: 'dashboard',\n    source: overview,\n    required: ['<AnatomyFocusPreview', 'contextMode=\"none\"'],\n  },\n"
+          new = "  {\n    surface: 'dashboard',\n    source: overview,\n    required: [\n      '<AnatomyFocusPreview',\n      'contextMode=\"region\"',\n      'data-clinical-focus=',\n      'FOCO CLÍNICO · HUMAN ATLAS 3D',\n    ],\n  },\n"
           if source.count(old) != 1:
               raise SystemExit(f'expected one dashboard context contract, found {source.count(old)}')
-          source = source.replace(old, new, 1)
-          path.write_text(source)
+          path.write_text(source.replace(old, new, 1))
           PY
           git diff --check
           git diff -- scripts/validate-reference-atlas.mjs
