@@ -58,7 +58,8 @@ O wedge do produto é **comunicação clínica visual entre profissional e pacie
 - [x] limite de **64 KiB** centralizado e aplicado por bytes UTF-8 tanto no arquivo quanto no texto digitado/colado;
 - [x] fluxo de análise também valida o limite no controlador, portanto a UI não é a única barreira;
 - [x] teste Browser E2E dedicado cobre o limite e a comunicação dos formatos aceitos;
-- [x] gate de segurança protege a mesma regra na autoridade central.
+- [x] gate de segurança protege a mesma regra na autoridade central;
+- [x] CI, Browser E2E e GitHub Pages/Chromium fecharam verdes no mesmo source funcional.
 
 ### O que continua deliberadamente fora do MVP browser atual
 
@@ -117,19 +118,19 @@ Durante a implementação, um update de `App.tsx` carregou mudanças estruturais
 Source funcional: `b5c2ca3d5c332432f7417513b19d1f8d06b290fe`.
 
 - **CI `34481648367` — PASS**: contratos de DB/organização/publicação/repositório/share/anatomia/demo/assets/performance/security/IA/revisão/workflow/licença/Atlas/MVP UI, TypeScript, build e bundle budget.
-- **GitHub Pages Preview `34481648389` — PASS nos jobs de build, deploy e verificação Chromium do fluxo 3D publicado.**
-- **Browser E2E `34481648442`** — responsive-layout e supporting-contracts PASS; clinical-flow ainda estava executando no instante desta consolidação. Só promover o run inteiro a PASS quando o terceiro shard concluir verde.
+- **Browser E2E `34481648442` — PASS completo**: `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes; o shard clínico inclui o novo contrato de intake de laudo.
+- **GitHub Pages Preview `34481648389` — PASS**: build, deploy, shell/assets publicados e verificação remota em Chromium do fluxo clínico 3D.
 
 Não usar runs intermediários que falharam durante a implementação como baseline final. Eles serviram para revelar contratos desatualizados e a regressão estrutural do `App.tsx`.
 
 ## 5. Próxima ordem de trabalho — mirando MVP
 
-### P0 — fechar candidato a piloto sintético
+### P0 — piloto sintético humano
 
-1. confirmar o shard `clinical-flow` do Browser E2E `34481648442`;
-2. manter CI + Browser E2E + Pages verdes no mesmo source funcional;
-3. executar o **piloto manual sintético** de `docs/PILOT.md` no preview publicado, em desktop e mobile;
-4. registrar apenas atritos observáveis de tarefa/navegação/3D e corrigir sem reabrir arquitetura já provada;
+1. executar o **piloto manual sintético** de `docs/PILOT.md` no preview publicado, em desktop e mobile;
+2. registrar apenas atritos observáveis de tarefa/navegação/3D;
+3. corrigir bloqueadores reais sem reabrir arquitetura já provada;
+4. manter CI + Browser E2E + Pages verdes;
 5. revisar texto do produto somente onde houver confusão real entre anatomia de referência e anatomia individual.
 
 ### P1 — ingestão de documentos, sem gambiarra
@@ -171,13 +172,7 @@ Somente depois da fronteira backend existir. A IA deve retornar estrutura valid�
 
 ## 6. Critério de MVP desta fase
 
-O **MVP browser sintético** pode ser tratado como pronto para piloto quando:
-
-- CI, Browser E2E e Pages estiverem verdes no source funcional;
-- fluxo laudo → anatomia → confirmação → 3D → explicação → revisão → paciente funcionar de ponta a ponta;
-- manual pilot não revelar bloqueador P0;
-- produto continuar synthetic-only e honesto sobre formatos/capacidades;
-- nenhum estado sugira diagnóstico automático ou reconstrução individual do paciente.
+O **MVP browser sintético** está tecnicamente qualificado para **piloto manual sintético** porque CI, Browser E2E e Pages fecharam verdes no source funcional. O próximo gate não é outro refactor abstrato: é navegação humana real pelo roteiro de `docs/PILOT.md` e correção dos bloqueadores que forem observados.
 
 Isso **não** significa “produção clínica pronta”. Produção exige P2 e os gates de segurança/compliance correspondentes.
 
