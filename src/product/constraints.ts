@@ -7,6 +7,9 @@ export const DEMO_CONSTRAINTS = {
     maxBytes: 64 * 1024,
     extensions: ['.txt', '.md'] as const,
   },
+  patientExplanation: {
+    maxCharacters: 4000,
+  },
 } as const
 
 export type DemoReportSourceValidation =
@@ -17,8 +20,20 @@ export type DemoReportSourceValidation =
       reason: 'too-short' | 'too-large'
     }
 
+export type DemoPatientExplanationValidation =
+  | { ok: true; characters: number }
+  | {
+      ok: false
+      characters: number
+      reason: 'too-large'
+    }
+
 export function reportSourceByteLength(value: string) {
   return new TextEncoder().encode(value).byteLength
+}
+
+export function patientExplanationCharacterLength(value: string) {
+  return Array.from(value).length
 }
 
 export function validateDemoReportSource(
@@ -37,6 +52,18 @@ export function validateDemoReportSource(
   return { ok: true, bytes }
 }
 
+export function validateDemoPatientExplanation(
+  value: string,
+): DemoPatientExplanationValidation {
+  const characters = patientExplanationCharacterLength(value)
+
+  if (characters > DEMO_CONSTRAINTS.patientExplanation.maxCharacters) {
+    return { ok: false, characters, reason: 'too-large' }
+  }
+
+  return { ok: true, characters }
+}
+
 export function isDemoTextFilenameAllowed(filename: string) {
   const normalized = filename.toLowerCase()
   return DEMO_CONSTRAINTS.localText.extensions.some((extension) =>
@@ -46,6 +73,10 @@ export function isDemoTextFilenameAllowed(filename: string) {
 
 export function formatDemoTextLimit() {
   return `${Math.round(DEMO_CONSTRAINTS.localText.maxBytes / 1024)} KB`
+}
+
+export function formatDemoPatientExplanationLimit() {
+  return `${DEMO_CONSTRAINTS.patientExplanation.maxCharacters.toLocaleString('pt-BR')} caracteres`
 }
 
 export function demoTextFormatLabel() {
