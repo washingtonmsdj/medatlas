@@ -48,6 +48,7 @@ export interface ReportPublicationIdentity {
 
 export interface VisualReport {
   id: string
+  version: number
   patient: PatientSummary
   title: string
   status: ClinicalReportStatus

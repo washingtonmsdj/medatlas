@@ -23,6 +23,10 @@ export type ReportWorkflowAction =
 function invalidatePublication(report: VisualReport): VisualReport {
   return {
     ...report,
+    version:
+      report.status === 'published'
+        ? report.version + 1
+        : report.version,
     status: 'draft',
     shareSlug: undefined,
     publicationIdentity: undefined,
@@ -171,6 +175,7 @@ export function reportWorkflowReducer(
       if (
         !canPublish(report) ||
         action.report.id !== report.id ||
+        action.report.version !== report.version ||
         action.report.status !== 'published' ||
         !action.report.shareSlug ||
         !action.report.publicationIdentity

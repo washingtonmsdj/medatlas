@@ -5,6 +5,7 @@ const clinicianNote =
 
 export const demoReport: VisualReport = {
   id: 'rep_demo_l4l5',
+  version: 1,
   patient: {
     id: 'pat_demo_001',
     displayName: 'Paciente demonstração',
@@ -39,6 +40,7 @@ export function createEmptyDemoReport(): VisualReport {
 
   return {
     id: `rep_demo_${suffix}`,
+    version: 1,
     patient: {
       id: 'pat_demo_001',
       displayName: 'Paciente demonstração',
