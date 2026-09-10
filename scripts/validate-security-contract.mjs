@@ -51,6 +51,11 @@ const requiredDemoFragments = [
   'getUsageSummary',
   'getReportViewStats',
   'pruneExpiredAndExcessShares',
+  'const keys: string[] = []',
+  'const activeShares = new Map<',
+  '.slice(MAX_STORED_DEMO_SHARES)',
+  'memoryShares.delete(token)',
+  'entry.storageKey ?? \`${STORAGE_PREFIX}${token}\`',
 ]
 
 for (const fragment of requiredDemoFragments) {

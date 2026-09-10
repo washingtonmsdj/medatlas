@@ -101,10 +101,14 @@ function storageEntries() {
   const entries: DemoShareEntry[] = []
 
   try {
+    const keys: string[] = []
+
     for (let index = 0; index < window.localStorage.length; index += 1) {
       const key = window.localStorage.key(index)
-      if (!key?.startsWith(STORAGE_PREFIX)) continue
+      if (key?.startsWith(STORAGE_PREFIX)) keys.push(key)
+    }
 
+    for (const key of keys) {
       const raw = window.localStorage.getItem(key)
       if (!raw) continue
 
@@ -126,36 +130,58 @@ function storageEntries() {
 }
 
 function pruneExpiredAndExcessShares(now = Date.now()) {
-  const entries = storageEntries()
+  const activeShares = new Map<
+    string,
+    { createdAt: number; storageKey?: string }
+  >()
 
-  for (const entry of entries) {
-    if (entry.expiresAt <= now && entry.key) {
+  for (const entry of storageEntries()) {
+    if (entry.expiresAt <= now) {
       try {
-        window.localStorage.removeItem(entry.key)
+        if (entry.key) window.localStorage.removeItem(entry.key)
       } catch {
         // Best-effort cleanup only.
       }
+
+      memoryShares.delete(entry.token)
+      continue
     }
-  }
 
-  const remaining = entries
-    .filter((entry) => entry.expiresAt > now)
-    .sort((a, b) => b.createdAt - a.createdAt)
-
-  for (const entry of remaining.slice(MAX_STORED_DEMO_SHARES)) {
-    if (!entry.key) continue
-
-    try {
-      window.localStorage.removeItem(entry.key)
-    } catch {
-      // Best-effort cleanup only.
-    }
+    activeShares.set(entry.token, {
+      createdAt: entry.createdAt,
+      storageKey: entry.key,
+    })
   }
 
   for (const [token, entry] of memoryShares) {
     if (entry.expiresAt <= now) {
       memoryShares.delete(token)
+      continue
     }
+
+    const current = activeShares.get(token)
+    if (!current || entry.createdAt > current.createdAt) {
+      activeShares.set(token, {
+        createdAt: entry.createdAt,
+        storageKey: current?.storageKey,
+      })
+    }
+  }
+
+  const excess = [...activeShares.entries()]
+    .sort(([, left], [, right]) => right.createdAt - left.createdAt)
+    .slice(MAX_STORED_DEMO_SHARES)
+
+  for (const [token, entry] of excess) {
+    try {
+      window.localStorage.removeItem(
+        entry.storageKey ?? `${STORAGE_PREFIX}${token}`,
+      )
+    } catch {
+      // Best-effort cleanup only.
+    }
+
+    memoryShares.delete(token)
   }
 }
 
