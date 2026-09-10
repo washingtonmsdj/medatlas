@@ -28,6 +28,7 @@ jobs:
       - run: npm run validate:organization-runtime
       - run: npm run validate:publication-identity
       - run: npm run validate:repository-boundary
+      - run: npm run validate:share-revocation
       - run: npm run validate:anatomy-contract
       - run: npm run validate:demo-scenarios
       - run: npm run validate:vendored-assets

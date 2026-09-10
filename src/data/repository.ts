@@ -3,7 +3,6 @@ import {
   demoClinicalRepository,
   demoRepositoryDescriptor,
   getStoredDemoShareCount,
-  revokeDemoReportShares,
 } from './demo-clinical-repository'
 import type {
   ClinicalRepository,
@@ -76,10 +75,6 @@ export function getActivePatientShareCount() {
 
 export function revokeAllActivePatientShares() {
   return clearDemoShares()
-}
-
-export function revokeActivePatientSharesForReport(reportId: string) {
-  return revokeDemoReportShares(reportId)
 }
 
 /**
