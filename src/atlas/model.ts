@@ -15,6 +15,12 @@ import type {
 export type AtlasContextMode = 'none' | 'system' | 'region'
 
 const chunkBufferCache = new Map<string, Promise<ArrayBuffer>>()
+const REGION_MAX_CHUNKS = 3
+const REGION_SYSTEM_PENALTY = 0.6
+const REGION_CENTER_WEIGHT = 0.035
+
+type Vec3 = [number, number, number]
+type Bounds3 = [Vec3, Vec3]
 
 export async function decodeModelResponse(
   response: Response,
@@ -71,8 +77,6 @@ export async function loadChunkBuffer(chunk: AtlasChunk): Promise<ArrayBuffer> {
   return request
 }
 
-type Vec3 = [number, number, number]
-
 function partCenter(part: AtlasPart): Vec3 {
   return [
     (part.bounds[0][0] + part.bounds[1][0]) * 0.5,
@@ -88,7 +92,7 @@ function distanceToSquared(a: Vec3, b: Vec3) {
   return dx * dx + dy * dy + dz * dz
 }
 
-function boundsCenter(parts: AtlasPart[]): Vec3 {
+function mergedBounds(parts: AtlasPart[]): Bounds3 {
   const min: Vec3 = [Infinity, Infinity, Infinity]
   const max: Vec3 = [-Infinity, -Infinity, -Infinity]
 
@@ -99,11 +103,100 @@ function boundsCenter(parts: AtlasPart[]): Vec3 {
     }
   }
 
+  return [min, max]
+}
+
+function boundsCenter(bounds: Bounds3): Vec3 {
   return [
-    (min[0] + max[0]) * 0.5,
-    (min[1] + max[1]) * 0.5,
-    (min[2] + max[2]) * 0.5,
+    (bounds[0][0] + bounds[1][0]) * 0.5,
+    (bounds[0][1] + bounds[1][1]) * 0.5,
+    (bounds[0][2] + bounds[1][2]) * 0.5,
   ]
+}
+
+function axisGap(candidateMin: number, candidateMax: number, focusMin: number, focusMax: number) {
+  if (candidateMax < focusMin) return focusMin - candidateMax
+  if (candidateMin > focusMax) return candidateMin - focusMax
+  return 0
+}
+
+function regionalDistanceScore(
+  part: AtlasPart,
+  focusBounds: Bounds3,
+  focusCenter: Vec3,
+  selectedSystems: Set<string>,
+) {
+  const focusExtents: Vec3 = [
+    focusBounds[1][0] - focusBounds[0][0],
+    focusBounds[1][1] - focusBounds[0][1],
+    focusBounds[1][2] - focusBounds[0][2],
+  ]
+  const largestExtent = Math.max(...focusExtents, 1)
+  const axisScale: Vec3 = focusExtents.map((extent) =>
+    Math.max(extent, largestExtent * 0.35),
+  ) as Vec3
+
+  let gapScore = 0
+  for (let axis = 0; axis < 3; axis += 1) {
+    const gap = axisGap(
+      part.bounds[0][axis],
+      part.bounds[1][axis],
+      focusBounds[0][axis],
+      focusBounds[1][axis],
+    )
+    gapScore += (gap / axisScale[axis]) ** 2
+  }
+
+  const centerScore =
+    distanceToSquared(partCenter(part), focusCenter) /
+    (largestExtent * largestExtent)
+  const systemPenalty = selectedSystems.has(part.system)
+    ? 0
+    : REGION_SYSTEM_PENALTY
+
+  return gapScore + centerScore * REGION_CENTER_WEIGHT + systemPenalty
+}
+
+function selectRegionalContext(
+  atlas: HumanAtlas,
+  selectedIds: Set<string>,
+  selectedParts: AtlasPart[],
+  selectedSystems: Set<string>,
+  contextLimit: number,
+) {
+  const focusBounds = mergedBounds(selectedParts)
+  const focusCenter = boundsCenter(focusBounds)
+  const selectedChunks = new Set(selectedParts.map((part) => part.chunk))
+  const admittedChunks = new Set(selectedChunks)
+
+  const ranked = atlas.parts
+    .filter((part) => !selectedIds.has(part.id))
+    .map((part) => ({
+      part,
+      score: regionalDistanceScore(
+        part,
+        focusBounds,
+        focusCenter,
+        selectedSystems,
+      ),
+    }))
+    .sort((a, b) => a.score - b.score)
+
+  const contextParts: AtlasPart[] = []
+
+  for (const { part } of ranked) {
+    const chunkAlreadyAdmitted = admittedChunks.has(part.chunk)
+    if (!chunkAlreadyAdmitted && admittedChunks.size >= REGION_MAX_CHUNKS) {
+      continue
+    }
+
+    admittedChunks.add(part.chunk)
+    contextParts.push(part)
+
+    if (contextParts.length >= contextLimit) break
+  }
+
+  return contextParts
 }
 
 export function selectConceptSceneParts(
@@ -121,28 +214,37 @@ export function selectConceptSceneParts(
 
   const selectedChunks = new Set(selectedParts.map((part) => part.chunk))
   const selectedSystems = new Set(selectedParts.map((part) => part.system))
-  const selectedCenter = boundsCenter(selectedParts)
   const effectiveLimit =
     contextMode === 'region' ? Math.max(contextLimit, 18) : contextLimit
 
   const contextParts =
     contextMode === 'none'
       ? []
-      : atlas.parts
-          .filter(
-            (part) =>
-              !selectedIds.has(part.id) &&
-              selectedChunks.has(part.chunk) &&
-              (contextMode === 'region' ||
-                selectedSystems.has(part.system)),
+      : contextMode === 'region'
+        ? selectRegionalContext(
+            atlas,
+            selectedIds,
+            selectedParts,
+            selectedSystems,
+            effectiveLimit,
           )
-          .map((part) => ({
-            part,
-            distance: distanceToSquared(partCenter(part), selectedCenter),
-          }))
-          .sort((a, b) => a.distance - b.distance)
-          .slice(0, effectiveLimit)
-          .map(({ part }) => part)
+        : atlas.parts
+            .filter(
+              (part) =>
+                !selectedIds.has(part.id) &&
+                selectedChunks.has(part.chunk) &&
+                selectedSystems.has(part.system),
+            )
+            .map((part) => ({
+              part,
+              distance: distanceToSquared(
+                partCenter(part),
+                boundsCenter(mergedBounds(selectedParts)),
+              ),
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, effectiveLimit)
+            .map(({ part }) => part)
 
   return {
     selectedIds,
