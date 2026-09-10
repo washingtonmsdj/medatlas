@@ -21,6 +21,7 @@ export interface ClinicalReportViewStat {
 export interface ClinicalRepository {
   publishReport(report: VisualReport): Promise<VisualReport>
   resolvePatientShare(token: string): Promise<VisualReport | null>
+  revokeReportShares(reportId: string): Promise<number>
   getUsageSummary(): Promise<ClinicalUsageSummary>
   getReportViewStats(): Promise<ClinicalReportViewStat[]>
 }

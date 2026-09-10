@@ -381,6 +381,57 @@ export function clearDemoShares() {
   return removedTokens.size
 }
 
+export function revokeDemoReportShares(reportId: string) {
+  if (!reportId.trim()) return 0
+
+  const removedTokens = new Set<string>()
+
+  try {
+    const keys: string[] = []
+
+    for (let index = 0; index < window.localStorage.length; index += 1) {
+      const key = window.localStorage.key(index)
+      if (key?.startsWith(STORAGE_PREFIX)) keys.push(key)
+    }
+
+    for (const key of keys) {
+      const raw = window.localStorage.getItem(key)
+      if (!raw) continue
+
+      const token = key.slice(STORAGE_PREFIX.length)
+      const entry = parseStoredShare(token, key, raw)
+
+      if (!entry) {
+        window.localStorage.removeItem(key)
+        continue
+      }
+
+      if (entry.report.id !== reportId) continue
+
+      window.localStorage.removeItem(key)
+
+      if (window.localStorage.getItem(key) !== null) {
+        throw new Error('share_revocation_not_confirmed')
+      }
+
+      removedTokens.add(token)
+      memoryShares.delete(token)
+    }
+  } catch {
+    throw new Error(
+      'Não foi possível revogar os links ativos da versão publicada. A alteração foi bloqueada para preservar a segurança do relatório.',
+    )
+  }
+
+  for (const [token, entry] of memoryShares) {
+    if (entry.report.id !== reportId) continue
+    removedTokens.add(token)
+    memoryShares.delete(token)
+  }
+
+  return removedTokens.size
+}
+
 function demoUsageSummary(): ClinicalUsageSummary {
   const entries = analyticsEntries()
   const publishedReports = new Set(entries.map((entry) => entry.report.id))
@@ -529,6 +580,10 @@ export class DemoClinicalRepository implements ClinicalRepository {
     }
 
     return read(token)
+  }
+
+  async revokeReportShares(reportId: string): Promise<number> {
+    return revokeDemoReportShares(reportId)
   }
 
   async getUsageSummary(): Promise<ClinicalUsageSummary> {
