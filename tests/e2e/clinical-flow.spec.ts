@@ -932,10 +932,10 @@ test('Atlas 3D matches the canonical three-column clinical concept', async ({ pa
     .getByRole('button', { name: 'Atlas 3D', exact: true })
     .click()
 
-  const workspace = page.locator('.atlas-v3-workspace')
-  const casePanel = page.locator('.atlas-v3-case-panel')
-  const bodyPanel = page.locator('.atlas-v3-body-panel')
-  const detailPanel = page.locator('.atlas-v3-detail-panel')
+  const workspace = page.locator('.reference-atlas-workspace')
+  const casePanel = page.locator('.reference-atlas-case-panel')
+  const bodyPanel = page.locator('.reference-atlas-body-panel')
+  const detailPanel = page.locator('.reference-atlas-detail-panel')
 
   await expect(workspace).toBeVisible()
   await expect(casePanel).toContainText('Resumo do exame')
@@ -1000,17 +1000,17 @@ test('full Atlas keeps body and detailed organ visible together without changing
   await heartResult.click()
 
   const bodyCanvas = page.locator(
-    '.atlas-v3-body-stage .reference-atlas-scene canvas',
+    '.reference-atlas-body-stage .reference-atlas-scene canvas',
   )
   const organCanvas = page.locator(
-    '.atlas-v3-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
+    '.reference-atlas-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
   )
 
   await expect(bodyCanvas).toBeVisible({ timeout: 60_000 })
   await expect(organCanvas).toBeVisible({ timeout: 45_000 })
 
-  const detailPanel = page.locator('.atlas-v3-detail-panel')
-  const depth = page.locator('.atlas-v3-depth-switch')
+  const detailPanel = page.locator('.reference-atlas-detail-panel')
+  const depth = page.locator('.reference-atlas-depth-switch')
   const bodyDepth = depth.getByRole('button', { name: 'Corpo', exact: true })
   const organDepth = depth.getByRole('button', { name: 'Órgão em detalhe' })
 
@@ -1325,7 +1325,7 @@ test('Atlas detail reference tab keeps anatomy authority explicit without engine
     .getByRole('button', { name: 'Referências' })
     .click()
 
-  const detail = page.locator('.atlas-v3-detail-content')
+  const detail = page.locator('.reference-atlas-detail-content')
   await expect(detail).toContainText('Human Atlas / BodyParts3D')
   await expect(detail).toContainText('fonte de verdade')
   await expect(detail).not.toContainText('SHA-256')

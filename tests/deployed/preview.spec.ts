@@ -174,8 +174,8 @@ test('published Atlas uses the concept body-plus-detail layout on mobile', async
     .getByRole('button', { name: 'Atlas 3D' })
     .click()
 
-  const workspace = page.locator('.atlas-v3-workspace')
-  const stage = page.locator('.atlas-v3-body-stage')
+  const workspace = page.locator('.reference-atlas-workspace')
+  const stage = page.locator('.reference-atlas-body-stage')
   const canvas = stage.locator('.reference-atlas-scene canvas')
 
   await expect(workspace).toBeVisible()
@@ -191,7 +191,7 @@ test('published Atlas uses the concept body-plus-detail layout on mobile', async
   await expect(
     page.getByRole('navigation', { name: 'Atalhos do Atlas 3D' }),
   ).toBeVisible()
-  await expect(page.locator('.atlas-v3-detail-panel')).toBeVisible()
+  await expect(page.locator('.reference-atlas-detail-panel')).toBeVisible()
 
   const search = page.locator('#reference-atlas-search')
   await search.fill('Coração')
@@ -204,7 +204,7 @@ test('published Atlas uses the concept body-plus-detail layout on mobile', async
   await expect(canvas).toBeVisible()
   await expect(
     page.locator(
-      '.atlas-v3-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
+      '.reference-atlas-organ-stage .organ-detail-scene[data-organ="heart"] canvas',
     ),
   ).toBeVisible({ timeout: 45_000 })
 

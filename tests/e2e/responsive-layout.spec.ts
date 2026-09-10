@@ -311,10 +311,10 @@ test('full Atlas concept stays usable from desktop to mobile', async ({
     .getByRole('button', { name: 'Atlas 3D' })
     .click()
 
-  const workspace = page.locator('.atlas-v3-workspace')
-  const stage = page.locator('.atlas-v3-body-stage')
+  const workspace = page.locator('.reference-atlas-workspace')
+  const stage = page.locator('.reference-atlas-body-stage')
   const canvas = stage.locator('.reference-atlas-scene canvas')
-  const detail = page.locator('.atlas-v3-detail-panel')
+  const detail = page.locator('.reference-atlas-detail-panel')
 
   await expect(workspace).toBeVisible()
   await expect(canvas).toBeVisible({ timeout: 100_000 })
@@ -352,9 +352,9 @@ test('full Atlas concept stays usable from desktop to mobile', async ({
   await expectNoHorizontalOverflow(page)
   await expect(canvas).toBeVisible()
 
-  const compactCase = await page.locator('.atlas-v3-case-panel').boundingBox()
-  const compactBody = await page.locator('.atlas-v3-body-panel').boundingBox()
-  const compactDetail = await page.locator('.atlas-v3-detail-panel').boundingBox()
+  const compactCase = await page.locator('.reference-atlas-case-panel').boundingBox()
+  const compactBody = await page.locator('.reference-atlas-body-panel').boundingBox()
+  const compactDetail = await page.locator('.reference-atlas-detail-panel').boundingBox()
   expect(compactCase).not.toBeNull()
   expect(compactBody).not.toBeNull()
   expect(compactDetail).not.toBeNull()
@@ -380,7 +380,7 @@ test('full Atlas concept stays usable from desktop to mobile', async ({
   const presetButtons = mobilePresets.getByRole('button')
   await expect(presetButtons).toHaveCount(6)
 
-  const depthButtons = page.locator('.atlas-v3-depth-switch').getByRole('button')
+  const depthButtons = page.locator('.reference-atlas-depth-switch').getByRole('button')
   await expect(depthButtons).toHaveCount(2)
   for (let index = 0; index < 2; index += 1) {
     const box = await depthButtons.nth(index).boundingBox()

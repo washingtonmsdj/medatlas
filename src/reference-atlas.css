@@ -44,7 +44,7 @@
   margin: 8px;
 }
 
-.atlas-v3-workspace {
+.reference-atlas-workspace {
   min-height: calc(100vh - 74px);
   display: grid;
   grid-template-columns: minmax(282px, 22%) minmax(500px, 1fr) minmax(360px, 30%);
@@ -55,26 +55,26 @@
   box-shadow: 0 28px 70px var(--surface-shortcut);
 }
 
-.atlas-v3-workspace button,
-.atlas-v3-workspace input,
-.atlas-v3-workspace select {
+.reference-atlas-workspace button,
+.reference-atlas-workspace input,
+.reference-atlas-workspace select {
   font: inherit;
 }
 
-.atlas-v3-case-panel,
-.atlas-v3-detail-panel {
+.reference-atlas-case-panel,
+.reference-atlas-detail-panel {
   min-width: 0;
   background:
     linear-gradient(180deg, var(--accent-primary), var(--accent-primary));
 }
 
-.atlas-v3-case-panel {
+.reference-atlas-case-panel {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--line-subtle);
 }
 
-.atlas-v3-patient-heading {
+.reference-atlas-patient-heading {
   min-height: 88px;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 30px;
@@ -84,7 +84,7 @@
   border-bottom: 1px solid var(--line-subtle);
 }
 
-.atlas-v3-patient-avatar {
+.reference-atlas-patient-avatar {
   width: 48px;
   height: 48px;
   display: grid;
@@ -98,13 +98,13 @@
   font-weight: 800;
 }
 
-.atlas-v3-patient-heading > div {
+.reference-atlas-patient-heading > div {
   min-width: 0;
   display: grid;
   gap: 4px;
 }
 
-.atlas-v3-patient-heading strong {
+.reference-atlas-patient-heading strong {
   overflow: hidden;
   color: var(--text-primary);
   font-size: 14px;
@@ -112,7 +112,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-patient-heading small {
+.reference-atlas-patient-heading small {
   overflow: hidden;
   color: var(--text-muted);
   font-size: 10px;
@@ -120,7 +120,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-patient-more {
+.reference-atlas-patient-more {
   width: 30px;
   height: 34px;
   display: grid;
@@ -131,14 +131,14 @@
   font-size: 13px;
 }
 
-.atlas-v3-case-tabs {
+.reference-atlas-case-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border-bottom: 1px solid var(--line-subtle);
   background: var(--surface-deep);
 }
 
-.atlas-v3-case-tabs button {
+.reference-atlas-case-tabs button {
   min-height: 42px;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -148,13 +148,13 @@
   font-size: 10px;
 }
 
-.atlas-v3-case-tabs button.active {
+.reference-atlas-case-tabs button.active {
   color: var(--accent-cyan);
   border-bottom-color: var(--line-focus);
   background: linear-gradient(180deg, transparent, var(--overlay-workspace-glow));
 }
 
-.atlas-v3-case-scroll {
+.reference-atlas-case-scroll {
   min-height: 0;
   flex: 1 1 auto;
   display: grid;
@@ -166,21 +166,21 @@
   scrollbar-color: var(--text-muted) transparent;
 }
 
-.atlas-v3-case-scroll section {
+.reference-atlas-case-scroll section {
   display: grid;
   gap: 9px;
 }
 
-.atlas-v3-case-tab-content {
+.reference-atlas-case-tab-content {
   padding: 2px 0 4px;
 }
 
-.atlas-v3-case-tab-content > strong {
+.reference-atlas-case-tab-content > strong {
   color: var(--accent-cyan);
   font-size: 10px;
 }
 
-.atlas-v3-case-tab-content > small {
+.reference-atlas-case-tab-content > small {
   width: fit-content;
   padding: 4px 7px;
   border: 1px solid var(--line-focus);
@@ -190,21 +190,21 @@
   font-size: 7px;
 }
 
-.atlas-v3-section-title {
+.reference-atlas-section-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.atlas-v3-section-title strong,
-.atlas-v3-label {
+.reference-atlas-section-title strong,
+.reference-atlas-label {
   color: var(--accent-cyan);
   font-size: 11px;
   font-weight: 800;
 }
 
-.atlas-v3-section-title span {
+.reference-atlas-section-title span {
   padding: 4px 7px;
   border: 1px solid var(--line-success);
   border-radius: 999px;
@@ -214,19 +214,19 @@
   font-weight: 800;
 }
 
-.atlas-v3-report-title {
+.reference-atlas-report-title {
   color: var(--accent-cyan);
   font-size: 10px;
 }
 
-.atlas-v3-case-scroll section > p {
+.reference-atlas-case-scroll section > p {
   margin: 0;
   color: var(--accent-cyan);
   font-size: 10.5px;
   line-height: 1.62;
 }
 
-.atlas-v3-structure-card {
+.reference-atlas-structure-card {
   width: 100%;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
@@ -241,7 +241,7 @@
   text-align: left;
 }
 
-.atlas-v3-structure-card > span {
+.reference-atlas-structure-card > span {
   width: 34px;
   height: 34px;
   display: grid;
@@ -252,13 +252,13 @@
   font-size: 16px;
 }
 
-.atlas-v3-structure-card > div {
+.reference-atlas-structure-card > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.atlas-v3-structure-card strong {
+.reference-atlas-structure-card strong {
   overflow: hidden;
   color: var(--accent-cyan);
   font-size: 11px;
@@ -266,7 +266,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-structure-card small {
+.reference-atlas-structure-card small {
   overflow: hidden;
   color: var(--accent-text);
   font-size: 9.5px;
@@ -274,17 +274,17 @@
   white-space: nowrap;
 }
 
-.atlas-v3-structure-card b {
+.reference-atlas-structure-card b {
   color: var(--accent-cyan);
   font-size: 15px;
 }
 
-.atlas-v3-findings {
+.reference-atlas-findings {
   display: grid;
   gap: 7px;
 }
 
-.atlas-v3-findings p {
+.reference-atlas-findings p {
   margin: 0;
   display: grid;
   grid-template-columns: 7px minmax(0, 1fr);
@@ -294,7 +294,7 @@
   line-height: 1.4;
 }
 
-.atlas-v3-findings i {
+.reference-atlas-findings i {
   width: 6px;
   height: 6px;
   margin-top: 3px;
@@ -303,13 +303,13 @@
   box-shadow: 0 0 10px var(--focus-ring);
 }
 
-.atlas-v3-tags {
+.reference-atlas-tags {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
-.atlas-v3-tags span {
+.reference-atlas-tags span {
   padding: 5px 9px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -317,25 +317,25 @@
   font-weight: 800;
 }
 
-.atlas-v3-tags .blue {
+.reference-atlas-tags .blue {
   color: var(--accent-cyan);
   border-color: var(--line-focus);
   background: var(--accent-surface);
 }
 
-.atlas-v3-tags .rose {
+.reference-atlas-tags .rose {
   color: var(--state-danger-soft);
   border-color: var(--line-danger);
   background: var(--surface-danger-soft);
 }
 
-.atlas-v3-tags .green {
+.reference-atlas-tags .green {
   color: var(--state-success);
   border-color: var(--line-success);
   background: var(--surface-success-soft);
 }
 
-.atlas-v3-primary-action {
+.reference-atlas-primary-action {
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -351,8 +351,8 @@
   font-weight: 850;
 }
 
-.atlas-v3-primary-action.confirmed,
-.atlas-v3-primary-action.confirmed:disabled {
+.reference-atlas-primary-action.confirmed,
+.reference-atlas-primary-action.confirmed:disabled {
   border-color: var(--line-success);
   color: var(--state-success);
   background: var(--surface-success-soft);
@@ -361,13 +361,13 @@
   opacity: 1;
 }
 
-.atlas-v3-secondary-actions {
+.reference-atlas-secondary-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
 }
 
-.atlas-v3-secondary-actions button {
+.reference-atlas-secondary-actions button {
   min-height: 38px;
   border: 1px solid var(--line-focus);
   border-radius: 9px;
@@ -378,7 +378,7 @@
   font-weight: 700;
 }
 
-.atlas-v3-review-banner {
+.reference-atlas-review-banner {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 10px;
@@ -388,12 +388,12 @@
   background: var(--surface-success-soft);
 }
 
-.atlas-v3-review-banner.pending {
+.reference-atlas-review-banner.pending {
   border-color: var(--line-danger);
   background: var(--surface-danger-soft);
 }
 
-.atlas-v3-review-banner > span {
+.reference-atlas-review-banner > span {
   width: 30px;
   height: 30px;
   display: grid;
@@ -404,28 +404,28 @@
   font-weight: 900;
 }
 
-.atlas-v3-review-banner.pending > span {
+.reference-atlas-review-banner.pending > span {
   color: var(--state-danger-soft);
   background: var(--surface-danger-soft);
 }
 
-.atlas-v3-review-banner > div {
+.reference-atlas-review-banner > div {
   display: grid;
   gap: 3px;
 }
 
-.atlas-v3-review-banner strong {
+.reference-atlas-review-banner strong {
   color: var(--accent-cyan);
   font-size: 9px;
 }
 
-.atlas-v3-review-banner small {
+.reference-atlas-review-banner small {
   color: var(--accent-text);
   font-size: 8.5px;
   line-height: 1.45;
 }
 
-.atlas-v3-body-panel {
+.reference-atlas-body-panel {
   position: relative;
   min-width: 0;
   min-height: 0;
@@ -438,7 +438,7 @@
     linear-gradient(180deg, var(--accent-primary), var(--accent-primary) 70%, var(--accent-primary));
 }
 
-.atlas-v3-depth-switch {
+.reference-atlas-depth-switch {
   position: absolute;
   z-index: 15;
   top: 14px;
@@ -454,7 +454,7 @@
   backdrop-filter: blur(14px);
 }
 
-.atlas-v3-depth-switch button {
+.reference-atlas-depth-switch button {
   min-width: 120px;
   min-height: 34px;
   padding: 0 14px;
@@ -467,7 +467,7 @@
   font-weight: 850;
 }
 
-.atlas-v3-depth-switch button.active {
+.reference-atlas-depth-switch button.active {
   color: var(--text-primary);
   background: linear-gradient(135deg, var(--accent-surface), var(--surface-control));
   box-shadow:
@@ -475,12 +475,12 @@
     0 0 22px var(--accent-primary);
 }
 
-.atlas-v3-depth-switch button:disabled {
+.reference-atlas-depth-switch button:disabled {
   opacity: .36;
   cursor: not-allowed;
 }
 
-.atlas-v3-search {
+.reference-atlas-search {
   position: absolute;
   z-index: 17;
   top: 16px;
@@ -488,7 +488,7 @@
   width: min(240px, 31%);
 }
 
-.atlas-v3-search > span {
+.reference-atlas-search > span {
   position: absolute;
   z-index: 2;
   left: 11px;
@@ -497,7 +497,7 @@
   color: var(--accent-text);
 }
 
-.atlas-v3-search input {
+.reference-atlas-search input {
   width: 100%;
   min-height: 36px;
   padding: 0 10px 0 30px;
@@ -511,16 +511,16 @@
   font-size: 9.5px;
 }
 
-.atlas-v3-search input:focus {
+.reference-atlas-search input:focus {
   border-color: var(--line-focus);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-.atlas-v3-search input::placeholder {
+.reference-atlas-search input::placeholder {
   color: var(--accent-text);
 }
 
-.atlas-v3-systems {
+.reference-atlas-systems {
   position: absolute;
   z-index: 14;
   top: 60px;
@@ -535,7 +535,7 @@
   backdrop-filter: blur(14px);
 }
 
-.atlas-v3-systems header {
+.reference-atlas-systems header {
   min-height: 38px;
   display: flex;
   align-items: center;
@@ -545,28 +545,28 @@
   border-bottom: 1px solid var(--line-focus);
 }
 
-.atlas-v3-systems header strong {
+.reference-atlas-systems header strong {
   color: var(--accent-cyan);
   font-size: 9px;
 }
 
-.atlas-v3-systems header span {
+.reference-atlas-systems header span {
   color: var(--accent-text);
   font-size: 7px;
 }
 
-.atlas-v3-systems > div {
+.reference-atlas-systems > div {
   max-height: 350px;
   overflow: auto;
   padding: 5px;
   scrollbar-width: none;
 }
 
-.atlas-v3-systems > div::-webkit-scrollbar {
+.reference-atlas-systems > div::-webkit-scrollbar {
   display: none;
 }
 
-.atlas-v3-systems button {
+.reference-atlas-systems button {
   width: 100%;
   min-height: 28px;
   display: grid;
@@ -583,20 +583,20 @@
   font-size: 8.5px;
 }
 
-.atlas-v3-systems button:hover,
-.atlas-v3-systems button.active {
+.reference-atlas-systems button:hover,
+.reference-atlas-systems button.active {
   color: var(--accent-cyan);
   background: var(--surface-control-hover);
 }
 
-.atlas-v3-systems button i {
+.reference-atlas-systems button i {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   box-shadow: 0 0 6px currentColor;
 }
 
-.atlas-v3-body-tools {
+.reference-atlas-body-tools {
   position: absolute;
   z-index: 14;
   top: 92px;
@@ -605,8 +605,8 @@
   gap: 7px;
 }
 
-.atlas-v3-body-tools button,
-.atlas-v3-organ-tools button {
+.reference-atlas-body-tools button,
+.reference-atlas-organ-tools button {
   width: 36px;
   height: 36px;
   display: grid;
@@ -619,33 +619,33 @@
   font-size: 14px;
 }
 
-.atlas-v3-body-tools button:hover,
-.atlas-v3-body-tools button.active,
-.atlas-v3-organ-tools button:hover:not(:disabled),
-.atlas-v3-organ-tools button.active {
+.reference-atlas-body-tools button:hover,
+.reference-atlas-body-tools button.active,
+.reference-atlas-organ-tools button:hover:not(:disabled),
+.reference-atlas-organ-tools button.active {
   color: var(--text-primary);
   border-color: var(--line-focus);
   background: var(--surface-control);
 }
 
-.atlas-v3-body-stage {
+.reference-atlas-body-stage {
   position: relative;
   min-width: 0;
   min-height: 650px;
   overflow: hidden;
 }
 
-.atlas-v3-body-stage > .reference-atlas-scene,
-.atlas-v3-body-stage > .reference-atlas-scene canvas {
+.reference-atlas-body-stage > .reference-atlas-scene,
+.reference-atlas-body-stage > .reference-atlas-scene canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.atlas-v3-loading,
-.atlas-v3-error,
-.atlas-v3-detail-empty {
+.reference-atlas-loading,
+.reference-atlas-error,
+.reference-atlas-detail-empty {
   position: absolute;
   inset: 0;
   z-index: 4;
@@ -658,15 +658,15 @@
   text-align: center;
 }
 
-.atlas-v3-loading strong,
-.atlas-v3-error strong,
-.atlas-v3-detail-empty strong {
+.reference-atlas-loading strong,
+.reference-atlas-error strong,
+.reference-atlas-detail-empty strong {
   color: var(--accent-cyan);
   font-size: 11px;
 }
 
-.atlas-v3-error p,
-.atlas-v3-detail-empty p {
+.reference-atlas-error p,
+.reference-atlas-detail-empty p {
   max-width: 320px;
   margin: 0;
   color: var(--accent-text);
@@ -674,7 +674,7 @@
   line-height: 1.55;
 }
 
-.atlas-v3-error button {
+.reference-atlas-error button {
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid var(--line-focus);
@@ -685,7 +685,7 @@
   font-size: 8px;
 }
 
-.atlas-v3-body-callout {
+.reference-atlas-body-callout {
   position: absolute;
   z-index: 12;
   right: 16%;
@@ -706,7 +706,7 @@
   text-align: left;
 }
 
-.atlas-v3-body-callout::before {
+.reference-atlas-body-callout::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -716,25 +716,25 @@
   background: linear-gradient(90deg, transparent, var(--accent-surface));
 }
 
-.atlas-v3-body-callout strong {
+.reference-atlas-body-callout strong {
   font-size: 9px;
 }
 
-.atlas-v3-body-callout small {
+.reference-atlas-body-callout small {
   color: var(--accent-text);
   font-size: 7px;
   line-height: 1.35;
 }
 
-.atlas-v3-body-callout.static {
+.reference-atlas-body-callout.static {
   cursor: default;
 }
 
-.atlas-v3-body-callout.static::before {
+.reference-atlas-body-callout.static::before {
   opacity: .55;
 }
 
-.atlas-v3-orientation {
+.reference-atlas-orientation {
   position: absolute;
   z-index: 8;
   left: 24px;
@@ -746,13 +746,13 @@
   font-size: 7px;
 }
 
-.atlas-v3-orientation b {
+.reference-atlas-orientation b {
   color: var(--accent-cyan);
   font-size: 7px;
   letter-spacing: .11em;
 }
 
-.atlas-v3-view-toggle {
+.reference-atlas-view-toggle {
   position: absolute;
   z-index: 9;
   right: 18px;
@@ -761,7 +761,7 @@
   gap: 4px;
 }
 
-.atlas-v3-view-toggle button {
+.reference-atlas-view-toggle button {
   min-width: 38px;
   min-height: 34px;
   border: 1px solid var(--line-focus);
@@ -773,14 +773,14 @@
   font-weight: 800;
 }
 
-.atlas-v3-view-toggle button.active {
+.reference-atlas-view-toggle button.active {
   color: var(--text-primary);
   border-color: var(--line-focus);
   background: var(--surface-control);
   box-shadow: 0 0 18px var(--focus-ring);
 }
 
-.atlas-v3-presets {
+.reference-atlas-presets {
   position: relative;
   z-index: 11;
   display: grid;
@@ -791,7 +791,7 @@
   background: var(--surface-deep);
 }
 
-.atlas-v3-presets button {
+.reference-atlas-presets button {
   min-width: 0;
   min-height: 66px;
   display: grid;
@@ -805,20 +805,20 @@
   cursor: pointer;
 }
 
-.atlas-v3-presets button:hover,
-.atlas-v3-presets button.active {
+.reference-atlas-presets button:hover,
+.reference-atlas-presets button.active {
   color: var(--accent-cyan);
   border-color: var(--line-focus);
   box-shadow: inset 0 0 0 1px var(--focus-ring);
 }
 
-.atlas-v3-presets button > span {
+.reference-atlas-presets button > span {
   color: var(--accent-cyan);
   font-size: 19px;
   line-height: 1;
 }
 
-.atlas-v3-presets button small {
+.reference-atlas-presets button small {
   overflow: hidden;
   max-width: 100%;
   padding: 0 4px;
@@ -827,7 +827,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-progress {
+.reference-atlas-progress {
   position: relative;
   min-height: 22px;
   display: flex;
@@ -841,7 +841,7 @@
   font-size: 6px;
 }
 
-.atlas-v3-progress i {
+.reference-atlas-progress i {
   position: absolute;
   inset: 0 auto auto 0;
   height: 2px;
@@ -849,18 +849,18 @@
   transition: width .3s ease;
 }
 
-.atlas-v3-detail-panel {
+.reference-atlas-detail-panel {
   min-width: 0;
   display: grid;
   grid-template-rows: auto auto minmax(250px, 42vh) auto minmax(0, 1fr) auto auto;
   border-left: 1px solid var(--line-subtle);
 }
 
-.atlas-v3-detail-panel.active {
+.reference-atlas-detail-panel.active {
   box-shadow: inset 2px 0 0 var(--focus-ring);
 }
 
-.atlas-v3-detail-breadcrumb {
+.reference-atlas-detail-breadcrumb {
   min-height: 42px;
   display: flex;
   align-items: center;
@@ -873,7 +873,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-detail-breadcrumb button {
+.reference-atlas-detail-breadcrumb button {
   padding: 0;
   border: 0;
   color: var(--accent-text);
@@ -882,18 +882,18 @@
   font-size: 8.5px;
 }
 
-.atlas-v3-detail-breadcrumb strong {
+.reference-atlas-detail-breadcrumb strong {
   overflow: hidden;
   color: var(--accent-cyan);
   text-overflow: ellipsis;
 }
 
-.atlas-v3-detail-breadcrumb b {
+.reference-atlas-detail-breadcrumb b {
   color: var(--accent-cyan);
   font-weight: 800;
 }
 
-.atlas-v3-detail-heading {
+.reference-atlas-detail-heading {
   min-height: 68px;
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) auto;
@@ -903,7 +903,7 @@
   border-bottom: 1px solid var(--line-subtle);
 }
 
-.atlas-v3-organ-icon {
+.reference-atlas-organ-icon {
   width: 36px;
   height: 36px;
   display: grid;
@@ -914,13 +914,13 @@
   font-size: 17px;
 }
 
-.atlas-v3-detail-heading > div {
+.reference-atlas-detail-heading > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.atlas-v3-detail-heading strong {
+.reference-atlas-detail-heading strong {
   overflow: hidden;
   color: var(--accent-cyan);
   font-size: 13px;
@@ -928,12 +928,12 @@
   white-space: nowrap;
 }
 
-.atlas-v3-detail-heading small {
+.reference-atlas-detail-heading small {
   color: var(--accent-text);
   font-size: 9px;
 }
 
-.atlas-v3-selection-state {
+.reference-atlas-selection-state {
   width: fit-content;
   margin-top: 3px;
   padding: 3px 6px;
@@ -946,13 +946,13 @@
   letter-spacing: .03em;
 }
 
-.atlas-v3-selection-state.confirmed {
+.reference-atlas-selection-state.confirmed {
   border-color: var(--line-success);
   color: var(--state-success);
   background: var(--surface-success-soft);
 }
 
-.atlas-v3-detail-heading select {
+.reference-atlas-detail-heading select {
   max-width: 118px;
   min-height: 34px;
   padding: 0 28px 0 9px;
@@ -963,7 +963,7 @@
   font-size: 7px;
 }
 
-.atlas-v3-organ-stage {
+.reference-atlas-organ-stage {
   position: relative;
   min-height: 0;
   overflow: hidden;
@@ -972,18 +972,18 @@
     linear-gradient(180deg, var(--accent-primary), var(--accent-primary));
 }
 
-.atlas-v3-organ-stage > .organ-detail-scene {
+.reference-atlas-organ-stage > .organ-detail-scene {
   position: absolute;
   inset: 0;
 }
 
-.atlas-v3-organ-stage > .organ-detail-scene canvas {
+.reference-atlas-organ-stage > .organ-detail-scene canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.atlas-v3-organ-tools {
+.reference-atlas-organ-tools {
   position: absolute;
   z-index: 8;
   top: 16px;
@@ -992,17 +992,17 @@
   gap: 7px;
 }
 
-.atlas-v3-organ-tools button {
+.reference-atlas-organ-tools button {
   width: 34px;
   height: 34px;
 }
 
-.atlas-v3-organ-tools button:disabled {
+.reference-atlas-organ-tools button:disabled {
   opacity: .3;
   cursor: not-allowed;
 }
 
-.atlas-v3-detail-tabs {
+.reference-atlas-detail-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid var(--line-subtle);
@@ -1010,7 +1010,7 @@
   background: var(--surface-deep);
 }
 
-.atlas-v3-detail-tabs button {
+.reference-atlas-detail-tabs button {
   min-height: 38px;
   padding: 0 5px;
   border: 0;
@@ -1021,34 +1021,34 @@
   font-size: 8.5px;
 }
 
-.atlas-v3-detail-tabs button.active {
+.reference-atlas-detail-tabs button.active {
   color: var(--accent-cyan);
   border-bottom-color: var(--line-focus);
   background: var(--overlay-workspace-glow);
 }
 
-.atlas-v3-detail-content {
+.reference-atlas-detail-content {
   min-height: 0;
   overflow: auto;
   padding: 12px 13px;
 }
 
-.atlas-v3-detail-content > p,
-.atlas-v3-tab-copy p {
+.reference-atlas-detail-content > p,
+.reference-atlas-tab-copy p {
   margin: 0;
   color: var(--accent-cyan);
   font-size: 9.5px;
   line-height: 1.55;
 }
 
-.atlas-v3-detail-metrics {
+.reference-atlas-detail-metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   margin-top: 10px;
 }
 
-.atlas-v3-detail-metrics article {
+.reference-atlas-detail-metrics article {
   min-width: 0;
   display: grid;
   gap: 3px;
@@ -1058,12 +1058,12 @@
   background: var(--surface-deep);
 }
 
-.atlas-v3-detail-metrics span {
+.reference-atlas-detail-metrics span {
   color: var(--accent-text);
   font-size: 7.5px;
 }
 
-.atlas-v3-detail-metrics strong {
+.reference-atlas-detail-metrics strong {
   overflow: hidden;
   color: var(--accent-cyan);
   font-size: 10px;
@@ -1071,22 +1071,22 @@
   white-space: nowrap;
 }
 
-.atlas-v3-detail-metrics small {
+.reference-atlas-detail-metrics small {
   color: var(--accent-text);
   font-size: 7.5px;
 }
 
-.atlas-v3-tab-copy {
+.reference-atlas-tab-copy {
   display: grid;
   gap: 8px;
 }
 
-.atlas-v3-tab-copy strong {
+.reference-atlas-tab-copy strong {
   color: var(--accent-cyan);
   font-size: 10px;
 }
 
-.atlas-v3-tab-copy button {
+.reference-atlas-tab-copy button {
   width: fit-content;
   min-height: 34px;
   padding: 0 10px;
@@ -1098,7 +1098,7 @@
   font-size: 7px;
 }
 
-.atlas-v3-reference-id {
+.reference-atlas-reference-id {
   width: fit-content;
   padding: 4px 7px;
   border: 1px solid var(--line-focus);
@@ -1108,7 +1108,7 @@
   font-size: 6.5px;
 }
 
-.atlas-v3-patient-explanation {
+.reference-atlas-patient-explanation {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: 10px;
@@ -1119,7 +1119,7 @@
   background: var(--surface-deep);
 }
 
-.atlas-v3-patient-explanation > span {
+.reference-atlas-patient-explanation > span {
   width: 34px;
   height: 34px;
   display: grid;
@@ -1129,25 +1129,25 @@
   background: var(--accent-surface);
 }
 
-.atlas-v3-patient-explanation > div {
+.reference-atlas-patient-explanation > div {
   min-width: 0;
   display: grid;
   gap: 5px;
 }
 
-.atlas-v3-patient-explanation strong {
+.reference-atlas-patient-explanation strong {
   color: var(--accent-cyan);
   font-size: 9.5px;
 }
 
-.atlas-v3-patient-explanation p {
+.reference-atlas-patient-explanation p {
   margin: 0;
   color: var(--accent-cyan);
   font-size: 9px;
   line-height: 1.5;
 }
 
-.atlas-v3-patient-explanation button {
+.reference-atlas-patient-explanation button {
   justify-self: end;
   min-height: 30px;
   display: inline-flex;
@@ -1162,7 +1162,7 @@
   font-size: 8.5px;
 }
 
-.atlas-v3-model-quality {
+.reference-atlas-model-quality {
   min-height: 54px;
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr) 30px;
@@ -1175,7 +1175,7 @@
   background: var(--surface-success-soft);
 }
 
-.atlas-v3-model-quality > span {
+.reference-atlas-model-quality > span {
   width: 30px;
   height: 30px;
   display: grid;
@@ -1186,18 +1186,18 @@
   font-weight: 900;
 }
 
-.atlas-v3-model-quality > div {
+.reference-atlas-model-quality > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.atlas-v3-model-quality strong {
+.reference-atlas-model-quality strong {
   color: var(--state-success);
   font-size: 9px;
 }
 
-.atlas-v3-model-quality small {
+.reference-atlas-model-quality small {
   overflow: hidden;
   color: var(--state-success);
   font-size: 7.5px;
@@ -1205,7 +1205,7 @@
   white-space: nowrap;
 }
 
-.atlas-v3-model-quality b {
+.reference-atlas-model-quality b {
   display: grid;
   place-items: center;
   height: 24px;
@@ -1216,33 +1216,33 @@
 }
 
 @media (max-width: 1320px) {
-  .atlas-v3-workspace {
+  .reference-atlas-workspace {
     grid-template-columns: 220px minmax(400px, 1fr) 300px;
   }
 
-  .atlas-v3-search {
+  .reference-atlas-search {
     width: 190px;
   }
 
-  .atlas-v3-depth-switch button {
+  .reference-atlas-depth-switch button {
     min-width: 100px;
   }
 
-  .atlas-v3-systems {
+  .reference-atlas-systems {
     width: 116px;
   }
 
-  .atlas-v3-detail-heading select {
+  .reference-atlas-detail-heading select {
     display: none;
   }
 }
 
 @media (max-width: 1020px) {
-  .atlas-v3-workspace {
+  .reference-atlas-workspace {
     grid-template-columns: 220px minmax(0, 1fr);
   }
 
-  .atlas-v3-detail-panel {
+  .reference-atlas-detail-panel {
     grid-column: 1 / -1;
     grid-template-columns: minmax(300px, .9fr) minmax(0, 1.1fr);
     grid-template-rows: auto auto minmax(360px, auto) auto auto;
@@ -1250,183 +1250,183 @@
     border-left: 0;
   }
 
-  .atlas-v3-detail-breadcrumb,
-  .atlas-v3-detail-heading {
+  .reference-atlas-detail-breadcrumb,
+  .reference-atlas-detail-heading {
     grid-column: 1 / -1;
   }
 
-  .atlas-v3-organ-stage {
+  .reference-atlas-organ-stage {
     grid-row: 3 / 6;
   }
 
-  .atlas-v3-detail-tabs,
-  .atlas-v3-detail-content,
-  .atlas-v3-patient-explanation,
-  .atlas-v3-model-quality {
+  .reference-atlas-detail-tabs,
+  .reference-atlas-detail-content,
+  .reference-atlas-patient-explanation,
+  .reference-atlas-model-quality {
     grid-column: 2;
   }
 
-  .atlas-v3-patient-explanation,
-  .atlas-v3-model-quality {
+  .reference-atlas-patient-explanation,
+  .reference-atlas-model-quality {
     margin-left: 0;
   }
 }
 
 @media (max-width: 860px) {
-  .atlas-v3-workspace {
+  .reference-atlas-workspace {
     display: block;
     overflow: visible;
   }
 
-  .atlas-v3-case-panel,
-  .atlas-v3-body-panel,
-  .atlas-v3-detail-panel {
+  .reference-atlas-case-panel,
+  .reference-atlas-body-panel,
+  .reference-atlas-detail-panel {
     min-height: auto;
   }
 
-  .atlas-v3-body-stage {
+  .reference-atlas-body-stage {
     min-height: 690px;
   }
 
-  .atlas-v3-case-panel {
+  .reference-atlas-case-panel {
     border-right: 0;
     border-bottom: 1px solid var(--line-subtle);
   }
 
-  .atlas-v3-case-scroll {
+  .reference-atlas-case-scroll {
     max-height: none;
   }
 
-  .atlas-v3-systems {
+  .reference-atlas-systems {
     top: 62px;
     right: 10px;
   }
 
-  .atlas-v3-search {
+  .reference-atlas-search {
     top: 14px;
     left: 10px;
     width: min(210px, 48%);
   }
 
-  .atlas-v3-depth-switch {
+  .reference-atlas-depth-switch {
     top: 58px;
   }
 
-  .atlas-v3-body-tools {
+  .reference-atlas-body-tools {
     top: 122px;
     left: 10px;
   }
 
-  .atlas-v3-detail-panel {
+  .reference-atlas-detail-panel {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto;
   }
 
-  .atlas-v3-detail-breadcrumb,
-  .atlas-v3-detail-heading,
-  .atlas-v3-organ-stage,
-  .atlas-v3-detail-tabs,
-  .atlas-v3-detail-content,
-  .atlas-v3-patient-explanation,
-  .atlas-v3-model-quality {
+  .reference-atlas-detail-breadcrumb,
+  .reference-atlas-detail-heading,
+  .reference-atlas-organ-stage,
+  .reference-atlas-detail-tabs,
+  .reference-atlas-detail-content,
+  .reference-atlas-patient-explanation,
+  .reference-atlas-model-quality {
     grid-column: 1;
     grid-row: auto;
   }
 
-  .atlas-v3-organ-stage {
+  .reference-atlas-organ-stage {
     min-height: 440px;
   }
 
-  .atlas-v3-patient-explanation,
-  .atlas-v3-model-quality {
+  .reference-atlas-patient-explanation,
+  .reference-atlas-model-quality {
     margin-left: 12px;
   }
 }
 
 @media (max-width: 560px) {
-  .atlas-v3-patient-heading {
+  .reference-atlas-patient-heading {
     grid-template-columns: 44px minmax(0, 1fr) 32px;
   }
 
-  .atlas-v3-case-tabs {
+  .reference-atlas-case-tabs {
     overflow-x: auto;
     grid-template-columns: repeat(4, minmax(82px, 1fr));
   }
 
-  .atlas-v3-secondary-actions {
+  .reference-atlas-secondary-actions {
     grid-template-columns: 1fr;
   }
 
-  .atlas-v3-body-stage {
+  .reference-atlas-body-stage {
     min-height: 610px;
   }
 
-  .atlas-v3-search {
+  .reference-atlas-search {
     width: calc(100% - 20px);
     right: 10px;
   }
 
-  .atlas-v3-depth-switch {
+  .reference-atlas-depth-switch {
     top: 60px;
     width: calc(100% - 20px);
   }
 
-  .atlas-v3-depth-switch button {
+  .reference-atlas-depth-switch button {
     min-width: 0;
     min-height: 42px;
   }
 
-  .atlas-v3-systems {
+  .reference-atlas-systems {
     top: 112px;
     right: 10px;
     width: 116px;
     max-height: 225px;
   }
 
-  .atlas-v3-body-tools {
+  .reference-atlas-body-tools {
     top: 112px;
   }
 
-  .atlas-v3-body-tools button,
-  .atlas-v3-organ-tools button {
+  .reference-atlas-body-tools button,
+  .reference-atlas-organ-tools button {
     width: 44px;
     height: 44px;
   }
 
-  .atlas-v3-body-callout {
+  .reference-atlas-body-callout {
     right: 10px;
     top: 48%;
     width: 140px;
   }
 
-  .atlas-v3-body-callout::before {
+  .reference-atlas-body-callout::before {
     width: 38px;
   }
 
-  .atlas-v3-presets {
+  .reference-atlas-presets {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .atlas-v3-presets button {
+  .reference-atlas-presets button {
     min-height: 68px;
   }
 
-  .atlas-v3-detail-tabs {
+  .reference-atlas-detail-tabs {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .atlas-v3-detail-tabs button {
+  .reference-atlas-detail-tabs button {
     min-height: 44px;
   }
 
-  .atlas-v3-detail-metrics {
+  .reference-atlas-detail-metrics {
     grid-template-columns: 1fr;
   }
 
-  .atlas-v3-patient-explanation button,
-  .atlas-v3-secondary-actions button,
-  .atlas-v3-primary-action {
+  .reference-atlas-patient-explanation button,
+  .reference-atlas-secondary-actions button,
+  .reference-atlas-primary-action {
     min-height: 44px;
   }
 }

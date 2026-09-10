@@ -173,21 +173,33 @@ const requiredExplorerFragments = [
   'resolveOrganDetail',
   "import('./OrganDetailScene')",
   'appearance="explorer"',
-  'data-concept-layout="clinical-atlas-v3"',
-  'atlas-v3-workspace',
-  'atlas-v3-case-panel',
-  'atlas-v3-body-panel',
-  'atlas-v3-detail-panel',
-  'atlas-v3-depth-switch',
-  'atlas-v3-systems',
-  'atlas-v3-presets',
-  'atlas-v3-organ-stage',
+  'data-concept-layout="reference-atlas-workbench"',
+  'reference-atlas-workspace',
+  'reference-atlas-case-panel',
+  'reference-atlas-body-panel',
+  'reference-atlas-detail-panel',
+  'reference-atlas-depth-switch',
+  'reference-atlas-systems',
+  'reference-atlas-presets',
+  'reference-atlas-organ-stage',
   'reference-atlas-search',
   'Usar estrutura no relatório',
   'Explicação para o paciente',
   'Qualidade do modelo',
   'onOpenPatientPreview',
 ]
+
+for (const obsoleteReferenceAtlasMarker of ['atlas-v3-', 'clinical-atlas-v3']) {
+  if (
+    explorer.includes(obsoleteReferenceAtlasMarker) ||
+    referenceStyles.includes(obsoleteReferenceAtlasMarker)
+  ) {
+    failures.push(
+      'reference atlas must use semantic class ownership: ' +
+        obsoleteReferenceAtlasMarker,
+    )
+  }
+}
 
 for (const fragment of requiredExplorerFragments) {
   if (!explorer.includes(fragment)) {
@@ -198,12 +210,12 @@ for (const fragment of requiredExplorerFragments) {
 }
 
 const requiredMobileExplorerCss = [
-  '.atlas-v3-workspace',
+  '.reference-atlas-workspace',
   'grid-template-columns: minmax(282px, 22%) minmax(500px, 1fr) minmax(360px, 30%)',
-  '.atlas-v3-body-stage > .reference-atlas-scene',
-  '.atlas-v3-detail-panel',
-  '.atlas-v3-organ-stage > .organ-detail-scene',
-  '.atlas-v3-presets',
+  '.reference-atlas-body-stage > .reference-atlas-scene',
+  '.reference-atlas-detail-panel',
+  '.reference-atlas-organ-stage > .organ-detail-scene',
+  '.reference-atlas-presets',
   'min-height: 610px',
   '@media (max-width: 560px)',
 ]
