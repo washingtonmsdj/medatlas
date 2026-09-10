@@ -31,6 +31,7 @@ async function collectTextFiles(root) {
 }
 
 const demoRepo = await read('src/data/demo-clinical-repository.ts')
+const app = await read('src/App.tsx')
 const reportIntake = await read('src/components/ReportIntake.tsx')
 const productConstraints = await read('src/product/constraints.ts')
 const indexHtml = await read('index.html')
@@ -109,9 +110,12 @@ if (
 
 const localImportInvariants = [
   'DEMO_CONSTRAINTS.localText.maxBytes',
-  'DEMO_CONSTRAINTS.localText.extensions',
+  'isDemoTextFilenameAllowed(file.name)',
+  'validateDemoReportSource(text)',
+  'validateDemoReportSource(nextValue)',
   'await file.text()',
-  'Importar laudo de texto sintético',
+  'Importar laudo sintético em TXT ou MD',
+  'Texto acima do limite de',
 ]
 
 for (const fragment of localImportInvariants) {
@@ -122,12 +126,32 @@ for (const fragment of localImportInvariants) {
   }
 }
 
+const controllerSourceInvariants = [
+  'validateDemoReportSource(value)',
+  'validateDemoReportSource(example.sourceText)',
+  'validateDemoReportSource(',
+  'report.finding.sourceText,',
+  'Texto acima do limite de',
+]
+
+for (const fragment of controllerSourceInvariants) {
+  if (!app.includes(fragment)) {
+    failures.push(
+      `clinical report controller missing source boundary invariant: ${fragment}`,
+    )
+  }
+}
+
 const requiredConstraintFragments = [
+  'minCharacters: 3',
+  'maxBytes: 64 * 1024',
+  "extensions: ['.txt', '.md'] as const",
+  'new TextEncoder().encode(value).byteLength',
+  'validateDemoReportSource',
+  'isDemoTextFilenameAllowed',
   'shareTtlMinutes: 30',
   'maxStoredShares: 10',
   'viewDedupeMilliseconds: 1500',
-  'maxBytes: 64 * 1024',
-  "extensions: ['.txt', '.md'] as const",
 ]
 
 for (const fragment of requiredConstraintFragments) {
@@ -147,6 +171,12 @@ if (!demoRepo.includes("from '../product/constraints'")) {
 if (!reportIntake.includes("from '../product/constraints'")) {
   failures.push(
     'local report intake must source file limits from the central product constraints',
+  )
+}
+
+if (!app.includes("from './product/constraints'")) {
+  failures.push(
+    'clinical report controller must source report text limits from the central product constraints',
   )
 }
 
@@ -226,5 +256,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
