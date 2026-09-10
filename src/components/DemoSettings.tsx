@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { AttributionNotice } from './AttributionNotice'
 import {
-  clearDemoShares,
-  getStoredDemoShareCount,
-} from '../data/demo-clinical-repository'
+  getActivePatientShareCount,
+  revokeAllActivePatientShares,
+} from '../data/repository'
 import { organizationRuntime } from '../organization/runtime'
 import { demoShareTtlLabel } from '../product/constraints'
 import { WorkspacePageHeader } from './WorkspacePageHeader'
@@ -17,12 +17,14 @@ export function DemoSettings({
   onNewReport,
   onSharesCleared,
 }: Props) {
-  const [shareCount, setShareCount] = useState(() => getStoredDemoShareCount())
+  const [shareCount, setShareCount] = useState(() =>
+    getActivePatientShareCount(),
+  )
   const [message, setMessage] = useState('')
   const branding = organizationRuntime.branding
 
   const clear = () => {
-    const removed = clearDemoShares()
+    const removed = revokeAllActivePatientShares()
     onSharesCleared()
     setShareCount(0)
     setMessage(

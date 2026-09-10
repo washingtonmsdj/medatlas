@@ -1,6 +1,8 @@
 import {
+  clearDemoShares,
   demoClinicalRepository,
   demoRepositoryDescriptor,
+  getStoredDemoShareCount,
 } from './demo-clinical-repository'
 import type {
   ClinicalRepository,
@@ -61,6 +63,14 @@ const organizationBoundDemoRepository: ClinicalRepository = {
   getReportViewStats() {
     return demoClinicalRepository.getReportViewStats()
   },
+}
+
+export function getActivePatientShareCount() {
+  return getStoredDemoShareCount()
+}
+
+export function revokeAllActivePatientShares() {
+  return clearDemoShares()
 }
 
 /**
