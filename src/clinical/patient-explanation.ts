@@ -6,6 +6,12 @@ import type {
 export interface PatientExplanationDraft {
   text: string
   provenance: ExplanationProvenance
+  inputIdentity: {
+    reportId: string
+    sourceText: string
+    atlasConceptId: string
+    anatomicalStructure: string
+  }
 }
 
 export interface PatientExplanationGenerator {
@@ -138,6 +144,15 @@ function genericDraft(report: VisualReport) {
   ].join(' ')
 }
 
+function createInputIdentity(report: VisualReport) {
+  return {
+    reportId: report.id,
+    sourceText: report.finding.sourceText,
+    atlasConceptId: report.finding.atlasConceptId,
+    anatomicalStructure: report.finding.anatomicalStructure,
+  }
+}
+
 export class DeterministicPatientExplanationGenerator
   implements PatientExplanationGenerator
 {
@@ -169,6 +184,7 @@ export class DeterministicPatientExplanationGenerator
         generatedAt: new Date().toISOString(),
         clinicianEdited: false,
       },
+      inputIdentity: createInputIdentity(report),
     }
   }
 }
