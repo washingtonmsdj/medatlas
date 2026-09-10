@@ -65,6 +65,10 @@ export function ReportComposer({
     setCopied(false)
   }, [shareUrl])
 
+  useEffect(() => {
+    setExplanationError('')
+  }, [report.id, report.finding.sourceText, report.finding.atlasConceptId])
+
   const updateExplanation = (value: string) => {
     const validation = validateDemoPatientExplanation(value)
 
