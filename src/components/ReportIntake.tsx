@@ -4,7 +4,13 @@ import {
   REPORT_EXAMPLES,
   type ReportExample,
 } from '../clinical/demo-scenarios'
-import { DEMO_CONSTRAINTS, formatDemoTextLimit } from '../product/constraints'
+import {
+  DEMO_CONSTRAINTS,
+  demoTextFormatLabel,
+  formatDemoTextLimit,
+  isDemoTextFilenameAllowed,
+  validateDemoReportSource,
+} from '../product/constraints'
 
 interface Props {
   sourceText: string
@@ -16,13 +22,6 @@ interface Props {
   onLoadExample: (example: ReportExample) => void
   onAnalyze: () => void | Promise<void>
   onConfirmSuggestion: (suggestion: AnatomySuggestion) => void
-}
-
-function hasAllowedTextExtension(filename: string) {
-  const normalized = filename.toLowerCase()
-  return DEMO_CONSTRAINTS.localText.extensions.some((extension) =>
-    normalized.endsWith(extension),
-  )
 }
 
 export function ReportIntake({
@@ -37,7 +36,12 @@ export function ReportIntake({
   onConfirmSuggestion,
 }: Props) {
   const [fileError, setFileError] = useState('')
+  const [sourceTextError, setSourceTextError] = useState('')
   const [fileName, setFileName] = useState('')
+  const sourceValidation = useMemo(
+    () => validateDemoReportSource(sourceText),
+    [sourceText],
+  )
 
   const sourceState = useMemo(() => {
     if (analyzing) {
@@ -45,6 +49,14 @@ export function ReportIntake({
         label: 'Analisando',
         detail: 'Localizando estruturas anatômicas.',
         tone: 'working',
+      }
+    }
+
+    if (sourceTextError) {
+      return {
+        label: 'Texto não aplicado',
+        detail: `O limite do laudo é ${formatDemoTextLimit()}.`,
+        tone: 'idle',
       }
     }
 
@@ -56,7 +68,7 @@ export function ReportIntake({
       }
     }
 
-    if (sourceText.trim().length >= 3) {
+    if (sourceValidation.ok) {
       return {
         label: 'Laudo pronto',
         detail: 'Pronto para localizar a anatomia.',
@@ -69,7 +81,7 @@ export function ReportIntake({
       detail: 'Cole o texto ou importe um arquivo.',
       tone: 'idle',
     }
-  }, [analyzing, sourceText, suggestions.length])
+  }, [analyzing, sourceTextError, sourceValidation.ok, suggestions.length])
 
   const importLocalText = async (
     event: ChangeEvent<HTMLInputElement>,
@@ -80,9 +92,10 @@ export function ReportIntake({
     if (!file) return
 
     setFileError('')
+    setSourceTextError('')
     setFileName('')
 
-    if (!hasAllowedTextExtension(file.name)) {
+    if (!isDemoTextFilenameAllowed(file.name)) {
       setFileError('Formato não suportado. Use um arquivo .txt ou .md.')
       return
     }
@@ -94,9 +107,15 @@ export function ReportIntake({
 
     try {
       const text = await file.text()
+      const validation = validateDemoReportSource(text)
 
-      if (text.trim().length < 3) {
+      if (!validation.ok && validation.reason === 'too-short') {
         setFileError('O arquivo não contém texto suficiente para análise.')
+        return
+      }
+
+      if (!validation.ok && validation.reason === 'too-large') {
+        setFileError(`Arquivo acima do limite de ${formatDemoTextLimit()}.`)
         return
       }
 
@@ -113,7 +132,7 @@ export function ReportIntake({
         <div>
           <span className="section-kicker">LAUDO / EXAME</span>
           <h2>Adicionar laudo</h2>
-          <p>Cole o texto do exame ou importe um arquivo.</p>
+          <p>Cole o texto do exame ou importe um arquivo TXT/MD.</p>
         </div>
 
         <div className="intake-status-cluster">
@@ -139,7 +158,12 @@ export function ReportIntake({
             <button
               key={example.id}
               type="button"
-              onClick={() => onLoadExample(example)}
+              onClick={() => {
+                setFileError('')
+                setSourceTextError('')
+                setFileName('')
+                onLoadExample(example)
+              }}
             >
               {example.label}
             </button>
@@ -148,13 +172,13 @@ export function ReportIntake({
 
         <label className="file-import-button">
           <input
-            aria-label="Importar laudo de texto sintético"
+            aria-label="Importar laudo sintético em TXT ou MD"
             type="file"
             accept=".txt,.md,text/plain,text/markdown"
             onChange={(event) => void importLocalText(event)}
           />
           <span aria-hidden="true">↑</span>
-          Importar arquivo
+          Importar TXT/MD
         </label>
       </div>
 
@@ -163,7 +187,10 @@ export function ReportIntake({
           <span>Texto do laudo</span>
           <div>
             {fileName && <strong>{fileName}</strong>}
-            <small>{sourceText.length.toLocaleString('pt-BR')} caracteres</small>
+            <small>
+              {sourceValidation.bytes.toLocaleString('pt-BR')} bytes · limite{' '}
+              {formatDemoTextLimit()}
+            </small>
           </div>
         </div>
 
@@ -172,9 +199,21 @@ export function ReportIntake({
           aria-label="Texto do laudo ou relatório"
           value={sourceText}
           onChange={(event) => {
+            const nextValue = event.target.value
+            const validation = validateDemoReportSource(nextValue)
+
             setFileName('')
             setFileError('')
-            onSourceTextChange(event.target.value)
+
+            if (!validation.ok && validation.reason === 'too-large') {
+              setSourceTextError(
+                `Texto acima do limite de ${formatDemoTextLimit()}.`,
+              )
+              return
+            }
+
+            setSourceTextError('')
+            onSourceTextChange(nextValue)
           }}
           rows={7}
           placeholder="Ex.: Protusão discal posterior em L4-L5..."
@@ -186,8 +225,7 @@ export function ReportIntake({
             Processado localmente
           </span>
           <small>
-            Máx. {formatDemoTextLimit()} em{' '}
-            {DEMO_CONSTRAINTS.localText.extensions.join('/')}
+            {demoTextFormatLabel()} · até {formatDemoTextLimit()}
           </small>
         </div>
       </div>
@@ -207,16 +245,16 @@ export function ReportIntake({
           className="primary"
           type="button"
           onClick={() => void onAnalyze()}
-          disabled={analyzing || sourceText.trim().length < 3}
+          disabled={analyzing || !sourceValidation.ok || Boolean(sourceTextError)}
         >
           {analyzing ? 'Analisando…' : 'Encontrar anatomia'}
         </button>
         <span>Depois, confirme a estrutura correta no Atlas.</span>
       </div>
 
-      {(error || fileError) && (
+      {(error || fileError || sourceTextError) && (
         <div className="intake-error" role="alert">
-          {fileError || error}
+          {sourceTextError || fileError || error}
         </div>
       )}
 
