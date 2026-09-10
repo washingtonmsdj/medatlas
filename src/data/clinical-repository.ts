@@ -1,3 +1,4 @@
+import type { PatientReportView } from '../domain/patient-report'
 import type { VisualReport } from '../domain/types'
 
 export interface ClinicalUsageSummary {
@@ -20,7 +21,7 @@ export interface ClinicalReportViewStat {
 
 export interface ClinicalRepository {
   publishReport(report: VisualReport): Promise<VisualReport>
-  resolvePatientShare(token: string): Promise<VisualReport | null>
+  resolvePatientShare(token: string): Promise<PatientReportView | null>
   revokeReportShares(reportId: string): Promise<number>
   getUsageSummary(): Promise<ClinicalUsageSummary>
   getReportViewStats(): Promise<ClinicalReportViewStat[]>

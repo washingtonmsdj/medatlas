@@ -8,6 +8,7 @@ import type {
   ClinicalRepository,
   ClinicalRepositoryDescriptor,
 } from './clinical-repository'
+import { toPatientReportView } from '../domain/patient-report'
 import { createReportPublicationIdentity } from '../organization/report-publication'
 import { organizationRuntime } from '../organization/runtime'
 
@@ -52,8 +53,9 @@ const organizationBoundDemoRepository: ClinicalRepository = {
     })
   },
 
-  resolvePatientShare(token) {
-    return demoClinicalRepository.resolvePatientShare(token)
+  async resolvePatientShare(token) {
+    const report = await demoClinicalRepository.resolvePatientShare(token)
+    return report ? toPatientReportView(report) : null
   },
 
   revokeReportShares(reportId) {
