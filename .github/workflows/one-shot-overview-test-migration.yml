@@ -1,0 +1,128 @@
+name: One-shot overview test migration
+
+on:
+  push:
+    branches:
+      - chore/overview-test-migration
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Align overview tests with semantic Clareza Viva structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_required(text: str, old: str, new: str, label: str) -> str:
+              if old not in text:
+                  raise SystemExit(f'missing expected fragment: {label}')
+              return text.replace(old, new, 1)
+
+          responsive_path = Path('tests/e2e/responsive-layout.spec.ts')
+          responsive = responsive_path.read_text()
+          old = """  const dashboardProgress = page.locator(
+            '.continue-care-card .care-progress',
+          )
+          await expect(dashboardProgress).toHaveAttribute('aria-valuenow', '3')
+          await expect(
+            page.locator('.continue-care-card .overview-current-action'),
+          ).toContainText('Publicar ao paciente')
+          """
+          new = """  const dashboardFlowMetric = page
+            .locator('.overview-kpi-card')
+            .filter({ hasText: 'Fluxo concluído' })
+          await expect(dashboardFlowMetric.locator('strong')).toHaveText('75%')
+
+          const currentOverviewStep = page
+            .locator('.overview-flow-list > button')
+            .filter({ has: page.locator('.overview-status-pill.current') })
+          await expect(currentOverviewStep).toContainText('Publicar ao paciente')
+          await expect(currentOverviewStep).toContainText('Em revisão')
+          """
+          responsive = replace_required(responsive, old, new, 'responsive dashboard hierarchy')
+          responsive = responsive.replace('.continue-care-card', '.overview-atlas-panel')
+          if '.continue-care-card' in responsive or '.care-progress' in responsive:
+              raise SystemExit('responsive legacy overview selector remains')
+          responsive_path.write_text(responsive)
+
+          clinical_path = Path('tests/e2e/clinical-flow.spec.ts')
+          clinical = clinical_path.read_text()
+          clinical = replace_required(
+              clinical,
+              "'.continue-care-card .anatomy-focus-preview'",
+              "'.overview-atlas-panel .anatomy-focus-preview'",
+              'clinical overview contextual 3D selector',
+          )
+          old = """test('dashboard progress follows the current report', async ({ page }) => {
+            await page.goto('/')
+
+            await expect(
+              page.getByRole('heading', { name: 'Atendimento em andamento' }),
+            ).toBeVisible()
+            await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
+
+            await startNewReportThroughSearch(page)
+            await page
+              .locator('.clinical-sidebar nav')
+              .getByRole('button', { name: 'Visão geral', exact: true })
+              .click()
+
+            await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
+          })
+          """
+          new = """test('overview completion follows the current report', async ({ page }) => {
+            await page.goto('/')
+
+            await expect(
+              page.getByRole('heading', { name: 'Atendimento em andamento' }),
+            ).toBeVisible()
+
+            const flowMetric = page
+              .locator('.overview-kpi-card')
+              .filter({ hasText: 'Fluxo concluído' })
+            await expect(flowMetric.locator('strong')).toHaveText('75%')
+
+            await startNewReportThroughSearch(page)
+            await page
+              .locator('.clinical-sidebar nav')
+              .getByRole('button', { name: 'Visão geral', exact: true })
+              .click()
+
+            await expect(flowMetric.locator('strong')).toHaveText('0%')
+          })
+          """
+          clinical = replace_required(clinical, old, new, 'clinical overview progress state')
+          if '.continue-care-card' in clinical or '.care-progress' in clinical:
+              raise SystemExit('clinical-flow legacy overview selector remains')
+          clinical_path.write_text(clinical)
+
+          deployed_path = Path('tests/deployed/preview.spec.ts')
+          deployed = deployed_path.read_text()
+          deployed = replace_required(
+              deployed,
+              "selector: '.continue-care-card .anatomy-focus-preview'",
+              "selector: '.overview-atlas-panel .anatomy-focus-preview'",
+              'deployed overview contextual 3D selector',
+          )
+          if '.continue-care-card' in deployed:
+              raise SystemExit('deployed preview legacy overview selector remains')
+          deployed_path.write_text(deployed)
+          PY
+
+          git diff --check
+          git diff -- tests/e2e/responsive-layout.spec.ts tests/e2e/clinical-flow.spec.ts tests/deployed/preview.spec.ts
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/e2e/responsive-layout.spec.ts tests/e2e/clinical-flow.spec.ts tests/deployed/preview.spec.ts
+          git commit -m "test: align overview gates with Clareza Viva"
+          git push origin HEAD:chore/overview-test-migration
