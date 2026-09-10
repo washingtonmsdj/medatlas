@@ -1,5 +1,6 @@
 import type { ReportExample } from '../clinical/demo-scenarios'
 import type { PatientExplanationDraft } from '../clinical/patient-explanation'
+import { validateDemoPatientExplanation } from '../product/constraints'
 import type { ReportReviewApproval, VisualReport } from './types'
 
 export type ReportWorkflowAction =
@@ -95,7 +96,8 @@ function canReviewExplanation(report: VisualReport) {
   return (
     Boolean(report.finding.atlasConceptId) &&
     !report.finding.anatomyReviewRequired &&
-    Boolean(report.finding.patientExplanation.trim())
+    Boolean(report.finding.patientExplanation.trim()) &&
+    validateDemoPatientExplanation(report.finding.patientExplanation).ok
   )
 }
 
@@ -162,7 +164,8 @@ export function reportWorkflowReducer(
       if (
         report.finding.anatomyReviewRequired ||
         !report.finding.atlasConceptId ||
-        !draftMatchesCurrentInputs(report, action.draft)
+        !draftMatchesCurrentInputs(report, action.draft) ||
+        !validateDemoPatientExplanation(action.draft.text).ok
       ) {
         return report
       }
@@ -183,7 +186,8 @@ export function reportWorkflowReducer(
     case 'explanation-edited': {
       if (
         report.finding.anatomyReviewRequired ||
-        !report.finding.atlasConceptId
+        !report.finding.atlasConceptId ||
+        !validateDemoPatientExplanation(action.value).ok
       ) {
         return report
       }
