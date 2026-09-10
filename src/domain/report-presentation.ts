@@ -1,4 +1,4 @@
-import type { VisualReport } from './types'
+import type { ClinicalReportStatus } from './types'
 
 export type ReportWorkflowStepId =
   | 'source'
@@ -15,6 +15,25 @@ export interface ReportWorkflowStepPresentation {
   detail: string
   done: boolean
   state: ReportWorkflowStepState
+}
+
+export interface ReportPresentationSource {
+  status: ClinicalReportStatus
+  finding: {
+    sourceText: string
+    anatomicalStructure: string
+    atlasConceptId: string
+    anatomyReviewRequired: boolean
+    patientExplanation: string
+    explanationReviewRequired: boolean
+  }
+  reviewApproval?: {
+    approvedBy: {
+      displayName: string
+    }
+  }
+  shareSlug?: string
+  publicationIdentity?: unknown
 }
 
 const STEP_META: Record<
@@ -39,18 +58,18 @@ const STEP_META: Record<
   },
 }
 
-function sourceDone(report: VisualReport) {
+function sourceDone(report: ReportPresentationSource) {
   return report.finding.sourceText.trim().length > 0
 }
 
-function anatomyDone(report: VisualReport) {
+function anatomyDone(report: ReportPresentationSource) {
   return (
     Boolean(report.finding.atlasConceptId) &&
     !report.finding.anatomyReviewRequired
   )
 }
 
-function explanationDone(report: VisualReport) {
+function explanationDone(report: ReportPresentationSource) {
   return (
     anatomyDone(report) &&
     Boolean(report.finding.patientExplanation.trim()) &&
@@ -59,7 +78,7 @@ function explanationDone(report: VisualReport) {
   )
 }
 
-function shareDone(report: VisualReport) {
+function shareDone(report: ReportPresentationSource) {
   return (
     report.status === 'published' &&
     Boolean(report.shareSlug) &&
@@ -67,7 +86,7 @@ function shareDone(report: VisualReport) {
   )
 }
 
-export function deriveReportPresentation(report: VisualReport) {
+export function deriveReportPresentation(report: ReportPresentationSource) {
   const completion: Record<ReportWorkflowStepId, boolean> = {
     source: sourceDone(report),
     anatomy: anatomyDone(report),
