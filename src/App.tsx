@@ -35,12 +35,12 @@ import { REPORT_EXAMPLES, type ReportExample } from './clinical/demo-scenarios'
 import { ReportIntake } from './components/ReportIntake'
 import { getClinicalRepository } from './data/repository'
 import { createEmptyDemoReport, demoReport } from './domain/demo'
+import type { PatientReportView } from './domain/patient-report'
 import {
   reportWorkflowReducer,
   type ReportWorkflowAction,
 } from './domain/report-workflow'
 import { deriveReportPresentation } from './domain/report-presentation'
-import type { VisualReport } from './domain/types'
 import { ROLE_LABELS } from './organization/roles'
 import { organizationRuntime } from './organization/runtime'
 
@@ -62,7 +62,7 @@ function PatientRoute({ slug }: { slug: string }) {
   const [state, setState] = useState<
     | { status: 'loading' }
     | { status: 'missing' }
-    | { status: 'ready'; report: VisualReport }
+    | { status: 'ready'; report: PatientReportView }
   >({ status: 'loading' })
 
   useEffect(() => {
