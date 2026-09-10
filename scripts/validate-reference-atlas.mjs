@@ -481,7 +481,12 @@ const contextual3dSurfaces = [
   {
     surface: 'dashboard',
     source: overview,
-    required: ['<AnatomyFocusPreview', 'contextMode="none"'],
+    required: [
+      '<AnatomyFocusPreview',
+      'contextMode="region"',
+      'data-clinical-focus=',
+      'FOCO CLÍNICO · HUMAN ATLAS 3D',
+    ],
   },
   {
     surface: 'patients',
