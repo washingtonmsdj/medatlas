@@ -57,12 +57,16 @@ for (const fragment of [
 
 for (const fragment of [
   'hasValidReviewPublicationBinding',
+  'hasValidPublishedClinicalContent',
   '!report.reviewApproval',
   '!report.publicationIdentity',
   'reviewApproval.organizationId === publicationIdentity.organizationId',
   'reviewApproval.workspaceId === publicationIdentity.workspaceId',
   'Number.isFinite(Date.parse(reviewApproval.approvedAt))',
   'Number.isFinite(Date.parse(publicationIdentity.publishedAt))',
+  'validateDemoPatientExplanation(report.finding.patientExplanation).ok',
+  '!hasValidPublishedClinicalContent(parsed.report)',
+  'A explicação para o paciente deve ter no máximo',
 ]) {
   if (!demoRepository.includes(fragment)) {
     failures.push(`raw demo repository missing fail-closed invariant: ${fragment}`)
@@ -76,5 +80,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas clinical repository boundary PASS: UI cannot bypass the active repository adapter and the raw demo repository independently verifies review/publication binding.',
+  'MedAtlas clinical repository boundary PASS: UI cannot bypass the active repository adapter and the raw demo repository independently verifies review/publication binding plus bounded publishable patient content.',
 )
