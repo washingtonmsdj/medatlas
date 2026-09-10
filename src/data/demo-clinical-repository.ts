@@ -188,14 +188,7 @@ function pruneExpiredAndExcessShares(now = Date.now()) {
 function persist(token: string, report: VisualReport) {
   const createdAt = Date.now()
   const expiresAt = createdAt + DEMO_SHARE_TTL_MS
-
-  memoryShares.set(token, {
-    createdAt,
-    expiresAt,
-    report,
-    viewCount: 0,
-  })
-  pruneExpiredAndExcessShares(createdAt)
+  const storageKey = `${STORAGE_PREFIX}${token}`
 
   const stored: StoredDemoShare = {
     schema: DEMO_SHARE_SCHEMA,
@@ -206,14 +199,21 @@ function persist(token: string, report: VisualReport) {
   }
 
   try {
-    window.localStorage.setItem(
-      `${STORAGE_PREFIX}${token}`,
-      JSON.stringify(stored),
-    )
-    pruneExpiredAndExcessShares(createdAt)
+    window.localStorage.setItem(storageKey, JSON.stringify(stored))
   } catch {
-    // In-memory sharing remains available in the current tab/session.
+    memoryShares.delete(token)
+    throw new Error(
+      'Não foi possível criar um link temporário neste navegador. Verifique se o armazenamento local está disponível e tente novamente.',
+    )
   }
+
+  memoryShares.set(token, {
+    createdAt,
+    expiresAt,
+    report,
+    viewCount: 0,
+  })
+  pruneExpiredAndExcessShares(createdAt)
 }
 
 function shouldCountView(lastViewedAt: string | undefined, now: number) {

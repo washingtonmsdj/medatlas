@@ -59,6 +59,9 @@ const requiredDemoFragments = [
   'const removedTokens = new Set(memoryShares.keys())',
   'removedTokens.add(key.slice(STORAGE_PREFIX.length))',
   'return removedTokens.size',
+  'const storageKey = \`${STORAGE_PREFIX}${token}\`',
+  'window.localStorage.setItem(storageKey, JSON.stringify(stored))',
+  'Não foi possível criar um link temporário neste navegador.',
 ]
 
 for (const fragment of requiredDemoFragments) {

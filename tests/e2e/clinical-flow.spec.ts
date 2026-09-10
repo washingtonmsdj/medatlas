@@ -1275,6 +1275,37 @@ test('concept shell keeps workspace context without the removed organization swi
   ).toBeVisible()
 })
 
+test('demo sharing fails closed when local persistence is unavailable', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const originalSetItem = Storage.prototype.setItem
+
+    Storage.prototype.setItem = function setItem(key, value) {
+      if (String(key).startsWith('medatlas:demo:published:')) {
+        throw new DOMException('Storage unavailable', 'QuotaExceededError')
+      }
+
+      return originalSetItem.call(this, key, value)
+    }
+  })
+
+  await openReports(page)
+
+  const publish = page.getByRole('button', {
+    name: 'Compartilhar com paciente',
+  })
+
+  await expect(publish).toBeEnabled()
+  await publish.click()
+
+  await expect(page.locator('.publish-error')).toContainText(
+    'armazenamento local está disponível',
+  )
+  await expect(page.getByText('Link pronto para enviar')).toHaveCount(0)
+})
+
+
 test('settings expose clinic branding without enabling unavailable mutations', async ({
   page,
 }) => {
