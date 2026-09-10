@@ -10,6 +10,10 @@ const source = await readFile(
   'src/clinical/structured-extraction.ts',
   'utf8',
 )
+const constraintsSource = await readFile(
+  'src/product/constraints.ts',
+  'utf8',
+)
 const manifest = JSON.parse(
   await readFile(
     'third_party/human-atlas/CURATED_CONCEPTS.json',
@@ -65,6 +69,12 @@ if (
   failures.push('AI confidence must be constrained to 0..1')
 }
 
+if (schema.properties?.patientExplanationDraft?.maxLength !== 4000) {
+  failures.push(
+    'AI patient explanation draft must stay bounded to the product maximum of 4000 characters',
+  )
+}
+
 const forbiddenTerms = [
   'diagnosis',
   'diagnóstico',
@@ -92,12 +102,32 @@ const requiredSourceFragments = [
   'A IA retornou',
   'DisabledClinicalExtractionEngine',
   "readonly mode = 'disabled' as const",
+  'DEMO_CONSTRAINTS.patientExplanation.maxCharacters',
+  'patientExplanationCharacterLength',
+  'anatomySuggestionSourceToken',
+  'sourceText: string',
+  'sourceToken,',
 ]
 
 for (const fragment of requiredSourceFragments) {
   if (!source.includes(fragment)) {
     failures.push(
       `runtime AI validator missing invariant: ${fragment}`,
+    )
+  }
+}
+
+const requiredConstraintFragments = [
+  'patientExplanation:',
+  'maxCharacters: 4000',
+  'patientExplanationCharacterLength',
+  'validateDemoPatientExplanation',
+]
+
+for (const fragment of requiredConstraintFragments) {
+  if (!constraintsSource.includes(fragment)) {
+    failures.push(
+      `central product constraints missing AI explanation invariant: ${fragment}`,
     )
   }
 }
@@ -127,5 +157,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas AI safety contract PASS: strict schema, mandatory clinician review, disabled provider and ${manifest.concepts.length} curated renderable concepts verified.`,
+  `MedAtlas AI safety contract PASS: strict schema, mandatory clinician review, bounded source-bound explanations, disabled provider and ${manifest.concepts.length} curated renderable concepts verified.`,
 )
