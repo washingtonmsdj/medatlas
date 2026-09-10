@@ -37,14 +37,8 @@ import { createEmptyDemoReport, demoReport } from './domain/demo'
 import { reportWorkflowReducer } from './domain/report-workflow'
 import { deriveReportPresentation } from './domain/report-presentation'
 import type { VisualReport } from './domain/types'
-import {
-  DEFAULT_DEMO_WORKSPACE_ID,
-  DEMO_ORGANIZATION,
-  getDemoCurrentMember,
-  getDemoUnit,
-  getDemoWorkspace,
-  ROLE_LABELS,
-} from './organization/demo-organization'
+import { ROLE_LABELS } from './organization/roles'
+import { organizationRuntime } from './organization/runtime'
 
 type ModuleName = ClinicalModuleName
 
@@ -131,7 +125,7 @@ function ClinicianApp() {
   )
   const [active, setActive] = useState<ModuleName>('Visão geral')
   const [viewMode, setViewMode] = useState<'professional' | 'patient'>('professional')
-  const [activeWorkspaceId] = useState(DEFAULT_DEMO_WORKSPACE_ID)
+  const [activeWorkspaceId] = useState(organizationRuntime.defaultWorkspaceId)
   const [publishing, setPublishing] = useState(false)
   const [generatingDraft, setGeneratingDraft] = useState(false)
   const [publishError, setPublishError] = useState('')
@@ -476,7 +470,7 @@ function ClinicianApp() {
         return (
           <Overview
             report={report}
-            organizationName={DEMO_ORGANIZATION.name}
+            organizationName={organizationRuntime.organization.name}
             workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
             unitName={activeUnit?.name}
             professionalDisplayName={
@@ -529,9 +523,9 @@ function ClinicianApp() {
     }
   }
 
-  const activeWorkspace = getDemoWorkspace(activeWorkspaceId)
-  const activeUnit = getDemoUnit(activeWorkspace?.unitId)
-  const currentMember = getDemoCurrentMember()
+  const activeWorkspace = organizationRuntime.getWorkspace(activeWorkspaceId)
+  const activeUnit = organizationRuntime.getUnit(activeWorkspace?.unitId)
+  const currentMember = organizationRuntime.getCurrentMember()
 
   const globalSearchActions: GlobalSearchAction[] = [
     {
@@ -601,7 +595,7 @@ function ClinicianApp() {
       </a>
       <ClinicalSidebar
         active={active}
-        organizationName={DEMO_ORGANIZATION.name}
+        organizationName={organizationRuntime.organization.name}
         workspaceName={activeWorkspace?.name ?? 'Workspace clínico'}
         unitName={activeUnit?.name}
         onNavigate={setActive}
