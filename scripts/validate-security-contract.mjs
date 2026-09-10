@@ -70,6 +70,10 @@ const requiredDemoFragments = [
   '!Number.isInteger(parsed.report.version)',
   'parsed.report.version < 1',
   '!hasValidReviewPublicationBinding(parsed.report)',
+  '!hasValidPublishedClinicalContent(parsed.report)',
+  'hasValidPublishedClinicalContent',
+  'validateDemoPatientExplanation(report.finding.patientExplanation).ok',
+  'formatDemoPatientExplanationLimit',
   'const reportKey = `${entry.report.id}:v${entry.report.version}`',
   'reportVersion: stat.reportVersion',
   '!Number.isInteger(report.version)',
@@ -168,6 +172,8 @@ const explanationBoundaryInvariants = [
   [reportWorkflow, 'validateDemoPatientExplanation(report.finding.patientExplanation).ok', 'review/publish explanation gate'],
   [structuredExtraction, 'DEMO_CONSTRAINTS.patientExplanation.maxCharacters', 'structured AI explanation'],
   [structuredExtraction, 'patientExplanationCharacterLength', 'structured AI explanation'],
+  [demoRepo, 'validateDemoPatientExplanation(report.finding.patientExplanation).ok', 'demo repository publish/share boundary'],
+  [demoRepo, '!hasValidPublishedClinicalContent(parsed.report)', 'stored patient share validation'],
 ]
 
 for (const [source, fragment, scope] of explanationBoundaryInvariants) {
@@ -307,5 +313,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake and patient explanations, source-bound anatomy suggestions, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
