@@ -47,6 +47,21 @@ function sameReviewApproval(left: VisualReport, right: VisualReport) {
   )
 }
 
+function draftMatchesCurrentInputs(
+  report: VisualReport,
+  draft: PatientExplanationDraft,
+) {
+  const input = draft.inputIdentity
+
+  return Boolean(
+    input &&
+      input.reportId === report.id &&
+      input.sourceText === report.finding.sourceText &&
+      input.atlasConceptId === report.finding.atlasConceptId &&
+      input.anatomicalStructure === report.finding.anatomicalStructure,
+  )
+}
+
 function invalidatePublication(report: VisualReport): VisualReport {
   return {
     ...report,
@@ -146,7 +161,8 @@ export function reportWorkflowReducer(
     case 'draft-generated': {
       if (
         report.finding.anatomyReviewRequired ||
-        !report.finding.atlasConceptId
+        !report.finding.atlasConceptId ||
+        !draftMatchesCurrentInputs(report, action.draft)
       ) {
         return report
       }
