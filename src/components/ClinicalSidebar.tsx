@@ -77,8 +77,10 @@ export function ClinicalSidebar({ active, organizationName, workspaceName, unitN
       <nav aria-label="Navegação principal">
         {CLINICAL_NAV_ITEMS.map((item) => {
           const label = item === 'Relatórios visuais' ? 'Laudos' : item
+          const accessibleLabel =
+            item === 'Relatórios visuais' ? 'Laudos · Relatórios visuais' : label
           return (
-            <button key={item} type="button" className={active === item ? 'active' : ''} aria-label={label} aria-current={active === item ? 'page' : undefined} onClick={() => onNavigate(item)}>
+            <button key={item} type="button" className={active === item ? 'active' : ''} aria-label={accessibleLabel} aria-current={active === item ? 'page' : undefined} onClick={() => onNavigate(item)}>
               <span className="clinical-sidebar-nav-icon"><SidebarIcon item={item} /></span>
               <span className="clinical-sidebar-nav-text">{label}</span>
             </button>
