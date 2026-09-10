@@ -16,6 +16,7 @@ export type AtlasContextMode = 'none' | 'system' | 'region'
 
 const chunkBufferCache = new Map<string, Promise<ArrayBuffer>>()
 const REGION_MAX_CHUNKS = 3
+const REGION_MAX_CONTEXT_PARTS = 12
 const REGION_SYSTEM_PENALTY = 0.6
 const REGION_CENTER_WEIGHT = 0.035
 
@@ -215,7 +216,9 @@ export function selectConceptSceneParts(
   const selectedChunks = new Set(selectedParts.map((part) => part.chunk))
   const selectedSystems = new Set(selectedParts.map((part) => part.system))
   const effectiveLimit =
-    contextMode === 'region' ? Math.max(contextLimit, 18) : contextLimit
+    contextMode === 'region'
+      ? Math.min(contextLimit, REGION_MAX_CONTEXT_PARTS)
+      : contextLimit
 
   const contextParts =
     contextMode === 'none'
