@@ -19,6 +19,9 @@ const migrationSources = await Promise.all(
 const sql = migrationSources
   .map(({ name, sql: source }) => `-- ${name}\n${source}`)
   .join('\n\n')
+const patientShareMigration = migrationSources.find(
+  ({ name }) => name === '202609100001_medatlas_patient_share_context.sql',
+)?.sql
 
 const requiredTables = [
   'organizations',
@@ -192,11 +195,94 @@ const invariants = [
     'invitation audit revoke',
     "'organization.invitation_revoked'",
   ],
+  [
+    'report workspace column',
+    'add column if not exists workspace_id uuid',
+  ],
+  [
+    'report workspace tenant-safe FK',
+    'foreign key (workspace_id, organization_id)\n      references public.clinical_workspaces(id, organization_id)',
+  ],
+  [
+    'published report workspace gate',
+    "check (status <> 'published' or workspace_id is not null)",
+  ],
+  [
+    'immutable patient-safe snapshot',
+    'add column if not exists patient_snapshot jsonb',
+  ],
+  [
+    'share review chronology',
+    'if report_row.approved_at > publication_time then',
+  ],
+  [
+    'share active workspace gate',
+    'and workspace.active = true',
+  ],
+  [
+    'reviewer professional snapshot',
+    "raise exception 'reviewer_profile_required'",
+  ],
+  [
+    'publisher professional snapshot',
+    "raise exception 'publisher_profile_required'",
+  ],
+  [
+    'per-report share revoke RPC',
+    'create or replace function public.medatlas_revoke_report_shares',
+  ],
+  [
+    'share revoke audit',
+    "'report.shares_revoked'",
+  ],
 ]
 
 for (const [label, marker] of invariants) {
   if (!sql.includes(marker)) {
     failures.push(`Missing invariant: ${label}`)
+  }
+}
+
+if (!patientShareMigration) {
+  failures.push('Missing patient-safe share context migration')
+} else {
+  for (const marker of [
+    "'sourceText', report_row.source_text",
+    "'anatomicalStructure', report_row.anatomical_structure",
+    "'atlasConceptId', report_row.atlas_concept_id",
+    "'patientExplanation', report_row.patient_explanation",
+    "'clinicianNote', report_row.clinician_note",
+    "'approvedBy', jsonb_build_object(",
+    "'approvedAt', report_row.approved_at",
+    "'organizationName', organization_name",
+    "'workspaceName', workspace_name",
+    "'brandName', brand_name",
+    "'patientFooterText', patient_footer_text",
+    "'publishedAt', publication_time",
+    'returns table (\n  patient_report jsonb,\n  share_expires_at timestamptz\n)',
+    'select\n    share_row.patient_snapshot,\n    share_row.expires_at;',
+  ]) {
+    if (!patientShareMigration.includes(marker)) {
+      failures.push(`Patient-safe SQL projection missing: ${marker}`)
+    }
+  }
+
+  const resolverStart = patientShareMigration.lastIndexOf(
+    'create function public.medatlas_resolve_report_share',
+  )
+  const resolver =
+    resolverStart >= 0 ? patientShareMigration.slice(resolverStart) : ''
+
+  if (!resolver.includes('patient_report jsonb')) {
+    failures.push('latest anonymous share resolver does not return patient_report jsonb')
+  }
+
+  if (/returns table\s*\([\s\S]*?\breport_id\s+uuid/i.test(resolver)) {
+    failures.push('latest anonymous share resolver exposes internal report_id')
+  }
+
+  if (/returns table\s*\([\s\S]*?\bpatient_id\b/i.test(resolver)) {
+    failures.push('latest anonymous share resolver exposes patient_id')
   }
 }
 
@@ -232,6 +318,12 @@ if (
   failures.push('Organization invitation mutation RPC exposed to anon')
 }
 
+if (
+  /grant execute on function public\.medatlas_revoke_report_shares\(uuid\)[\s\S]*?\bto\s+anon\b/i.test(sql)
+) {
+  failures.push('Report share revocation RPC exposed to anon')
+}
+
 if (failures.length > 0) {
   console.error('MedAtlas database contract FAILED')
   for (const failure of failures) {
@@ -241,5 +333,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe organization/workspace/branding/invitation/share/storage invariants.`,
+  `MedAtlas database contract PASS: ${requiredTables.length} RLS tables across ${migrationNames.length} migration(s) + tenant-safe workspace, patient-safe snapshot, review/publication, invitation/share/storage invariants.`,
 )
