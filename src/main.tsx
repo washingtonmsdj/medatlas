@@ -12,6 +12,7 @@ import './styles/clinical-sidebar.css'
 import './styles/concept-shell.css'
 import './styles/concept-modules.css'
 import './styles/workspace-page-header.css'
+import './styles/clareza-viva.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
