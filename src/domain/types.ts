@@ -29,6 +29,23 @@ export interface ClinicalFinding {
   clinicianNote: string
 }
 
+export interface ReportPublicationIdentity {
+  organizationId: string
+  organizationName: string
+  workspaceId: string
+  workspaceName: string
+  branding: {
+    brandName: string
+    patientFooterText: string
+  }
+  professional: {
+    id: string
+    displayName: string
+    specialty?: string
+  }
+  publishedAt: string
+}
+
 export interface VisualReport {
   id: string
   patient: PatientSummary
@@ -36,4 +53,5 @@ export interface VisualReport {
   status: ClinicalReportStatus
   finding: ClinicalFinding
   shareSlug?: string
+  publicationIdentity?: ReportPublicationIdentity
 }
