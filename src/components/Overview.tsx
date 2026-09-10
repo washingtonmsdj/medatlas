@@ -218,7 +218,14 @@ export function Overview({
                   <strong>{presentation.completed} de {presentation.total} etapas</strong>
                   <span>{presentation.progressPercent}% concluído</span>
                 </div>
-                <div className="overview-case-progress-bar" aria-label={`${presentation.progressPercent}% do fluxo concluído`}>
+                <div
+                  className="overview-case-progress-bar"
+                  role="progressbar"
+                  aria-label="Progresso do relatório"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={presentation.progressPercent}
+                >
                   <span style={{ width: `${presentation.progressPercent}%` }} />
                 </div>
               </div>
