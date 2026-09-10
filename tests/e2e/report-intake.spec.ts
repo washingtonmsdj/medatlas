@@ -51,7 +51,7 @@ test('describes the formats that the browser MVP actually accepts', async ({
     page.getByText('Cole o texto do exame ou importe um arquivo TXT/MD.'),
   ).toBeVisible()
   await expect(
-    page.getByLabel('Importar laudo sintético em TXT ou MD'),
+    page.getByLabel('Importar laudo de texto sintético em TXT ou MD'),
   ).toHaveAttribute('accept', '.txt,.md,text/plain,text/markdown')
   await expect(page.getByText('.txt · .md · até 64 KB')).toBeVisible()
 })
