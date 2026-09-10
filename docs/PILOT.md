@@ -141,13 +141,15 @@ Não registrar PHI nem dados clínicos reais.
 
 Source funcional desta atualização: `b5c2ca3d5c332432f7417513b19d1f8d06b290fe`.
 
-- CI `34481648367` — PASS completo.
-- GitHub Pages Preview `34481648389` — build, deploy e verificação Chromium do fluxo 3D publicado — PASS.
-- Browser E2E `34481648442` — `responsive-layout` e `supporting-contracts` PASS; o shard `clinical-flow` ainda estava executando no instante desta edição. Só registrar o run inteiro como PASS quando esse shard concluir verde.
+- CI `34481648367` — **PASS completo**.
+- Browser E2E `34481648442` — **PASS completo** nos shards `clinical-flow`, `responsive-layout` e `supporting-contracts`.
+- GitHub Pages Preview `34481648389` — **PASS** em build, deploy, verificação de shell/assets e Chromium remoto do fluxo clínico 3D.
+
+Esse conjunto qualifica o browser MVP para o **piloto manual sintético** descrito acima. Ele não qualifica o produto para dados reais.
 
 ## Critério de conclusão do MVP sintético
 
-O candidato pode avançar para avaliação de MVP quando:
+O candidato pode avançar na avaliação de MVP quando:
 
 - CI, Browser E2E e Pages estiverem verdes sobre o mesmo source funcional;
 - piloto manual sintético não revelar bloqueador P0;
