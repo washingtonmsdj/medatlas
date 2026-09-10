@@ -75,3 +75,33 @@ test('published report mutation fails closed when persisted share revocation is 
 
   await expect(page.getByText('SEU RELATÓRIO VISUAL')).toBeVisible()
 })
+
+test('tampered stored share is rejected when patient explanation exceeds the product boundary', async ({
+  page,
+}) => {
+  const shareUrl = await publishReadyReport(page)
+
+  const tampered = await page.evaluate(() => {
+    const prefix = 'medatlas:demo:published:'
+    const key = Array.from({ length: window.localStorage.length }, (_, index) =>
+      window.localStorage.key(index),
+    ).find((candidate) => candidate?.startsWith(prefix))
+
+    if (!key) return false
+
+    const raw = window.localStorage.getItem(key)
+    if (!raw) return false
+
+    const stored = JSON.parse(raw)
+    stored.report.finding.patientExplanation = 'a'.repeat(4001)
+    window.localStorage.setItem(key, JSON.stringify(stored))
+    return true
+  })
+
+  expect(tampered).toBe(true)
+  await page.goto(shareUrl)
+
+  await expect(
+    page.getByRole('heading', { name: 'Este link não está disponível.' }),
+  ).toBeVisible()
+})
