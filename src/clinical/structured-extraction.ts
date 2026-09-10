@@ -1,6 +1,10 @@
 import type { HumanAtlas } from '../atlas/types'
 import { conceptDisplayName } from '../atlas/source'
 import {
+  DEMO_CONSTRAINTS,
+  patientExplanationCharacterLength,
+} from '../product/constraints'
+import {
   anatomySuggestionSourceToken,
   type AnatomySuggestion,
 } from './anatomy-suggestions'
@@ -191,7 +195,8 @@ export function validateStructuredClinicalExtraction(
   if (input.patientExplanationDraft !== undefined) {
     if (
       typeof input.patientExplanationDraft !== 'string' ||
-      input.patientExplanationDraft.length > 4000
+      patientExplanationCharacterLength(input.patientExplanationDraft) >
+        DEMO_CONSTRAINTS.patientExplanation.maxCharacters
     ) {
       throw new Error(
         'patientExplanationDraft excede o contrato permitido.',
