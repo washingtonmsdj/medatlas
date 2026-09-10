@@ -352,7 +352,7 @@ test('real Human Atlas stays visible across core MVP context surfaces', async ({
 
   await expectRealContextual3D(
     page,
-    '.continue-care-card .anatomy-focus-preview',
+    '.overview-atlas-panel .anatomy-focus-preview',
   )
 
   const surfaces = [
@@ -705,13 +705,17 @@ test('new visual report starts empty and fail-closed', async ({ page }) => {
 })
 
 
-test('dashboard progress follows the current report', async ({ page }) => {
+test('overview completion follows the current report', async ({ page }) => {
   await page.goto('/')
 
   await expect(
     page.getByRole('heading', { name: 'Atendimento em andamento' }),
   ).toBeVisible()
-  await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
+
+  const flowMetric = page
+    .locator('.overview-kpi-card')
+    .filter({ hasText: 'Fluxo concluído' })
+  await expect(flowMetric.locator('strong')).toHaveText('75%')
 
   await startNewReportThroughSearch(page)
   await page
@@ -719,7 +723,7 @@ test('dashboard progress follows the current report', async ({ page }) => {
     .getByRole('button', { name: 'Visão geral', exact: true })
     .click()
 
-  await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
+  await expect(flowMetric.locator('strong')).toHaveText('0%')
 })
 
 
