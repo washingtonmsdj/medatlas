@@ -20,23 +20,20 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
-          def replace_required(text: str, old: str, new: str, label: str) -> str:
-              if old not in text:
-                  raise SystemExit(f'missing expected fragment: {label}')
-              return text.replace(old, new, 1)
+          def sub_once(text: str, pattern: str, replacement: str, label: str, flags: int = 0) -> str:
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=flags)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected 1 replacement, got {count}')
+              return updated
 
           responsive_path = Path('tests/e2e/responsive-layout.spec.ts')
           responsive = responsive_path.read_text()
-          old = """  const dashboardProgress = page.locator(
-            '.continue-care-card .care-progress',
-          )
-          await expect(dashboardProgress).toHaveAttribute('aria-valuenow', '3')
-          await expect(
-            page.locator('.continue-care-card .overview-current-action'),
-          ).toContainText('Publicar ao paciente')
-          """
-          new = """  const dashboardFlowMetric = page
+          responsive = sub_once(
+              responsive,
+              r"  const dashboardProgress = page\.locator\(\n.*?\)\.toContainText\('Publicar ao paciente'\)\n",
+              """  const dashboardFlowMetric = page
             .locator('.overview-kpi-card')
             .filter({ hasText: 'Fluxo concluído' })
           await expect(dashboardFlowMetric.locator('strong')).toHaveText('75%')
@@ -46,8 +43,10 @@ jobs:
             .filter({ has: page.locator('.overview-status-pill.current') })
           await expect(currentOverviewStep).toContainText('Publicar ao paciente')
           await expect(currentOverviewStep).toContainText('Em revisão')
-          """
-          responsive = replace_required(responsive, old, new, 'responsive dashboard hierarchy')
+          """,
+              'responsive dashboard hierarchy',
+              re.S,
+          )
           responsive = responsive.replace('.continue-care-card', '.overview-atlas-panel')
           if '.continue-care-card' in responsive or '.care-progress' in responsive:
               raise SystemExit('responsive legacy overview selector remains')
@@ -55,30 +54,17 @@ jobs:
 
           clinical_path = Path('tests/e2e/clinical-flow.spec.ts')
           clinical = clinical_path.read_text()
-          clinical = replace_required(
-              clinical,
+          if clinical.count("'.continue-care-card .anatomy-focus-preview'") != 1:
+              raise SystemExit('clinical contextual 3D selector count changed')
+          clinical = clinical.replace(
               "'.continue-care-card .anatomy-focus-preview'",
               "'.overview-atlas-panel .anatomy-focus-preview'",
-              'clinical overview contextual 3D selector',
+              1,
           )
-          old = """test('dashboard progress follows the current report', async ({ page }) => {
-            await page.goto('/')
-
-            await expect(
-              page.getByRole('heading', { name: 'Atendimento em andamento' }),
-            ).toBeVisible()
-            await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '3')
-
-            await startNewReportThroughSearch(page)
-            await page
-              .locator('.clinical-sidebar nav')
-              .getByRole('button', { name: 'Visão geral', exact: true })
-              .click()
-
-            await expect(page.locator('.care-progress')).toHaveAttribute('aria-valuenow', '0')
-          })
-          """
-          new = """test('overview completion follows the current report', async ({ page }) => {
+          clinical = sub_once(
+              clinical,
+              r"test\('dashboard progress follows the current report'.*?\n\}\)\n(?=\n\ntest\('demo settings can clear local patient shares')",
+              """test('overview completion follows the current report', async ({ page }) => {
             await page.goto('/')
 
             await expect(
@@ -98,19 +84,23 @@ jobs:
 
             await expect(flowMetric.locator('strong')).toHaveText('0%')
           })
-          """
-          clinical = replace_required(clinical, old, new, 'clinical overview progress state')
+          """,
+              'clinical overview progress state',
+              re.S,
+          )
           if '.continue-care-card' in clinical or '.care-progress' in clinical:
               raise SystemExit('clinical-flow legacy overview selector remains')
           clinical_path.write_text(clinical)
 
           deployed_path = Path('tests/deployed/preview.spec.ts')
           deployed = deployed_path.read_text()
-          deployed = replace_required(
-              deployed,
-              "selector: '.continue-care-card .anatomy-focus-preview'",
+          old_selector = "selector: '.continue-care-card .anatomy-focus-preview'"
+          if deployed.count(old_selector) != 1:
+              raise SystemExit('deployed overview contextual 3D selector count changed')
+          deployed = deployed.replace(
+              old_selector,
               "selector: '.overview-atlas-panel .anatomy-focus-preview'",
-              'deployed overview contextual 3D selector',
+              1,
           )
           if '.continue-care-card' in deployed:
               raise SystemExit('deployed preview legacy overview selector remains')
