@@ -25,8 +25,20 @@ export function PatientReportPage({
   previewMode = false,
   onSwitchToProfessional,
 }: Props) {
-  const currentMember = organizationRuntime.getCurrentMember()
-  const branding = organizationRuntime.branding
+  const publicationIdentity = report.publicationIdentity
+  const currentMember = previewMode
+    ? organizationRuntime.getCurrentMember()
+    : null
+  const branding =
+    publicationIdentity?.branding ?? organizationRuntime.branding
+  const professionalDisplayName =
+    publicationIdentity?.professional.displayName ??
+    currentMember?.displayName ??
+    'Profissional responsável'
+  const professionalSpecialty =
+    publicationIdentity?.professional.specialty ??
+    currentMember?.professional?.specialty ??
+    'Clínica'
   const presentation = deriveReportPresentation(report)
   const hasAnatomy = Boolean(report.finding.atlasConceptId)
   const [atlasStatus, setAtlasStatus] = useState<
@@ -71,6 +83,13 @@ export function PatientReportPage({
     setReset((current) => current + 1)
   }
 
+  if (
+    !previewMode &&
+    (report.status !== 'published' || !publicationIdentity)
+  ) {
+    return <InvalidPatientLink />
+  }
+
   return (
     <main className="patient-shell" data-surface-priority="mobile-first">
       <header className="patient-header">
@@ -93,7 +112,9 @@ export function PatientReportPage({
           <div className="patient-clinic">
             <span>{branding.brandName}</span>
             <small>
-              {previewMode ? 'Prévia · dados fictícios' : 'Relatório compartilhado'}
+              {previewMode
+                ? 'Prévia · dados fictícios'
+                : `${publicationIdentity?.workspaceName} · Relatório compartilhado`}
             </small>
           </div>
           <button
@@ -183,8 +204,7 @@ export function PatientReportPage({
                 : 'Relatório em edição'}
             </strong>
             <p>
-              {currentMember?.displayName ?? 'Profissional demo'} ·{' '}
-              {currentMember?.professional?.specialty ?? 'Clínica'}
+              {professionalDisplayName} · {professionalSpecialty}
             </p>
           </div>
         </aside>
