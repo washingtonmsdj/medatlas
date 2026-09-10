@@ -645,3 +645,25 @@ Estado de source revisado diretamente no `main` antes desta rodada: `88c7022bca4
 4. preservar o baseline verde CI + Browser shards + Pages a cada mudança funcional;
 5. manter Human Atlas como corpo completo canônico e Organ Detail como detalhe complementar, sem renderer paralelo ou fallback fake.
 
+### Checkpoint — Reference Atlas semântico e ciclo de compartilhamento consistente (2026-09-09)
+- [x] `atlas-v3-*` tinha ownership real e **não foi apagado**; o domínio foi migrado coordenadamente para `reference-atlas-*` em JSX, CSS, E2E e validators no commit **`59322569902b529e144b6c378bf669f5528376cd`**.
+- [x] o marcador `clinical-atlas-v3` passou a `reference-atlas-workbench`; Human Atlas, Organ Detail, câmera, seleção, assets e engines 3D não foram alterados.
+- [x] aliases de apresentação puramente versionados foram absorvidos/migrados no commit **`668f344025f5add11374ecd434b57654fc9433a0`**: `workflow-strip-premium`, `patient-summary-*-mvp`, `mvp-settings-grid`, `mvp-technical-details`, `demo-privacy-banner-mvp` e `mvp-surface`. Os nomes canônicos agora são semânticos.
+- [x] retenção de links demo corrigida no commit **`1c6177ebc8411a5c469f59eeca138508328903d6`**: o limite central `maxStoredShares` vale sobre o conjunto real de storage + memória; tokens excedentes/expirados são removidos dos dois lugares.
+- [x] enumeração do `localStorage` deixou de remover chaves durante o loop por índice, evitando pular entradas inválidas após reindexação.
+- [x] `clearDemoShares()` agora contabiliza tokens únicos também quando existem somente em memória, commit **`376bec93c065cda97999ef56ce31040b33a93fab`**.
+- [x] publicação demo passou a falhar fechado quando o navegador não consegue persistir o link; não existe mais estado de “Link pronto” sustentado apenas por memória volátil. Commit **`10d391c099d553fae4f999ae2c5ca3bbf15c0124`**, com E2E específico simulando falha de storage.
+- [x] `Limpar links` revoga também o estado publicado do relatório atual: `shareSlug` é removido e um relatório ainda revisado retorna a `clinician_review`/“Pronto para compartilhar”. Commit **`0af4d9095bf2c744d0fe8132519a9053fb1dbee6`**, com contrato do reducer + E2E do fluxo de revogação.
+- [x] CI do runtime canônico **`0af4d909…`**: run **`34420701748` PASS**.
+- [ ] GitHub Pages do runtime **`0af4d909…`**: run **`34420701742`** em deploy/verificação no momento deste checkpoint.
+- [ ] Browser E2E do runtime **`0af4d909…`**: run **`34420701691`**, três shards em execução no momento deste checkpoint.
+- [x] CI/Pages do checkpoint intermediário **`668f3440…`** passaram: CI **`34420174303` PASS**, Pages **`34420174289` PASS**. Runs Browser intermediários cancelados por commits posteriores não representam falha funcional.
+- [x] referências a `atlas-v3-*`, `*-mvp`, `*-premium` em checkpoints históricos acima descrevem estados antigos; **não são nomes canônicos atuais** e não devem ser reintroduzidos.
+
+### Próxima frente P0 após este checkpoint
+1. fechar e registrar o resultado exato do Browser **`34420701691`** e Pages **`34420701742`** do runtime `0af4d909…`;
+2. se ambos estiverem verdes, executar o próximo pente-fino pelo **fluxo real do MVP** (criar/revisar/compartilhar/revogar/abrir como paciente), não por busca mecânica de nomes;
+3. auditar dependências diretas de `DEMO_ORGANIZATION` nos módulos de apresentação pensando na futura troca por repository/context, sem ativar Supabase antes da autorização;
+4. manter Configurações fail-closed: “Editar identidade” permanece indisponível enquanto não houver uma implementação real e persistente; não habilitar ação fake;
+5. preservar Human Atlas como corpo completo canônico e Organ Detail como aprofundamento complementar; nenhuma limpeza de frontend justifica criar renderer paralelo, thumbnail ou fallback fake.
+
