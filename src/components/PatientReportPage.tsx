@@ -5,10 +5,7 @@ import type { AtlasView } from '../atlas/systems'
 import { resolveOrganDetail } from '../anatomy-detail/catalog'
 import type { VisualReport } from '../domain/types'
 import { PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
-import {
-  DEMO_ORGANIZATION_BRANDING,
-  getDemoCurrentMember,
-} from '../organization/demo-organization'
+import { organizationRuntime } from '../organization/runtime'
 import { HumanAtlasScene } from './HumanAtlasScene'
 import { AttributionNotice } from './AttributionNotice'
 
@@ -28,7 +25,8 @@ export function PatientReportPage({
   previewMode = false,
   onSwitchToProfessional,
 }: Props) {
-  const currentMember = getDemoCurrentMember()
+  const currentMember = organizationRuntime.getCurrentMember()
+  const branding = organizationRuntime.branding
   const presentation = deriveReportPresentation(report)
   const hasAnatomy = Boolean(report.finding.atlasConceptId)
   const [atlasStatus, setAtlasStatus] = useState<
@@ -93,7 +91,7 @@ export function PatientReportPage({
             </button>
           )}
           <div className="patient-clinic">
-            <span>{DEMO_ORGANIZATION_BRANDING.brandName}</span>
+            <span>{branding.brandName}</span>
             <small>
               {previewMode ? 'Prévia · dados fictícios' : 'Relatório compartilhado'}
             </small>
@@ -468,7 +466,7 @@ export function PatientReportPage({
 
       <footer className="patient-footer">
         <span>
-          {DEMO_ORGANIZATION_BRANDING.patientFooterText} · MedAtlas
+          {branding.patientFooterText} · MedAtlas
           {previewMode ? ' · prévia' : ''}
         </span>
         <button
