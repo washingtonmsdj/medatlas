@@ -74,7 +74,7 @@ test('desktop SaaS surfaces stay inside 1600px and 1440px viewports', async ({
   ).toBeVisible()
   await expect(
     page
-      .locator('.continue-care-card')
+      .locator('.overview-atlas-panel')
       .getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 60_000 })
   await capture(page, 'dashboard-1600')
@@ -179,7 +179,7 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   await expect(skipLink).toHaveCSS('opacity', '0')
 
   const dashboardMobile3dStage = page.locator(
-    '.continue-care-card .anatomy-focus-preview-stage',
+    '.overview-atlas-panel .anatomy-focus-preview-stage',
   )
   await expect(dashboardMobile3dStage).toBeVisible()
 
@@ -190,7 +190,7 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
 
   await expect(
     page
-      .locator('.continue-care-card')
+      .locator('.overview-atlas-panel')
       .getByText('3D carregado', { exact: true }),
   ).toBeVisible({ timeout: 60_000 })
 
@@ -411,16 +411,19 @@ test('frontend refinement keeps hierarchy explicit on desktop and mobile', async
   await expect(page.locator('.premium-metrics')).toHaveCount(0)
   await expect(page.locator('.mvp-next-step-card')).toHaveCount(0)
 
-  const dashboardProgress = page.locator(
-    '.continue-care-card .care-progress',
-  )
-  await expect(dashboardProgress).toHaveAttribute('aria-valuenow', '3')
-  await expect(
-    page.locator('.continue-care-card .overview-current-action'),
-  ).toContainText('Publicar ao paciente')
+  const dashboardFlowMetric = page
+  .locator('.overview-kpi-card')
+  .filter({ hasText: 'Fluxo concluído' })
+await expect(dashboardFlowMetric.locator('strong')).toHaveText('75%')
+
+const currentOverviewStep = page
+  .locator('.overview-flow-list > button')
+  .filter({ has: page.locator('.overview-status-pill.current') })
+await expect(currentOverviewStep).toContainText('Publicar ao paciente')
+await expect(currentOverviewStep).toContainText('Em revisão')
 
   const dashboardStage = page.locator(
-    '.continue-care-card .anatomy-focus-preview-stage',
+    '.overview-atlas-panel .anatomy-focus-preview-stage',
   )
   await expect(dashboardStage).toBeVisible()
   const dashboardStageBox = await dashboardStage.boundingBox()

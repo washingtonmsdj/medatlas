@@ -16,7 +16,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
   const contextualSurfaces = [
     {
       button: null,
-      selector: '.continue-care-card .anatomy-focus-preview',
+      selector: '.overview-atlas-panel .anatomy-focus-preview',
     },
     {
       button: 'Pacientes',
