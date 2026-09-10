@@ -56,6 +56,9 @@ const requiredDemoFragments = [
   '.slice(MAX_STORED_DEMO_SHARES)',
   'memoryShares.delete(token)',
   'entry.storageKey ?? \`${STORAGE_PREFIX}${token}\`',
+  'const removedTokens = new Set(memoryShares.keys())',
+  'removedTokens.add(key.slice(STORAGE_PREFIX.length))',
+  'return removedTokens.size',
 ]
 
 for (const fragment of requiredDemoFragments) {

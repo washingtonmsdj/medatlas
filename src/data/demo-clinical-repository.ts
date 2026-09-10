@@ -338,7 +338,7 @@ export function getStoredDemoShareCount() {
 }
 
 export function clearDemoShares() {
-  let removed = 0
+  const removedTokens = new Set(memoryShares.keys())
 
   try {
     const keys: string[] = []
@@ -349,15 +349,15 @@ export function clearDemoShares() {
     }
 
     for (const key of keys) {
+      removedTokens.add(key.slice(STORAGE_PREFIX.length))
       window.localStorage.removeItem(key)
-      removed += 1
     }
   } catch {
     // Memory cleanup still runs even when local storage is unavailable.
   }
 
   memoryShares.clear()
-  return removed
+  return removedTokens.size
 }
 
 function demoUsageSummary(): ClinicalUsageSummary {
