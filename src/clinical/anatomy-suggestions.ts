@@ -11,6 +11,7 @@ export interface AnatomySuggestion {
   evidence: string
   confidence: 'high' | 'medium'
   score: number
+  sourceToken: string
 }
 
 function escapeRegExp(value: string) {
@@ -25,6 +26,21 @@ function containsTerm(text: string, term: string) {
   ).test(text)
 }
 
+function normalizedSourceToken(normalizedText: string) {
+  let hash = 2166136261
+
+  for (let index = 0; index < normalizedText.length; index += 1) {
+    hash ^= normalizedText.charCodeAt(index)
+    hash = Math.imul(hash, 16777619)
+  }
+
+  return `${normalizedText.length}:${(hash >>> 0).toString(16).padStart(8, '0')}`
+}
+
+export function anatomySuggestionSourceToken(sourceText: string) {
+  return normalizedSourceToken(normalizeAnatomyText(sourceText))
+}
+
 export function suggestAnatomyFromText(
   atlas: HumanAtlas,
   sourceText: string,
@@ -34,6 +50,7 @@ export function suggestAnatomyFromText(
 
   if (text.length < 3) return []
 
+  const sourceToken = normalizedSourceToken(text)
   const conceptsById = new Map(
     atlas.concepts.map((concept) => [concept.id, concept]),
   )
@@ -58,6 +75,7 @@ export function suggestAnatomyFromText(
           evidence: alias,
           confidence: 'high',
           score,
+          sourceToken,
         })
       }
     }
@@ -84,6 +102,7 @@ export function suggestAnatomyFromText(
         evidence: concept.name,
         confidence: 'medium',
         score,
+        sourceToken,
       })
     }
   }
