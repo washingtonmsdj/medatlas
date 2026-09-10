@@ -57,6 +57,24 @@ function randomToken(bytes = 32) {
   ).join('')
 }
 
+function hasValidReviewPublicationBinding(report: VisualReport) {
+  const reviewApproval = report.reviewApproval
+  const publicationIdentity = report.publicationIdentity
+
+  return Boolean(
+    reviewApproval &&
+      publicationIdentity &&
+      reviewApproval.organizationId === publicationIdentity.organizationId &&
+      reviewApproval.workspaceId === publicationIdentity.workspaceId &&
+      reviewApproval.approvedBy.id &&
+      reviewApproval.approvedBy.displayName &&
+      publicationIdentity.professional.id &&
+      publicationIdentity.professional.displayName &&
+      Number.isFinite(Date.parse(reviewApproval.approvedAt)) &&
+      Number.isFinite(Date.parse(publicationIdentity.publishedAt)),
+  )
+}
+
 function parseStoredShare(
   token: string,
   key: string,
@@ -72,7 +90,7 @@ function parseStoredShare(
       !parsed.report ||
       !Number.isInteger(parsed.report.version) ||
       parsed.report.version < 1 ||
-      !parsed.report.publicationIdentity ||
+      !hasValidReviewPublicationBinding(parsed.report) ||
       !Number.isFinite(createdAt) ||
       !Number.isFinite(expiresAt)
     ) {
@@ -449,9 +467,21 @@ export class DemoClinicalRepository implements ClinicalRepository {
       throw new Error('A versão do relatório é inválida.')
     }
 
+    if (!report.reviewApproval) {
+      throw new Error(
+        'A revisão clínica precisa registrar o profissional responsável.',
+      )
+    }
+
     if (!report.publicationIdentity) {
       throw new Error(
         'A identidade responsável pela publicação precisa estar confirmada.',
+      )
+    }
+
+    if (!hasValidReviewPublicationBinding(report)) {
+      throw new Error(
+        'A revisão clínica e a publicação precisam pertencer ao mesmo contexto organizacional e workspace.',
       )
     }
 
