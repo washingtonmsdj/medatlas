@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 const files = {
   app: await readFile('src/App.tsx', 'utf8'),
   composer: await readFile('src/components/ReportComposer.tsx', 'utf8'),
+  patient: await readFile('src/components/PatientReportPage.tsx', 'utf8'),
   workflow: await readFile('src/domain/report-workflow.ts', 'utf8'),
   types: await readFile('src/domain/types.ts', 'utf8'),
   review: await readFile('src/clinical/report-review.ts', 'utf8'),
@@ -30,6 +31,9 @@ const invariants = [
   ['workflow invalidates approval on content change', files.workflow, 'reviewApproval: undefined'],
   ['workflow requires approval before publish', files.workflow, 'hasValidReviewApproval(report)'],
   ['composer exposes reviewer identity', files.composer, 'report.reviewApproval?.approvedBy.displayName'],
+  ['patient requires review provenance', files.patient, '!reviewApproval'],
+  ['patient labels reviewer separately', files.patient, 'Revisado por'],
+  ['patient labels publisher separately', files.patient, 'Compartilhado por'],
   ['publisher also requires clinical-write', files.publication, "roleHasCapability(professional.role, 'clinical-write')"],
   ['repository requires review provenance', files.repository, 'const reviewApproval = report.reviewApproval'],
   ['repository binds review and publication tenant', files.repository, 'reviewApproval.organizationId !== publicationIdentity.organizationId'],
@@ -71,5 +75,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas clinician review gate PASS: review provenance, clinical-write authorization, tenant/workspace binding, UI gating and production approved_by/approved_at contract verified.',
+  'MedAtlas clinician review gate PASS: review provenance, clinical-write authorization, reviewer/publisher separation, tenant/workspace binding and production approved_by/approved_at contract verified.',
 )

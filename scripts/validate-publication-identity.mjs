@@ -3,26 +3,40 @@ import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
 import ts from 'typescript'
 
+function compileCommonJs(source) {
+  return ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  }).outputText
+}
+
+const rolesSource = await readFile('src/organization/roles.ts', 'utf8')
+const rolesModule = { exports: {} }
+vm.runInNewContext(
+  `(function (exports, module) {
+${compileCommonJs(rolesSource)}
+  })(module.exports, module)`,
+  { module: rolesModule },
+)
+
 const helperSource = await readFile(
   'src/organization/report-publication.ts',
   'utf8',
 )
-
-const compiled = ts.transpileModule(helperSource, {
-  compilerOptions: {
-    module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ES2022,
-    esModuleInterop: true,
-  },
-})
-
 const moduleRecord = { exports: {} }
+const localRequire = (request) => {
+  if (request === './roles') return rolesModule.exports
+  throw new Error(`Unexpected runtime dependency: ${request}`)
+}
 
 vm.runInNewContext(
-  `(function (exports, module) {
-${compiled.outputText}
-  })(module.exports, module)`,
-  { module: moduleRecord },
+  `(function (exports, module, require) {
+${compileCommonJs(helperSource)}
+  })(module.exports, module, localRequire)`,
+  { module: moduleRecord, localRequire },
 )
 
 const { createReportPublicationIdentity } = moduleRecord.exports
@@ -127,6 +141,20 @@ assert.equal(
   'inactive publisher membership must fail closed',
 )
 
+const staff = { ...professional, id: 'member_staff', role: 'staff' }
+assert.equal(
+  createReportPublicationIdentity({
+    ...runtime,
+    organization: {
+      ...runtime.organization,
+      members: [staff],
+    },
+    getCurrentMember: () => staff,
+  }),
+  null,
+  'publisher without clinical-write must fail closed',
+)
+
 const repository = await readFile('src/data/repository.ts', 'utf8')
 const workflow = await readFile('src/domain/report-workflow.ts', 'utf8')
 const patient = await readFile('src/components/PatientReportPage.tsx', 'utf8')
@@ -136,6 +164,7 @@ for (const fragment of [
   'createReportPublicationIdentity',
   'publicationIdentity,',
   'organizationBoundDemoRepository',
+  'reviewApproval.workspaceId',
 ]) {
   assert.ok(
     repository.includes(fragment),
@@ -146,6 +175,7 @@ for (const fragment of [
 for (const fragment of [
   'publicationIdentity: undefined',
   '!action.report.publicationIdentity',
+  'sameReviewApproval(report, action.report)',
 ]) {
   assert.ok(
     workflow.includes(fragment),
@@ -155,14 +185,18 @@ for (const fragment of [
 
 for (const fragment of [
   'const publicationIdentity = report.publicationIdentity',
+  'const reviewApproval = report.reviewApproval',
   '!previewMode &&',
   '!publicationIdentity',
+  '!reviewApproval',
   'publicationIdentity?.professional.displayName',
   'publicationIdentity?.branding',
+  'Revisado por',
+  'Compartilhado por',
 ]) {
   assert.ok(
     patient.includes(fragment),
-    `patient report must consume immutable publication identity: ${fragment}`,
+    `patient report must consume immutable review/publication identities: ${fragment}`,
   )
 }
 
@@ -170,7 +204,11 @@ assert.ok(
   domainTypes.includes('export interface ReportPublicationIdentity'),
   'domain must expose the publication identity contract',
 )
+assert.ok(
+  domainTypes.includes('export interface ReportReviewApproval'),
+  'domain must expose the review approval contract',
+)
 
 console.log(
-  'MedAtlas publication identity contract PASS: publication snapshots are tenant-bound, fail closed on invalid organization context, are invalidated with mutable report state, and drive the shared patient surface.',
+  'MedAtlas publication identity contract PASS: publication snapshots require clinical-write, fail closed on invalid organization context, preserve reviewer/publisher separation and drive the shared patient surface.',
 )
