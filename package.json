@@ -8,6 +8,7 @@
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
     "check": "tsc --noEmit -p tsconfig.app.json",
     "validate:db-contract": "node scripts/validate-db-contract.mjs",
+    "validate:organization-runtime": "node scripts/validate-organization-runtime.mjs",
     "validate:anatomy-contract": "node scripts/validate-anatomy-contract.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 3016",
     "validate:demo-scenarios": "node scripts/validate-demo-scenarios.mjs",

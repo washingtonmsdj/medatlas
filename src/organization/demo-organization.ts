@@ -127,5 +127,3 @@ export function getDemoUnit(unitId?: string) {
     ) ?? null
   )
 }
-
-export { ROLE_LABELS } from './roles'
