@@ -1,5 +1,8 @@
 import { useMemo, useState, type ChangeEvent } from 'react'
-import type { AnatomySuggestion } from '../clinical/anatomy-suggestions'
+import {
+  anatomySuggestionSourceToken,
+  type AnatomySuggestion,
+} from '../clinical/anatomy-suggestions'
 import {
   REPORT_EXAMPLES,
   type ReportExample,
@@ -42,6 +45,14 @@ export function ReportIntake({
     () => validateDemoReportSource(sourceText),
     [sourceText],
   )
+  const sourceToken = useMemo(
+    () => anatomySuggestionSourceToken(sourceText),
+    [sourceText],
+  )
+  const currentSuggestions = useMemo(
+    () => suggestions.filter((suggestion) => suggestion.sourceToken === sourceToken),
+    [sourceToken, suggestions],
+  )
 
   const sourceState = useMemo(() => {
     if (analyzing) {
@@ -60,9 +71,9 @@ export function ReportIntake({
       }
     }
 
-    if (suggestions.length > 0) {
+    if (currentSuggestions.length > 0) {
       return {
-        label: `${suggestions.length} correspondência${suggestions.length === 1 ? '' : 's'}`,
+        label: `${currentSuggestions.length} correspondência${currentSuggestions.length === 1 ? '' : 's'}`,
         detail: 'Confirme a estrutura correta.',
         tone: 'ready',
       }
@@ -81,7 +92,7 @@ export function ReportIntake({
       detail: 'Cole o texto ou importe um arquivo.',
       tone: 'idle',
     }
-  }, [analyzing, sourceTextError, sourceValidation.ok, suggestions.length])
+  }, [analyzing, currentSuggestions.length, sourceTextError, sourceValidation.ok])
 
   const importLocalText = async (
     event: ChangeEvent<HTMLInputElement>,
@@ -258,17 +269,17 @@ export function ReportIntake({
         </div>
       )}
 
-      {suggestions.length > 0 && (
+      {currentSuggestions.length > 0 && (
         <div className="suggestion-list">
           <div className="suggestion-list-heading">
             <div>
               <span className="section-kicker">ESTRUTURAS ENCONTRADAS</span>
               <strong>Confirme a anatomia do laudo</strong>
             </div>
-            <span>{suggestions.length} opção(ões)</span>
+            <span>{currentSuggestions.length} opção(ões)</span>
           </div>
 
-          {suggestions.map((suggestion, index) => {
+          {currentSuggestions.map((suggestion, index) => {
             const highConfidence = suggestion.confidence === 'high'
 
             return (
