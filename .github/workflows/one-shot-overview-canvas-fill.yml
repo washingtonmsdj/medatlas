@@ -23,50 +23,21 @@ jobs:
 
           css_path = Path('src/styles/clareza-viva.css')
           css = css_path.read_text()
-          anchor = ".overview-atlas-stage > .anatomy-focus-preview {\n  height: 100%;\n  overflow: hidden;\n  border-color: var(--line-control);\n  border-radius: 12px;\n  background: var(--surface-panel);\n  box-shadow: none;\n}\n"
-          addition = "\n.overview-atlas-stage .human-atlas-scene,\n.overview-atlas-stage .reference-atlas-scene {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.overview-atlas-stage .reference-atlas-scene canvas {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n"
-          if css.count(anchor) != 1:
-              raise SystemExit(f'expected one Overview preview anchor, found {css.count(anchor)}')
+          css_anchor = ".overview-atlas-stage > .anatomy-focus-preview {\n  height: 100%;\n  overflow: hidden;\n  border-color: var(--line-control);\n  border-radius: 12px;\n  background: var(--surface-panel);\n  box-shadow: none;\n}\n"
+          css_addition = "\n.overview-atlas-stage .human-atlas-scene,\n.overview-atlas-stage .reference-atlas-scene {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.overview-atlas-stage .reference-atlas-scene canvas {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n"
+          if css.count(css_anchor) != 1:
+              raise SystemExit(f'expected one Overview preview anchor, found {css.count(css_anchor)}')
           if '.overview-atlas-stage .reference-atlas-scene {' in css:
               raise SystemExit('Overview scene fill contract already exists')
-          css_path.write_text(css.replace(anchor, anchor + addition, 1))
+          css_path.write_text(css.replace(css_anchor, css_anchor + css_addition, 1))
 
           test_path = Path('tests/e2e/responsive-layout.spec.ts')
           test = test_path.read_text()
-          anchor = """  const dashboardMobile3dStageBox =
-    await dashboardMobile3dStage.boundingBox()
-  expect(dashboardMobile3dStageBox).not.toBeNull()
-  expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)
-
-  await expect(
-"""
-          replacement = """  const dashboardMobile3dHost = page.locator(
-    '.overview-atlas-panel .human-atlas-scene .reference-atlas-scene',
-  )
-  const dashboardMobile3dCanvas = dashboardMobile3dHost.locator('canvas')
-  await expect(dashboardMobile3dCanvas).toBeVisible({ timeout: 60_000 })
-
-  const [dashboardMobile3dStageBox, dashboardMobile3dHostBox, dashboardMobile3dCanvasBox] =
-    await Promise.all([
-      dashboardMobile3dStage.boundingBox(),
-      dashboardMobile3dHost.boundingBox(),
-      dashboardMobile3dCanvas.boundingBox(),
-    ])
-  expect(dashboardMobile3dStageBox).not.toBeNull()
-  expect(dashboardMobile3dHostBox).not.toBeNull()
-  expect(dashboardMobile3dCanvasBox).not.toBeNull()
-  expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)
-  expect(dashboardMobile3dHostBox!.height).toBeGreaterThanOrEqual(400)
-  expect(dashboardMobile3dCanvasBox!.height).toBeGreaterThanOrEqual(400)
-  expect(
-    Math.abs(dashboardMobile3dCanvasBox!.height - dashboardMobile3dStageBox!.height),
-  ).toBeLessThanOrEqual(1)
-
-  await expect(
-"""
-          if test.count(anchor) != 1:
-              raise SystemExit(f'expected one mobile Overview stage assertion block, found {test.count(anchor)}')
-          test_path.write_text(test.replace(anchor, replacement, 1))
+          test_anchor = "  const dashboardMobile3dStageBox =\n    await dashboardMobile3dStage.boundingBox()\n  expect(dashboardMobile3dStageBox).not.toBeNull()\n  expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)\n\n  await expect(\n"
+          test_replacement = "  const dashboardMobile3dHost = page.locator(\n    '.overview-atlas-panel .human-atlas-scene .reference-atlas-scene',\n  )\n  const dashboardMobile3dCanvas = dashboardMobile3dHost.locator('canvas')\n  await expect(dashboardMobile3dCanvas).toBeVisible({ timeout: 60_000 })\n\n  const [dashboardMobile3dStageBox, dashboardMobile3dHostBox, dashboardMobile3dCanvasBox] =\n    await Promise.all([\n      dashboardMobile3dStage.boundingBox(),\n      dashboardMobile3dHost.boundingBox(),\n      dashboardMobile3dCanvas.boundingBox(),\n    ])\n  expect(dashboardMobile3dStageBox).not.toBeNull()\n  expect(dashboardMobile3dHostBox).not.toBeNull()\n  expect(dashboardMobile3dCanvasBox).not.toBeNull()\n  expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)\n  expect(dashboardMobile3dHostBox!.height).toBeGreaterThanOrEqual(400)\n  expect(dashboardMobile3dCanvasBox!.height).toBeGreaterThanOrEqual(400)\n  expect(\n    Math.abs(dashboardMobile3dCanvasBox!.height - dashboardMobile3dStageBox!.height),\n  ).toBeLessThanOrEqual(1)\n\n  await expect(\n"
+          if test.count(test_anchor) != 1:
+              raise SystemExit(f'expected one mobile Overview stage assertion block, found {test.count(test_anchor)}')
+          test_path.write_text(test.replace(test_anchor, test_replacement, 1))
           PY
           git diff --check
           git diff -- src/styles/clareza-viva.css tests/e2e/responsive-layout.spec.ts
