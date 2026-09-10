@@ -114,19 +114,63 @@ const confirmed = reportWorkflowReducer(changed, {
   displayName: 'Rins',
 })
 
-const generated = reportWorkflowReducer(confirmed, {
+const validDraft = {
+  text: 'Rascunho educacional.',
+  provenance: {
+    origin: 'deterministic',
+    generatorId: 'test',
+    generatorVersion: '1',
+    generatedAt: '2026-09-07T00:00:00.000Z',
+    clinicianEdited: false,
+  },
+  inputIdentity: {
+    reportId: confirmed.id,
+    sourceText: confirmed.finding.sourceText,
+    atlasConceptId: confirmed.finding.atlasConceptId,
+    anatomicalStructure: confirmed.finding.anatomicalStructure,
+  },
+}
+
+const staleSourceDraft = reportWorkflowReducer(confirmed, {
   type: 'draft-generated',
   draft: {
-    text: 'Rascunho educacional.',
-    provenance: {
-      origin: 'deterministic',
-      generatorId: 'test',
-      generatorVersion: '1',
-      generatedAt: '2026-09-07T00:00:00.000Z',
-      clinicianEdited: false,
+    ...validDraft,
+    inputIdentity: {
+      ...validDraft.inputIdentity,
+      sourceText: 'Texto antigo com coração',
     },
   },
 })
+assert.deepEqual(
+  staleSourceDraft,
+  confirmed,
+  'draft generated for an older source must be rejected',
+)
+
+const staleAnatomyDraft = reportWorkflowReducer(confirmed, {
+  type: 'draft-generated',
+  draft: {
+    ...validDraft,
+    inputIdentity: {
+      ...validDraft.inputIdentity,
+      atlasConceptId: 'FMA7088',
+      anatomicalStructure: 'Coração',
+    },
+  },
+})
+assert.deepEqual(
+  staleAnatomyDraft,
+  confirmed,
+  'draft generated for an older anatomy confirmation must be rejected',
+)
+
+const generated = reportWorkflowReducer(confirmed, {
+  type: 'draft-generated',
+  draft: validDraft,
+})
+
+assert.equal(generated.finding.patientExplanation, 'Rascunho educacional.')
+assert.equal(generated.finding.explanationReviewRequired, true)
 
 const missingApproval = reportWorkflowReducer(generated, {
   type: 'explanation-approved',
@@ -220,5 +264,5 @@ assert.equal(edited.publicationIdentity, undefined)
 assert.equal(edited.finding.explanationReviewRequired, true)
 
 console.log(
-  'MedAtlas report workflow reducer PASS: content versioning, explicit authorized review provenance, approval invalidation, share revocation and immutable publication identity verified.',
+  'MedAtlas report workflow reducer PASS: content versioning, stale generated-draft rejection, explicit authorized review provenance, approval invalidation, share revocation and immutable publication identity verified.',
 )
