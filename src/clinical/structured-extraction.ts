@@ -1,6 +1,9 @@
 import type { HumanAtlas } from '../atlas/types'
 import { conceptDisplayName } from '../atlas/source'
-import type { AnatomySuggestion } from './anatomy-suggestions'
+import {
+  anatomySuggestionSourceToken,
+  type AnatomySuggestion,
+} from './anatomy-suggestions'
 
 export const CLINICAL_EXTRACTION_SCHEMA_VERSION =
   'medatlas.clinical-extraction/1' as const
@@ -250,10 +253,12 @@ export function validateStructuredClinicalExtraction(
 export function structuredExtractionToSuggestions(
   atlas: HumanAtlas,
   extraction: StructuredClinicalExtraction,
+  sourceText: string,
 ): AnatomySuggestion[] {
   const conceptsById = new Map(
     atlas.concepts.map((concept) => [concept.id, concept]),
   )
+  const sourceToken = anatomySuggestionSourceToken(sourceText)
 
   return extraction.candidateStructures
     .map((candidate) => {
@@ -274,6 +279,7 @@ export function structuredExtractionToSuggestions(
             ? ('high' as const)
             : ('medium' as const),
         score: Math.round(candidate.confidence * 100),
+        sourceToken,
       }
     })
     .sort(
