@@ -422,6 +422,20 @@ button.primary {
   box-shadow: none;
 }
 
+.overview-atlas-stage .human-atlas-scene,
+.overview-atlas-stage .reference-atlas-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overview-atlas-stage .reference-atlas-scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .overview-atlas-stage .anatomy-focus-preview-header,
 .overview-atlas-stage .anatomy-focus-preview-footer {
   background: var(--surface-panel);

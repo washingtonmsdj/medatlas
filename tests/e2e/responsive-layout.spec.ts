@@ -183,10 +183,27 @@ test('mobile SaaS surfaces stay inside a 390px viewport', async ({ page }) => {
   )
   await expect(dashboardMobile3dStage).toBeVisible()
 
-  const dashboardMobile3dStageBox =
-    await dashboardMobile3dStage.boundingBox()
+  const dashboardMobile3dHost = page.locator(
+    '.overview-atlas-panel .human-atlas-scene .reference-atlas-scene',
+  )
+  const dashboardMobile3dCanvas = dashboardMobile3dHost.locator('canvas')
+  await expect(dashboardMobile3dCanvas).toBeVisible({ timeout: 60_000 })
+
+  const [dashboardMobile3dStageBox, dashboardMobile3dHostBox, dashboardMobile3dCanvasBox] =
+    await Promise.all([
+      dashboardMobile3dStage.boundingBox(),
+      dashboardMobile3dHost.boundingBox(),
+      dashboardMobile3dCanvas.boundingBox(),
+    ])
   expect(dashboardMobile3dStageBox).not.toBeNull()
+  expect(dashboardMobile3dHostBox).not.toBeNull()
+  expect(dashboardMobile3dCanvasBox).not.toBeNull()
   expect(dashboardMobile3dStageBox!.height).toBeGreaterThanOrEqual(400)
+  expect(dashboardMobile3dHostBox!.height).toBeGreaterThanOrEqual(400)
+  expect(dashboardMobile3dCanvasBox!.height).toBeGreaterThanOrEqual(400)
+  expect(
+    Math.abs(dashboardMobile3dCanvasBox!.height - dashboardMobile3dStageBox!.height),
+  ).toBeLessThanOrEqual(1)
 
   await expect(
     page
