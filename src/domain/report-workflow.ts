@@ -25,6 +25,7 @@ function invalidatePublication(report: VisualReport): VisualReport {
     ...report,
     status: 'draft',
     shareSlug: undefined,
+    publicationIdentity: undefined,
   }
 }
 
@@ -171,7 +172,8 @@ export function reportWorkflowReducer(
         !canPublish(report) ||
         action.report.id !== report.id ||
         action.report.status !== 'published' ||
-        !action.report.shareSlug
+        !action.report.shareSlug ||
+        !action.report.publicationIdentity
       ) {
         return report
       }
@@ -179,7 +181,11 @@ export function reportWorkflowReducer(
       return action.report
 
     case 'shares-cleared':
-      if (report.status !== 'published' && !report.shareSlug) {
+      if (
+        report.status !== 'published' &&
+        !report.shareSlug &&
+        !report.publicationIdentity
+      ) {
         return report
       }
 
@@ -187,6 +193,7 @@ export function reportWorkflowReducer(
         ...report,
         status: canPublish(report) ? 'clinician_review' : 'draft',
         shareSlug: undefined,
+        publicationIdentity: undefined,
       }
   }
 }
