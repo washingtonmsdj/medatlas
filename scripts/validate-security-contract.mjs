@@ -64,11 +64,17 @@ const requiredDemoFragments = [
   'Não foi possível criar um link temporário neste navegador.',
   '!Number.isInteger(parsed.report.version)',
   'parsed.report.version < 1',
-  '!parsed.report.publicationIdentity',
+  '!hasValidReviewPublicationBinding(parsed.report)',
   'const reportKey = \`${entry.report.id}:v${entry.report.version}\`',
   'reportVersion: stat.reportVersion',
   '!Number.isInteger(report.version)',
+  '!report.reviewApproval',
   '!report.publicationIdentity',
+  'hasValidReviewPublicationBinding(report)',
+  'reviewApproval.organizationId === publicationIdentity.organizationId',
+  'reviewApproval.workspaceId === publicationIdentity.workspaceId',
+  'Number.isFinite(Date.parse(reviewApproval.approvedAt))',
+  'Number.isFinite(Date.parse(publicationIdentity.publishedAt))',
 ]
 
 for (const fragment of requiredDemoFragments) {
@@ -220,5 +226,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, versioned temporary shares, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
