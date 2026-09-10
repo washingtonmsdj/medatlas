@@ -37,69 +37,69 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-    matrix:
-      include:
-        - suite: clinical-flow
-          tests: >-
-            tests/e2e/clinical-flow.spec.ts
-            tests/e2e/report-intake.spec.ts
-            tests/e2e/share-revocation.spec.ts
-        - suite: responsive-layout
-          tests: tests/e2e/responsive-layout.spec.ts
-        - suite: supporting-contracts
-          tests: >-
-            tests/e2e/accessibility.spec.ts
-            tests/e2e/anatomy-depth-layout.spec.ts
-            tests/e2e/invitations-contract.spec.ts
-            tests/e2e/patient-localization.spec.ts
+      matrix:
+        include:
+          - suite: clinical-flow
+            tests: >-
+              tests/e2e/clinical-flow.spec.ts
+              tests/e2e/report-intake.spec.ts
+              tests/e2e/share-revocation.spec.ts
+          - suite: responsive-layout
+            tests: tests/e2e/responsive-layout.spec.ts
+          - suite: supporting-contracts
+            tests: >-
+              tests/e2e/accessibility.spec.ts
+              tests/e2e/anatomy-depth-layout.spec.ts
+              tests/e2e/invitations-contract.spec.ts
+              tests/e2e/patient-localization.spec.ts
 
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '22.13.0'
-        cache: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
 
-    - name: Install application dependencies
-      run: npm ci
+      - name: Install application dependencies
+        run: npm ci
 
-    - name: Install pinned Playwright test runner
-      run: npm install --no-save --package-lock=false @playwright/test@1.63.0 @axe-core/playwright@4.13.0
+      - name: Install pinned Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.63.0 @axe-core/playwright@4.13.0
 
-    - name: Install Chromium
-      run: |
-        # Playwright uses its own Chromium build. The hosted runner's
-        # unrelated Google Chrome apt source can temporarily publish an
-        # inconsistent index and make --with-deps fail before tests start.
-        for source_file in /etc/apt/sources.list.d/*; do
-          if [ -f "$source_file" ] && grep -q 'dl.google.com/linux/chrome-stable/deb' "$source_file"; then
-            sudo rm -f "$source_file"
-          fi
-        done
-        npx playwright install --with-deps chromium
+      - name: Install Chromium
+        run: |
+          # Playwright uses its own Chromium build. The hosted runner's
+          # unrelated Google Chrome apt source can temporarily publish an
+          # inconsistent index and make --with-deps fail before tests start.
+          for source_file in /etc/apt/sources.list.d/*; do
+            if [ -f "$source_file" ] && grep -q 'dl.google.com/linux/chrome-stable/deb' "$source_file"; then
+              sudo rm -f "$source_file"
+            fi
+          done
+          npx playwright install --with-deps chromium
 
-    - name: Build test target
-      run: npm run build
+      - name: Build test target
+        run: npm run build
 
-    - name: Run browser E2E
-      run: npx playwright test ${{ matrix.tests }} --project=chromium
+      - name: Run browser E2E
+        run: npx playwright test ${{ matrix.tests }} --project=chromium
 
-    - name: Upload visual QA captures
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: visual-qa-${{ github.run_id }}-${{ matrix.suite }}
-        path: test-results/visual-qa/
-        if-no-files-found: ignore
-        retention-days: 7
+      - name: Upload visual QA captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-qa-${{ github.run_id }}-${{ matrix.suite }}
+          path: test-results/visual-qa/
+          if-no-files-found: ignore
+          retention-days: 7
 
-    - name: Upload Playwright report on failure
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report-${{ matrix.suite }}
-        path: |
-          playwright-report/
-          test-results/
-        if-no-files-found: ignore
-        retention-days: 7
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.suite }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
