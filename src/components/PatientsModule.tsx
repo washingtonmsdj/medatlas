@@ -27,7 +27,7 @@ export function PatientsModule({
   const presentation = deriveReportPresentation(report)
 
   return (
-    <section className="workspace-page mvp-surface">
+    <section className="workspace-page">
       <WorkspacePageHeader
         eyebrow="PACIENTE ATUAL"
         title={report.patient.displayName}
@@ -46,8 +46,8 @@ export function PatientsModule({
         }
       />
 
-      <article className="patient-current-report workspace-panel patient-summary-card-mvp">
-        <header className="patient-summary-heading-mvp">
+      <article className="patient-current-report workspace-panel patient-summary-card">
+        <header className="patient-summary-heading">
           <div className="patient-profile-heading">
             <span className="patient-avatar" aria-hidden="true">
               {initials(report.patient.displayName)}
@@ -60,7 +60,7 @@ export function PatientsModule({
           </div>
         </header>
 
-        <div className="patient-summary-report-mvp">
+        <div className="patient-summary-report">
           <span className="label">RELATÓRIO ATUAL</span>
           <strong>{report.title}</strong>
           <small>

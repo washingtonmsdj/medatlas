@@ -430,7 +430,7 @@ test('frontend refinement keeps hierarchy explicit on desktop and mobile', async
   await page.getByRole('button', { name: 'Relatórios' }).click()
 
   const currentStep = page.locator(
-    '.workflow-strip-premium [data-step-state="current"]',
+    '.report-workflow-strip [data-step-state="current"]',
   )
   await expect(currentStep).toHaveCount(1)
   await expect(currentStep).toContainText('Publicar ao paciente')

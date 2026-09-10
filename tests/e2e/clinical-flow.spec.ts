@@ -832,7 +832,7 @@ test('patients module reflects only the current synthetic report context', async
   ).toBeVisible()
 
   await expect(
-    page.locator('.patient-summary-card-mvp').getByText('Paciente demonstração', { exact: true }),
+    page.locator('.patient-summary-card').getByText('Paciente demonstração', { exact: true }),
   ).toBeVisible()
   await expect(
     page.getByText('Disco intervertebral L4–L5', { exact: true }).first(),
@@ -860,7 +860,7 @@ test('required anatomy attribution is visible in clinician and patient surfaces'
 
   await page.getByRole('button', { name: 'Configurações' }).click()
 
-  const clinicianAttribution = page.locator('details.mvp-technical-details')
+  const clinicianAttribution = page.locator('details.settings-attribution-details')
   await expect(clinicianAttribution).toBeVisible()
   await clinicianAttribution.locator('summary').click()
 

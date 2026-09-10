@@ -1,6 +1,6 @@
 /* MedAtlas workflow and clinical-studio layout refinements. */
 
-.workflow-strip-premium {
+.report-workflow-strip {
   position: sticky;
   z-index: 38;
   top: 72px;
@@ -14,7 +14,7 @@
   backdrop-filter: blur(12px);
 }
 
-.workflow-strip-premium > div {
+.report-workflow-strip > div {
   position: relative;
   min-height: 50px;
   display: grid;
@@ -31,19 +31,19 @@
     background .18s ease;
 }
 
-.workflow-strip-premium > div > span {
+.report-workflow-strip > div > span {
   grid-row: 1 / 3;
   align-self: center;
 }
 
-.workflow-strip-premium > div > p {
+.report-workflow-strip > div > p {
   margin: 0;
   color: inherit;
   font-size: var(--type-small);
   font-weight: 700;
 }
 
-.workflow-strip-premium > div > small {
+.report-workflow-strip > div > small {
   color: var(--accent-text);
   font-size: var(--type-caption);
   font-weight: 800;
@@ -51,7 +51,7 @@
   text-transform: uppercase;
 }
 
-.workflow-strip-premium > div.current {
+.report-workflow-strip > div.current {
   color: var(--text-primary);
   border-color: var(--line-focus);
   background: var(--surface-control-hover);
@@ -59,14 +59,14 @@
   transform: translateY(-1px);
 }
 
-.workflow-strip-premium > div.current > span {
+.report-workflow-strip > div.current > span {
   color: var(--accent-cyan);
   border-color: var(--line-focus);
   background: var(--surface-control);
   box-shadow: 0 0 0 4px var(--focus-ring);
 }
 
-.workflow-strip-premium > div.pending {
+.report-workflow-strip > div.pending {
   color: var(--text-muted);
   background: var(--surface-control);
 }
@@ -121,7 +121,7 @@
     padding-inline: 14px;
   }
 
-  .workflow-strip-premium {
+  .report-workflow-strip {
     position: static;
     padding-top: 0;
     backdrop-filter: none;
@@ -146,13 +146,13 @@
 }
 
 @media (max-width: 620px) {
-  .workflow-strip-premium {
+  .report-workflow-strip {
     grid-template-columns: 1fr 1fr;
     gap: 7px;
     margin-bottom: 10px;
   }
 
-  .workflow-strip-premium > div {
+  .report-workflow-strip > div {
     min-height: 56px;
     padding: 8px 10px;
   }
@@ -173,7 +173,7 @@
 
 .workspace-page {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .workspace-hero-badge {
@@ -270,16 +270,16 @@
   line-height: 1.45;
 }
 
-.patient-summary-card-mvp {
+.patient-summary-card {
   display: grid;
   gap: 14px;
 }
 
-.patient-summary-heading-mvp {
+.patient-summary-heading {
   align-items: center;
 }
 
-.patient-summary-report-mvp {
+.patient-summary-report {
   display: grid;
   gap: 3px;
   padding: 12px 0;
@@ -287,12 +287,12 @@
   border-bottom: 1px solid var(--line-subtle);
 }
 
-.patient-summary-report-mvp strong {
+.patient-summary-report strong {
   color: var(--text-strong);
   font-size: 16px;
 }
 
-.patient-summary-report-mvp small {
+.patient-summary-report small {
   color: var(--text-muted);
   font-size: var(--type-caption);
 }
@@ -653,21 +653,21 @@
     min-height: 92px;
   }
 
-  .patient-summary-card-mvp {
+  .patient-summary-card {
     grid-template-columns: minmax(250px, .72fr) minmax(280px, 1fr);
     align-items: center;
   }
 
-  .patient-summary-heading-mvp {
+  .patient-summary-heading {
     grid-row: 1 / span 2;
   }
 
-  .patient-summary-report-mvp {
+  .patient-summary-report {
     grid-column: 2;
   }
 
-  .patient-summary-card-mvp .patient-report-progress,
-  .patient-summary-card-mvp .patient-workspace-actions {
+  .patient-summary-card .patient-report-progress,
+  .patient-summary-card .patient-workspace-actions {
     grid-column: 2;
   }
 }
@@ -829,12 +829,12 @@
     padding: 10px 11px;
   }
 
-  .patient-summary-heading-mvp {
+  .patient-summary-heading {
     align-items: flex-start;
     gap: 10px;
   }
 
-  .patient-summary-heading-mvp .report-state-chip {
+  .patient-summary-heading .report-state-chip {
     flex: 0 0 auto;
   }
 }

@@ -183,13 +183,13 @@
   background: var(--overlay-header-control);
 }
 
-.clinical-workspace details.mvp-technical-details {
+.clinical-workspace details.settings-attribution-details {
   border-color: var(--line-subtle);
   color: var(--text-muted-strong);
   background: var(--surface-shortcut);
 }
 
-.clinical-workspace details.mvp-technical-details summary {
+.clinical-workspace details.settings-attribution-details summary {
   color: var(--text-secondary);
 }
 
@@ -415,12 +415,9 @@
   }
 }
 
-/* MVP interaction surfaces. */
-.mvp-surface {
-  gap: 14px;
-}
+/* Product interaction surfaces. */
 
-.demo-privacy-banner-mvp {
+.demo-privacy-banner-compact {
   width: fit-content;
   max-width: 100%;
   min-height: 28px;
@@ -436,36 +433,33 @@
   line-height: 1.2;
 }
 
-.demo-privacy-banner-mvp strong {
+.demo-privacy-banner-compact strong {
   flex: 0 0 auto;
   color: var(--text-demo-strong);
 }
 
-.demo-privacy-banner-mvp span {
+.demo-privacy-banner-compact span {
   overflow: hidden;
   color: var(--text-demo);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mvp-settings-grid {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
 
-.mvp-technical-details {
+.settings-attribution-details {
   border: 1px solid var(--line-subtle);
   border-radius: 16px;
   background: var(--surface-panel);
 }
 
-.mvp-technical-details summary {
+.settings-attribution-details summary {
   cursor: pointer;
   padding: 14px 16px;
   color: var(--text-secondary);
   font-weight: 800;
 }
 
-.mvp-technical-details[open] > :not(summary) {
+.settings-attribution-details[open] > :not(summary) {
   margin: 0 14px 14px;
 }
 

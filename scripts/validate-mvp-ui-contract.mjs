@@ -216,6 +216,14 @@ for (const [name, stylesheet] of [
 
 for (const legacySelector of [
   'module-v3',
+  'workflow-strip-premium',
+  'patient-summary-card-mvp',
+  'patient-summary-heading-mvp',
+  'patient-summary-report-mvp',
+  'mvp-settings-grid',
+  'mvp-technical-details',
+  'demo-privacy-banner-mvp',
+  'mvp-surface',
   'medatlas-v2-shell',
   'medatlas-v2-workspace',
   'medatlas-v2-topbar',

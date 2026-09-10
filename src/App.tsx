@@ -302,7 +302,7 @@ function ClinicianApp() {
   const reportPresentation = deriveReportPresentation(report)
 
   const reportWorkflow = (
-    <section className="workspace-page mvp-surface">
+    <section className="workspace-page">
       <WorkspacePageHeader
         eyebrow="RELATÓRIO VISUAL"
         title={report.title}
@@ -325,7 +325,7 @@ function ClinicianApp() {
         }
       />
 
-      <section className="workflow-strip workflow-strip-premium" aria-label="Fluxo do relatório">
+      <section className="workflow-strip report-workflow-strip" aria-label="Fluxo do relatório">
         {reportPresentation.steps.map((step, index) => (
           <div
             className={step.state}

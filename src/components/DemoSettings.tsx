@@ -27,7 +27,7 @@ export function DemoSettings({ onNewReport }: Props) {
   }
 
   return (
-    <section className="workspace-page mvp-surface">
+    <section className="workspace-page">
       <WorkspacePageHeader
         eyebrow="CONFIGURAÇÕES"
         title="Configurações do workspace"
@@ -44,7 +44,7 @@ export function DemoSettings({ onNewReport }: Props) {
         }
       />
 
-      <div className="settings-grid mvp-settings-grid">
+      <div className="settings-grid">
         <article className="settings-branding-card">
           <div className="settings-card-heading">
             <span
@@ -101,7 +101,7 @@ export function DemoSettings({ onNewReport }: Props) {
         </article>
       </div>
 
-      <details className="mvp-technical-details">
+      <details className="settings-attribution-details">
         <summary>Licenças e atribuições do Atlas</summary>
         <AttributionNotice />
       </details>

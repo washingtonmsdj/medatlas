@@ -32,7 +32,7 @@ export function Overview({
     .toUpperCase()
 
   return (
-    <section className="overview-3d-first workspace-page mvp-surface">
+    <section className="overview-3d-first workspace-page">
       <WorkspacePageHeader
         eyebrow={scopeLabel}
         title="Atendimento em andamento"
