@@ -1,0 +1,57 @@
+name: One-shot overview region contract
+
+on:
+  push:
+    branches:
+      - fix/overview-region-contract
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Align overview contract with clinical regional focus
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/validate-reference-atlas.mjs')
+          source = path.read_text()
+          old = """  {
+    surface: 'dashboard',
+    source: overview,
+    required: ['<AnatomyFocusPreview', 'contextMode=\"none\"'],
+  },
+"""
+          new = """  {
+    surface: 'dashboard',
+    source: overview,
+    required: [
+      '<AnatomyFocusPreview',
+      'contextMode=\"region\"',
+      'data-clinical-focus=',
+      'FOCO CLÍNICO · HUMAN ATLAS 3D',
+    ],
+  },
+"""
+          if source.count(old) != 1:
+              raise SystemExit(f'expected one dashboard context contract, found {source.count(old)}')
+          source = source.replace(old, new, 1)
+          path.write_text(source)
+          PY
+          git diff --check
+          git diff -- scripts/validate-reference-atlas.mjs
+      - name: Remove one-shot workflow and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/one-shot-overview-region-contract.yml
+          git add scripts/validate-reference-atlas.mjs
+          git commit -m "test: require regional clinical focus in overview"
+          git push origin HEAD:fix/overview-region-contract
