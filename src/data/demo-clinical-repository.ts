@@ -5,7 +5,12 @@ import type {
   ClinicalUsageSummary,
 } from './clinical-repository'
 import type { VisualReport } from '../domain/types'
-import { DEMO_CONSTRAINTS, demoShareTtlLabel } from '../product/constraints'
+import {
+  DEMO_CONSTRAINTS,
+  demoShareTtlLabel,
+  formatDemoPatientExplanationLimit,
+  validateDemoPatientExplanation,
+} from '../product/constraints'
 
 const STORAGE_PREFIX = 'medatlas:demo:published:'
 const DEMO_SHARE_SCHEMA = 'medatlas.demo-share/1'
@@ -75,6 +80,17 @@ function hasValidReviewPublicationBinding(report: VisualReport) {
   )
 }
 
+function hasValidPublishedClinicalContent(report: VisualReport) {
+  return Boolean(
+    report.finding &&
+      report.finding.atlasConceptId &&
+      !report.finding.anatomyReviewRequired &&
+      !report.finding.explanationReviewRequired &&
+      report.finding.patientExplanation.trim() &&
+      validateDemoPatientExplanation(report.finding.patientExplanation).ok,
+  )
+}
+
 function parseStoredShare(
   token: string,
   key: string,
@@ -91,6 +107,7 @@ function parseStoredShare(
       !Number.isInteger(parsed.report.version) ||
       parsed.report.version < 1 ||
       !hasValidReviewPublicationBinding(parsed.report) ||
+      !hasValidPublishedClinicalContent(parsed.report) ||
       !Number.isFinite(createdAt) ||
       !Number.isFinite(expiresAt)
     ) {
@@ -557,6 +574,12 @@ export class DemoClinicalRepository implements ClinicalRepository {
     if (!report.finding.patientExplanation.trim()) {
       throw new Error(
         'A explicação para o paciente não pode estar vazia.',
+      )
+    }
+
+    if (!validateDemoPatientExplanation(report.finding.patientExplanation).ok) {
+      throw new Error(
+        `A explicação para o paciente deve ter no máximo ${formatDemoPatientExplanationLimit()}.`,
       )
     }
 
