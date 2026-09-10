@@ -26,19 +26,24 @@ export function PatientReportPage({
   onSwitchToProfessional,
 }: Props) {
   const publicationIdentity = report.publicationIdentity
+  const reviewApproval = report.reviewApproval
   const currentMember = previewMode
     ? organizationRuntime.getCurrentMember()
     : null
   const branding =
     publicationIdentity?.branding ?? organizationRuntime.branding
-  const professionalDisplayName =
+  const reviewerDisplayName =
+    reviewApproval?.approvedBy.displayName ??
+    currentMember?.displayName ??
+    'Profissional responsável'
+  const reviewerSpecialty =
+    reviewApproval?.approvedBy.specialty ??
+    currentMember?.professional?.specialty ??
+    'Clínica'
+  const publisherDisplayName =
     publicationIdentity?.professional.displayName ??
     currentMember?.displayName ??
     'Profissional responsável'
-  const professionalSpecialty =
-    publicationIdentity?.professional.specialty ??
-    currentMember?.professional?.specialty ??
-    'Clínica'
   const presentation = deriveReportPresentation(report)
   const hasAnatomy = Boolean(report.finding.atlasConceptId)
   const [atlasStatus, setAtlasStatus] = useState<
@@ -85,7 +90,9 @@ export function PatientReportPage({
 
   if (
     !previewMode &&
-    (report.status !== 'published' || !publicationIdentity)
+    (report.status !== 'published' ||
+      !publicationIdentity ||
+      !reviewApproval)
   ) {
     return <InvalidPatientLink />
   }
@@ -204,8 +211,11 @@ export function PatientReportPage({
                 : 'Relatório em edição'}
             </strong>
             <p>
-              {professionalDisplayName} · {professionalSpecialty}
+              Revisado por {reviewerDisplayName} · {reviewerSpecialty}
             </p>
+            {!previewMode && publicationIdentity && (
+              <small>Compartilhado por {publisherDisplayName}</small>
+            )}
           </div>
         </aside>
       </section>
@@ -451,7 +461,7 @@ export function PatientReportPage({
               </strong>
               <small>
                 {presentation.completion.explanation
-                  ? 'Pronta para o paciente.'
+                  ? `Revisada por ${reviewerDisplayName}.`
                   : 'Ainda não compartilhada.'}
               </small>
             </div>
