@@ -33,6 +33,10 @@ async function collectTextFiles(root) {
 const demoRepo = await read('src/data/demo-clinical-repository.ts')
 const app = await read('src/App.tsx')
 const reportIntake = await read('src/components/ReportIntake.tsx')
+const reportComposer = await read('src/components/ReportComposer.tsx')
+const reportWorkflow = await read('src/domain/report-workflow.ts')
+const anatomySuggestions = await read('src/clinical/anatomy-suggestions.ts')
+const structuredExtraction = await read('src/clinical/structured-extraction.ts')
 const productConstraints = await read('src/product/constraints.ts')
 const indexHtml = await read('index.html')
 const vercel = await read('vercel.json')
@@ -56,17 +60,17 @@ const requiredDemoFragments = [
   'const activeShares = new Map<',
   '.slice(MAX_STORED_DEMO_SHARES)',
   'memoryShares.delete(token)',
-  'entry.storageKey ?? \`${STORAGE_PREFIX}${token}\`',
+  'entry.storageKey ?? `${STORAGE_PREFIX}${token}`',
   'const removedTokens = new Set(memoryShares.keys())',
   'removedTokens.add(key.slice(STORAGE_PREFIX.length))',
   'return removedTokens.size',
-  'const storageKey = \`${STORAGE_PREFIX}${token}\`',
+  'const storageKey = `${STORAGE_PREFIX}${token}`',
   'window.localStorage.setItem(storageKey, JSON.stringify(stored))',
   'Não foi possível criar um link temporário neste navegador.',
   '!Number.isInteger(parsed.report.version)',
   'parsed.report.version < 1',
   '!hasValidReviewPublicationBinding(parsed.report)',
-  'const reportKey = \`${entry.report.id}:v${entry.report.version}\`',
+  'const reportKey = `${entry.report.id}:v${entry.report.version}`',
   'reportVersion: stat.reportVersion',
   '!Number.isInteger(report.version)',
   '!report.reviewApproval',
@@ -142,6 +146,36 @@ for (const fragment of controllerSourceInvariants) {
   }
 }
 
+const anatomyOriginInvariants = [
+  [anatomySuggestions, 'sourceToken: string', 'anatomy suggestion type'],
+  [anatomySuggestions, 'anatomySuggestionSourceToken', 'anatomy suggestion source binding'],
+  [reportIntake, 'suggestion.sourceToken === sourceToken', 'report intake stale-suggestion filter'],
+  [structuredExtraction, 'anatomySuggestionSourceToken(sourceText)', 'structured extraction source binding'],
+  [structuredExtraction, 'sourceToken,', 'structured extraction suggestion identity'],
+]
+
+for (const [source, fragment, scope] of anatomyOriginInvariants) {
+  if (!source.includes(fragment)) {
+    failures.push(`${scope} missing safety invariant: ${fragment}`)
+  }
+}
+
+const explanationBoundaryInvariants = [
+  [reportComposer, 'validateDemoPatientExplanation(value)', 'patient explanation UI'],
+  [reportComposer, 'formatDemoPatientExplanationLimit()', 'patient explanation UI'],
+  [reportWorkflow, 'validateDemoPatientExplanation(action.draft.text).ok', 'generated explanation workflow'],
+  [reportWorkflow, 'validateDemoPatientExplanation(action.value).ok', 'edited explanation workflow'],
+  [reportWorkflow, 'validateDemoPatientExplanation(report.finding.patientExplanation).ok', 'review/publish explanation gate'],
+  [structuredExtraction, 'DEMO_CONSTRAINTS.patientExplanation.maxCharacters', 'structured AI explanation'],
+  [structuredExtraction, 'patientExplanationCharacterLength', 'structured AI explanation'],
+]
+
+for (const [source, fragment, scope] of explanationBoundaryInvariants) {
+  if (!source.includes(fragment)) {
+    failures.push(`${scope} missing explanation boundary invariant: ${fragment}`)
+  }
+}
+
 const requiredConstraintFragments = [
   'minCharacters: 3',
   'maxBytes: 64 * 1024',
@@ -149,6 +183,11 @@ const requiredConstraintFragments = [
   'new TextEncoder().encode(value).byteLength',
   'validateDemoReportSource',
   'isDemoTextFilenameAllowed',
+  'patientExplanation:',
+  'maxCharacters: 4000',
+  'Array.from(value).length',
+  'validateDemoPatientExplanation',
+  'formatDemoPatientExplanationLimit',
   'shareTtlMinutes: 30',
   'maxStoredShares: 10',
   'viewDedupeMilliseconds: 1500',
@@ -171,6 +210,18 @@ if (!demoRepo.includes("from '../product/constraints'")) {
 if (!reportIntake.includes("from '../product/constraints'")) {
   failures.push(
     'local report intake must source file limits from the central product constraints',
+  )
+}
+
+if (!reportComposer.includes("from '../product/constraints'")) {
+  failures.push(
+    'patient explanation UI must source its limit from the central product constraints',
+  )
+}
+
+if (!reportWorkflow.includes("from '../product/constraints'")) {
+  failures.push(
+    'report workflow must enforce the central patient explanation limit',
   )
 }
 
@@ -256,5 +307,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake and patient explanations, source-bound anatomy suggestions, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
