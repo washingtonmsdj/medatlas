@@ -3,7 +3,7 @@ import { deriveReportPresentation } from '../domain/report-presentation'
 import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
 import { resolveOrganDetail } from '../anatomy-detail/catalog'
-import type { VisualReport } from '../domain/types'
+import type { PatientReportView } from '../domain/patient-report'
 import { PATIENT_CONVERSATION_QUESTIONS } from '../clinical/patient-communication'
 import { organizationRuntime } from '../organization/runtime'
 import { HumanAtlasScene } from './HumanAtlasScene'
@@ -15,7 +15,7 @@ const OrganDetailScene = lazy(async () => {
 })
 
 interface Props {
-  report: VisualReport
+  report: PatientReportView
   previewMode?: boolean
   onSwitchToProfessional?: () => void
 }
