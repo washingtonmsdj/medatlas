@@ -1,0 +1,616 @@
+/* Visão geral orientada ao caso clínico.
+   A identidade continua vindo de design-tokens.css + clareza-viva.css. */
+
+.overview-case-dashboard {
+  gap: 14px;
+}
+
+.overview-case-heading .workspace-page-header-copy h2 {
+  max-width: 900px;
+  font-size: clamp(42px, 4.1vw, 66px);
+  line-height: .94;
+}
+
+.overview-case-heading .workspace-page-header-copy p {
+  margin-top: 7px;
+  font-size: var(--type-body);
+}
+
+.overview-header-new-report {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-control);
+  color: var(--text-on-accent);
+  background: var(--accent-primary);
+  box-shadow: var(--shadow-primary);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.overview-header-new-report span {
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.overview-case-kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(170px, .7fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-card);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.overview-case-kpis .overview-kpi-card {
+  min-height: 86px;
+  border: 0;
+  border-right: 1px solid var(--line-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.overview-period-card {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 14px;
+  color: var(--text-primary);
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+
+.overview-period-card svg {
+  color: var(--accent-primary);
+}
+
+.overview-case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(300px, .58fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.overview-resume-card,
+.overview-attention-panel,
+.overview-insight-panel,
+.overview-recent-panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-card);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.overview-resume-heading {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px 13px;
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.overview-resume-heading > div {
+  min-width: 0;
+}
+
+.overview-resume-heading h2,
+.overview-attention-panel h2,
+.overview-insight-panel h2,
+.overview-recent-panel h2 {
+  margin: 2px 0 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.overview-resume-heading h2 {
+  font-size: clamp(28px, 2.2vw, 38px);
+  line-height: 1;
+}
+
+.overview-resume-heading p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
+}
+
+.overview-resume-grid {
+  display: grid;
+  grid-template-columns: minmax(460px, 1.35fr) minmax(270px, .65fr);
+  min-height: 560px;
+}
+
+.overview-case-focus-stage {
+  min-height: 560px;
+  padding: 10px;
+  border-right: 1px solid var(--line-subtle);
+  background: var(--surface-deep);
+}
+
+.overview-case-focus-stage > .anatomy-focus-preview {
+  height: 100%;
+}
+
+.overview-case-focus-stage .anatomy-focus-preview-stage,
+.overview-case-focus-stage .human-atlas-scene,
+.overview-case-focus-stage .reference-atlas-scene,
+.overview-case-focus-stage .organ-detail-scene,
+.overview-case-focus-stage .focused-reference-loading,
+.overview-case-focus-stage .renderer-module-loading {
+  min-height: 425px;
+}
+
+.overview-case-focus-stage .reference-atlas-scene,
+.overview-case-focus-stage .reference-atlas-scene canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.overview-case-focus-stage .anatomy-focus-preview-header {
+  min-height: 64px;
+  padding-block: 10px;
+}
+
+.overview-case-focus-stage .anatomy-focus-preview-footer {
+  min-height: 58px;
+}
+
+.overview-case-progress {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  background: var(--surface-panel);
+}
+
+.overview-case-patient {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.overview-case-avatar,
+.overview-attention-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--text-strong);
+  background: var(--accent-surface);
+  font-size: var(--type-caption);
+  font-weight: 800;
+}
+
+.overview-case-avatar {
+  width: 44px;
+  height: 44px;
+}
+
+.overview-case-patient > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.overview-case-patient span,
+.overview-next-action span {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.overview-case-patient h3 {
+  margin: 1px 0 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.overview-case-patient strong {
+  color: var(--text-primary);
+  font-size: var(--type-small);
+}
+
+.overview-case-patient small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overview-case-focus-copy {
+  display: grid;
+  gap: 5px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.overview-case-focus-copy strong {
+  color: var(--accent-primary);
+  font-size: var(--type-small);
+}
+
+.overview-case-focus-copy p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-caption);
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.overview-case-flow-summary {
+  display: grid;
+  gap: 7px;
+  padding: 14px 0 9px;
+}
+
+.overview-case-flow-summary > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.overview-case-flow-summary strong,
+.overview-case-flow-summary span {
+  font-size: var(--type-caption);
+}
+
+.overview-case-flow-summary strong {
+  color: var(--text-primary);
+}
+
+.overview-case-flow-summary span {
+  color: var(--text-muted);
+}
+
+.overview-case-progress-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-control);
+}
+
+.overview-case-progress-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-primary);
+}
+
+.overview-current-flow-heading {
+  margin: 7px 0 4px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.overview-case-flow-list {
+  padding: 0;
+}
+
+.overview-case-flow-list > button {
+  min-height: 48px;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 7px;
+  padding: 6px 0;
+}
+
+.overview-case-flow-list .overview-flow-index {
+  width: 24px;
+  height: 24px;
+}
+
+.overview-case-flow-list .overview-flow-copy small {
+  display: none;
+}
+
+.overview-case-flow-list .overview-status-pill {
+  font-size: 8px;
+}
+
+.overview-next-action {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: var(--radius-control);
+  background: var(--surface-sage-strong);
+}
+
+.overview-next-action strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.overview-continue-button,
+.overview-open-atlas-button,
+.overview-insight-panel button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.overview-continue-button {
+  border: 1px solid var(--accent-primary);
+  color: var(--text-on-accent);
+  background: var(--accent-primary);
+}
+
+.overview-open-atlas-button {
+  border: 0;
+  color: var(--accent-primary);
+  background: transparent;
+}
+
+.overview-continue-button svg,
+.overview-open-atlas-button svg,
+.overview-insight-panel button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.overview-case-side-rail {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.overview-attention-list {
+  display: grid;
+  padding: 0 14px 12px;
+}
+
+.overview-attention-list > button {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto 18px;
+  gap: 9px;
+  align-items: center;
+  min-height: 72px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line-subtle);
+  color: var(--text-primary);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.overview-attention-list > button:last-child {
+  border-bottom: 0;
+}
+
+.overview-attention-avatar {
+  width: 38px;
+  height: 38px;
+}
+
+.overview-attention-list > button > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.overview-attention-list strong {
+  font-size: var(--type-small);
+}
+
+.overview-attention-list small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overview-attention-list i {
+  padding: 5px 7px;
+  border-radius: 999px;
+  color: var(--state-danger);
+  background: var(--surface-coral-soft);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.overview-attention-list i.done {
+  color: var(--state-success);
+  background: var(--surface-success-soft);
+}
+
+.overview-attention-list svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
+.overview-insight-panel {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 95% 50%, var(--overlay-workspace-glow), transparent 46%),
+    var(--surface-sage-strong);
+}
+
+.overview-insight-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--accent-primary);
+  background: var(--surface-panel);
+}
+
+.overview-insight-panel h2 {
+  font-size: clamp(25px, 2vw, 33px);
+  line-height: 1;
+}
+
+.overview-insight-panel p {
+  margin: 7px 0 0;
+  color: var(--text-secondary);
+  font-size: var(--type-small);
+  line-height: 1.55;
+}
+
+.overview-insight-panel button {
+  width: max-content;
+  margin-top: 0;
+  padding: 0 12px;
+  border: 1px solid var(--accent-primary);
+  color: var(--text-on-accent);
+  background: var(--accent-primary);
+}
+
+.overview-recent-panel .overview-report-table {
+  padding: 0 14px 12px;
+}
+
+@media (max-width: 1280px) {
+  .overview-case-layout {
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr);
+  }
+
+  .overview-resume-grid {
+    grid-template-columns: minmax(410px, 1.15fr) minmax(255px, .7fr);
+  }
+}
+
+@media (max-width: 1080px) {
+  .overview-case-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .overview-case-kpis .overview-kpi-card:nth-child(2) {
+    border-right: 0;
+  }
+
+  .overview-period-card {
+    border-top: 1px solid var(--line-subtle);
+  }
+
+  .overview-case-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-case-side-rail {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, .65fr);
+    grid-template-rows: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .overview-case-heading .workspace-page-header-copy h2 {
+    font-size: clamp(36px, 11vw, 50px);
+  }
+
+  .overview-resume-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-case-focus-stage {
+    min-height: 520px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line-subtle);
+  }
+
+  .overview-case-focus-stage .anatomy-focus-preview-stage,
+  .overview-case-focus-stage .human-atlas-scene,
+  .overview-case-focus-stage .reference-atlas-scene,
+  .overview-case-focus-stage .organ-detail-scene,
+  .overview-case-focus-stage .focused-reference-loading,
+  .overview-case-focus-stage .renderer-module-loading {
+    min-height: 400px;
+  }
+
+  .overview-case-side-rail {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .overview-case-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-case-kpis .overview-kpi-card {
+    border-right: 0;
+    border-bottom: 1px solid var(--line-subtle);
+  }
+
+  .overview-period-card {
+    min-height: 58px;
+  }
+
+  .overview-resume-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .overview-case-focus-stage {
+    min-height: 500px;
+    padding: 7px;
+  }
+
+  .overview-case-progress {
+    padding: 14px;
+  }
+
+  .overview-case-flow-list > button {
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+
+  .overview-case-flow-list .overview-status-pill {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .overview-attention-list > button {
+    grid-template-columns: 36px minmax(0, 1fr) 18px;
+  }
+
+  .overview-attention-list i {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .overview-attention-list > button > svg {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
