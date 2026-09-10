@@ -114,7 +114,7 @@ const localImportInvariants = [
   'validateDemoReportSource(text)',
   'validateDemoReportSource(nextValue)',
   'await file.text()',
-  'Importar laudo sintético em TXT ou MD',
+  'Importar laudo de texto sintético em TXT ou MD',
   'Texto acima do limite de',
 ]
 
