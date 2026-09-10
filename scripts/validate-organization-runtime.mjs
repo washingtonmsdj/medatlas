@@ -83,6 +83,29 @@ if (demo.includes("from './roles'") || demo.includes('ROLE_LABELS')) {
   failures.push('demo organization data must not own or re-export generic role policy')
 }
 
+for (const unsafeFallback of [
+  'DEMO_ORGANIZATION.members.find((member) => member.active)',
+  'DEMO_ORGANIZATION.workspaces.find((workspace) => workspace.active)',
+]) {
+  if (demo.includes(unsafeFallback)) {
+    failures.push(
+      `demo organization selectors must fail closed instead of using fallback: ${unsafeFallback}`,
+    )
+  }
+}
+
+for (const requiredSelector of [
+  'member.id === DEMO_CURRENT_MEMBER_ID && member.active',
+  'workspace.id === workspaceId && workspace.active',
+  'unit.id === unitId && unit.active',
+]) {
+  if (!demo.includes(requiredSelector)) {
+    failures.push(
+      `demo organization selector missing exact active match: ${requiredSelector}`,
+    )
+  }
+}
+
 for (const file of [
   'src/App.tsx',
   'src/components/TeamModule.tsx',
@@ -103,5 +126,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas organization runtime contract PASS: UI is isolated from demo tenant data and generic organization policy has neutral ownership.',
+  'MedAtlas organization runtime contract PASS: UI is isolated from demo tenant data, generic organization policy has neutral ownership, and explicit member/workspace/unit selectors fail closed.',
 )

@@ -100,9 +100,7 @@ export function getDemoCurrentMember() {
   return (
     DEMO_ORGANIZATION.members.find(
       (member) => member.id === DEMO_CURRENT_MEMBER_ID && member.active,
-    ) ??
-    DEMO_ORGANIZATION.members.find((member) => member.active) ??
-    null
+    ) ?? null
   )
 }
 
@@ -112,9 +110,7 @@ export function getDemoWorkspace(workspaceId: string) {
   return (
     DEMO_ORGANIZATION.workspaces.find(
       (workspace) => workspace.id === workspaceId && workspace.active,
-    ) ??
-    DEMO_ORGANIZATION.workspaces.find((workspace) => workspace.active) ??
-    null
+    ) ?? null
   )
 }
 
