@@ -9,6 +9,7 @@ import {
   type AnatomySuggestion,
 } from './clinical/anatomy-suggestions'
 import { patientExplanationGenerator } from './clinical/patient-explanation'
+import { createReportReviewApproval } from './clinical/report-review'
 import { AtlasViewport } from './components/AtlasViewport'
 import { AnalyticsModule } from './components/AnalyticsModule'
 import { DemoPrivacyBanner } from './components/DemoPrivacyBanner'
@@ -150,6 +151,7 @@ function ClinicianApp() {
     if (
       report.finding.anatomyReviewRequired ||
       report.finding.explanationReviewRequired ||
+      !report.reviewApproval ||
       publishing ||
       !report.finding.patientExplanation.trim()
     ) {
@@ -289,7 +291,22 @@ function ClinicianApp() {
       return
     }
 
-    dispatchReport({ type: 'explanation-approved' })
+    const approval = createReportReviewApproval(
+      organizationRuntime,
+      activeWorkspaceId,
+    )
+
+    if (!approval) {
+      setPublishError(
+        'A aprovação clínica exige um profissional ativo com permissão de escrita clínica neste workspace.',
+      )
+      return
+    }
+
+    dispatchReport({
+      type: 'explanation-approved',
+      approval,
+    })
     setPublishError('')
   }
 
