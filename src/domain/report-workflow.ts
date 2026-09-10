@@ -1,6 +1,6 @@
 import type { ReportExample } from '../clinical/demo-scenarios'
 import type { PatientExplanationDraft } from '../clinical/patient-explanation'
-import type { VisualReport } from './types'
+import type { ReportReviewApproval, VisualReport } from './types'
 
 export type ReportWorkflowAction =
   | { type: 'replace'; report: VisualReport }
@@ -16,7 +16,7 @@ export type ReportWorkflowAction =
       draft: PatientExplanationDraft
     }
   | { type: 'explanation-edited'; value: string }
-  | { type: 'explanation-approved' }
+  | { type: 'explanation-approved'; approval?: ReportReviewApproval }
   | { type: 'published'; report: VisualReport }
   | { type: 'shares-cleared' }
 
@@ -28,6 +28,7 @@ function invalidatePublication(report: VisualReport): VisualReport {
         ? report.version + 1
         : report.version,
     status: 'draft',
+    reviewApproval: undefined,
     shareSlug: undefined,
     publicationIdentity: undefined,
   }
@@ -165,6 +166,7 @@ export function reportWorkflowReducer(
       return {
         ...report,
         status: 'clinician_review',
+        reviewApproval: action.approval ?? report.reviewApproval,
         finding: {
           ...report.finding,
           explanationReviewRequired: false,
