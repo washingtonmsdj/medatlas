@@ -70,6 +70,9 @@ function parseStoredShare(
     if (
       parsed.schema !== DEMO_SHARE_SCHEMA ||
       !parsed.report ||
+      !Number.isInteger(parsed.report.version) ||
+      parsed.report.version < 1 ||
+      !parsed.report.publicationIdentity ||
       !Number.isFinite(createdAt) ||
       !Number.isFinite(expiresAt)
     ) {
@@ -390,7 +393,9 @@ function demoReportViewStats(): ClinicalReportViewStat[] {
   const reportMap = new Map<
     string,
     {
+      reportId: string
       reportTitle: string
+      reportVersion: number
       sharesCreated: number
       viewCount: number
       lastViewedAt?: string
@@ -398,8 +403,11 @@ function demoReportViewStats(): ClinicalReportViewStat[] {
   >()
 
   for (const entry of analyticsEntries()) {
-    const current = reportMap.get(entry.report.id) ?? {
+    const reportKey = `${entry.report.id}:v${entry.report.version}`
+    const current = reportMap.get(reportKey) ?? {
+      reportId: entry.report.id,
       reportTitle: entry.report.title,
+      reportVersion: entry.report.version,
       sharesCreated: 0,
       viewCount: 0,
       lastViewedAt: undefined,
@@ -416,14 +424,14 @@ function demoReportViewStats(): ClinicalReportViewStat[] {
       current.lastViewedAt = entry.lastViewedAt
     }
 
-    reportMap.set(entry.report.id, current)
+    reportMap.set(reportKey, current)
   }
 
-  return [...reportMap.entries()]
-    .map(([reportId, stat]) => ({
-      reportId,
+  return [...reportMap.values()]
+    .map((stat) => ({
+      reportId: stat.reportId,
       reportTitle: stat.reportTitle,
-      reportVersion: 1,
+      reportVersion: stat.reportVersion,
       sharesCreated: stat.sharesCreated,
       viewCount: stat.viewCount,
       lastViewedAt: stat.lastViewedAt,
@@ -437,6 +445,16 @@ function demoReportViewStats(): ClinicalReportViewStat[] {
 
 export class DemoClinicalRepository implements ClinicalRepository {
   async publishReport(report: VisualReport): Promise<VisualReport> {
+    if (!Number.isInteger(report.version) || report.version < 1) {
+      throw new Error('A versão do relatório é inválida.')
+    }
+
+    if (!report.publicationIdentity) {
+      throw new Error(
+        'A identidade responsável pela publicação precisa estar confirmada.',
+      )
+    }
+
     if (report.finding.anatomyReviewRequired) {
       throw new Error(
         'A anatomia precisa ser confirmada para o texto atual antes da publicação.',
