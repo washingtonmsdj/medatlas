@@ -4,7 +4,7 @@ import {
   clearDemoShares,
   getStoredDemoShareCount,
 } from '../data/demo-clinical-repository'
-import { DEMO_ORGANIZATION_BRANDING } from '../organization/demo-organization'
+import { organizationRuntime } from '../organization/runtime'
 import { demoShareTtlLabel } from '../product/constraints'
 import { WorkspacePageHeader } from './WorkspacePageHeader'
 
@@ -19,6 +19,7 @@ export function DemoSettings({
 }: Props) {
   const [shareCount, setShareCount] = useState(() => getStoredDemoShareCount())
   const [message, setMessage] = useState('')
+  const branding = organizationRuntime.branding
 
   const clear = () => {
     const removed = clearDemoShares()
@@ -55,13 +56,13 @@ export function DemoSettings({
             <span
               className="settings-icon branding"
               aria-hidden="true"
-              style={{ background: DEMO_ORGANIZATION_BRANDING.primaryColorHex }}
+              style={{ background: branding.primaryColorHex }}
             >
-              {DEMO_ORGANIZATION_BRANDING.markText}
+              {branding.markText}
             </span>
             <div>
               <span className="label">CLÍNICA</span>
-              <strong>{DEMO_ORGANIZATION_BRANDING.brandName}</strong>
+              <strong>{branding.brandName}</strong>
             </div>
           </div>
           <p>Identidade exibida na experiência do paciente.</p>

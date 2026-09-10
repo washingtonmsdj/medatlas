@@ -1,62 +1,12 @@
-export type MedAtlasMemberRole = 'admin' | 'clinician' | 'staff'
-
-export interface DemoProfessionalProfile {
-  specialty: string
-  licenseRegion?: string
-  licenseNumber?: string
-}
-
-export interface DemoOrganizationMember {
-  id: string
-  displayName: string
-  initials: string
-  role: MedAtlasMemberRole
-  active: boolean
-  professional?: DemoProfessionalProfile
-}
-
-export interface DemoOrganizationUnit {
-  id: string
-  organizationId: string
-  name: string
-  slug: string
-  city?: string
-  region?: string
-  countryCode?: string
-  active: boolean
-}
-
-export interface DemoClinicalWorkspace {
-  id: string
-  organizationId: string
-  unitId?: string
-  name: string
-  slug: string
-  specialty?: string
-  active: boolean
-}
-
-export interface DemoOrganizationBranding {
-  organizationId: string
-  brandName: string
-  markText: string
-  primaryColorHex: string
-  patientFooterText: string
-}
-
-export interface DemoOrganizationContext {
-  id: string
-  name: string
-  slug: string
-  units: DemoOrganizationUnit[]
-  workspaces: DemoClinicalWorkspace[]
-  members: DemoOrganizationMember[]
-}
+import type {
+  OrganizationBranding,
+  OrganizationContext,
+} from './types'
 
 const DEMO_ORGANIZATION_ID = 'demo-org-clinica-horizonte'
 const DEMO_MAIN_UNIT_ID = 'demo-unit-principal'
 
-export const DEMO_ORGANIZATION: DemoOrganizationContext = {
+export const DEMO_ORGANIZATION: OrganizationContext = {
   id: DEMO_ORGANIZATION_ID,
   name: 'Clínica Horizonte',
   slug: 'clinica-horizonte-demo',
@@ -136,7 +86,7 @@ export const DEMO_ORGANIZATION: DemoOrganizationContext = {
   ],
 }
 
-export const DEMO_ORGANIZATION_BRANDING: DemoOrganizationBranding = {
+export const DEMO_ORGANIZATION_BRANDING: OrganizationBranding = {
   organizationId: DEMO_ORGANIZATION_ID,
   brandName: 'Clínica Horizonte',
   markText: 'CH',
@@ -178,50 +128,4 @@ export function getDemoUnit(unitId?: string) {
   )
 }
 
-export const ROLE_LABELS: Record<MedAtlasMemberRole, string> = {
-  admin: 'Administrador',
-  clinician: 'Profissional clínico',
-  staff: 'Equipe de apoio',
-}
-
-export interface RoleCapability {
-  id: 'read' | 'clinical-write' | 'membership-write'
-  label: string
-}
-
-export const ROLE_CAPABILITIES: Record<
-  MedAtlasMemberRole,
-  RoleCapability['id'][]
-> = {
-  admin: ['read', 'clinical-write', 'membership-write'],
-  clinician: ['read', 'clinical-write'],
-  staff: ['read'],
-}
-
-export const CAPABILITIES: RoleCapability[] = [
-  {
-    id: 'read',
-    label: 'Ler dados da organização',
-  },
-  {
-    id: 'clinical-write',
-    label: 'Criar/editar dados clínicos',
-  },
-  {
-    id: 'membership-write',
-    label: 'Gerenciar membros',
-  },
-]
-
-
-export const ROLE_ORDER: MedAtlasMemberRole[] = [
-  'admin',
-  'clinician',
-  'staff',
-]
-
-export const ROLE_DESCRIPTIONS: Record<MedAtlasMemberRole, string> = {
-  admin: 'Pode escrever dados clínicos e administrar membros.',
-  clinician: 'Pode ler e escrever dados clínicos da organização.',
-  staff: 'Pode consultar dados permitidos, sem escrita clínica.',
-}
+export { ROLE_LABELS } from './roles'

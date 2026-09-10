@@ -1,15 +1,15 @@
 import {
   CAPABILITIES,
-  DEMO_ORGANIZATION,
   ROLE_CAPABILITIES,
   ROLE_DESCRIPTIONS,
   ROLE_LABELS,
   ROLE_ORDER,
-} from '../organization/demo-organization'
+} from '../organization/roles'
+import { organizationRuntime } from '../organization/runtime'
 import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 export function TeamModule() {
-  const activeMembers = DEMO_ORGANIZATION.members.filter(
+  const activeMembers = organizationRuntime.organization.members.filter(
     (member) => member.active,
   )
 
@@ -33,7 +33,7 @@ export function TeamModule() {
         <header>
           <div>
             <span className="section-kicker">MEMBROS</span>
-            <strong>{DEMO_ORGANIZATION.name}</strong>
+            <strong>{organizationRuntime.organization.name}</strong>
           </div>
           <span>{activeMembers.length}</span>
         </header>
