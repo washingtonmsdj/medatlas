@@ -67,7 +67,10 @@ export function ClinicalSidebar({ active, organizationName, workspaceName, unitN
         <span className="clinical-sidebar-brand-mark"><MedAtlasMark /></span>
         <span className="clinical-sidebar-brand-copy">
           <strong>Med<span>Atlas</span></strong>
-          <small><span className="clinical-sidebar-brand-identity">CONHECIMENTO QUE CUIDA</span><span className="clinical-sidebar-brand-descriptor">Clinical 3D Workbench</span></small>
+          <small>
+            <span className="clinical-sidebar-brand-identity">Conhecimento que cuida</span>
+            <span className="clinical-sidebar-brand-descriptor">Clinical 3D Workbench · Medicina para vidas mais longas.</span>
+          </small>
         </span>
       </button>
 

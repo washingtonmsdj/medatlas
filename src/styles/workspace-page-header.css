@@ -85,6 +85,41 @@
   cursor: wait;
 }
 
+.workspace-page-header.overview-dashboard-heading {
+  min-height: auto;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 18px 2px 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.overview-dashboard-heading .workspace-page-header-copy {
+  max-width: none;
+}
+
+.overview-dashboard-heading .workspace-page-header-copy .section-kicker {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.overview-dashboard-heading .workspace-page-header-copy h2 {
+  font-family: var(--font-display);
+  font-size: var(--type-title);
+  font-weight: 400;
+  line-height: .98;
+}
+
+.overview-dashboard-heading .workspace-page-header-copy p {
+  margin-top: 8px;
+}
+
 @media (max-width: 760px) {
   .workspace-page-header {
     min-height: auto;
@@ -107,6 +142,11 @@
   .workspace-page-header-actions > button {
     min-height: 44px;
   }
+
+  .workspace-page-header.overview-dashboard-heading {
+    align-items: flex-start;
+    padding: 10px 2px 2px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -116,6 +156,10 @@
 
   .workspace-page-header-copy h2 {
     font-size: 22px;
+  }
+
+  .workspace-page-header.overview-dashboard-heading {
+    border-radius: 0;
   }
 
   .workspace-page-header-actions > button {

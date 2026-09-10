@@ -1,6 +1,7 @@
 import type { VisualReport } from '../domain/types'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
+import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
   report: VisualReport
@@ -105,15 +106,17 @@ export function Overview({
 
   return (
     <section className="overview-dashboard workspace-page">
-      <header className="overview-dashboard-heading">
-        <div>
-          <h1>Visão geral</h1>
-          <p>Acompanhe o paciente, o relatório e a anatomia clínica em um só lugar.</p>
-        </div>
-        <span className="overview-demo-context">
-          Demonstração · {scopeLabel}
-        </span>
-      </header>
+      <WorkspacePageHeader
+        eyebrow="VISÃO CLÍNICA"
+        title="Visão geral"
+        description="Acompanhe o paciente, o relatório e a anatomia clínica em um só lugar."
+        className="overview-dashboard-heading"
+        meta={
+          <span className="overview-demo-context">
+            Demonstração · {scopeLabel}
+          </span>
+        }
+      />
 
       <section className="overview-kpi-grid" aria-label="Resumo do atendimento demonstrativo">
         {kpis.map((item) => (
