@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { patientShareUrl } from '../app-url'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import type { VisualReport } from '../domain/types'
-import { demoShareTtlLabel } from '../product/constraints'
+import {
+  demoShareTtlLabel,
+  formatDemoPatientExplanationLimit,
+  validateDemoPatientExplanation,
+} from '../product/constraints'
 
 interface Props {
   report: VisualReport
@@ -40,6 +44,8 @@ export function ReportComposer({
   onPreviewPatient,
 }: Props) {
   const [copied, setCopied] = useState(false)
+  const [explanationError, setExplanationError] = useState('')
+  const copyRequest = useRef(0)
   const presentation = deriveReportPresentation(report)
 
   const shareUrl =
@@ -47,18 +53,43 @@ export function ReportComposer({
       ? patientShareUrl(report.shareSlug)
       : ''
 
+  const explanationValidation = validateDemoPatientExplanation(
+    report.finding.patientExplanation,
+  )
   const canWorkOnExplanation = presentation.completion.anatomy
   const hasExplanation = presentation.explanation.state !== 'empty'
   const reviewComplete = presentation.completion.explanation
 
+  useEffect(() => {
+    copyRequest.current += 1
+    setCopied(false)
+  }, [shareUrl])
+
+  const updateExplanation = (value: string) => {
+    const validation = validateDemoPatientExplanation(value)
+
+    if (!validation.ok) {
+      setExplanationError(
+        `A explicação deve ter no máximo ${formatDemoPatientExplanationLimit()}.`,
+      )
+      return
+    }
+
+    setExplanationError('')
+    onUpdateExplanation(value)
+  }
+
   const copyLink = async () => {
     if (!shareUrl) return
 
+    const requestId = ++copyRequest.current
+    const targetUrl = shareUrl
+
     try {
-      await navigator.clipboard.writeText(shareUrl)
-      setCopied(true)
+      await navigator.clipboard.writeText(targetUrl)
+      if (copyRequest.current === requestId) setCopied(true)
     } catch {
-      setCopied(false)
+      if (copyRequest.current === requestId) setCopied(false)
     }
   }
 
@@ -125,15 +156,25 @@ export function ReportComposer({
             className="explanation-editor"
             aria-label="Explicação para o paciente"
             value={report.finding.patientExplanation}
-            onChange={(event) => onUpdateExplanation(event.target.value)}
+            onChange={(event) => updateExplanation(event.target.value)}
             rows={9}
             placeholder="Escreva ou gere uma explicação clara para o paciente."
             disabled={!canWorkOnExplanation}
           />
           <div className="explanation-editor-meta">
             <span>{presentation.explanation.detail}</span>
+            <small>
+              {explanationValidation.characters.toLocaleString('pt-BR')} /{' '}
+              {formatDemoPatientExplanationLimit()}
+            </small>
           </div>
         </div>
+
+        {explanationError && (
+          <div className="publish-error" role="alert">
+            {explanationError}
+          </div>
+        )}
       </section>
 
       {!reviewComplete ? (
