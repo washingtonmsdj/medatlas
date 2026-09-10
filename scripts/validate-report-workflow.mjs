@@ -3,34 +3,61 @@ import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
 import ts from 'typescript'
 
+function compileCommonJs(source) {
+  return ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  }).outputText
+}
+
+const constraintsSource = await readFile(
+  'src/product/constraints.ts',
+  'utf8',
+)
+const constraintsModule = { exports: {} }
+
+vm.runInNewContext(
+  `(function (exports, module) {
+${compileCommonJs(constraintsSource)}
+  })(module.exports, module)`,
+  { module: constraintsModule, TextEncoder },
+)
+
 const source = await readFile(
   'src/domain/report-workflow.ts',
   'utf8',
 )
-
-const compiled = ts.transpileModule(source, {
-  compilerOptions: {
-    module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ES2022,
-    esModuleInterop: true,
-  },
-})
-
 const moduleRecord = { exports: {} }
+const localRequire = (specifier) => {
+  if (specifier === '../product/constraints') {
+    return constraintsModule.exports
+  }
+
+  throw new Error(`Unexpected runtime dependency in workflow validator: ${specifier}`)
+}
 
 vm.runInNewContext(
-  `(function (exports, module) {
-${compiled.outputText}
-  })(module.exports, module)`,
-  { module: moduleRecord },
+  `(function (exports, module, require) {
+${compileCommonJs(source)}
+  })(module.exports, module, require)`,
+  { module: moduleRecord, require: localRequire },
 )
 
 const { reportWorkflowReducer } = moduleRecord.exports
+const { DEMO_CONSTRAINTS } = constraintsModule.exports
 
 assert.equal(
   typeof reportWorkflowReducer,
   'function',
   'reportWorkflowReducer must be exported',
+)
+assert.equal(
+  DEMO_CONSTRAINTS.patientExplanation.maxCharacters,
+  4000,
+  'patient explanation limit must stay centralized',
 )
 
 const reviewApproval = {
@@ -164,6 +191,22 @@ assert.deepEqual(
   'draft generated for an older anatomy confirmation must be rejected',
 )
 
+const oversizedText = 'a'.repeat(
+  DEMO_CONSTRAINTS.patientExplanation.maxCharacters + 1,
+)
+const oversizedGeneratedDraft = reportWorkflowReducer(confirmed, {
+  type: 'draft-generated',
+  draft: {
+    ...validDraft,
+    text: oversizedText,
+  },
+})
+assert.deepEqual(
+  oversizedGeneratedDraft,
+  confirmed,
+  'oversized generated explanation must be rejected',
+)
+
 const generated = reportWorkflowReducer(confirmed, {
   type: 'draft-generated',
   draft: validDraft,
@@ -171,6 +214,33 @@ const generated = reportWorkflowReducer(confirmed, {
 
 assert.equal(generated.finding.patientExplanation, 'Rascunho educacional.')
 assert.equal(generated.finding.explanationReviewRequired, true)
+
+const oversizedEdit = reportWorkflowReducer(generated, {
+  type: 'explanation-edited',
+  value: oversizedText,
+})
+assert.deepEqual(
+  oversizedEdit,
+  generated,
+  'oversized clinician explanation must be rejected',
+)
+
+const oversizedExisting = {
+  ...generated,
+  finding: {
+    ...generated.finding,
+    patientExplanation: oversizedText,
+  },
+}
+const oversizedApproval = reportWorkflowReducer(oversizedExisting, {
+  type: 'explanation-approved',
+  approval: reviewApproval,
+})
+assert.deepEqual(
+  oversizedApproval,
+  oversizedExisting,
+  'oversized explanation must not pass clinician review',
+)
 
 const missingApproval = reportWorkflowReducer(generated, {
   type: 'explanation-approved',
@@ -264,5 +334,5 @@ assert.equal(edited.publicationIdentity, undefined)
 assert.equal(edited.finding.explanationReviewRequired, true)
 
 console.log(
-  'MedAtlas report workflow reducer PASS: content versioning, stale generated-draft rejection, explicit authorized review provenance, approval invalidation, share revocation and immutable publication identity verified.',
+  'MedAtlas report workflow reducer PASS: content versioning, stale generated-draft rejection, bounded patient explanations, explicit authorized review provenance, approval invalidation, share revocation and immutable publication identity verified.',
 )
