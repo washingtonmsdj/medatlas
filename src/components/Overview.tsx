@@ -223,11 +223,11 @@ export function Overview({
             </button>
           </header>
 
-          <div className="overview-report-table" role="table" aria-label="Relatório demonstrativo atual">
-            <div className="overview-report-row overview-report-row-head" role="row">
+          <div className="overview-report-table" aria-label="Relatório demonstrativo atual">
+            <div className="overview-report-row overview-report-row-head">
               <span>Paciente</span><span>Anatomia</span><span>Versão</span><span>Status</span>
             </div>
-            <button className="overview-report-row" role="row" type="button" onClick={onOpenReport}>
+            <button className="overview-report-row" type="button" onClick={onOpenReport}>
               <span><b>{report.patient.displayName.slice(0, 1)}</b>{report.patient.displayName}</span>
               <span>{report.finding.anatomicalStructure}</span>
               <span>v{report.version}</span>
