@@ -62,12 +62,25 @@ const requiredDemoFragments = [
   'const storageKey = \`${STORAGE_PREFIX}${token}\`',
   'window.localStorage.setItem(storageKey, JSON.stringify(stored))',
   'Não foi possível criar um link temporário neste navegador.',
+  '!Number.isInteger(parsed.report.version)',
+  'parsed.report.version < 1',
+  '!parsed.report.publicationIdentity',
+  'const reportKey = \`${entry.report.id}:v${entry.report.version}\`',
+  'reportVersion: stat.reportVersion',
+  '!Number.isInteger(report.version)',
+  '!report.publicationIdentity',
 ]
 
 for (const fragment of requiredDemoFragments) {
   if (!demoRepo.includes(fragment)) {
     failures.push(`demo repository missing safety invariant: ${fragment}`)
   }
+}
+
+if (demoRepo.includes('reportVersion: 1')) {
+  failures.push(
+    'demo analytics must use the persisted report version instead of a hardcoded version',
+  )
 }
 
 if (!demoRepo.includes('crypto.getRandomValues')) {
@@ -102,7 +115,6 @@ for (const fragment of localImportInvariants) {
     )
   }
 }
-
 
 const requiredConstraintFragments = [
   'shareTtlMinutes: 30',
@@ -208,5 +220,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, temporary shares, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, versioned temporary shares, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
