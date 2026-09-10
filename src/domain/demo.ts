@@ -13,6 +13,16 @@ export const demoReport: VisualReport = {
   },
   title: 'Entenda seu exame — coluna lombar',
   status: 'clinician_review',
+  reviewApproval: {
+    organizationId: 'demo-org-clinica-horizonte',
+    workspaceId: 'demo-workspace-ortopedia',
+    approvedBy: {
+      id: 'demo-member-carlos',
+      displayName: 'Dr. Carlos Mendes',
+      specialty: 'Ortopedia',
+    },
+    approvedAt: '2026-09-07T00:00:00.000Z',
+  },
   finding: {
     id: 'finding_demo_001',
     sourceText:

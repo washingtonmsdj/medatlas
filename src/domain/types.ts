@@ -29,6 +29,17 @@ export interface ClinicalFinding {
   clinicianNote: string
 }
 
+export interface ReportReviewApproval {
+  organizationId: string
+  workspaceId: string
+  approvedBy: {
+    id: string
+    displayName: string
+    specialty?: string
+  }
+  approvedAt: string
+}
+
 export interface ReportPublicationIdentity {
   organizationId: string
   organizationName: string
@@ -53,6 +64,7 @@ export interface VisualReport {
   title: string
   status: ClinicalReportStatus
   finding: ClinicalFinding
+  reviewApproval?: ReportReviewApproval
   shareSlug?: string
   publicationIdentity?: ReportPublicationIdentity
 }

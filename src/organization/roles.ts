@@ -1,7 +1,12 @@
 import type { OrganizationMemberRole } from './types'
 
+export type RoleCapabilityId =
+  | 'read'
+  | 'clinical-write'
+  | 'membership-write'
+
 export interface RoleCapability {
-  id: 'read' | 'clinical-write' | 'membership-write'
+  id: RoleCapabilityId
   label: string
 }
 
@@ -13,11 +18,18 @@ export const ROLE_LABELS: Record<OrganizationMemberRole, string> = {
 
 export const ROLE_CAPABILITIES: Record<
   OrganizationMemberRole,
-  RoleCapability['id'][]
+  RoleCapabilityId[]
 > = {
   admin: ['read', 'clinical-write', 'membership-write'],
   clinician: ['read', 'clinical-write'],
   staff: ['read'],
+}
+
+export function roleHasCapability(
+  role: OrganizationMemberRole,
+  capability: RoleCapabilityId,
+) {
+  return ROLE_CAPABILITIES[role].includes(capability)
 }
 
 export const CAPABILITIES: RoleCapability[] = [
