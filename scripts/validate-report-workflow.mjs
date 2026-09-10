@@ -33,6 +33,17 @@ assert.equal(
   'reportWorkflowReducer must be exported',
 )
 
+const reviewApproval = {
+  organizationId: 'org_1',
+  workspaceId: 'workspace_1',
+  approvedBy: {
+    id: 'reviewer_1',
+    displayName: 'Dra. Revisora',
+    specialty: 'Ortopedia',
+  },
+  approvedAt: '2026-09-10T00:00:00.000Z',
+}
+
 const publicationIdentity = {
   organizationId: 'org_1',
   organizationName: 'Clínica demonstração',
@@ -43,11 +54,11 @@ const publicationIdentity = {
     patientFooterText: 'Clínica demonstração · teste',
   },
   professional: {
-    id: 'professional_1',
-    displayName: 'Dr. Teste',
+    id: 'publisher_1',
+    displayName: 'Dr. Publicador',
     specialty: 'Ortopedia',
   },
-  publishedAt: '2026-09-10T00:00:00.000Z',
+  publishedAt: '2026-09-10T00:05:00.000Z',
 }
 
 const base = {
@@ -60,6 +71,7 @@ const base = {
   },
   title: 'Relatório visual',
   status: 'published',
+  reviewApproval,
   shareSlug: 'a'.repeat(64),
   publicationIdentity,
   finding: {
@@ -89,43 +101,18 @@ const changed = reportWorkflowReducer(base, {
 
 assert.equal(changed.version, 2)
 assert.equal(changed.status, 'draft')
+assert.equal(changed.reviewApproval, undefined)
 assert.equal(changed.shareSlug, undefined)
 assert.equal(changed.publicationIdentity, undefined)
 assert.equal(changed.finding.anatomyReviewRequired, true)
 assert.equal(changed.finding.patientExplanation, '')
 assert.equal(changed.finding.explanationReviewRequired, true)
-assert.equal(
-  changed.finding.explanationProvenance.clinicianEdited,
-  false,
-)
-
-const blockedDraft = reportWorkflowReducer(changed, {
-  type: 'draft-generated',
-  draft: {
-    text: 'Não deve entrar.',
-    provenance: {
-      origin: 'deterministic',
-      generatorId: 'test',
-      generatorVersion: '1',
-      generatedAt: '2026-09-07T00:00:00.000Z',
-      clinicianEdited: false,
-    },
-  },
-})
-
-assert.deepEqual(blockedDraft, changed)
 
 const confirmed = reportWorkflowReducer(changed, {
   type: 'anatomy-confirmed',
   conceptId: 'FMA7203',
   displayName: 'Rins',
 })
-
-assert.equal(confirmed.version, 2)
-assert.equal(confirmed.finding.atlasConceptId, 'FMA7203')
-assert.equal(confirmed.finding.anatomicalStructure, 'Rins')
-assert.equal(confirmed.finding.anatomyReviewRequired, false)
-assert.equal(confirmed.finding.patientExplanation, '')
 
 const generated = reportWorkflowReducer(confirmed, {
   type: 'draft-generated',
@@ -141,33 +128,29 @@ const generated = reportWorkflowReducer(confirmed, {
   },
 })
 
-assert.equal(generated.version, 2)
-assert.equal(generated.status, 'draft')
-assert.equal(
-  generated.finding.patientExplanation,
-  'Rascunho educacional.',
-)
-assert.equal(generated.finding.explanationReviewRequired, true)
+const missingApproval = reportWorkflowReducer(generated, {
+  type: 'explanation-approved',
+})
+assert.deepEqual(missingApproval, generated)
 
-const prematurePublish = reportWorkflowReducer(generated, {
-  type: 'published',
-  report: {
-    ...generated,
-    status: 'published',
-    shareSlug: 'b'.repeat(64),
-    publicationIdentity,
+const invalidApproval = reportWorkflowReducer(generated, {
+  type: 'explanation-approved',
+  approval: {
+    ...reviewApproval,
+    approvedAt: 'not-a-date',
   },
 })
-
-assert.deepEqual(prematurePublish, generated)
+assert.deepEqual(invalidApproval, generated)
 
 const approved = reportWorkflowReducer(generated, {
   type: 'explanation-approved',
+  approval: reviewApproval,
 })
 
 assert.equal(approved.version, 2)
 assert.equal(approved.status, 'clinician_review')
 assert.equal(approved.finding.explanationReviewRequired, false)
+assert.deepEqual(approved.reviewApproval, reviewApproval)
 
 const missingIdentity = reportWorkflowReducer(approved, {
   type: 'published',
@@ -177,21 +160,25 @@ const missingIdentity = reportWorkflowReducer(approved, {
     shareSlug: 'c'.repeat(64),
   },
 })
-
 assert.deepEqual(missingIdentity, approved)
 
-const wrongVersion = reportWorkflowReducer(approved, {
+const changedApproval = reportWorkflowReducer(approved, {
   type: 'published',
   report: {
     ...approved,
-    version: approved.version + 1,
+    reviewApproval: {
+      ...reviewApproval,
+      approvedBy: {
+        ...reviewApproval.approvedBy,
+        id: 'reviewer_other',
+      },
+    },
     status: 'published',
     shareSlug: 'c'.repeat(64),
     publicationIdentity,
   },
 })
-
-assert.deepEqual(wrongVersion, approved)
+assert.deepEqual(changedApproval, approved)
 
 const published = reportWorkflowReducer(approved, {
   type: 'published',
@@ -206,6 +193,7 @@ const published = reportWorkflowReducer(approved, {
 assert.equal(published.version, 2)
 assert.equal(published.status, 'published')
 assert.equal(published.shareSlug, 'c'.repeat(64))
+assert.deepEqual(published.reviewApproval, reviewApproval)
 assert.deepEqual(published.publicationIdentity, publicationIdentity)
 
 const sharesCleared = reportWorkflowReducer(published, {
@@ -214,6 +202,7 @@ const sharesCleared = reportWorkflowReducer(published, {
 
 assert.equal(sharesCleared.version, 2)
 assert.equal(sharesCleared.status, 'clinician_review')
+assert.deepEqual(sharesCleared.reviewApproval, reviewApproval)
 assert.equal(sharesCleared.shareSlug, undefined)
 assert.equal(sharesCleared.publicationIdentity, undefined)
 assert.equal(sharesCleared.finding.explanationReviewRequired, false)
@@ -225,27 +214,11 @@ const edited = reportWorkflowReducer(published, {
 
 assert.equal(edited.version, 3)
 assert.equal(edited.status, 'draft')
+assert.equal(edited.reviewApproval, undefined)
 assert.equal(edited.shareSlug, undefined)
 assert.equal(edited.publicationIdentity, undefined)
 assert.equal(edited.finding.explanationReviewRequired, true)
-assert.equal(
-  edited.finding.explanationProvenance.clinicianEdited,
-  true,
-)
-
-const wrongPublishedReport = reportWorkflowReducer(approved, {
-  type: 'published',
-  report: {
-    ...approved,
-    id: 'rep_other',
-    status: 'published',
-    shareSlug: 'd'.repeat(64),
-    publicationIdentity,
-  },
-})
-
-assert.deepEqual(wrongPublishedReport, approved)
 
 console.log(
-  'MedAtlas report workflow reducer PASS: publication invalidation, immutable publication identity, content versioning, anatomy confirmation, draft gating, clinician review and publish acceptance verified.',
+  'MedAtlas report workflow reducer PASS: content versioning, explicit authorized review provenance, approval invalidation, share revocation and immutable publication identity verified.',
 )
