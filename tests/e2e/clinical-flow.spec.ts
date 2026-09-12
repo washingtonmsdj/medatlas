@@ -545,7 +545,15 @@ test('mobile workspace keeps the main clinical flow usable', async ({
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Relatórios' }).click()
+  const sidebar = page.locator('.clinical-sidebar')
+  const more = sidebar.getByRole('button', { name: 'Mais módulos' })
+  await expect(more).toBeVisible()
+  await more.click()
+  await page
+    .locator('#clinical-sidebar-more-menu')
+    .getByRole('button', { name: 'Laudos' })
+    .click()
+
   await expect(
     page.getByRole('heading', {
       name: 'Adicionar laudo',
@@ -1316,7 +1324,7 @@ test('demo sharing fails closed when local persistence is unavailable', async ({
 })
 
 
-test('settings expose clinic branding without enabling unavailable mutations', async ({
+test('settings expose clinic branding as read-only demo state', async ({
   page,
 }) => {
   await page.goto('/')
@@ -1329,17 +1337,20 @@ test('settings expose clinic branding without enabling unavailable mutations', a
     }),
   ).toBeVisible()
 
-  await expect(page.locator('.settings-branding-card').getByText('CLÍNICA', { exact: true })).toBeVisible()
+  const branding = page.locator('.settings-branding-card')
   await expect(
-    page.getByText('Clínica Horizonte', { exact: true }).first(),
+    branding.getByText('CLÍNICA', { exact: true }),
   ).toBeVisible()
   await expect(
-    page.getByText('Identidade exibida na experiência do paciente.'),
+    branding.getByText('Clínica Horizonte', { exact: true }),
   ).toBeVisible()
-
   await expect(
-    page.getByRole('button', { name: 'Editar identidade' }),
-  ).toBeDisabled()
+    branding.getByText('Identidade exibida na experiência do paciente.'),
+  ).toBeVisible()
+  await expect(
+    branding.getByText('Somente leitura no demo', { exact: true }),
+  ).toBeVisible()
+  await expect(branding.getByRole('button')).toHaveCount(0)
 })
 
 
