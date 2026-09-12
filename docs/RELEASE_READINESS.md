@@ -1,8 +1,8 @@
 # MedAtlas — MVP release readiness
 
-Checkpoint: **2026-09-10**  
+Checkpoint: **2026-09-12**  
 Canonical branch: `main`  
-Functional product source: **`b5c2ca3d5c332432f7417513b19d1f8d06b290fe`**
+Functional product source: **`e66eaf0daf8eb8904f56ae80e41fde947097d5b8`**
 
 ## Verdict
 
@@ -34,7 +34,8 @@ O candidato atual inclui:
 - órgão em detalhe como profundidade suplementar, sem alterar a confirmação clínica;
 - triagem determinística e confirmação anatômica explícita;
 - rascunho educacional, edição, revisão humana e publicação fail-closed;
-- preview pré-publicação e share demo temporário/versionado/revogável;
+- preview pré-publicação que distingue explicitamente conteúdo revisado de conteúdo ainda pendente;
+- share demo temporário/versionado/revogável;
 - portal paciente com anatomia de referência, branding e explicação revisada;
 - Analytics demo local;
 - Equipe/permissões source-first sem mutações fake;
@@ -61,7 +62,7 @@ Human Atlas upstream permanece fixado ao source/proveniência registrada pelo pr
 
 ### CI
 
-Run **`34481648367` — PASS**.
+Run **`34691114750` — PASS**.
 
 Inclui:
 
@@ -82,17 +83,17 @@ Inclui:
 
 ### Browser E2E
 
-Run **`34481648442` — PASS completo**.
+Run **`34691114745` — PASS completo**.
 
 Shards verdes:
 
-- `clinical-flow` — inclui o fluxo de relatório e o novo contrato de intake/64 KiB;
+- `clinical-flow` — inclui fluxo de relatório, intake/64 KiB e o contrato que impede prévia pendente de se apresentar como revisada;
 - `responsive-layout`;
 - `supporting-contracts` — acessibilidade e contratos auxiliares.
 
 ### GitHub Pages Preview
 
-Run **`34481648389` — PASS**.
+Run **`34691114736` — PASS**.
 
 Jobs verdes:
 
@@ -101,13 +102,24 @@ Jobs verdes:
 - verificação do shell/assets publicados;
 - verificação remota em Chromium do fluxo clínico 3D.
 
-## Correção de robustez desta consolidação
+## Correções de robustez consolidadas
+
+### Intake de laudo
 
 A rodada de 2026-09-10 fechou uma inconsistência do intake: a UI comunicava limite de 64 KB, mas o texto digitado/colado podia contornar o limite que existia no arquivo.
 
 A correção criou uma autoridade central em `src/product/constraints.ts`, fez o `ReportIntake` rejeitar payload acima do limite sem substituir o último texto válido, adicionou defesa no controlador de `App.tsx`, atualizou o gate de segurança e introduziu Browser E2E específico.
 
-Durante essa implementação, um update de arquivo completo carregou acidentalmente trechos antigos do shell em `App.tsx`. O gate `validate:mvp-ui` detectou a regressão. O arquivo foi restaurado a partir do último baseline verde e os guards foram reaplicados isoladamente. O source final `b5c2ca3…` passou todos os gates; não usar os commits intermediários como baseline.
+### Prévia do paciente e gate de revisão
+
+A auditoria de 2026-09-12 encontrou uma ambiguidade de confiança: uma prévia ainda sem aprovação clínica podia exibir autoria `Revisado por ...`, selo de sucesso e linguagem de conteúdo revisado.
+
+O fluxo de publicação já era fail-closed, portanto a correção preservou a arquitetura e alinhou a UI ao estado real:
+
+- `PatientReportPage` deriva estado revisado da conclusão real + `reviewApproval`;
+- conteúdo pendente usa `REVISÃO PENDENTE`, não atribui revisor inexistente e rotula impressão como prévia;
+- o estado visual pendente usa tokens de warning em vez de sucesso;
+- Browser E2E garante que editar a explicação invalida a aprovação e que a prévia não volta a afirmar revisão antes de nova aprovação.
 
 ## Gate seguinte do MVP
 
@@ -118,7 +130,7 @@ Executar `docs/PILOT.md` em desktop e mobile, observando:
 - clareza para iniciar/continuar relatório;
 - compreensão da diferença entre sugestão, exploração e confirmação anatômica;
 - utilidade real do 3D;
-- clareza da revisão humana;
+- clareza da revisão humana e dos estados pendentes;
 - transição para a experiência paciente;
 - entendimento de “anatomia de referência”;
 - responsividade/controles;
@@ -166,6 +178,7 @@ Antes de qualquer dado real:
 - “Novo relatório” duplicado na sidebar;
 - Consultas/Exames como módulos independentes no MVP;
 - CSS morto/tema paralelo para contornar cascade;
+- estado pendente visualmente apresentado como revisão aprovada;
 - IDs FMA na superfície primária do paciente;
 - remote AI, auth, billing ou dados reais fingidos por frontend;
 - Vercel/Supabase como dependência para validar o MVP sintético atual.
