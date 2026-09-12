@@ -92,6 +92,8 @@ O Browser E2E protege, entre outros pontos:
 20. arquitetura de profundidade `Corpo → Órgão em detalhe`;
 21. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
+O Browser E2E é dividido em quatro shards com responsabilidade explícita: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. O CI executa `validate:browser-e2e-matrix`, que impede qualquer `tests/e2e/*.spec.ts` de ficar fora da matriz ou ser executado em duplicidade.
+
 O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, ingestão, segurança, contrato OCR, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget. Budgets opcionais de PDF/OCR permanecem separados do core inicial.
 
 ## Critérios 3D-first
@@ -177,8 +179,9 @@ Não registrar PHI nem dados clínicos reais.
 
 A evidência de release deve sempre corresponder ao mesmo source candidato. Para qualificar um candidato de MVP sintético, registrar e conferir:
 
-- CI completo verde, incluindo `validate:security-contract`, `validate:ocr-contract`, typecheck, build e bundle budget;
-- Browser E2E 3/3 verde, incluindo `scanned-pdf-ocr.spec.ts`, `clinical-flow`, responsividade e contratos de suporte;
+- CI completo verde, incluindo `validate:security-contract`, `validate:ocr-contract`, `validate:browser-e2e-matrix`, typecheck, build e bundle budget;
+- Browser E2E **4/4** verde: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`;
+- `document-ingestion` executando obrigatoriamente `report-intake.spec.ts` e `scanned-pdf-ocr.spec.ts`;
 - GitHub Pages verde para o mesmo source, incluindo verificação dos assets OCR same-origin e do fluxo publicado.
 
 Não reutilizar uma execução antiga para declarar um source novo pronto.
