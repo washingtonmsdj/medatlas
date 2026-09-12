@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3016",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build && node scripts/copy-third-party-licenses.mjs",
     "check": "tsc --noEmit -p tsconfig.app.json",
     "validate:db-contract": "node scripts/validate-db-contract.mjs",
     "validate:organization-runtime": "node scripts/validate-organization-runtime.mjs",
