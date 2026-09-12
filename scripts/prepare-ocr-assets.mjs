@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const outputRoot = 'public/ocr-assets'
@@ -10,6 +10,14 @@ const coreSource = 'node_modules/tesseract.js-core'
 const languageCandidates = [
   'node_modules/@tesseract.js-data/por/4.0.0_best_int/por.traineddata.gz',
   'node_modules/@tesseract.js-data/por/4.0.0/por.traineddata.gz',
+]
+const requiredLstmCoreFiles = [
+  'tesseract-core-lstm.wasm.js',
+  'tesseract-core-lstm.wasm',
+  'tesseract-core-simd-lstm.wasm.js',
+  'tesseract-core-simd-lstm.wasm',
+  'tesseract-core-relaxedsimd-lstm.wasm.js',
+  'tesseract-core-relaxedsimd-lstm.wasm',
 ]
 
 const readPackageVersion = async (packagePath, expectedName) => {
@@ -41,16 +49,19 @@ await rm(outputRoot, { recursive: true, force: true })
 await mkdir(coreOutput, { recursive: true })
 await mkdir(langOutput, { recursive: true })
 
-const coreFiles = (await readdir(coreSource))
-  .filter((filename) => /^tesseract-core.*\.(?:js|wasm)$/.test(filename))
-  .sort()
+const installedCoreFiles = new Set(await readdir(coreSource))
+const missingCoreFiles = requiredLstmCoreFiles.filter(
+  (filename) => !installedCoreFiles.has(filename),
+)
 
-if (coreFiles.length < 8) {
-  throw new Error(`Unexpected Tesseract core payload: only ${coreFiles.length} runtime files found.`)
+if (missingCoreFiles.length > 0) {
+  throw new Error(
+    `Pinned Tesseract core is missing required LSTM runtime files: ${missingCoreFiles.join(', ')}`,
+  )
 }
 
 await copyFile(workerSource, path.join(outputRoot, 'worker.min.js'))
-for (const filename of coreFiles) {
+for (const filename of requiredLstmCoreFiles) {
   await copyFile(path.join(coreSource, filename), path.join(coreOutput, filename))
 }
 
@@ -72,26 +83,38 @@ const languageVersion = await readPackageVersion(
 
 const manifestFiles = [
   'worker.min.js',
-  ...coreFiles.map((filename) => `core/${filename}`),
+  ...requiredLstmCoreFiles.map((filename) => `core/${filename}`),
   'lang/por.traineddata.gz',
 ]
 const files = Object.fromEntries(
   await Promise.all(
-    manifestFiles.map(async (relativePath) => [
-      relativePath,
-      await sha256(path.join(outputRoot, relativePath)),
-    ]),
+    manifestFiles.map(async (relativePath) => {
+      const filePath = path.join(outputRoot, relativePath)
+      const bytes = (await stat(filePath)).size
+      return [
+        relativePath,
+        {
+          sha256: await sha256(filePath),
+          bytes,
+        },
+      ]
+    }),
   ),
+)
+const totalBytes = Object.values(files).reduce(
+  (total, file) => total + file.bytes,
+  0,
 )
 
 const manifest = {
-  schema: 'medatlas.ocr-assets/1',
+  schema: 'medatlas.ocr-assets/2',
   generatedFromDependencies: true,
   tesseractVersion,
   coreVersion,
   languagePackage: '@tesseract.js-data/por',
   languageVersion,
   language: 'por',
+  totalBytes,
   files,
 }
 
@@ -102,5 +125,8 @@ await writeFile(
 )
 
 console.log(
-  `Prepared local OCR assets: Tesseract.js ${tesseractVersion}, core ${coreVersion}, por ${languageVersion}, ${manifestFiles.length} runtime files.`,
+  `Prepared local OCR assets: Tesseract.js ${tesseractVersion}, core ${coreVersion}, por ${languageVersion}, ${manifestFiles.length} runtime files, ${totalBytes} bytes total.`,
 )
+for (const [relativePath, metadata] of Object.entries(files)) {
+  console.log(`- ${relativePath}: ${metadata.bytes} bytes`)
+}
