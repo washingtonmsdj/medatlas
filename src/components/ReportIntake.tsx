@@ -137,6 +137,10 @@ export function ReportIntake({
     }
   }
 
+  const analyzeLabel = anatomyReviewRequired
+    ? 'Encontrar anatomia'
+    : 'Reanalisar laudo'
+
   return (
     <section className="intake-card">
       <div className="intake-heading">
@@ -253,14 +257,18 @@ export function ReportIntake({
 
       <div className="intake-actions">
         <button
-          className="primary"
+          className={anatomyReviewRequired ? 'primary' : 'reanalyze'}
           type="button"
           onClick={() => void onAnalyze()}
           disabled={analyzing || !sourceValidation.ok || Boolean(sourceTextError)}
         >
-          {analyzing ? 'Analisando…' : 'Encontrar anatomia'}
+          {analyzing ? 'Analisando…' : analyzeLabel}
         </button>
-        <span>Depois, confirme a estrutura correta no Atlas.</span>
+        <span>
+          {anatomyReviewRequired
+            ? 'Depois, confirme a estrutura correta no Atlas.'
+            : 'Use apenas se precisar refazer a correspondência anatômica.'}
+        </span>
       </div>
 
       {(error || fileError || sourceTextError) && (
