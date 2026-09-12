@@ -134,6 +134,11 @@
   white-space: nowrap;
 }
 
+.clinical-sidebar-more-button,
+.clinical-sidebar-more-menu {
+  display: none;
+}
+
 .clinical-sidebar-message {
   margin-top: auto;
   display: grid;
@@ -230,6 +235,7 @@
     height: auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    overflow: visible;
     padding: 9px 10px 8px;
     border-right: 0;
     border-bottom: 1px solid var(--line-sidebar-mobile);
@@ -257,6 +263,8 @@
     gap: 5px;
     margin-top: 7px;
     overflow-x: auto;
+    padding-right: 68px;
+    scroll-padding-right: 68px;
     scrollbar-width: none;
   }
 
@@ -287,6 +295,73 @@
     font-size: 9.5px;
   }
 
+  .clinical-sidebar nav .clinical-sidebar-more-button {
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    z-index: 4;
+    width: 62px;
+    min-height: 40px;
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 3px;
+    padding: 5px 7px;
+    border: 1px solid var(--line-sidebar-mobile);
+    background: var(--surface-sidebar-end);
+    box-shadow: -10px 0 14px var(--surface-sidebar-end);
+  }
+
+  .clinical-sidebar nav .clinical-sidebar-more-button.active {
+    background: var(--accent-surface);
+  }
+
+  .clinical-sidebar-more-menu {
+    position: absolute;
+    top: calc(100% - 2px);
+    right: 10px;
+    z-index: 95;
+    width: min(330px, calc(100vw - 20px));
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid var(--line-elevated);
+    border-radius: 12px;
+    background: var(--surface-popover-elevated);
+    box-shadow: var(--shadow-popover);
+  }
+
+  .clinical-sidebar-more-menu button {
+    min-width: 0;
+    min-height: 44px;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: var(--text-primary);
+    background: var(--surface-panel);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .clinical-sidebar-more-menu button:hover,
+  .clinical-sidebar-more-menu button.active {
+    border-color: var(--line-control);
+    background: var(--accent-surface);
+  }
+
+  .clinical-sidebar-more-menu button > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--type-caption);
+    font-weight: 680;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .clinical-sidebar-message,
   .clinical-sidebar-context {
     display: none;
@@ -299,6 +374,10 @@
   }
 
   .clinical-sidebar nav button {
+    min-height: 44px;
+  }
+
+  .clinical-sidebar nav .clinical-sidebar-more-button {
     min-height: 44px;
   }
 }
