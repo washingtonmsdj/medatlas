@@ -1066,7 +1066,7 @@ export function ReferenceAtlasExplorer({
           <span aria-hidden="true">›</span>
           <strong>{chosen ? conceptDisplayName(chosen) : 'Estrutura'}</strong>
           <span aria-hidden="true">›</span>
-          <b>Modelo detalhado</b>
+          <b>{detailAvailable ? 'Modelo detalhado' : 'Detalhe suplementar'}</b>
         </header>
 
         <div className="reference-atlas-detail-heading">
@@ -1133,10 +1133,15 @@ export function ReferenceAtlasExplorer({
           ) : (
             <div className="reference-atlas-detail-empty">
               <span aria-hidden="true">3D</span>
-              <strong>Selecione um órgão compatível</strong>
+              <strong>
+                {chosen
+                  ? 'Detalhe 3D adicional não disponível'
+                  : 'Selecione uma estrutura'}
+              </strong>
               <p>
-                Coração, cérebro, pulmões, fígado, rins, olho, intestino,
-                pâncreas e pele possuem modelos detalhados.
+                {chosen
+                  ? `${conceptDisplayName(chosen)} continua disponível no corpo completo do Human Atlas. Não há um modelo 3D suplementar específico para esta estrutura nesta versão.`
+                  : 'Selecione uma estrutura no corpo completo para verificar se existe um modelo 3D suplementar disponível.'}
               </p>
             </div>
           )}
@@ -1216,7 +1221,13 @@ export function ReferenceAtlasExplorer({
         <div className="reference-atlas-detail-content">
           {detailTab === 'info' && (
             <>
-              <p>{organSummary(chosenDetail?.label ?? activeLabel)}</p>
+              <p>
+                {detailAvailable
+                  ? organSummary(chosenDetail?.label ?? activeLabel)
+                  : chosen
+                    ? 'A estrutura selecionada permanece disponível no corpo completo do Human Atlas. O painel de detalhe suplementar não substitui nem altera a anatomia confirmada.'
+                    : 'Selecione uma estrutura no corpo completo para consultar seu contexto e, quando disponível, um modelo 3D suplementar.'}
+              </p>
               <div className="reference-atlas-detail-metrics">
                 <article>
                   <span>Sistema</span>
@@ -1282,9 +1293,9 @@ export function ReferenceAtlasExplorer({
             <div className="reference-atlas-tab-copy">
               <strong>Referência anatômica</strong>
               <p>
-                Human Atlas / BodyParts3D permanece como fonte de verdade. O
-                modelo de órgão é uma visualização suplementar validada e
-                vinculada ao contexto anatômico.
+                {detailAvailable
+                  ? 'Human Atlas / BodyParts3D permanece como fonte de verdade. O modelo de órgão é uma visualização suplementar validada e vinculada ao contexto anatômico.'
+                  : 'Human Atlas / BodyParts3D permanece como fonte de verdade. Esta estrutura não possui um modelo 3D suplementar específico nesta versão.'}
               </p>
               {chosen && (
                 <small className="reference-atlas-reference-id">
