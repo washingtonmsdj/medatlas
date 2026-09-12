@@ -50,6 +50,7 @@ jobs:
             tests: >-
               tests/e2e/responsive-layout.spec.ts
               tests/e2e/mobile-navigation.spec.ts
+              tests/e2e/visual-3d-visibility.spec.ts
           - suite: supporting-contracts
             tests: >-
               tests/e2e/accessibility.spec.ts
