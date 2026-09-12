@@ -63,8 +63,7 @@ test('published MedAtlas preview loads the SaaS shell and real clinical 3D flow'
 
   await expect
     .poll(
-      async () =>
-        focusedScene.locator('canvas').count(),
+      async () => focusedScene.locator('canvas').count(),
       {
         timeout: 45_000,
         message: 'Human Atlas canvas should render from deployed anatomy assets',
@@ -169,9 +168,11 @@ test('published Atlas uses the concept body-plus-detail layout on mobile', async
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./')
 
-  await page
-    .locator('.clinical-sidebar nav')
-    .getByRole('button', { name: 'Atlas 3D' })
+  await page.getByRole('button', { name: 'Mais módulos' }).click()
+  const mobileModules = page.locator('#clinical-sidebar-more-menu')
+  await expect(mobileModules).toBeVisible()
+  await mobileModules
+    .getByRole('button', { name: 'Atlas 3D', exact: true })
     .click()
 
   const workspace = page.locator('.reference-atlas-workspace')
@@ -215,4 +216,3 @@ test('published Atlas uses the concept body-plus-detail layout on mobile', async
   )
   expect(overflow).toBe(false)
 })
-
