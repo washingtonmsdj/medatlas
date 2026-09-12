@@ -6,6 +6,7 @@ export const DEMO_CONSTRAINTS = {
     minCharacters: 3,
     maxBytes: 64 * 1024,
     extensions: ['.txt', '.md'] as const,
+    mimeTypes: ['text/plain', 'text/markdown', 'text/x-markdown'] as const,
   },
   patientExplanation: {
     maxCharacters: 4000,
@@ -68,6 +69,16 @@ export function isDemoTextFilenameAllowed(filename: string) {
   const normalized = filename.toLowerCase()
   return DEMO_CONSTRAINTS.localText.extensions.some((extension) =>
     normalized.endsWith(extension),
+  )
+}
+
+export function isDemoTextMimeAllowed(mimeType: string) {
+  const normalized = mimeType.trim().toLowerCase()
+  return (
+    normalized.length === 0 ||
+    DEMO_CONSTRAINTS.localText.mimeTypes.some(
+      (allowedMimeType) => allowedMimeType === normalized,
+    )
   )
 }
 
