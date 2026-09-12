@@ -62,4 +62,10 @@ test('patient preview never presents pending content as clinically reviewed', as
   await expect(
     page.getByRole('button', { name: 'Imprimir prévia' }),
   ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Voltar ao profissional' }),
+  ).toHaveCount(1)
+  await expect(
+    page.getByRole('button', { name: 'Voltar para visão profissional' }),
+  ).toHaveCount(0)
 })
