@@ -3,10 +3,10 @@
 > **Documento canônico de continuidade.** Leia antes de alterar o projeto.
 > Este arquivo registra o estado atual e as próximas decisões; não é diário de commits.
 
-Última consolidação: **2026-09-10**  
+Última consolidação: **2026-09-12**  
 Branch canônica: **`main`**  
 Repositório: **`washingtonmsdj/medatlas`**  
-Source funcional de referência desta consolidação: **`b5c2ca3d5c332432f7417513b19d1f8d06b290fe`**
+Source funcional de referência desta consolidação: **`e66eaf0daf8eb8904f56ae80e41fde947097d5b8`**
 
 ## 0. Missão — não reinterpretar
 
@@ -36,7 +36,7 @@ link e experiência do paciente
 
 O wedge do produto é **comunicação clínica visual entre profissional e paciente**. MedAtlas não é diagnosticador automático, PACS, prontuário completo, segmentador DICOM nem reconstrução 3D específica do paciente.
 
-## 1. Estado real do MVP em 2026-09-10
+## 1. Estado real do MVP em 2026-09-12
 
 ### MVP browser sintético — candidato a piloto
 
@@ -49,6 +49,7 @@ O wedge do produto é **comunicação clínica visual entre profissional e pacie
 - [x] triagem determinística de anatomia com confirmação humana obrigatória;
 - [x] rascunho educacional + edição + aprovação clínica obrigatória;
 - [x] preview do paciente antes da publicação;
+- [x] preview pendente não se apresenta mais como revisado: sem atribuição falsa de revisor, com estado visual de warning e impressão rotulada como prévia;
 - [x] share demo opaco, versionado, temporário e revogável;
 - [x] Analytics local do fluxo demo;
 - [x] Equipe e permissões source-first sem mutações fake;
@@ -57,8 +58,8 @@ O wedge do produto é **comunicação clínica visual entre profissional e pacie
 - [x] ingestão local do MVP explicitamente limitada a **texto colado/digitado ou arquivo `.txt`/`.md`**;
 - [x] limite de **64 KiB** centralizado e aplicado por bytes UTF-8 tanto no arquivo quanto no texto digitado/colado;
 - [x] fluxo de análise também valida o limite no controlador, portanto a UI não é a única barreira;
-- [x] teste Browser E2E dedicado cobre o limite e a comunicação dos formatos aceitos;
-- [x] gate de segurança protege a mesma regra na autoridade central;
+- [x] Browser E2E dedicado protege intake e semântica de revisão pendente do portal do paciente;
+- [x] gate de segurança protege as regras centrais;
 - [x] CI, Browser E2E e GitHub Pages/Chromium fecharam verdes no mesmo source funcional.
 
 ### O que continua deliberadamente fora do MVP browser atual
@@ -97,10 +98,13 @@ Esses itens **não devem ser simulados por botões fake, hardcode ou parser impr
 18. `concept-shell.css` continua autoridade do shell; não ressuscitar temas paralelos ou CSS morto para vencer cascade.
 19. PDF/imagem só entram com um contrato de ingestão seguro; não anexar parser/OCR casual ao browser atual.
 20. Supabase/auth/IA remota só são ativados deliberadamente com seus próprios gates de isolamento e segurança.
+21. Prévia do paciente sem aprovação clínica deve comunicar **pendência**, nunca sucesso ou autoria de revisão inexistente.
 
-## 3. Correção consolidada nesta rodada
+## 3. Correções MVP consolidadas
 
-Foi encontrada uma inconsistência real de MVP: a interface comunicava limite de **64 KB**, mas o texto colado/digitado não estava protegido pela mesma barreira usada pelo importador de arquivo.
+### 3.1 Intake de laudo — limite real de 64 KiB
+
+Foi encontrada anteriormente uma inconsistência real de MVP: a interface comunicava limite de **64 KB**, mas o texto colado/digitado não estava protegido pela mesma barreira usada pelo importador de arquivo.
 
 A correção ficou distribuída corretamente por responsabilidade:
 
@@ -109,29 +113,43 @@ A correção ficou distribuída corretamente por responsabilidade:
 - `src/App.tsx` — defesa em profundidade antes da mutação/análise;
 - `scripts/validate-security-contract.mjs` — contrato estático de segurança;
 - `tests/e2e/report-intake.spec.ts` — regressão em navegador;
-- `.github/workflows/browser-e2e.yml` — novo teste incorporado ao shard clínico.
+- `.github/workflows/browser-e2e.yml` — teste incorporado ao shard clínico.
 
-Durante a implementação, um update de `App.tsx` carregou mudanças estruturais não relacionadas. A regressão foi detectada pelo próprio `validate:mvp-ui`, comparada ao último HEAD verde `3ad3d98c…` e corrigida **restaurando o shell canônico e reaplicando somente o source guard**. A comparação final contra esse baseline deixou `App.tsx` com 35 adições e 3 remoções, sem a troca acidental do shell.
+Durante essa implementação, um update completo de `App.tsx` carregou mudanças estruturais não relacionadas. A regressão foi detectada pelo próprio `validate:mvp-ui` e o shell canônico foi restaurado antes de reaplicar somente o guard necessário.
+
+### 3.2 Portal do paciente — revisão pendente não pode parecer aprovada
+
+Na auditoria de 2026-09-12 foi encontrado um problema de confiança do MVP: a prévia do paciente podia estar **sem aprovação clínica**, mas a superfície ainda mostrava linguagem e elementos visuais de revisão concluída, incluindo atribuição `Revisado por ...` baseada no membro atual e selo de sucesso.
+
+A correção foi feita sem enfraquecer o fluxo existente:
+
+- `src/components/PatientReportPage.tsx` — `hasClinicalReview` passou a depender da conclusão real da explicação + `reviewApproval`; prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor, usa `Imprimir prévia` e mantém linguagem de rascunho;
+- `src/styles/patient-review-state.css` — estado pendente usa tokens de warning em vez de herdar verde/sucesso;
+- `src/main.tsx` — carrega o módulo de estado visual;
+- `tests/e2e/report-explanation.spec.ts` — regressão de navegador garante que editar a explicação invalida a aprovação e que a prévia não volta a afirmar `Revisado por` antes de nova aprovação.
+
+A publicação real não estava burlando o gate: o repositório demo já rejeitava publicação sem revisão, anatomia válida, explicação válida e vínculo organizacional consistente. A correção desta rodada foi na **representação confiável do estado clínico na UI**, preservando a arquitetura fail-closed.
 
 ## 4. Evidência atual
 
-Source funcional: `b5c2ca3d5c332432f7417513b19d1f8d06b290fe`.
+Source funcional: `e66eaf0daf8eb8904f56ae80e41fde947097d5b8`.
 
-- **CI `34481648367` — PASS**: contratos de DB/organização/publicação/repositório/share/anatomia/demo/assets/performance/security/IA/revisão/workflow/licença/Atlas/MVP UI, TypeScript, build e bundle budget.
-- **Browser E2E `34481648442` — PASS completo**: `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes; o shard clínico inclui o novo contrato de intake de laudo.
-- **GitHub Pages Preview `34481648389` — PASS**: build, deploy, shell/assets publicados e verificação remota em Chromium do fluxo clínico 3D.
+- **CI `34691114750` — PASS**: audit, contratos de DB/organização/publicação/repositório/share/anatomia/demo/assets/performance/security/IA/revisão/workflow/licença/Atlas/MVP UI, TypeScript, build e bundle budget.
+- **Browser E2E `34691114745` — PASS completo**: `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes; o shard clínico inclui o novo contrato que impede a prévia pendente de se apresentar como revisada.
+- **GitHub Pages Preview `34691114736` — PASS**: build, deploy, shell/assets publicados e verificação remota em Chromium do fluxo clínico 3D.
 
-Não usar runs intermediários que falharam durante a implementação como baseline final. Eles serviram para revelar contratos desatualizados e a regressão estrutural do `App.tsx`.
+Não usar commits/runs intermediários da implementação como baseline final. O source funcional acima é o checkpoint desta consolidação.
 
 ## 5. Próxima ordem de trabalho — mirando MVP
 
 ### P0 — piloto sintético humano
 
 1. executar o **piloto manual sintético** de `docs/PILOT.md` no preview publicado, em desktop e mobile;
-2. registrar apenas atritos observáveis de tarefa/navegação/3D;
-3. corrigir bloqueadores reais sem reabrir arquitetura já provada;
-4. manter CI + Browser E2E + Pages verdes;
-5. revisar texto do produto somente onde houver confusão real entre anatomia de referência e anatomia individual.
+2. observar principalmente: início/continuação do relatório, diferença entre exploração e confirmação anatômica, utilidade do 3D, revisão humana, transição profissional → paciente e estados pendentes;
+3. registrar apenas atritos observáveis de tarefa/navegação/3D;
+4. corrigir bloqueadores reais sem reabrir arquitetura já provada;
+5. manter CI + Browser E2E + Pages verdes;
+6. revisar texto do produto somente onde houver confusão real entre anatomia de referência e anatomia individual.
 
 ### P1 — ingestão de documentos, sem gambiarra
 
@@ -172,7 +190,9 @@ Somente depois da fronteira backend existir. A IA deve retornar estrutura valid�
 
 ## 6. Critério de MVP desta fase
 
-O **MVP browser sintético** está tecnicamente qualificado para **piloto manual sintético** porque CI, Browser E2E e Pages fecharam verdes no source funcional. O próximo gate não é outro refactor abstrato: é navegação humana real pelo roteiro de `docs/PILOT.md` e correção dos bloqueadores que forem observados.
+O **MVP browser sintético** permanece tecnicamente qualificado para **piloto manual sintético**. A auditoria de 2026-09-12 removeu uma ambiguidade clínica real da prévia do paciente e o novo source voltou a fechar verde em CI, Browser E2E e Pages.
+
+O próximo gate não é outro refactor abstrato: é navegação humana real pelo roteiro de `docs/PILOT.md` e correção dos bloqueadores observados.
 
 Isso **não** significa “produção clínica pronta”. Produção exige P2 e os gates de segurança/compliance correspondentes.
 
