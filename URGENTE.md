@@ -66,7 +66,14 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] PDF.js `6.3.289` fica pinado, local e lazy; worker não depende de CDN;
 - [x] parser/worker PDF têm budget separado e não aumentam o budget do core inicial;
 - [x] licença Apache-2.0 do PDF.js é validada e distribuída em `dist/licenses/pdfjs-LICENSE.txt`;
-- [x] `src/ingestion/` é a fronteira tipada de arquivo → validação → extração para TXT/MD/PDF;
+- [x] ingestão local de **PNG/JPEG com OCR em português**, sem upload;
+- [x] imagem limitada a **6 MiB, 4096 px por lado, 4,5 MP e 64 KiB de texto OCR**;
+- [x] imagem valida extensão, MIME, assinatura binária e dimensões/pixels antes de carregar Tesseract;
+- [x] Tesseract.js `7.0.0`, core `7.0.0` e modelo português `1.0.0` ficam pinados, locais e lazy;
+- [x] worker OCR é direto same-origin (`workerBlobURL: false`), sem CDN/default remoto;
+- [x] OCR tem progresso/cancelamento e falha/cancelamento preservam o último texto válido;
+- [x] assets OCR têm manifesto SHA-256 e budgets separados, sem relaxar o core inicial;
+- [x] `src/ingestion/` é a fronteira tipada de arquivo → validação → extração/OCR para TXT/MD/PDF/PNG/JPEG;
 - [x] `ReportIntake` não lê bytes de arquivo diretamente;
 - [x] falha de ingestão preserva o último texto válido;
 - [x] importar arquivo apenas produz texto editável; não executa análise anatômica, não confirma FMA e não publica;
@@ -74,7 +81,7 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 
 ### Fora do MVP browser atual
 
-- [ ] imagem/OCR e PDF escaneado sem camada textual;
+- [ ] OCR de **PDF escaneado/image-only** sem camada textual;
 - [ ] autenticação real;
 - [ ] Supabase de produção ativo;
 - [ ] armazenamento clínico real;
@@ -124,7 +131,15 @@ Esses itens **não podem ser simulados por botões fake, hardcode, parser improv
 34. PDF deve falhar fechado por extensão/MIME, limite de 8 MiB, assinatura `%PDF-`, limite de 50 páginas, limite de 64 KiB extraídos, senha, documento malformado ou ausência de texto extraível.
 35. Importar PDF não pode executar `Encontrar anatomia`, confirmar FMA, aprovar conteúdo ou publicar; apenas preenche a fonte textual editável.
 36. Parser e worker PDF têm budgets opcionais próprios; não afrouxar o budget do core para absorvê-los. A licença Apache-2.0 deve acompanhar o artefato distribuído.
-37. OCR, quando entrar, deverá ser local/vendorizado, lazy e limitado; worker/core/modelos de idioma não podem depender de CDN por padrão, e o resultado continua passando pelo editor antes da interpretação clínica.
+37. OCR de imagem permanece local/vendorizado, lazy e limitado; worker/core/modelos de idioma não podem depender de CDN/default remoto.
+38. PNG/JPEG devem validar extensão, MIME, assinatura binária, bytes, dimensão por lado e total de pixels **antes** de carregar Tesseract.
+39. Worker/core/modelo OCR são pinados e same-origin; `workerBlobURL: false` é contrato, não otimização opcional.
+40. OCR de imagem aceita somente PNG/JPEG no gate atual; PDF sem camada textual continua fail-closed e não herda OCR implicitamente.
+41. Cancelamento/falha OCR preserva o último texto válido; sucesso produz apenas fonte textual editável.
+42. OCR nunca executa anatomia, confirmação FMA, revisão ou publicação automaticamente.
+43. Assets OCR possuem manifesto SHA-256 e budget separado; não afrouxar budgets de entry/core para absorvê-los.
+44. Proveniência/licenças de Tesseract.js/core e modelo português devem permanecer verificadas e distribuídas conforme o contrato de terceiros.
+45. Testes OCR tratam reconhecimento textual como probabilístico/semântico; paths, same-origin, hashes, limites e transições clínicas permanecem contratos exatos.
 
 ## 3. Correções MVP consolidadas
 
@@ -173,12 +188,33 @@ Implementação canônica:
 - parser usa somente controles suportados pela API 6 e desliga recursos não necessários à extração textual (`useWasm`, XFA, fontes/canvas/image decoder e worker fetch);
 - valida extensão + MIME + tamanho antes do parse e assinatura `%PDF-` antes de entregar bytes ao PDF.js;
 - rejeita >8 MiB, >50 páginas, >64 KiB de texto extraído, senha, malformação e PDF sem texto;
-- PDF sem camada textual comunica explicitamente que imagem/OCR ainda não é suportado;
+- PDF sem camada textual comunica explicitamente que **OCR de PDF escaneado ainda não é suportado**;
 - texto extraído entra no mesmo editor e continua separado de `Encontrar anatomia`;
-- parser (~431,9 KB) e worker (~1.265,4 KB) são opcionais/lazy; entry principal permaneceu ~347,9 KB;
+- parser (~431,9 KB) e worker (~1.265,4 KB) são opcionais/lazy;
 - `scripts/validate-bundle-budget.mjs` mantém budget do core separado dos budgets PDF;
 - `THIRD_PARTY_NOTICES.md`, gate de licença e build protegem Apache-2.0 e `dist/licenses/pdfjs-LICENSE.txt`;
 - Pages publicado testa um PDF real e exige worker resolvido em `/medatlas/assets/`.
+
+### 3.6 OCR local de PNG/JPEG — concluído
+
+Implementação canônica:
+
+- `src/ingestion/image-metadata.ts` valida assinatura e metadados estruturais PNG/JPEG;
+- `src/ingestion/local-image-ocr.ts` aplica tamanho/dimensões/pixels antes do runtime e importa `tesseract.js` somente via `await import(...)`;
+- formatos aceitos: `.png`, `.jpg`, `.jpeg`; MIME: `image/png` e `image/jpeg`;
+- limites: **6 MiB**, **4096 px por lado**, **4,5 MP**, **64 KiB de texto OCR**;
+- Tesseract.js/core **7.0.0** e `@tesseract.js-data/por` **1.0.0** ficam fixados no lockfile;
+- worker, core e modelo `por` são preparados localmente em build/dev por `scripts/prepare-ocr-assets.mjs`;
+- runtime usa `BASE_URL`, paths locais e `workerBlobURL: false`; sem CDN/default remoto;
+- somente os fallbacks LSTM necessários são distribuídos: **8 arquivos / 21.780.497 bytes**;
+- uma execução carrega somente um fallback de core; pior conjunto observado ~**8,27 MB**;
+- progresso é acessível e cancelamento usa `AbortController`; o worker é encerrado ao final;
+- falha/cancelamento não substituem o texto válido anterior;
+- sucesso preenche apenas o editor, sem executar `Encontrar anatomia`;
+- `validate:ocr-contract`, security/license gates e bundle budget protegem a fronteira;
+- Browser E2E roda OCR português real e testa invalidez/oversize/dimensões;
+- Pages verifica manifesto, bytes e SHA-256 dos 8 assets e executa OCR real sob `/medatlas/ocr-assets/`;
+- testes de OCR não exigem transcrição byte-a-byte; exigem reconhecimento semântico estável, enquanto garantias de infraestrutura permanecem exatas.
 
 ## 4. Checkpoints e validação
 
@@ -212,7 +248,7 @@ Security: **`11a3ac4810e409097d6f76642a3080f5c91c2acd`**.
 - Browser **`34704614163` — PASS 3/3**;
 - Pages **`34702511026` — PASS**.
 
-### Baseline verde atual — PDF textual local
+### Baseline verde — PDF textual local
 
 Runtime/parser: **`75fbc18ac73d97f376e20e8c343d996ba443dfd4`**.  
 UI/roteamento: **`8a7c4c8eab243681290f79ff2fedfd8f74898f6a`**.  
@@ -226,6 +262,20 @@ HEAD final de regressão: **`1b8ae472ba42a83aad59d0ab407c9f3c9ce7342f`**.
 - build observado: entry ~347,9 KB; parser PDF lazy ~431,9 KB; worker local ~1.265,4 KB.
 
 O Browser intermediário **`34709060147`** teve 41/42 testes verdes e todos os casos PDF verdes. A única falha era um contrato TXT antigo procurando o label removido `Importar laudo de texto sintético`; foi corrigido em **`ff6a9dc0a656759abda1d78b5e88e9f1847d498a`**. Não foi regressão de runtime/PDF.
+
+### Baseline verde atual — OCR local PNG/JPEG
+
+Runtime OCR/same-origin: **`4a77ad954eed46da3bb215beea3bf96a11d36b2a`**.  
+HEAD Browser final: **`54636a2542b9accc58989d89411eaa979bbcd0b2`**.  
+Source Pages OCR: **`8d8111b650bd34b55b8f42d6e172359338e8bbe1`**.
+
+- CI **`34723473730` — PASS completo**;
+- Browser E2E **`34723473763` — PASS completo 3/3**, incluindo OCR português real no `clinical-flow`;
+- GitHub Pages **`34723466362` — PASS completo**, com build/deploy, integridade dos **8 assets OCR / 21.780.497 bytes**, OCR PNG real same-origin, PDF e Atlas mobile;
+- entry observado ~350,8 KB e core JS sem PDF ~961,1 KB; OCR permanece lazy e com budget separado;
+- worker OCR é direto `/ocr-assets/worker.min.js`, sem `blob:` e sem CDN.
+
+O Browser anterior **`34722819374`** falhou somente porque o teste exigia transcrição OCR byte-a-byte (`LAUDO ... CORACAO`). O Tesseract havia reconhecido semanticamente o conteúdo, mas com ruído de glifos. O contrato foi corrigido para reconhecer conteúdo semanticamente e manter infraestrutura/same-origin como assertivas exatas; não foi regressão de runtime.
 
 ## 5. Próxima ordem de trabalho — foco MVP
 
@@ -241,7 +291,7 @@ Regressão obrigatória:
 4. QA viewport-aware nas superfícies WebGL;
 5. correção somente de atrito reproduzível ou requisito explícito.
 
-### P1 — ingestão documental, sem gambiarra — **PDF CONCLUÍDO / OCR É O PRÓXIMO GATE**
+### P1 — ingestão documental, sem gambiarra — **TXT/MD/PDF TEXTUAL + PNG/JPEG OCR CONCLUÍDOS**
 
 Concluído:
 
@@ -249,21 +299,25 @@ Concluído:
 - [x] TXT/MD local fail-closed;
 - [x] PDF textual local com limites próprios;
 - [x] parser PDF mantido, pinado, local e lazy;
-- [x] extensão/MIME/assinatura/tamanho/páginas/texto/senha/malformação fail-closed;
+- [x] extensão/MIME/assinatura/tamanho/páginas/texto/senha/malformação PDF fail-closed;
+- [x] PNG/JPEG local com assinatura/dimensões/pixels/bytes validados antes do OCR;
+- [x] Tesseract/core/modelo português pinados, locais, lazy e same-origin;
+- [x] progresso/cancelamento e preservação do último texto válido;
 - [x] importação separada da análise anatômica;
 - [x] security contract + licença + Browser E2E + Pages publicado;
-- [x] budgets do PDF separados sem afrouxar o core.
+- [x] budgets PDF/OCR separados sem afrouxar o core.
 
-Próximo gate — **imagem/OCR, ainda não implementado**:
+Próximo gate — **OCR de PDF escaneado/image-only, ainda não implementado**:
 
-1. definir formatos de imagem, tamanho, dimensões/pixels, páginas e orçamento de memória/CPU;
-2. escolher engine OCR mantida e fixar versão/proveniência/licença;
-3. worker/core/modelos de idioma devem ser **locais/vendorizados**, nunca CDN/default remoto;
-4. carregar OCR apenas sob demanda e fora do bundle inicial;
-5. adicionar progresso, cancelamento, timeout e erro explícito;
-6. manter resultado OCR limitado a 64 KiB e editável antes de qualquer análise anatômica;
-7. imagem/PDF escaneado não pode auto-confirmar anatomia, revisar nem publicar;
-8. adicionar security contract, Browser E2E, budget e teste no deploy antes de expor a capacidade na UI.
+1. rasterizar páginas localmente pela fronteira PDF já mantida, sem segunda stack de PDF;
+2. definir limite pequeno e explícito de páginas submetidas ao OCR, total de pixels e orçamento de memória/CPU;
+3. reutilizar a fronteira OCR atual por página, sem duplicar Tesseract em React;
+4. preservar worker/core/modelo locais, pinados, lazy e same-origin;
+5. expor progresso de documento + página atual e cancelamento único;
+6. definir semântica fail-closed para página sem texto, erro parcial e documento excedente;
+7. manter resultado agregado limitado a 64 KiB e editável antes de qualquer análise anatômica;
+8. PDF escaneado não pode auto-confirmar anatomia, revisar nem publicar;
+9. adicionar security contract, Browser E2E, budget e prova no deploy antes de expor a capacidade na UI.
 
 Storage privado, retenção de dados reais e PHI continuam fora até o gate de produção clínica.
 
@@ -288,7 +342,7 @@ Somente depois da fronteira backend existir. Deve retornar estrutura validável,
 
 ## 6. Critério desta fase
 
-O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. TXT/MD e PDF textual local estão separados, limitados e protegidos. O próximo salto de P1 é **imagem/OCR local controlado**, sem alterar a autoridade clínica nem liberar dados reais.
+O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. TXT/MD, PDF textual e PNG/JPEG com OCR local estão separados, limitados e protegidos. O próximo salto de P1 é **OCR local de PDF escaneado por página**, reutilizando as fronteiras já validadas e sem alterar a autoridade clínica nem liberar dados reais.
 
 Produção clínica continua fora deste gate.
 
@@ -304,5 +358,9 @@ Produção clínica continua fora deste gate.
 - `src/ingestion/local-text.ts` — fronteira TXT/MD local fail-closed;
 - `src/ingestion/local-report-file.ts` — roteamento de formatos e lazy boundary;
 - `src/ingestion/pdf.ts` — extração PDF textual local fail-closed;
+- `src/ingestion/image-metadata.ts` — assinatura/dimensões PNG/JPEG;
+- `src/ingestion/local-image-ocr.ts` — OCR local fail-closed, lazy e cancelável;
 - `src/product/constraints.ts` — limites/extensões/MIME compartilhados do produto;
-- `THIRD_PARTY_NOTICES.md` — provenance/licenças, incluindo PDF.js.
+- `scripts/prepare-ocr-assets.mjs` — preparação determinística dos assets OCR locais;
+- `scripts/validate-ocr-ingestion-contract.mjs` — gate estrutural OCR;
+- `THIRD_PARTY_NOTICES.md` — provenance/licenças, incluindo PDF.js e OCR.
