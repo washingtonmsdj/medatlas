@@ -419,11 +419,6 @@ function ClinicianApp() {
             {reportPresentation.completed}/{reportPresentation.total} etapas
           </span>
         }
-        actions={
-          <button type="button" onClick={() => setViewMode('patient')}>
-            Prévia do paciente
-          </button>
-        }
       />
 
       <section className="workflow-strip report-workflow-strip" aria-label="Fluxo do relatório">
