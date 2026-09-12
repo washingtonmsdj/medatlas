@@ -150,7 +150,7 @@ export function PatientReportPage({
               <small>Visualização</small>
               <strong>{hasAnatomy ? '3D disponível' : 'Aguardando'}</strong>
             </span>
-            <span className="reviewed">
+            <span className={hasClinicalReview ? 'reviewed' : 'pending'}>
               <small>Status</small>
               <strong>{hasClinicalReview ? 'Revisado' : 'Pendente'}</strong>
             </span>
@@ -196,7 +196,9 @@ export function PatientReportPage({
           </nav>
         </div>
 
-        <aside className="patient-review-summary">
+        <aside
+          className={`patient-review-summary ${hasClinicalReview ? 'reviewed' : 'pending'}`}
+        >
           <span className="patient-review-icon">
             {hasClinicalReview ? '✓' : '!'}
           </span>
@@ -454,7 +456,9 @@ export function PatientReportPage({
             </p>
           </div>
 
-          <div className="patient-review-stamp">
+          <div
+            className={`patient-review-stamp ${hasClinicalReview ? 'reviewed' : 'pending'}`}
+          >
             <span>{hasClinicalReview ? '✓' : '!'}</span>
             <div>
               <strong>
