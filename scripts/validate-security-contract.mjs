@@ -37,6 +37,8 @@ const reportComposer = await read('src/components/ReportComposer.tsx')
 const reportWorkflow = await read('src/domain/report-workflow.ts')
 const anatomySuggestions = await read('src/clinical/anatomy-suggestions.ts')
 const structuredExtraction = await read('src/clinical/structured-extraction.ts')
+const ingestionContracts = await read('src/ingestion/contracts.ts')
+const localTextIngestion = await read('src/ingestion/local-text.ts')
 const productConstraints = await read('src/product/constraints.ts')
 const indexHtml = await read('index.html')
 const vercel = await read('vercel.json')
@@ -116,22 +118,48 @@ if (
   )
 }
 
-const localImportInvariants = [
-  'DEMO_CONSTRAINTS.localText.maxBytes',
-  'isDemoTextFilenameAllowed(file.name)',
-  'validateDemoReportSource(text)',
+const localImportUiInvariants = [
+  'ingestLocalTextFile(file)',
+  'LOCAL_TEXT_FILE_ACCEPT',
   'validateDemoReportSource(nextValue)',
-  'await file.text()',
   'Importar laudo de texto sintético em TXT ou MD',
   'Texto acima do limite de',
+  'Tipo de arquivo incompatível com TXT/MD.',
+  'O arquivo precisa estar em UTF-8 válido.',
 ]
 
-for (const fragment of localImportInvariants) {
+for (const fragment of localImportUiInvariants) {
   if (!reportIntake.includes(fragment)) {
     failures.push(
-      `local synthetic report import missing invariant: ${fragment}`,
+      `local synthetic report UI missing ingestion invariant: ${fragment}`,
     )
   }
+}
+
+const localIngestionBoundaryInvariants = [
+  [localTextIngestion, 'DEMO_CONSTRAINTS.localText.maxBytes', 'local ingestion size limit'],
+  [localTextIngestion, 'isDemoTextFilenameAllowed(file.name)', 'local ingestion extension gate'],
+  [localTextIngestion, 'isDemoTextMimeAllowed(file.type)', 'local ingestion media-type gate'],
+  [localTextIngestion, 'await file.arrayBuffer()', 'local ingestion byte reader'],
+  [localTextIngestion, "new TextDecoder('utf-8', { fatal: true }).decode(buffer)", 'local ingestion strict UTF-8 decoder'],
+  [localTextIngestion, 'validateDemoReportSource(text)', 'local ingestion source validation'],
+  [localTextIngestion, 'buffer.byteLength > DEMO_CONSTRAINTS.localText.maxBytes', 'local ingestion post-read size gate'],
+  [localTextIngestion, 'LOCAL_TEXT_FILE_ACCEPT', 'local ingestion browser accept contract'],
+  [ingestionContracts, "| 'unsupported-media-type'", 'ingestion media-type failure contract'],
+  [ingestionContracts, "| 'invalid-encoding'", 'ingestion encoding failure contract'],
+  [ingestionContracts, "source: 'local-file'", 'ingestion source identity'],
+]
+
+for (const [source, fragment, scope] of localIngestionBoundaryInvariants) {
+  if (!source.includes(fragment)) {
+    failures.push(`${scope} missing safety invariant: ${fragment}`)
+  }
+}
+
+if (/\bfile\.(?:text|arrayBuffer)\s*\(/.test(reportIntake)) {
+  failures.push(
+    'ReportIntake must not read local file bytes directly; file decoding belongs to src/ingestion',
+  )
 }
 
 const controllerSourceInvariants = [
@@ -186,9 +214,11 @@ const requiredConstraintFragments = [
   'minCharacters: 3',
   'maxBytes: 64 * 1024',
   "extensions: ['.txt', '.md'] as const",
+  "mimeTypes: ['text/plain', 'text/markdown', 'text/x-markdown'] as const",
   'new TextEncoder().encode(value).byteLength',
   'validateDemoReportSource',
   'isDemoTextFilenameAllowed',
+  'isDemoTextMimeAllowed',
   'patientExplanation:',
   'maxCharacters: 4000',
   'Array.from(value).length',
@@ -215,7 +245,19 @@ if (!demoRepo.includes("from '../product/constraints'")) {
 
 if (!reportIntake.includes("from '../product/constraints'")) {
   failures.push(
-    'local report intake must source file limits from the central product constraints',
+    'local report editor must source report text limits from the central product constraints',
+  )
+}
+
+if (!localTextIngestion.includes("from '../product/constraints'")) {
+  failures.push(
+    'local ingestion boundary must source file limits and media types from the central product constraints',
+  )
+}
+
+if (!localTextIngestion.includes("from './contracts'")) {
+  failures.push(
+    'local ingestion boundary must return the typed ingestion result contract',
   )
 }
 
@@ -313,5 +355,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, bounded local report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, typed fail-closed local ingestion, bounded report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
