@@ -82,7 +82,9 @@ test('demo settings expose read-only branding without duplicating the new report
   ).toHaveCount(0)
   await expect(page.locator('.settings-actions')).toHaveCount(0)
 
-  await page.getByRole('button', { name: 'Visão geral' }).click()
+  await page
+    .getByRole('button', { name: 'Visão geral', exact: true })
+    .click()
   await expect(
     page.getByRole('button', { name: 'Novo relatório', exact: true }),
   ).toBeVisible()
