@@ -1,0 +1,18 @@
+/* MVP action-state authority: primary actions must read as active or unavailable at a glance. */
+
+.clinical-workspace button.primary:not(:disabled),
+.patient-shell button.primary:not(:disabled),
+.patient-route-state button.primary:not(:disabled) {
+  color: var(--text-on-accent);
+}
+
+.clinical-workspace button.primary:disabled,
+.patient-shell button.primary:disabled,
+.patient-route-state button.primary:disabled {
+  color: var(--text-muted);
+  border-color: var(--line-control);
+  background: var(--surface-control);
+  box-shadow: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
