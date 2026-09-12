@@ -27,24 +27,17 @@ export function PatientReportPage({
 }: Props) {
   const publicationIdentity = report.publicationIdentity
   const reviewApproval = report.reviewApproval
-  const currentMember = previewMode
-    ? organizationRuntime.getCurrentMember()
-    : null
   const branding =
     publicationIdentity?.branding ?? organizationRuntime.branding
   const reviewerDisplayName =
-    reviewApproval?.approvedBy.displayName ??
-    currentMember?.displayName ??
-    'Profissional responsável'
+    reviewApproval?.approvedBy.displayName ?? 'Profissional responsável'
   const reviewerSpecialty =
-    reviewApproval?.approvedBy.specialty ??
-    currentMember?.professional?.specialty ??
-    'Clínica'
+    reviewApproval?.approvedBy.specialty ?? 'Clínica'
   const publisherDisplayName =
-    publicationIdentity?.professional.displayName ??
-    currentMember?.displayName ??
-    'Profissional responsável'
+    publicationIdentity?.professional.displayName ?? 'Profissional responsável'
   const presentation = deriveReportPresentation(report)
+  const hasClinicalReview =
+    presentation.completion.explanation && Boolean(reviewApproval)
   const hasAnatomy = Boolean(report.finding.atlasConceptId)
   const [atlasStatus, setAtlasStatus] = useState<
     'idle' | 'loading' | 'ready' | 'error'
@@ -129,7 +122,9 @@ export function PatientReportPage({
             type="button"
             onClick={() => window.print()}
           >
-            Imprimir / salvar PDF
+            {previewMode && !hasClinicalReview
+              ? 'Imprimir prévia'
+              : 'Imprimir / salvar PDF'}
           </button>
         </div>
       </header>
@@ -140,7 +135,11 @@ export function PatientReportPage({
             {previewMode ? 'VISÃO DO PACIENTE · PRÉVIA' : 'SEU RELATÓRIO VISUAL'}
           </span>
           <h1>{report.title}</h1>
-          <p>Veja a região em 3D e leia a explicação revisada.</p>
+          <p>
+            {hasClinicalReview
+              ? 'Veja a região em 3D e leia a explicação revisada.'
+              : 'Confira como o paciente verá o relatório após a revisão clínica.'}
+          </p>
 
           <div className="patient-report-chips" aria-label="Resumo do relatório">
             <span>
@@ -153,7 +152,7 @@ export function PatientReportPage({
             </span>
             <span className="reviewed">
               <small>Status</small>
-              <strong>{presentation.completion.explanation ? 'Revisado' : 'Pendente'}</strong>
+              <strong>{hasClinicalReview ? 'Revisado' : 'Pendente'}</strong>
             </span>
           </div>
 
@@ -199,20 +198,24 @@ export function PatientReportPage({
 
         <aside className="patient-review-summary">
           <span className="patient-review-icon">
-            {presentation.completion.explanation ? '✓' : '•'}
+            {hasClinicalReview ? '✓' : '!'}
           </span>
           <div>
             <span className="section-kicker">
-              {presentation.completion.explanation ? 'REVISADO' : 'PRÉVIA'}
+              {hasClinicalReview ? 'REVISADO' : 'REVISÃO PENDENTE'}
             </span>
             <strong>
-              {presentation.completion.explanation
+              {hasClinicalReview
                 ? 'Pronto para o paciente'
-                : 'Relatório em edição'}
+                : 'Revisão clínica pendente'}
             </strong>
-            <p>
-              Revisado por {reviewerDisplayName} · {reviewerSpecialty}
-            </p>
+            {hasClinicalReview ? (
+              <p>
+                Revisado por {reviewerDisplayName} · {reviewerSpecialty}
+              </p>
+            ) : (
+              <p>Esta prévia ainda não foi aprovada pelo profissional.</p>
+            )}
             {!previewMode && publicationIdentity && (
               <small>Compartilhado por {publisherDisplayName}</small>
             )}
@@ -452,17 +455,17 @@ export function PatientReportPage({
           </div>
 
           <div className="patient-review-stamp">
-            <span>✓</span>
+            <span>{hasClinicalReview ? '✓' : '!'}</span>
             <div>
               <strong>
-                {presentation.completion.explanation
+                {hasClinicalReview
                   ? 'Explicação revisada'
                   : 'Prévia em edição'}
               </strong>
               <small>
-                {presentation.completion.explanation
+                {hasClinicalReview
                   ? `Revisada por ${reviewerDisplayName}.`
-                  : 'Ainda não compartilhada.'}
+                  : 'Revisão clínica pendente. Ainda não compartilhada.'}
               </small>
             </div>
           </div>
