@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export type ClinicalModuleName =
   | 'Visão geral'
   | 'Pacientes'
@@ -11,6 +13,13 @@ export const CLINICAL_NAV_ITEMS = [
   'Visão geral',
   'Pacientes',
   'Relatórios visuais',
+  'Atlas 3D',
+  'Equipe',
+  'Analytics',
+  'Configurações',
+] as const satisfies readonly ClinicalModuleName[]
+
+const MOBILE_OVERFLOW_ITEMS = [
   'Atlas 3D',
   'Equipe',
   'Analytics',
@@ -49,6 +58,25 @@ function SidebarIcon({ item }: { item: ClinicalModuleName }) {
   }
 }
 
+function MoreIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="5" cy="12" r="1" fill="currentColor" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+      <circle cx="19" cy="12" r="1" fill="currentColor" />
+    </svg>
+  )
+}
+
 function MedAtlasMark() {
   return (
     <svg viewBox="0 0 42 42" aria-hidden="true">
@@ -60,10 +88,30 @@ function MedAtlasMark() {
   )
 }
 
+function navigationLabel(item: ClinicalModuleName) {
+  return item === 'Relatórios visuais' ? 'Laudos' : item
+}
+
+function navigationAccessibleLabel(item: ClinicalModuleName) {
+  return item === 'Relatórios visuais'
+    ? 'Laudos · Relatórios visuais'
+    : navigationLabel(item)
+}
+
 export function ClinicalSidebar({ active, organizationName, workspaceName, unitName, onNavigate }: Props) {
+  const [mobileOverflowOpen, setMobileOverflowOpen] = useState(false)
+  const mobileOverflowActive = MOBILE_OVERFLOW_ITEMS.includes(
+    active as (typeof MOBILE_OVERFLOW_ITEMS)[number],
+  )
+
+  const navigate = (item: ClinicalModuleName) => {
+    setMobileOverflowOpen(false)
+    onNavigate(item)
+  }
+
   return (
     <aside className="clinical-sidebar" aria-label="Navegação clínica">
-      <button className="clinical-sidebar-brand" type="button" aria-label="Ir para visão geral" onClick={() => onNavigate('Visão geral')}>
+      <button className="clinical-sidebar-brand" type="button" aria-label="Ir para visão geral" onClick={() => navigate('Visão geral')}>
         <span className="clinical-sidebar-brand-mark"><MedAtlasMark /></span>
         <span className="clinical-sidebar-brand-copy">
           <strong>Med<span>Atlas</span></strong>
@@ -75,18 +123,53 @@ export function ClinicalSidebar({ active, organizationName, workspaceName, unitN
       </button>
 
       <nav aria-label="Navegação principal">
-        {CLINICAL_NAV_ITEMS.map((item) => {
-          const label = item === 'Relatórios visuais' ? 'Laudos' : item
-          const accessibleLabel =
-            item === 'Relatórios visuais' ? 'Laudos · Relatórios visuais' : label
-          return (
-            <button key={item} type="button" className={active === item ? 'active' : ''} aria-label={accessibleLabel} aria-current={active === item ? 'page' : undefined} onClick={() => onNavigate(item)}>
-              <span className="clinical-sidebar-nav-icon"><SidebarIcon item={item} /></span>
-              <span className="clinical-sidebar-nav-text">{label}</span>
-            </button>
-          )
-        })}
+        {CLINICAL_NAV_ITEMS.map((item) => (
+          <button
+            key={item}
+            type="button"
+            className={active === item ? 'active' : ''}
+            aria-label={navigationAccessibleLabel(item)}
+            aria-current={active === item ? 'page' : undefined}
+            onClick={() => navigate(item)}
+          >
+            <span className="clinical-sidebar-nav-icon"><SidebarIcon item={item} /></span>
+            <span className="clinical-sidebar-nav-text">{navigationLabel(item)}</span>
+          </button>
+        ))}
+
+        <button
+          className={`clinical-sidebar-more-button ${mobileOverflowActive ? 'active' : ''}`}
+          type="button"
+          aria-label="Mais módulos"
+          aria-expanded={mobileOverflowOpen}
+          aria-controls="clinical-sidebar-more-menu"
+          onClick={() => setMobileOverflowOpen((current) => !current)}
+        >
+          <span className="clinical-sidebar-nav-icon"><MoreIcon /></span>
+          <span className="clinical-sidebar-nav-text">Mais</span>
+        </button>
       </nav>
+
+      {mobileOverflowOpen && (
+        <div
+          className="clinical-sidebar-more-menu"
+          id="clinical-sidebar-more-menu"
+          aria-label="Mais módulos"
+        >
+          {MOBILE_OVERFLOW_ITEMS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={active === item ? 'active' : ''}
+              aria-current={active === item ? 'page' : undefined}
+              onClick={() => navigate(item)}
+            >
+              <span className="clinical-sidebar-nav-icon"><SidebarIcon item={item} /></span>
+              <span>{navigationLabel(item)}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="clinical-sidebar-message" aria-hidden="true">
         <span className="clinical-sidebar-message-rule" />
