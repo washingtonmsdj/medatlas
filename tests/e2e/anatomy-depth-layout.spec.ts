@@ -56,3 +56,39 @@ test('clinical anatomy depth controls keep separate hit areas on desktop', async
     expect(detailBox!.height).toBeGreaterThanOrEqual(34)
   }
 })
+
+test('Atlas explains unavailable supplemental detail without asking to replace confirmed anatomy', async ({
+  page,
+}) => {
+  test.setTimeout(90_000)
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Atlas 3D', exact: true }).click()
+
+  const detailPanel = page.getByLabel('Detalhe anatômico')
+  await expect(detailPanel).toBeVisible()
+  await expect(
+    detailPanel.getByText('Detalhe 3D adicional não disponível', { exact: true }),
+  ).toBeVisible({ timeout: 45_000 })
+  await expect(detailPanel).toContainText(
+    'Disco intervertebral L4–L5 continua disponível no corpo completo do Human Atlas.',
+  )
+  await expect(
+    detailPanel.getByText('Selecione um órgão compatível', { exact: true }),
+  ).toHaveCount(0)
+
+  const detailToggle = page
+    .getByRole('group', { name: 'Nível anatômico' })
+    .getByRole('button', { name: 'Órgão em detalhe' })
+  await expect(detailToggle).toBeDisabled()
+
+  await page
+    .getByRole('navigation', { name: 'Atalhos do Atlas 3D' })
+    .getByRole('button', { name: 'Coração' })
+    .click()
+
+  await expect(detailToggle).toBeEnabled()
+  await expect(
+    detailPanel.getByText('Modelo anatômico detalhado', { exact: true }),
+  ).toBeVisible()
+})
