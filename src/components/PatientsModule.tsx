@@ -102,7 +102,7 @@ export function PatientsModule({
           label={report.finding.anatomicalStructure}
           eyebrow="HUMAN ATLAS 3D"
           appearance="patient"
-          contextMode="system"
+          contextMode="region"
           reviewRequired={report.finding.anatomyReviewRequired}
           onOpenAtlas={onOpenAtlas}
           description="Anatomia de referência usada neste relatório."
