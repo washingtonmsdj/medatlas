@@ -63,3 +63,18 @@ test('published patient portal stays self-contained', async ({ page }) => {
 
   await patientPage.close()
 })
+
+test('demo settings expose read-only branding as state, not a dead control', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Configurações' }).click()
+
+  await expect(
+    page.getByRole('heading', { name: 'Configurações do workspace' }),
+  ).toBeVisible()
+  await expect(page.getByText('Somente leitura no demo')).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Editar identidade' }),
+  ).toHaveCount(0)
+})
