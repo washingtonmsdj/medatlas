@@ -78,7 +78,7 @@ test('Atlas explains unavailable supplemental detail without asking to replace c
   ).toHaveCount(0)
 
   const detailToggle = page
-    .getByRole('group', { name: 'Nível anatômico' })
+    .locator('.reference-atlas-depth-switch')
     .getByRole('button', { name: 'Órgão em detalhe' })
   await expect(detailToggle).toBeDisabled()
 
