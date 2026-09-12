@@ -39,7 +39,10 @@ const anatomySuggestions = await read('src/clinical/anatomy-suggestions.ts')
 const structuredExtraction = await read('src/clinical/structured-extraction.ts')
 const ingestionContracts = await read('src/ingestion/contracts.ts')
 const localTextIngestion = await read('src/ingestion/local-text.ts')
+const localReportIngestion = await read('src/ingestion/local-report-file.ts')
+const pdfIngestion = await read('src/ingestion/pdf.ts')
 const productConstraints = await read('src/product/constraints.ts')
+const packageJson = await read('package.json')
 const indexHtml = await read('index.html')
 const vercel = await read('vercel.json')
 const envExample = await read('.env.example')
@@ -119,13 +122,13 @@ if (
 }
 
 const localImportUiInvariants = [
-  'ingestLocalTextFile(file)',
-  'LOCAL_TEXT_FILE_ACCEPT',
+  'ingestLocalReportFile(file)',
+  'LOCAL_REPORT_FILE_ACCEPT',
   'validateDemoReportSource(nextValue)',
-  'Importar laudo de texto sintético em TXT ou MD',
-  'Texto acima do limite de',
-  'Tipo de arquivo incompatível com TXT/MD.',
-  'O arquivo precisa estar em UTF-8 válido.',
+  'Importar laudo sintético em TXT, MD ou PDF',
+  'Imagem/OCR ainda não é suportado.',
+  'PDF protegido por senha não é suportado.',
+  'O arquivo não possui uma assinatura PDF válida.',
 ]
 
 for (const fragment of localImportUiInvariants) {
@@ -136,21 +139,47 @@ for (const fragment of localImportUiInvariants) {
   }
 }
 
-const localIngestionBoundaryInvariants = [
-  [localTextIngestion, 'DEMO_CONSTRAINTS.localText.maxBytes', 'local ingestion size limit'],
-  [localTextIngestion, 'isDemoTextFilenameAllowed(file.name)', 'local ingestion extension gate'],
-  [localTextIngestion, 'isDemoTextMimeAllowed(file.type)', 'local ingestion media-type gate'],
-  [localTextIngestion, 'await file.arrayBuffer()', 'local ingestion byte reader'],
-  [localTextIngestion, "new TextDecoder('utf-8', { fatal: true }).decode(buffer)", 'local ingestion strict UTF-8 decoder'],
-  [localTextIngestion, 'validateDemoReportSource(text)', 'local ingestion source validation'],
-  [localTextIngestion, 'buffer.byteLength > DEMO_CONSTRAINTS.localText.maxBytes', 'local ingestion post-read size gate'],
-  [localTextIngestion, 'LOCAL_TEXT_FILE_ACCEPT', 'local ingestion browser accept contract'],
-  [ingestionContracts, "| 'unsupported-media-type'", 'ingestion media-type failure contract'],
-  [ingestionContracts, "| 'invalid-encoding'", 'ingestion encoding failure contract'],
-  [ingestionContracts, "source: 'local-file'", 'ingestion source identity'],
+const localTextBoundaryInvariants = [
+  [localTextIngestion, 'DEMO_CONSTRAINTS.localText.maxBytes', 'local text size limit'],
+  [localTextIngestion, 'isDemoTextFilenameAllowed(file.name)', 'local text extension gate'],
+  [localTextIngestion, 'isDemoTextMimeAllowed(file.type)', 'local text media-type gate'],
+  [localTextIngestion, 'await file.arrayBuffer()', 'local text byte reader'],
+  [localTextIngestion, "new TextDecoder('utf-8', { fatal: true }).decode(buffer)", 'local text strict UTF-8 decoder'],
+  [localTextIngestion, 'validateDemoReportSource(text)', 'local text source validation'],
+  [localTextIngestion, "format: 'text'", 'local text format identity'],
 ]
 
-for (const [source, fragment, scope] of localIngestionBoundaryInvariants) {
+for (const [source, fragment, scope] of localTextBoundaryInvariants) {
+  if (!source.includes(fragment)) {
+    failures.push(`${scope} missing safety invariant: ${fragment}`)
+  }
+}
+
+const localPdfBoundaryInvariants = [
+  [localReportIngestion, "await import('./pdf')", 'PDF parser lazy-loading boundary'],
+  [localReportIngestion, 'isDemoPdfFilenameAllowed(file.name)', 'PDF routing by canonical extension'],
+  [pdfIngestion, "from 'pdfjs-dist'", 'pinned local PDF.js parser import'],
+  [pdfIngestion, "pdfjs-dist/build/pdf.worker.min.mjs?url", 'local PDF.js worker asset'],
+  [pdfIngestion, 'DEMO_CONSTRAINTS.localPdf.maxBytes', 'PDF size limit'],
+  [pdfIngestion, 'DEMO_CONSTRAINTS.localPdf.maxPages', 'PDF page limit'],
+  [pdfIngestion, 'DEMO_CONSTRAINTS.localPdf.maxExtractedTextBytes', 'PDF extracted text limit'],
+  [pdfIngestion, 'isDemoPdfFilenameAllowed(file.name)', 'PDF extension gate'],
+  [pdfIngestion, 'isDemoPdfMimeAllowed(file.type)', 'PDF media-type gate'],
+  [pdfIngestion, 'hasPdfSignature(buffer)', 'PDF signature gate'],
+  [pdfIngestion, 'isEvalSupported: false', 'PDF eval disabled'],
+  [pdfIngestion, 'stopAtErrors: true', 'PDF parser fail-closed errors'],
+  [pdfIngestion, 'useWorkerFetch: false', 'PDF worker remote fetch disabled'],
+  [pdfIngestion, 'reportSourceByteLength(partialText)', 'PDF progressive text byte limit'],
+  [pdfIngestion, 'validateDemoReportSource(text)', 'PDF extracted text downstream boundary'],
+  [pdfIngestion, "format: 'pdf'", 'PDF format identity'],
+  [pdfIngestion, 'pageCount: pdf.numPages', 'PDF page provenance'],
+  [ingestionContracts, "| 'invalid-signature'", 'PDF signature failure contract'],
+  [ingestionContracts, "| 'too-many-pages'", 'PDF page failure contract'],
+  [ingestionContracts, "| 'no-extractable-text'", 'PDF no-text failure contract'],
+  [ingestionContracts, "| 'encrypted-document'", 'PDF password failure contract'],
+]
+
+for (const [source, fragment, scope] of localPdfBoundaryInvariants) {
   if (!source.includes(fragment)) {
     failures.push(`${scope} missing safety invariant: ${fragment}`)
   }
@@ -160,6 +189,20 @@ if (/\bfile\.(?:text|arrayBuffer)\s*\(/.test(reportIntake)) {
   failures.push(
     'ReportIntake must not read local file bytes directly; file decoding belongs to src/ingestion',
   )
+}
+
+if (/\bfetch\s*\(|new\s+XMLHttpRequest|https?:\/\//i.test(pdfIngestion)) {
+  failures.push(
+    'PDF ingestion must not fetch parser assets or document content from remote URLs',
+  )
+}
+
+if (localReportIngestion.includes("from './pdf'")) {
+  failures.push('PDF parser must remain dynamically imported, not eager-loaded')
+}
+
+if (!packageJson.includes('"pdfjs-dist": "6.3.289"')) {
+  failures.push('PDF.js dependency must remain exactly pinned to 6.3.289')
 }
 
 const controllerSourceInvariants = [
@@ -215,10 +258,18 @@ const requiredConstraintFragments = [
   'maxBytes: 64 * 1024',
   "extensions: ['.txt', '.md'] as const",
   "mimeTypes: ['text/plain', 'text/markdown', 'text/x-markdown'] as const",
+  'localPdf:',
+  'maxBytes: 8 * 1024 * 1024',
+  'maxPages: 50',
+  'maxExtractedTextBytes: 64 * 1024',
+  "extensions: ['.pdf'] as const",
+  "mimeTypes: ['application/pdf'] as const",
   'new TextEncoder().encode(value).byteLength',
   'validateDemoReportSource',
   'isDemoTextFilenameAllowed',
   'isDemoTextMimeAllowed',
+  'isDemoPdfFilenameAllowed',
+  'isDemoPdfMimeAllowed',
   'patientExplanation:',
   'maxCharacters: 4000',
   'Array.from(value).length',
@@ -249,16 +300,16 @@ if (!reportIntake.includes("from '../product/constraints'")) {
   )
 }
 
-if (!localTextIngestion.includes("from '../product/constraints'")) {
-  failures.push(
-    'local ingestion boundary must source file limits and media types from the central product constraints',
-  )
-}
-
-if (!localTextIngestion.includes("from './contracts'")) {
-  failures.push(
-    'local ingestion boundary must return the typed ingestion result contract',
-  )
+for (const [source, name] of [
+  [localTextIngestion, 'local text ingestion'],
+  [pdfIngestion, 'PDF ingestion'],
+]) {
+  if (!source.includes("from '../product/constraints'")) {
+    failures.push(`${name} must source limits from central product constraints`)
+  }
+  if (!source.includes("from './contracts'")) {
+    failures.push(`${name} must return the typed ingestion result contract`)
+  }
 }
 
 if (!reportComposer.includes("from '../product/constraints'")) {
@@ -355,5 +406,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, typed fail-closed local ingestion, bounded report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, typed fail-closed TXT/MD/PDF local ingestion, bounded report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
