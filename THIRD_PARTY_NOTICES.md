@@ -36,6 +36,26 @@ to the distributable artifact at:
 
 PDF.js is used only to extract bounded local PDF text before clinical interpretation. Importing a PDF does not confirm anatomy, run OCR, approve clinical content or publish a patient report.
 
+## Tesseract.js OCR
+
+Upstream runtime: https://github.com/naptha/tesseract.js  
+Upstream WebAssembly core: https://github.com/naptha/tesseract.js-core
+
+Pinned runtime packages used for local image OCR:
+
+- `tesseract.js@7.0.0`;
+- transitive `tesseract.js-core@7.0.0`;
+- `@tesseract.js-data/por@1.0.0` for the Portuguese language model.
+
+The runtime/core and language package resolve as Apache-2.0 dependencies. MedAtlas generates `public/ocr-assets/` from those pinned packages before development/build, records SHA-256 for every emitted OCR runtime asset and serves worker, core and `por.traineddata.gz` only from the same MedAtlas origin. No OCR worker/core/language CDN is used by the ingestion boundary.
+
+The production build redistributes the installed Apache-2.0 license texts at:
+
+- `dist/licenses/tesseractjs-LICENSE.txt`;
+- `dist/licenses/tesseractjs-core-LICENSE.txt`.
+
+Image OCR is limited to bounded local PNG/JPEG input and only produces editable report source text. OCR does not confirm anatomy, diagnose, approve clinical content or publish a patient report. OCR of scanned PDFs remains outside this checkpoint.
+
 ## BodyParts3D
 
 Anatomical data used by Human Atlas originates from BodyParts3D 4.0.
