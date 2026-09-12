@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/maintenance-patch-deployed-ocr.py'
+      - '.github/workflows/maintenance-patch-deployed-ocr.yml'
 
 permissions:
   contents: write
