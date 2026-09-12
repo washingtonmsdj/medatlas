@@ -17,6 +17,7 @@ import './styles/overview-case.css'
 import './styles/patient-review-state.css'
 import './styles/action-state.css'
 import './styles/reference-atlas-contrast.css'
+import './styles/intake-ocr.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
