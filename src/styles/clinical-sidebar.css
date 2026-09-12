@@ -263,8 +263,8 @@
     gap: 5px;
     margin-top: 7px;
     overflow-x: auto;
-    padding-right: 68px;
-    scroll-padding-right: 68px;
+    padding-right: 76px;
+    scroll-padding-right: 76px;
     scrollbar-width: none;
   }
 
@@ -300,12 +300,12 @@
     right: 10px;
     bottom: 8px;
     z-index: 4;
-    width: 62px;
+    width: 70px;
     min-height: 40px;
     display: grid;
-    grid-template-columns: 20px auto;
-    gap: 3px;
-    padding: 5px 7px;
+    grid-template-columns: 18px auto;
+    gap: 2px;
+    padding: 5px 6px;
     border: 1px solid var(--line-sidebar-mobile);
     background: var(--surface-sidebar-end);
     box-shadow: -10px 0 14px var(--surface-sidebar-end);
@@ -313,6 +313,11 @@
 
   .clinical-sidebar nav .clinical-sidebar-more-button.active {
     background: var(--accent-surface);
+  }
+
+  .clinical-sidebar nav .clinical-sidebar-more-button .clinical-sidebar-nav-text {
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .clinical-sidebar-more-menu {
