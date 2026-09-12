@@ -49,9 +49,12 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] rascunho educacional + edição + aprovação clínica obrigatória;
 - [x] preview do paciente antes da publicação;
 - [x] preview pendente não se apresenta como revisão concluída;
+- [x] portal publicado e links inválidos/revogados permanecem autocontidos, sem rota artificial de volta ao shell clínico;
 - [x] share demo opaco, versionado, temporário e revogável;
 - [x] Analytics local demo;
 - [x] Equipe/permissões sem mutações fake;
+- [x] Configurações demo deixam branding/estado não persistente explicitamente read-only;
+- [x] navegação mobile prioriza `Visão geral` + `Pacientes` e mantém módulos secundários acessíveis via `Mais`;
 - [x] responsividade desktop/mobile e axe/WCAG protegidos por Browser E2E;
 - [x] GitHub Pages publicado e verificado em Chromium;
 - [x] ingestão local limitada honestamente a texto/TXT/MD;
@@ -95,74 +98,70 @@ Esses itens **não podem ser simulados por botões fake, hardcode ou parser impr
 19. Supabase/auth/IA remota só entram com gates próprios.
 20. Prévia sem aprovação clínica comunica **pendência**, nunca sucesso ou autoria inexistente.
 21. Ação já concluída não deve competir visualmente com o próximo CTA real do fluxo.
+22. Portal do paciente publicado é uma experiência autocontida; retorno explícito ao profissional existe apenas na prévia interna.
+23. Em mobile, módulos secundários não podem desaparecer: ficam atrás de `Mais` e os testes devem navegar pelo mesmo caminho do usuário.
+24. Um canvas WebGL “carregado” sem anatomia visível é falha visual, mesmo que o renderer e o DOM estejam tecnicamente ativos.
 
 ## 3. Correções MVP consolidadas
 
 ### 3.1 Intake — limite real de 64 KiB
 
-A UI e o controlador agora compartilham a mesma autoridade de limite por bytes UTF-8 para texto digitado/colado e arquivo TXT/MD. Browser E2E protege a barreira.
+A UI e o controlador compartilham a mesma autoridade de limite por bytes UTF-8 para texto digitado/colado e arquivo TXT/MD. Browser E2E protege a barreira.
 
-### 3.2 Portal do paciente — revisão pendente
+### 3.2 Portal do paciente — revisão e isolamento corretos
 
 `PatientReportPage` só apresenta conteúdo como revisado quando existe conclusão real + `reviewApproval`. Prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor e usa semântica visual de warning.
+
+A prévia interna mantém uma única ação `Voltar ao profissional`. O portal publicado, links inválidos e shares revogados não oferecem retorno artificial ao shell clínico.
 
 ### 3.3 Piloto visual — contraste e hierarquia de ações
 
 O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os testes funcionais, sozinhos, não evidenciavam:
 
-1. **CTAs primários com baixo contraste** — ações como `Continuar relatório` e `Compartilhar com paciente` pareciam desabilitadas por causa de especificidade/cascade antigo.
-   - `src/styles/action-state.css` virou a autoridade explícita para estado visual de ações primárias e desabilitadas.
-   - Capturas responsivas posteriores confirmaram texto legível e hierarquia correta.
+1. **CTAs primários com baixo contraste** — `src/styles/action-state.css` é a autoridade explícita de estado visual das ações primárias/desabilitadas.
+2. **Painéis laterais do Atlas com baixo contraste** — `src/styles/reference-atlas-contrast.css` corrige contraste sem tocar no renderer/anatomia.
+3. **Prévia do paciente com duas saídas** — ficou uma única rota de retorno no preview e nenhuma no portal publicado.
+4. **`Encontrar anatomia` competia depois da confirmação** — após anatomia confirmada vira `Reanalisar laudo`, visualmente secundária; quando `anatomyReviewRequired=true`, volta a `Encontrar anatomia` como ação primária.
+5. **Navegação mobile instável/densa** — `Visão geral` e `Pacientes` permanecem primários; `Laudos`, `Atlas 3D`, `Equipe`, `Analytics` e `Configurações` ficam em `Mais`, sem alterar desktop.
+6. **Suite responsiva foi truncada por uma edição concorrente** — restaurada integralmente em `f8acc60de0f66b163de843a65da8edbe57d5969d`; não aceitar novamente cobertura parcial como PASS.
+7. **Gate do Pages ficou desatualizado após o novo `Mais`** — o teste publicado ainda buscava `Atlas 3D` diretamente no mobile; corrigido em `3e9a88d4284cb23a17e50869f20db3b1a3cc4678` para percorrer a navegação real.
 
-2. **Painéis laterais do Atlas com texto escuro sobre superfície forest** — o 3D estava correto, mas resumo/contexto/detalhe perdiam legibilidade.
-   - `src/styles/reference-atlas-contrast.css` corrige somente contraste dos painéis, sem tocar no renderer nem na anatomia.
-   - Captura nova de `atlas-explorer-1600` confirmou a correção no build real.
-
-3. **Prévia do paciente com duas saídas para o profissional** — havia retorno no topo e outro no rodapé.
-   - em preview existe agora uma única ação `Voltar ao profissional`;
-   - portal publicado mantém `Voltar ao MedAtlas`;
-   - `report-explanation.spec.ts` protege a singularidade do caminho de retorno.
-
-4. **`Encontrar anatomia` continuava competindo como CTA primário mesmo depois da anatomia já confirmada.**
-   - quando `anatomyReviewRequired=true`, continua `Encontrar anatomia` como ação primária;
-   - quando a estrutura já está confirmada, vira `Reanalisar laudo`, visualmente secundária;
-   - `report-intake.spec.ts` protege essa transição de hierarquia.
-
-Não esconder/rebaixar outras ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
+Não esconder/rebaixar ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
 
 ## 4. Checkpoints e validação
 
-### Último checkpoint completamente verde antes das duas últimas correções de navegação/hierarquia
+### Baseline verde consolidado anterior
 
-Source funcional: **`17d278e35ef8e60d885390ff49f564d48cd93e24`**.
+Source funcional: **`2e0b35474f68966caa8aca85d306a15433b454b3`**.
 
-- CI **`34692392073` — PASS**;
-- Browser E2E **`34692392068` — PASS completo** (`clinical-flow`, `responsive-layout`, `supporting-contracts`);
-- GitHub Pages **`34692392044` — PASS**, incluindo verificação remota do fluxo clínico 3D;
-- visual QA pós-correção confirmou contraste dos CTAs e dos painéis do Atlas.
+- CI **`34693122528` — PASS**;
+- Browser E2E **`34693122510` — PASS completo** (`clinical-flow`, `responsive-layout`, `supporting-contracts`);
+- GitHub Pages do runtime correspondente (`b021ca356887233b753b7c21713570a01fbe48f9`) **`34693105521` — PASS**;
+- visual QA confirmou contraste dos CTAs, contraste do Atlas e hierarquia `Reanalisar laudo`.
 
-### Candidato atual em validação
+### Baseline atual de deploy/navegação
 
-HEAD de teste/continuidade no momento desta consolidação: **`2e0b35474f68966caa8aca85d306a15433b454b3`**.
+HEAD no momento desta consolidação: **`3e9a88d4284cb23a17e50869f20db3b1a3cc4678`**.
 
-Inclui, além do checkpoint verde:
+Evidência já fechada:
 
-- retorno único na prévia do paciente;
-- hierarquia `Encontrar anatomia` → `Reanalisar laudo` após confirmação;
-- regressões E2E correspondentes.
+- CI **`34695594932` — PASS**;
+- GitHub Pages Preview **`34695594926` — PASS completo**: build, deploy, assets e fluxo 3D publicado em Chromium;
+- captura responsiva do commit pai `f8acc60de0f66b163de843a65da8edbe57d5969d` foi gerada após a restauração integral da suite;
+- no Browser E2E **`34695392237`**, `responsive-layout` e `supporting-contracts` já passaram; `clinical-flow` ainda estava executando na hora desta consolidação. Confirmar sua conclusão antes de chamar o HEAD atual de baseline Browser E2E completo.
 
-CI/Browser E2E do candidato foram disparados. Antes de declarar este SHA como novo baseline verde, confirmar os jobs mais recentes. Não confundir runs cancelados por commits subsequentes com regressão funcional.
+Não confundir runs cancelados/supersedidos por commits subsequentes com regressão funcional.
 
 ## 5. Próxima ordem de trabalho — foco MVP
 
 ### P0 — continuar piloto sintético visual/humano
 
-1. fechar os gates do candidato atual;
-2. revisar as novas capturas desktop/mobile após as mudanças desta rodada;
-3. seguir página por página: Visão geral → Pacientes → Laudos → Atlas 3D → Preview → portal publicado → Analytics;
-4. registrar somente atritos observáveis de tarefa, leitura, hierarquia e 3D;
-5. corrigir bloqueadores reais sem reabrir arquitetura já provada;
-6. manter CI + Browser E2E + Pages verdes.
+1. **Dashboard mobile / 3D:** a captura `dashboard-mobile-390.png` do run `34695392237` mostra `3D CARREGADO`, HUD e controles ativos, porém o viewport central sem anatomia visível; na página `Pacientes`, o mesmo foco L4–L5 aparece corretamente. Investigar diferença de layout/reenquadramento do mesmo `AnatomyFocusPreview` e corrigir na raiz, sem mascarar com imagem/fallback.
+2. Fechar o shard `clinical-flow` do Browser E2E `34695392237`; se falhar, corrigir a causa antes de avançar.
+3. Depois da correção do viewport, gerar nova captura mobile e exigir anatomia realmente visível, não apenas canvas existente/status `ready`.
+4. Seguir página por página: Visão geral → Pacientes → Laudos → Atlas 3D → Preview → portal publicado → Analytics/Equipe/Configurações.
+5. Registrar somente atritos observáveis de tarefa, leitura, hierarquia e 3D.
+6. Manter CI + Browser E2E + Pages verdes.
 
 ### P1 — ingestão documental, sem gambiarra
 
