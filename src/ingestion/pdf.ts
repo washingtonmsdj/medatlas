@@ -31,7 +31,11 @@ function failure(
 }
 
 function hasPdfSignature(buffer: ArrayBuffer) {
-  const bytes = new Uint8Array(buffer, 0, Math.min(buffer.byteLength, PDF_SIGNATURE.length))
+  const bytes = new Uint8Array(
+    buffer,
+    0,
+    Math.min(buffer.byteLength, PDF_SIGNATURE.length),
+  )
   return (
     bytes.length === PDF_SIGNATURE.length &&
     PDF_SIGNATURE.every((value, index) => bytes[index] === value)
@@ -104,9 +108,14 @@ export async function ingestLocalPdfFile(
 
   const loadingTask = getDocument({
     data: new Uint8Array(buffer),
-    isEvalSupported: false,
     stopAtErrors: true,
     useWorkerFetch: false,
+    useWasm: false,
+    enableXfa: false,
+    disableFontFace: true,
+    isOffscreenCanvasSupported: false,
+    isImageDecoderSupported: false,
+    maxImageSize: 0,
   })
 
   let rejectPassword: ((reason?: unknown) => void) | undefined
