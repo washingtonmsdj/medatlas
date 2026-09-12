@@ -24,7 +24,7 @@ link do paciente
 
 O produto não foi desenhado para emitir diagnóstico automático. A automação ajuda a localizar anatomia, preparar conteúdo e reduzir atrito; a autoridade de publicação continua sendo humana.
 
-### 3D-first
+## 3D-first
 
 O Human Atlas não é uma página isolada do MedAtlas: ele é a camada visual que acompanha o workflow anatômico.
 
@@ -34,9 +34,9 @@ Hoje a geometria real BodyParts3D aparece em:
 - **Pacientes** — contexto visual do relatório;
 - **Relatórios visuais** — laudo/exame, contexto da consulta e Clinical 3D Workbench;
 - **Atlas 3D** — explorer completo;
-  - mantém recursos do Human Atlas de referência como camadas, picking, explode, marcadores, hover por peça no inventário, vistas e enquadramento respeitando os painéis;
+  - mantém camadas, picking, explode, marcadores, hover, vistas e enquadramento respeitando os painéis;
   - estruturas compatíveis podem aprofundar para **Órgão em detalhe** sem perder o FMA/BodyParts3D selecionado;
-- **preview pré-publicação** — o profissional vê o mesmo Human Atlas real antes de compartilhar;
+- **preview pré-publicação** — o profissional vê o mesmo Human Atlas antes de compartilhar;
 - **link do paciente** — experiência simplificada com o mesmo engine.
 
 `Equipe`, `Analytics` e `Configurações` não recebem canvas 3D por decoração: nessas telas não existe uma tarefa anatômica.
@@ -47,7 +47,7 @@ O preview público do MVP está em:
 
 `https://washingtonmsdj.github.io/medatlas/`
 
-O workflow de Pages valida a publicação, os assets anatômicos e executa Playwright contra o site publicado.
+O workflow de Pages valida a publicação, os assets anatômicos, o fluxo 3D e a ingestão PDF publicada.
 
 ## Estado atual
 
@@ -55,26 +55,32 @@ O MVP já possui:
 
 - fluxo clínico em português;
 - edição/colagem de texto de laudo;
-- importação local de arquivo sintético .txt/.md (máx. 64 KB), sem upload;
-- Relatórios visuais concentram ingestão local de laudo/exame e o contexto da consulta; PDF/imagem permanecem explicitamente bloqueados nesta fase;
+- importação local sintética `.txt`/`.md` com até **64 KiB por bytes UTF-8**, sem upload;
+- importação local de **PDF textual** com até **8 MiB**, **50 páginas** e **64 KiB de texto extraído**, sem upload;
+- PDF.js `6.3.289` pinado, carregado de forma lazy, com worker local;
+- validação PDF de extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha, malformação e presença de texto;
+- PDF escaneado sem camada textual rejeitado explicitamente enquanto imagem/OCR não está implementado;
+- texto extraído sempre editável antes da análise anatômica;
+- falha de ingestão preservando o último texto válido;
+- Relatórios visuais concentrando ingestão local de laudo/exame e contexto da consulta;
 - módulo Pacientes funcional no modo sintético, derivado do relatório atual e sem persistência paralela;
 - triagem determinística de referências anatômicas;
-- sugestões limitadas a conceitos que realmente existem no atlas;
+- sugestões limitadas a conceitos realmente existentes no atlas;
 - busca manual por conceitos FMA;
 - Human Atlas / BodyParts3D real em Three.js;
-- explorador Atlas 3D completo derivado diretamente do renderer do Human Atlas: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
-- Dashboard, Pacientes, Relatórios visuais e página do paciente reutilizam o mesmo Human Atlas canônico em modo focado, com recorte de anatomia e somente os chunks necessários;
-- navegação em dois níveis `Corpo → Órgão em detalhe`, com detalhe suplementar para cérebro, olho, coração, intestino, rins, fígado, pulmões, pâncreas e pele;
-- os 9 GLBs detalhados ficam no próprio MedAtlas, são verificados por SHA-256 e carregados somente quando o usuário abre o detalhe;
+- explorador Atlas 3D completo: 2.234 peças, sistemas, picking por estrutura, vistas, rotação, isolamento e explode;
+- Dashboard, Pacientes, Relatórios e paciente reutilizando o mesmo Human Atlas canônico em modo focado;
+- navegação `Corpo → Órgão em detalhe`, com detalhe suplementar para estruturas compatíveis;
+- 9 GLBs detalhados locais, verificados por SHA-256 e carregados sob demanda;
 - suporte a conceitos compostos e várias meshes;
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
-- 34,3 MB da closure Human Atlas + cerca de 30,0 MB de modelos detalhados vendorizados no próprio MedAtlas; o payload inicial continua limitado porque os órgãos detalhados são lazy-loaded;
+- assets Human Atlas e modelos detalhados vendorizados no próprio MedAtlas, com payload inicial controlado por lazy loading;
 - provenance + SHA-256 verificados no CI para Human Atlas e modelos detalhados;
-- atribuição BodyParts3D CC BY 4.0 + Human Atlas MIT visível na UI clínica e na página do paciente;
-- Browser E2E com Chromium cobrindo desktop, mobile e handoff ao paciente;
+- atribuição BodyParts3D CC BY 4.0 + Human Atlas MIT nas superfícies exigidas;
+- Browser E2E com Chromium cobrindo desktop, mobile, ingestão e handoff ao paciente;
 - gate axe/WCAG para violações serious/critical;
-- piloto sintético guiado com critérios de aceite no dashboard;
+- piloto sintético guiado;
 - modo demo synthetic-only com shares locais expirando em 30 minutos;
 - CSP e headers de segurança no deploy Vercel;
 - explicação editável para o paciente;
@@ -84,11 +90,42 @@ O MVP já possui:
 - abstração assíncrona `ClinicalRepository`;
 - máquina de estado fail-closed para o ciclo completo do relatório;
 - contrato Supabase multi-tenant com RLS fail-closed em source;
-- bucket clínico privado e modelo de auditoria;
+- bucket clínico privado e modelo de auditoria projetados;
 - tokens de compartilhamento de produção definidos por hash, expiração e revogação;
-- CI com `npm ci`, typecheck, build, contrato de banco e auditoria de dependências de produção.
+- CI com `npm ci`, auditoria, contratos, typecheck, build e budgets.
 
 Todos os pacientes, profissionais, clínicas e laudos exibidos atualmente são **dados sintéticos de demonstração**.
+
+## Ingestão documental local
+
+A ingestão não pertence ao componente React. `ReportIntake` apresenta a UI, mas leitura/decoding/parsing ficam em `src/ingestion/`.
+
+Fluxo atual:
+
+```text
+arquivo local
+   ↓
+validação de formato/limites
+   ↓
+extração de texto
+   ↓
+texto editável no relatório
+   ↓
+Encontrar anatomia (ação separada)
+```
+
+Arquivos suportados:
+
+| Formato | Limites principais | Observação |
+| --- | --- | --- |
+| TXT/MD | 64 KiB UTF-8 | decoding fatal UTF-8 |
+| PDF textual | 8 MiB · 50 páginas · 64 KiB extraídos | PDF.js local/lazy |
+
+PDF rejeita fail-closed MIME/extensão incompatível, assinatura inválida, arquivo grande demais, excesso de páginas/texto, senha, malformação e ausência de texto extraível.
+
+**Imagem/OCR ainda não é suportado.** Um PDF escaneado não é enviado a serviço remoto e não vira texto por heurística improvisada.
+
+Importar arquivo nunca equivale a interpretar clinicamente: não executa automaticamente `Encontrar anatomia`, não confirma FMA, não aprova explicação e não publica.
 
 ## Rodar localmente
 
@@ -109,6 +146,11 @@ Validação completa:
 
 ```bash
 npm run validate:db-contract
+npm run validate:organization-runtime
+npm run validate:publication-identity
+npm run validate:repository-boundary
+npm run validate:share-revocation
+npm run validate:patient-share
 npm run validate:anatomy-contract
 npm run validate:demo-scenarios
 npm run validate:vendored-assets
@@ -119,8 +161,10 @@ npm run validate:review-gate
 npm run validate:report-workflow
 npm run validate:license-attribution
 npm run validate:reference-atlas
+npm run validate:mvp-ui
 npm run check
 npm run build
+npm run validate:bundle-budget
 npm audit --omit=dev --audit-level=high
 ```
 
@@ -134,11 +178,11 @@ O MedAtlas fixa sua integração inicial ao Human Atlas no commit:
 
 O renderer não usa iframe. O catálogo e as geometrias BodyParts3D são resolvidos semanticamente e renderizados dentro da aplicação.
 
-Os arquivos necessários ao runtime estão em `public/atlas-assets/`. O runtime resolve esse diretório relativamente ao `BASE_URL` do Vite, permitindo deploy tanto na raiz quanto em subpaths como `/medatlas/`. Eles foram copiados do commit upstream fixado por um workflow reproduzível e possuem `SHA256SUMS` + `PROVENANCE.json`. O navegador não precisa buscar geometrias no repositório upstream durante o uso normal.
+Os arquivos necessários ao runtime estão em `public/atlas-assets/`. O runtime resolve esse diretório relativamente ao `BASE_URL` do Vite, permitindo deploy tanto na raiz quanto em subpaths como `/medatlas/`. Eles possuem `SHA256SUMS` + `PROVENANCE.json`. O navegador não precisa buscar geometrias no repositório upstream durante o uso normal.
 
-Nos cenários sintéticos atuais, o payload inicial de atlas fica aproximadamente entre **3,4 MB e 6,0 MB**, apesar da closure total vendorizada ter 34,3 MB, porque o renderer carrega somente os chunks necessários ao conceito selecionado.
+Nos cenários sintéticos, o renderer carrega somente os chunks necessários ao conceito selecionado, preservando o budget inicial apesar da closure anatômica local ser maior.
 
-Exemplo atual:
+Exemplo:
 
 ```text
 “L4-L5”
@@ -156,8 +200,7 @@ A anatomia é **referência educacional**, não reconstrução do corpo individu
 
 ### Profundidade de órgão
 
-Quando a estrutura selecionada possui um modelo detalhado compatível, a interface
-oferece uma segunda profundidade:
+Quando a estrutura selecionada possui modelo detalhado compatível:
 
 ```text
 Corpo completo / Human Atlas
@@ -169,9 +212,7 @@ estrutura FMA confirmada
 voltar ao corpo preservando a seleção
 ```
 
-O detalhe é complementar. Ele não confirma FMA, não altera o relatório e não
-substitui BodyParts3D como fonte de verdade clínica. Os arquivos ficam em
-`public/organ-models/` e são carregados sob demanda.
+O detalhe é complementar. Ele não confirma FMA, não altera o relatório e não substitui BodyParts3D como fonte de verdade clínica. Os arquivos ficam em `public/organ-models/` e são carregados sob demanda.
 
 ## Triagem do laudo
 
@@ -186,9 +227,9 @@ Ele:
 5. retorna sugestões;
 6. exige confirmação explícita antes de alterar o relatório.
 
-A próxima camada de IA já possui um contrato técnico estrito em `src/clinical/structured-extraction.schema.json` e `src/clinical/structured-extraction.ts`. Um modelo poderá sugerir candidatos, mas a resposta só é aceita se passar pelo schema/runtime validator, exigir revisão clínica e cada FMA existir como conceito renderizável no atlas fixado.
+A próxima camada de IA possui contrato técnico estrito em `src/clinical/structured-extraction.schema.json` e `src/clinical/structured-extraction.ts`. Um modelo poderá sugerir candidatos, mas a resposta só é aceita se passar pelo schema/runtime validator, exigir revisão clínica e cada FMA existir como conceito renderizável no atlas fixado.
 
-O provedor remoto permanece explicitamente desativado enquanto o MVP não possui backend. Chaves de modelo não devem entrar no bundle Vite. Veja `docs/AI.md`.
+O provedor remoto permanece desativado enquanto o MVP não possui backend. Chaves de modelo não devem entrar no bundle Vite. Veja `docs/AI.md`.
 
 ## Dados e Supabase
 
@@ -201,28 +242,15 @@ O contrato de produção está em:
 - `docs/ARCHITECTURE.md`
 - `docs/RELEASE_READINESS.md`
 
-Ele define:
-
-- organizações/tenants;
-- membros e papéis;
-- profissionais;
-- pacientes;
-- consultas;
-- relatórios visuais;
-- documentos clínicos;
-- compartilhamentos;
-- auditoria;
-- RLS em todas as tabelas de aplicação;
-- Storage privado;
-- token de paciente armazenado somente como SHA-256.
+Ele define organizações/tenants, membros/papéis, profissionais, pacientes, consultas, relatórios visuais, documentos clínicos, compartilhamentos, auditoria, RLS, Storage privado e token de paciente armazenado somente como SHA-256.
 
 O backend Supabase **não é ativado silenciosamente** só porque variáveis de ambiente existem. A troca do adaptador demo pelo adaptador Supabase ocorrerá somente depois de migration + testes de isolamento.
 
-Enquanto isso, o modo atual é explicitamente **synthetic-only**. Não deve receber dados reais de pacientes. Os links de demonstração expiram automaticamente em 30 minutos e a persistência local é limitada.
+Enquanto isso, o modo atual é explicitamente **synthetic-only**. Não deve receber dados reais de pacientes.
 
 ## Segurança
 
-Alguns invariantes já são gates permanentes:
+Alguns invariantes permanentes:
 
 - nenhuma publicação com revisão pendente;
 - nenhum token previsível;
@@ -231,34 +259,47 @@ Alguns invariantes já são gates permanentes:
 - nenhuma tabela clínica sem RLS;
 - nenhum documento clínico em bucket público;
 - nenhuma IA pode publicar diretamente;
-- dados demo não devem compartilhar projeto/storage com dados clínicos reais.
+- dados demo não devem compartilhar projeto/storage com dados clínicos reais;
+- `ReportIntake` não lê bytes diretamente;
+- parser PDF/worker não dependem de fetch remoto;
+- falha de ingestão não apaga o último texto válido;
+- texto importado não vira confirmação clínica automática.
 
-Veja `docs/SECURITY.md` e `docs/PILOT.md`.
+Veja `docs/SECURITY.md`, `docs/PILOT.md` e `URGENTE.md`.
 
 ## Deploy
 
 ### Vercel
 
-`vercel.json` está pronto e usa `npm ci`.
-
-O workflow manual `.github/workflows/preview-artifact.yml` gera um pacote
-estático de preview pequeno, sem duplicar os binários anatômicos. O checkpoint
-atual e as provas de deploy estão em `docs/RELEASE_READINESS.md`.
+`vercel.json` usa `npm ci`. O workflow manual `.github/workflows/preview-artifact.yml` gera pacote estático de preview sem duplicar binários anatômicos.
 
 ### GitHub Pages
 
-O preview público está ativo em:
+Preview público:
 
 ```text
 https://washingtonmsdj.github.io/medatlas/
 ```
 
-O workflow `.github/workflows/pages.yml` publica a aplicação, valida shell/assets anatômicos e executa Playwright contra o deploy real, incluindo canvas Human Atlas nas superfícies 3D-first, no preview pré-publicação e no portal do paciente.
+`.github/workflows/pages.yml` publica a aplicação e executa Playwright contra o deploy real. O gate atual também importa um PDF textual sintético e verifica que o worker PDF é carregado pelo subpath correto `/medatlas/assets/`.
+
+## Bundle PDF
+
+PDF.js não degrada o caminho inicial: o módulo de ingestão PDF é importado apenas quando um `.pdf` é selecionado.
+
+Build observado no checkpoint atual:
+
+- entry principal ~347,9 KB;
+- parser PDF lazy ~431,9 KB;
+- worker PDF local ~1.265,4 KB.
+
+`scripts/validate-bundle-budget.mjs` mantém budgets separados para core, parser e worker. Não aumentar o budget do core para absorver PDF.
 
 ## Licenças e provenance
 
 - Human Atlas: MIT.
 - BodyParts3D 4.0: CC BY 4.0.
+- PDF.js `6.3.289`: Apache License 2.0; licença do pacote é validada e distribuída em `dist/licenses/pdfjs-LICENSE.txt`.
 - `thebuggeddev/anatomy`: integração e modelos detalhados sob permissão específica registrada em `docs/UPSTREAM_ANATOMY.md`; não é tratada como licença open-source geral.
 
 Veja:
@@ -269,15 +310,14 @@ Veja:
 
 ## Roadmap
 
-O plano executável e continuamente atualizado está em:
+O plano executável e continuamente atualizado está em `URGENTE.md`.
 
-`URGENTE.md`
+Próximas frentes:
 
-As próximas frentes são:
-
-1. concluir o piloto sintético/manual no preview público e corrigir UX observada;
-2. preparar critérios do piloto clínico controlado;
-3. somente depois, projeto Supabase exclusivo do MedAtlas;
-4. provas de isolamento multi-tenant + autenticação;
-5. adapter Supabase do `ClinicalRepository`;
-6. ativar provedor de IA somente atrás do backend e dos gates já definidos.
+1. continuar o piloto sintético/manual, agora incluindo ingestão de PDF textual;
+2. próximo gate P1: imagem/OCR **local, vendorizado, lazy e limitado**, sem CDN/default remoto;
+3. preparar critérios do piloto clínico controlado;
+4. somente depois, projeto Supabase exclusivo do MedAtlas;
+5. provas de isolamento multi-tenant + autenticação;
+6. adapter Supabase do `ClinicalRepository`;
+7. ativar provedor de IA somente atrás do backend e dos gates já definidos.
