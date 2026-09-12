@@ -17,16 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Patch deployed OCR coverage
+      - name: Patch OCR browser coverage
         run: python scripts/maintenance-patch-deployed-ocr.py
 
-      - name: Commit deployed OCR verification
+      - name: Commit test updates only
         run: |
           git diff --check
+          git checkout -- .github/workflows/pages.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm scripts/maintenance-patch-deployed-ocr.py
-          git rm .github/workflows/maintenance-patch-deployed-ocr.yml
-          git add tests/deployed/preview.spec.ts .github/workflows/pages.yml
-          git commit -m 'test: verify deployed local image ocr'
+          git add tests/deployed/preview.spec.ts tests/e2e/report-intake.spec.ts
+          git commit -m 'test: harden local image ocr verification'
           git push
