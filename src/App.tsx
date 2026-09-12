@@ -611,12 +611,7 @@ function ClinicianApp() {
         return <AnalyticsModule repository={clinicalData.repository} />
 
       case 'Configurações':
-        return (
-          <DemoSettings
-            onNewReport={startNewReport}
-            onSharesCleared={clearShareState}
-          />
-        )
+        return <DemoSettings onSharesCleared={clearShareState} />
     }
   }
 
