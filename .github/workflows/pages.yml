@@ -11,6 +11,7 @@ on:
       - 'index.html'
       - 'package.json'
       - 'package-lock.json'
+      - 'scripts/prepare-ocr-assets.mjs'
       - 'vite.config.ts'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -203,9 +204,58 @@ jobs:
             }
           }
 
+          const ocrManifestResponse = await fetchOk(
+            new URL('ocr-assets/manifest.json', pageUrl),
+          )
+          const ocrManifest = await ocrManifestResponse.json()
+          const ocrEntries = Object.entries(ocrManifest?.files ?? {})
+
+          if (
+            ocrManifest?.schema !== 'medatlas.ocr-assets/2' ||
+            ocrManifest?.generatedFromDependencies !== true ||
+            ocrManifest?.tesseractVersion !== '7.0.0' ||
+            ocrManifest?.coreVersion !== '7.0.0' ||
+            ocrManifest?.languagePackage !== '@tesseract.js-data/por' ||
+            ocrManifest?.languageVersion !== '1.0.0' ||
+            ocrManifest?.language !== 'por' ||
+            ocrEntries.length !== 8
+          ) {
+            throw new Error('published_ocr_manifest_invalid')
+          }
+
+          let verifiedOcrBytes = 0
+          for (const [relativePath, asset] of ocrEntries) {
+            if (
+              typeof asset?.bytes !== 'number' ||
+              asset.bytes <= 0 ||
+              typeof asset?.sha256 !== 'string' ||
+              !/^[a-f0-9]{64}$/.test(asset.sha256)
+            ) {
+              throw new Error(`published_ocr_manifest_entry_invalid:${relativePath}`)
+            }
+
+            const response = await fetchOk(
+              new URL(`ocr-assets/${relativePath}`, pageUrl),
+            )
+            const buffer = Buffer.from(await response.arrayBuffer())
+            if (buffer.length !== asset.bytes) {
+              throw new Error(`published_ocr_asset_size_mismatch:${relativePath}`)
+            }
+
+            const digest = createHash('sha256').update(buffer).digest('hex')
+            if (digest !== asset.sha256) {
+              throw new Error(`published_ocr_asset_sha256_mismatch:${relativePath}`)
+            }
+            verifiedOcrBytes += buffer.length
+          }
+
+          if (verifiedOcrBytes !== ocrManifest.totalBytes) {
+            throw new Error('published_ocr_total_bytes_mismatch')
+          }
+
           console.log(`MedAtlas Pages preview PASS: ${pageUrl}`)
           console.log(
-            `Validated ${assetRefs.length} JS/CSS asset(s) + Human Atlas provenance/index + 9 organ GLBs.`,
+            `Validated ${assetRefs.length} JS/CSS asset(s) + Human Atlas provenance/index + 9 organ GLBs + ${ocrEntries.length} OCR assets (${verifiedOcrBytes} bytes).`,
           )
           NODE
 
