@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent } from 'react'
+import { useMemo, useRef, useState, type ChangeEvent } from 'react'
 import {
   anatomySuggestionSourceToken,
   type AnatomySuggestion,
@@ -17,9 +17,13 @@ import {
 } from '../ingestion/local-report-file'
 import {
   demoReportFileFormatLabel,
+  formatDemoImageDimensionLimit,
+  formatDemoImageFileLimit,
+  formatDemoImagePixelLimit,
   formatDemoPdfFileLimit,
   formatDemoPdfPageLimit,
   formatDemoTextLimit,
+  isDemoImageFilenameAllowed,
   validateDemoReportSource,
 } from '../product/constraints'
 
@@ -38,33 +42,52 @@ interface Props {
 type IngestionFailure = Exclude<TextDocumentIngestionResult, { ok: true }>
 
 function ingestionFailureMessage(failure: IngestionFailure) {
-  const isPdf = failure.fileName.toLowerCase().endsWith('.pdf')
+  const normalizedName = failure.fileName.toLowerCase()
+  const isPdf = normalizedName.endsWith('.pdf')
+  const isImage =
+    normalizedName.endsWith('.png') ||
+    normalizedName.endsWith('.jpg') ||
+    normalizedName.endsWith('.jpeg')
 
   switch (failure.code) {
     case 'unsupported-extension':
-      return 'Formato não suportado. Use um arquivo .txt, .md ou .pdf.'
+      return 'Formato não suportado. Use .txt, .md, .pdf, .png, .jpg ou .jpeg.'
     case 'unsupported-media-type':
       return 'Tipo de arquivo incompatível com a extensão selecionada.'
     case 'too-large':
-      return isPdf
-        ? `PDF acima do limite de ${formatDemoPdfFileLimit()}.`
-        : `Arquivo acima do limite de ${formatDemoTextLimit()}.`
+      if (isPdf) return `PDF acima do limite de ${formatDemoPdfFileLimit()}.`
+      if (isImage) return `Imagem acima do limite de ${formatDemoImageFileLimit()}.`
+      return `Arquivo acima do limite de ${formatDemoTextLimit()}.`
     case 'too-short':
       return 'O arquivo não contém texto suficiente para análise.'
     case 'invalid-encoding':
       return 'O arquivo precisa estar em UTF-8 válido.'
     case 'invalid-signature':
-      return 'O arquivo não possui uma assinatura PDF válida.'
+      return isImage
+        ? 'A assinatura da imagem não corresponde ao formato selecionado.'
+        : 'O arquivo não possui uma assinatura PDF válida.'
+    case 'invalid-dimensions':
+      return 'Não foi possível validar as dimensões da imagem.'
+    case 'too-many-pixels':
+      return `Imagem acima do limite de ${formatDemoImagePixelLimit()} ou ${formatDemoImageDimensionLimit()}.`
     case 'too-many-pages':
       return `PDF acima do limite de ${formatDemoPdfPageLimit()}.`
     case 'too-much-text':
       return `O texto extraído excede o limite de ${formatDemoTextLimit()}.`
     case 'no-extractable-text':
-      return 'Este PDF não contém texto extraível. Imagem/OCR ainda não é suportado.'
+      return isImage
+        ? 'O OCR local não encontrou texto suficiente na imagem.'
+        : 'Este PDF não contém texto extraível. Imagem/OCR do PDF ainda não é suportado.'
     case 'encrypted-document':
       return 'PDF protegido por senha não é suportado.'
     case 'malformed-document':
       return 'PDF inválido ou corrompido.'
+    case 'ocr-runtime-unavailable':
+      return 'Não foi possível carregar o OCR local.'
+    case 'ocr-failed':
+      return 'Não foi possível extrair texto da imagem.'
+    case 'cancelled':
+      return 'OCR cancelado. O texto anterior foi preservado.'
     case 'parse-failed':
       return 'Não foi possível processar o PDF.'
     case 'read-failed':
@@ -77,6 +100,10 @@ function formatImportedFileMeta(
 ) {
   if (result.format === 'pdf' && result.pageCount) {
     return `${result.pageCount} página${result.pageCount === 1 ? '' : 's'} · ${result.extractedTextBytes.toLocaleString('pt-BR')} bytes extraídos`
+  }
+
+  if (result.format === 'image' && result.width && result.height) {
+    return `${result.width.toLocaleString('pt-BR')}×${result.height.toLocaleString('pt-BR')} px · ${result.extractedTextBytes.toLocaleString('pt-BR')} bytes extraídos · OCR local`
   }
 
   return `${result.extractedTextBytes.toLocaleString('pt-BR')} bytes`
@@ -97,6 +124,10 @@ export function ReportIntake({
   const [sourceTextError, setSourceTextError] = useState('')
   const [fileName, setFileName] = useState('')
   const [fileMeta, setFileMeta] = useState('')
+  const [importingFile, setImportingFile] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState<number | null>(null)
+  const [ocrStatus, setOcrStatus] = useState('')
+  const activeImportController = useRef<AbortController | null>(null)
   const sourceValidation = useMemo(
     () => validateDemoReportSource(sourceText),
     [sourceText],
@@ -111,6 +142,14 @@ export function ReportIntake({
   )
 
   const sourceState = useMemo(() => {
+    if (importingFile && ocrProgress !== null) {
+      return {
+        label: 'Extraindo texto',
+        detail: `${ocrStatus || 'OCR local'} · ${Math.round(ocrProgress * 100)}%`,
+        tone: 'working',
+      }
+    }
+
     if (analyzing) {
       return {
         label: 'Analisando',
@@ -148,7 +187,15 @@ export function ReportIntake({
       detail: 'Cole o texto ou importe um arquivo.',
       tone: 'idle',
     }
-  }, [analyzing, currentSuggestions.length, sourceTextError, sourceValidation.ok])
+  }, [
+    analyzing,
+    currentSuggestions.length,
+    importingFile,
+    ocrProgress,
+    ocrStatus,
+    sourceTextError,
+    sourceValidation.ok,
+  ])
 
   const importLocalFile = async (
     event: ChangeEvent<HTMLInputElement>,
@@ -158,21 +205,43 @@ export function ReportIntake({
 
     if (!file) return
 
+    const isImage = isDemoImageFilenameAllowed(file.name)
+    const controller = isImage ? new AbortController() : null
+    activeImportController.current = controller
+
     setFileError('')
     setSourceTextError('')
     setFileName('')
     setFileMeta('')
+    setImportingFile(true)
+    setOcrProgress(isImage ? 0 : null)
+    setOcrStatus(isImage ? 'Preparando OCR local' : '')
 
-    const result = await ingestLocalReportFile(file)
+    try {
+      const result = await ingestLocalReportFile(file, {
+        signal: controller?.signal,
+        onOcrProgress: ({ status, progress }) => {
+          setOcrStatus(status)
+          setOcrProgress(progress)
+        },
+      })
 
-    if (!result.ok) {
-      setFileError(ingestionFailureMessage(result))
-      return
+      if (!result.ok) {
+        setFileError(ingestionFailureMessage(result))
+        return
+      }
+
+      onSourceTextChange(result.document.text)
+      setFileName(result.document.fileName)
+      setFileMeta(formatImportedFileMeta(result.document))
+    } finally {
+      if (activeImportController.current === controller) {
+        activeImportController.current = null
+      }
+      setImportingFile(false)
+      setOcrProgress(null)
+      setOcrStatus('')
     }
-
-    onSourceTextChange(result.document.text)
-    setFileName(result.document.fileName)
-    setFileMeta(formatImportedFileMeta(result.document))
   }
 
   const analyzeLabel = anatomyReviewRequired
@@ -185,7 +254,7 @@ export function ReportIntake({
         <div>
           <span className="section-kicker">LAUDO / EXAME</span>
           <h2>Adicionar laudo</h2>
-          <p>Cole o texto do exame ou importe um arquivo TXT, MD ou PDF.</p>
+          <p>Cole o texto ou importe TXT, MD, PDF, PNG ou JPG.</p>
         </div>
 
         <div className="intake-status-cluster">
@@ -211,6 +280,7 @@ export function ReportIntake({
             <button
               key={example.id}
               type="button"
+              disabled={importingFile}
               onClick={() => {
                 setFileError('')
                 setSourceTextError('')
@@ -224,17 +294,42 @@ export function ReportIntake({
           ))}
         </div>
 
-        <label className="file-import-button">
+        <label className={`file-import-button${importingFile ? ' disabled' : ''}`}>
           <input
-            aria-label="Importar laudo sintético em TXT, MD ou PDF"
+            aria-label="Importar laudo sintético em TXT, MD, PDF, PNG ou JPG"
             type="file"
             accept={LOCAL_REPORT_FILE_ACCEPT}
+            disabled={importingFile}
             onChange={(event) => void importLocalFile(event)}
           />
           <span aria-hidden="true">↑</span>
-          Importar TXT/MD/PDF
+          Importar arquivo
         </label>
       </div>
+
+      {importingFile && ocrProgress !== null && (
+        <div className="ocr-progress-panel" role="status" aria-live="polite">
+          <div className="ocr-progress-heading">
+            <div>
+              <strong>OCR local</strong>
+              <small>{ocrStatus || 'Extraindo texto da imagem'}</small>
+            </div>
+            <span>{Math.round(ocrProgress * 100)}%</span>
+          </div>
+          <progress
+            aria-label="Progresso do OCR local"
+            max={100}
+            value={Math.round(ocrProgress * 100)}
+          />
+          <button
+            type="button"
+            className="ocr-cancel-button"
+            onClick={() => activeImportController.current?.abort()}
+          >
+            Cancelar OCR
+          </button>
+        </div>
+      )}
 
       <div className="intake-editor-shell">
         <div className="intake-editor-toolbar">
@@ -252,6 +347,7 @@ export function ReportIntake({
           className="intake-editor"
           aria-label="Texto do laudo ou relatório"
           value={sourceText}
+          disabled={importingFile}
           onChange={(event) => {
             const nextValue = event.target.value
             const validation = validateDemoReportSource(nextValue)
@@ -300,14 +396,21 @@ export function ReportIntake({
           className={anatomyReviewRequired ? 'primary' : 'reanalyze'}
           type="button"
           onClick={() => void onAnalyze()}
-          disabled={analyzing || !sourceValidation.ok || Boolean(sourceTextError)}
+          disabled={
+            analyzing ||
+            importingFile ||
+            !sourceValidation.ok ||
+            Boolean(sourceTextError)
+          }
         >
           {analyzing ? 'Analisando…' : analyzeLabel}
         </button>
         <span>
-          {anatomyReviewRequired
-            ? 'Depois, confirme a estrutura correta no Atlas.'
-            : 'Use apenas se precisar refazer a correspondência anatômica.'}
+          {importingFile
+            ? 'Conclua ou cancele a extração antes de localizar a anatomia.'
+            : anatomyReviewRequired
+              ? 'Depois, confirme a estrutura correta no Atlas.'
+              : 'Use apenas se precisar refazer a correspondência anatômica.'}
         </span>
       </div>
 
