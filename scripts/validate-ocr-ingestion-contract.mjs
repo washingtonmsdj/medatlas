@@ -1,0 +1,117 @@
+import { readFile } from 'node:fs/promises'
+
+const failures = []
+const read = (file) => readFile(file, 'utf8')
+
+const [
+  constraints,
+  contracts,
+  metadata,
+  ocr,
+  router,
+  intake,
+  assetPrep,
+  packageJson,
+] = await Promise.all([
+  read('src/product/constraints.ts'),
+  read('src/ingestion/contracts.ts'),
+  read('src/ingestion/image-metadata.ts'),
+  read('src/ingestion/local-image-ocr.ts'),
+  read('src/ingestion/local-report-file.ts'),
+  read('src/components/ReportIntake.tsx'),
+  read('scripts/prepare-ocr-assets.mjs'),
+  read('package.json'),
+])
+
+const required = [
+  [constraints, 'localImage:', 'central image constraints'],
+  [constraints, 'maxBytes: 6 * 1024 * 1024', 'image byte limit'],
+  [constraints, 'maxDimension: 4096', 'image side limit'],
+  [constraints, 'maxPixels: 4_500_000', 'image pixel limit'],
+  [constraints, 'maxExtractedTextBytes: 64 * 1024', 'image OCR text limit'],
+  [constraints, "extensions: ['.png', '.jpg', '.jpeg'] as const", 'image extensions'],
+  [constraints, "mimeTypes: ['image/png', 'image/jpeg'] as const", 'image MIME types'],
+  [contracts, "| 'invalid-dimensions'", 'image dimension failure contract'],
+  [contracts, "| 'too-many-pixels'", 'image pixel failure contract'],
+  [contracts, "| 'ocr-runtime-unavailable'", 'OCR runtime failure contract'],
+  [contracts, "| 'ocr-failed'", 'OCR recognition failure contract'],
+  [contracts, "| 'cancelled'", 'OCR cancellation contract'],
+  [contracts, "format: 'text' | 'pdf' | 'image'", 'image ingestion result identity'],
+  [contracts, 'signal?: AbortSignal', 'OCR abort signal contract'],
+  [contracts, 'onOcrProgress?:', 'OCR progress contract'],
+  [metadata, 'const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47', 'PNG signature gate'],
+  [metadata, 'const JPEG_START_OF_FRAME_MARKERS', 'JPEG structural parser'],
+  [metadata, 'localImageMimeMatchesKind', 'extension/MIME kind binding'],
+  [ocr, 'DEMO_CONSTRAINTS.localImage.maxBytes', 'OCR source size gate'],
+  [ocr, 'parseLocalImageMetadata(', 'OCR metadata gate'],
+  [ocr, 'DEMO_CONSTRAINTS.localImage.maxDimension', 'OCR dimension gate'],
+  [ocr, 'DEMO_CONSTRAINTS.localImage.maxPixels', 'OCR pixel gate'],
+  [ocr, "await import('tesseract.js')", 'lazy Tesseract import'],
+  [ocr, 'import.meta.env.BASE_URL', 'deploy-relative OCR asset root'],
+  [ocr, 'workerPath: `${ocrRoot}/worker.min.js`', 'local OCR worker path'],
+  [ocr, 'corePath: `${ocrRoot}/core`', 'local OCR core path'],
+  [ocr, 'langPath: `${ocrRoot}/lang`', 'local OCR language path'],
+  [ocr, "createWorker('por', OEM.LSTM_ONLY", 'pinned Portuguese OCR initialization'],
+  [ocr, 'validateDemoReportSource(text)', 'OCR text downstream validation'],
+  [ocr, 'await worker.terminate()', 'OCR worker teardown'],
+  [ocr, "format: 'image'", 'OCR image result identity'],
+  [router, "await import('./local-image-ocr')", 'lazy image OCR routing'],
+  [router, 'isDemoImageFilenameAllowed(file.name)', 'image OCR routing gate'],
+  [intake, 'new AbortController()', 'OCR UI cancellation controller'],
+  [intake, 'Cancelar OCR', 'OCR cancel UI'],
+  [intake, 'Progresso do OCR local', 'OCR progress accessibility'],
+  [intake, 'importingFile ||', 'anatomy analysis blocked during OCR'],
+  [assetPrep, "const outputRoot = 'public/ocr-assets'", 'local OCR asset output'],
+  [assetPrep, "node_modules/tesseract.js/dist/worker.min.js", 'pinned worker source'],
+  [assetPrep, "node_modules/tesseract.js-core", 'pinned core source'],
+  [assetPrep, "@tesseract.js-data/por", 'pinned Portuguese model source'],
+  [assetPrep, "createHash('sha256')", 'OCR asset integrity manifest'],
+  [packageJson, '"tesseract.js": "7.0.0"', 'Tesseract dependency pin'],
+  [packageJson, '"@tesseract.js-data/por": "1.0.0"', 'Portuguese model dependency pin'],
+  [packageJson, '"prepare:ocr-assets": "node scripts/prepare-ocr-assets.mjs"', 'OCR asset preparation script'],
+  [packageJson, '"dev": "npm run prepare:ocr-assets && vite', 'OCR assets prepared for development'],
+  [packageJson, '"build": "npm run prepare:ocr-assets && tsc', 'OCR assets prepared for production build'],
+]
+
+for (const [source, fragment, scope] of required) {
+  if (!source.includes(fragment)) {
+    failures.push(`${scope} missing invariant: ${fragment}`)
+  }
+}
+
+const metadataIndex = ocr.indexOf('parseLocalImageMetadata(')
+const runtimeIndex = ocr.indexOf("await import('tesseract.js')")
+if (metadataIndex === -1 || runtimeIndex === -1 || metadataIndex > runtimeIndex) {
+  failures.push('image signature/dimension validation must happen before Tesseract is loaded')
+}
+
+if (/\bfetch\s*\(|new\s+XMLHttpRequest|https?:\/\//i.test(ocr)) {
+  failures.push('OCR ingestion must not fetch runtime/model assets from remote URLs')
+}
+
+if (router.includes("from './local-image-ocr'")) {
+  failures.push('Tesseract OCR must remain dynamically imported, not eager-loaded')
+}
+
+if (/\bfile\.(?:text|arrayBuffer)\s*\(/.test(intake)) {
+  failures.push('ReportIntake must not read image bytes; OCR decoding belongs to src/ingestion')
+}
+
+if (!router.includes('...DEMO_CONSTRAINTS.localImage.extensions')) {
+  failures.push('report file accept contract must include bounded image extensions')
+}
+
+if (!router.includes('...DEMO_CONSTRAINTS.localImage.mimeTypes')) {
+  failures.push('report file accept contract must include bounded image MIME types')
+}
+
+if (failures.length > 0) {
+  console.error('MedAtlas OCR ingestion contract FAILED')
+  failures.forEach((failure) => console.error(`- ${failure}`))
+  process.exit(1)
+}
+
+console.log('MedAtlas OCR ingestion contract PASS')
+console.log('- PNG/JPEG are bounded and structurally validated before OCR runtime loading.')
+console.log('- Tesseract worker/core/Portuguese model are local, pinned and lazy.')
+console.log('- OCR remains cancellable and separate from anatomy analysis.')
