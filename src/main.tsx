@@ -14,6 +14,7 @@ import './styles/concept-modules.css'
 import './styles/workspace-page-header.css'
 import './styles/clareza-viva.css'
 import './styles/overview-case.css'
+import './styles/patient-review-state.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
