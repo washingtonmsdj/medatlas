@@ -100,7 +100,8 @@ Esses itens **não podem ser simulados por botões fake, hardcode ou parser impr
 21. Ação já concluída não deve competir visualmente com o próximo CTA real do fluxo.
 22. Portal do paciente publicado é uma experiência autocontida; retorno explícito ao profissional existe apenas na prévia interna.
 23. Em mobile, módulos secundários não podem desaparecer: ficam atrás de `Mais` e os testes devem navegar pelo mesmo caminho do usuário.
-24. Um canvas WebGL “carregado” sem anatomia visível é falha visual, mesmo que o renderer e o DOM estejam tecnicamente ativos.
+24. QA visual de WebGL deve observar a superfície como o usuário a observa: renderers pausados fora do viewport não devem ser tratados como falha só porque uma captura `fullPage` não provocou interseção/scroll.
+25. Não remover `IntersectionObserver`/pausa offscreen para “consertar” screenshots; preservar a economia de GPU e testar o primeiro frame quando a superfície entra no viewport.
 
 ## 3. Correções MVP consolidadas
 
@@ -114,7 +115,7 @@ A UI e o controlador compartilham a mesma autoridade de limite por bytes UTF-8 p
 
 A prévia interna mantém uma única ação `Voltar ao profissional`. O portal publicado, links inválidos e shares revogados não oferecem retorno artificial ao shell clínico.
 
-### 3.3 Piloto visual — contraste e hierarquia de ações
+### 3.3 Piloto visual — contraste, hierarquia e QA fiel ao viewport
 
 O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os testes funcionais, sozinhos, não evidenciavam:
 
@@ -124,7 +125,8 @@ O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os
 4. **`Encontrar anatomia` competia depois da confirmação** — após anatomia confirmada vira `Reanalisar laudo`, visualmente secundária; quando `anatomyReviewRequired=true`, volta a `Encontrar anatomia` como ação primária.
 5. **Navegação mobile instável/densa** — `Visão geral` e `Pacientes` permanecem primários; `Laudos`, `Atlas 3D`, `Equipe`, `Analytics` e `Configurações` ficam em `Mais`, sem alterar desktop.
 6. **Suite responsiva foi truncada por uma edição concorrente** — restaurada integralmente em `f8acc60de0f66b163de843a65da8edbe57d5969d`; não aceitar novamente cobertura parcial como PASS.
-7. **Gate do Pages ficou desatualizado após o novo `Mais`** — o teste publicado ainda buscava `Atlas 3D` diretamente no mobile; corrigido em `3e9a88d4284cb23a17e50869f20db3b1a3cc4678` para percorrer a navegação real.
+7. **Gate do Pages ficou desatualizado após o novo `Mais`** — corrigido em `3e9a88d4284cb23a17e50869f20db3b1a3cc4678` para percorrer a navegação mobile real.
+8. **Dashboard mobile parecia ter 3D vazio no screenshot full-page** — investigação confirmou que o Human Atlas fica abaixo do viewport inicial e o renderer pausa frames offscreen com `IntersectionObserver`; desktop e Pacientes renderizam normalmente quando a superfície está dentro do viewport/root margin. O experimento de atrasar readiness foi revertido em `70e653e5f786d91ae589729592ca86664cf9af61` para não mascarar a causa. O QA agora inclui `tests/e2e/visual-3d-visibility.spec.ts`, que traz a superfície para o viewport e captura `dashboard-3d-mobile-visible-390.png` após frames reais do navegador.
 
 Não esconder/rebaixar ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
 
@@ -139,16 +141,21 @@ Source funcional: **`2e0b35474f68966caa8aca85d306a15433b454b3`**.
 - GitHub Pages do runtime correspondente (`b021ca356887233b753b7c21713570a01fbe48f9`) **`34693105521` — PASS**;
 - visual QA confirmou contraste dos CTAs, contraste do Atlas e hierarquia `Reanalisar laudo`.
 
-### Baseline atual de deploy/navegação
+### Baseline de deploy/navegação já provado
 
-HEAD no momento desta consolidação: **`3e9a88d4284cb23a17e50869f20db3b1a3cc4678`**.
-
-Evidência já fechada:
+Source: **`3e9a88d4284cb23a17e50869f20db3b1a3cc4678`**.
 
 - CI **`34695594932` — PASS**;
-- GitHub Pages Preview **`34695594926` — PASS completo**: build, deploy, assets e fluxo 3D publicado em Chromium;
-- captura responsiva do commit pai `f8acc60de0f66b163de843a65da8edbe57d5969d` foi gerada após a restauração integral da suite;
-- no Browser E2E **`34695392237`**, `responsive-layout` e `supporting-contracts` já passaram; `clinical-flow` ainda estava executando na hora desta consolidação. Confirmar sua conclusão antes de chamar o HEAD atual de baseline Browser E2E completo.
+- GitHub Pages Preview **`34695594926` — PASS completo**: build, deploy, assets e fluxo 3D publicado em Chromium.
+
+### Candidato atual de QA visual
+
+HEAD funcional/teste: **`fdce791c4a327000c1dd2b813ce75515158225d0`**.
+
+- preserva a otimização offscreen do renderer;
+- adiciona captura viewport-aware `dashboard-3d-mobile-visible-390.png` ao shard responsivo;
+- CI **`34696244235` — PASS**;
+- Browser E2E **`34696244246`** aguardava liberação do grupo de concorrência na hora desta consolidação; runs intermediários foram supersedidos/cancelados e não são regressões.
 
 Não confundir runs cancelados/supersedidos por commits subsequentes com regressão funcional.
 
@@ -156,12 +163,11 @@ Não confundir runs cancelados/supersedidos por commits subsequentes com regress
 
 ### P0 — continuar piloto sintético visual/humano
 
-1. **Dashboard mobile / 3D:** a captura `dashboard-mobile-390.png` do run `34695392237` mostra `3D CARREGADO`, HUD e controles ativos, porém o viewport central sem anatomia visível; na página `Pacientes`, o mesmo foco L4–L5 aparece corretamente. Investigar diferença de layout/reenquadramento do mesmo `AnatomyFocusPreview` e corrigir na raiz, sem mascarar com imagem/fallback.
-2. Fechar o shard `clinical-flow` do Browser E2E `34695392237`; se falhar, corrigir a causa antes de avançar.
-3. Depois da correção do viewport, gerar nova captura mobile e exigir anatomia realmente visível, não apenas canvas existente/status `ready`.
-4. Seguir página por página: Visão geral → Pacientes → Laudos → Atlas 3D → Preview → portal publicado → Analytics/Equipe/Configurações.
-5. Registrar somente atritos observáveis de tarefa, leitura, hierarquia e 3D.
-6. Manter CI + Browser E2E + Pages verdes.
+1. Fechar Browser E2E `34696244246` e baixar o artifact responsivo.
+2. Inspecionar `dashboard-3d-mobile-visible-390.png`; exigir anatomia visível quando a superfície realmente entra no viewport. Se continuar vazia **nesse teste viewport-aware**, tratar como bug real do renderer/câmera.
+3. Se a prova passar, encerrar o falso positivo do screenshot full-page e seguir página por página: Visão geral → Pacientes → Laudos → Atlas 3D → Preview → portal publicado → Analytics/Equipe/Configurações.
+4. Registrar somente atritos observáveis de tarefa, leitura, hierarquia e 3D.
+5. Manter CI + Browser E2E + Pages verdes.
 
 ### P1 — ingestão documental, sem gambiarra
 
