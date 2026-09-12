@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { createSyntheticOcrPng } from './ocr-fixture'
 
 function createSyntheticPdf(text = 'Laudo sintetico publicado sobre L4-L5.') {
   const escapedText = text
@@ -222,7 +223,7 @@ test('published PDF ingestion loads its local worker under the Pages base path',
   })
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo-publicado.pdf',
       mimeType: 'application/pdf',
@@ -240,6 +241,75 @@ test('published PDF ingestion loads its local worker under the Pages base path',
 
   expect(workerResponses.length).toBeGreaterThan(0)
   expect(workerResponses.every((url) => url.includes('/medatlas/assets/'))).toBe(true)
+})
+
+
+test('published PNG OCR uses only direct same-origin assets under the Pages base path', async ({
+  page,
+}) => {
+  test.setTimeout(120_000)
+  await openBlankReport(page)
+
+  const origin = new URL(page.url()).origin
+  const ocrRequests: string[] = []
+  const remoteOcrRequests: string[] = []
+  const workerUrls: string[] = []
+
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.pathname.includes('/ocr-assets/')) {
+      ocrRequests.push(request.url())
+    }
+    if (
+      url.origin !== origin &&
+      /tesseract|traineddata|jsdelivr|unpkg|projectnaptha/i.test(request.url())
+    ) {
+      remoteOcrRequests.push(request.url())
+    }
+  })
+  page.on('worker', (worker) => workerUrls.push(worker.url()))
+
+  await page
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
+    .setInputFiles({
+      name: 'laudo-ocr-publicado.png',
+      mimeType: 'image/png',
+      buffer: await createSyntheticOcrPng(page),
+    })
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await expect(editor).toHaveValue(/LAUDO\s+SINTETICO\s+CORACAO/i, {
+    timeout: 45_000,
+  })
+  await expect(page.getByText('laudo-ocr-publicado.png')).toBeVisible()
+  await expect(page.getByText(/1\.000×260 px .* OCR local/)).toBeVisible()
+  await expect(page.getByText('ESTRUTURAS ENCONTRADAS')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Encontrar anatomia' })).toBeEnabled()
+
+  const parsedOcrRequests = ocrRequests.map((value) => new URL(value))
+  expect(
+    parsedOcrRequests.some(
+      (url) => url.pathname === '/medatlas/ocr-assets/worker.min.js',
+    ),
+  ).toBeTruthy()
+  expect(
+    parsedOcrRequests.some(
+      (url) =>
+        url.pathname.startsWith('/medatlas/ocr-assets/core/tesseract-core-') &&
+        url.pathname.endsWith('.wasm.js'),
+    ),
+  ).toBeTruthy()
+  expect(
+    parsedOcrRequests.some(
+      (url) => url.pathname === '/medatlas/ocr-assets/lang/por.traineddata.gz',
+    ),
+  ).toBeTruthy()
+  expect(parsedOcrRequests.every((url) => url.origin === origin)).toBe(true)
+  expect(remoteOcrRequests).toEqual([])
+  expect(workerUrls.some((url) => url.includes('/medatlas/ocr-assets/worker.min.js'))).toBe(true)
+  expect(workerUrls.some((url) => url.startsWith('blob:'))).toBe(false)
 })
 
 test('published Atlas uses the concept body-plus-detail layout on mobile', async ({
