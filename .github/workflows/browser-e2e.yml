@@ -23,6 +23,7 @@ on:
       - 'vite.config.ts'
       - 'scripts/prepare-ocr-assets.mjs'
       - 'public/atlas-assets/**'
+      - '.github/workflows/browser-e2e.yml'
   workflow_dispatch:
 
 concurrency:
@@ -44,10 +45,13 @@ jobs:
           - suite: clinical-flow
             tests: >-
               tests/e2e/clinical-flow.spec.ts
-              tests/e2e/report-intake.spec.ts
               tests/e2e/report-explanation.spec.ts
               tests/e2e/mvp-ux-contracts.spec.ts
               tests/e2e/share-revocation.spec.ts
+          - suite: document-ingestion
+            tests: >-
+              tests/e2e/report-intake.spec.ts
+              tests/e2e/scanned-pdf-ocr.spec.ts
           - suite: responsive-layout
             tests: >-
               tests/e2e/responsive-layout.spec.ts

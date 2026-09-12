@@ -69,6 +69,17 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] assets anatômicos/OCR com provenance/integridade e budgets próprios;
 - [x] CI, Browser E2E e deploy possuem gates específicos para o fluxo sintético.
 
+### Checkpoint de release em 2026-09-12
+
+- `main` integrada no checkpoint **`80b16a3be6a64b37fcd9e409bf3a3700bc1ad76f`**;
+- CI pós-merge desse source: **PASS**;
+- GitHub Pages build + deploy + verificação publicada desse source: **PASS**, incluindo fluxo 3D/OCR no site servido;
+- Browser E2E anterior comprovou `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes;
+- pente-fino posterior descobriu que `tests/e2e/scanned-pdf-ocr.spec.ts` existia, mas não pertencia a nenhum shard do workflow Browser E2E;
+- correção definitiva em andamento na branch `work/medatlas-mvp-final-gates-20260912`: criar shard `document-ingestion` e um gate de cobertura da matriz para impedir specs órfãos ou duplicados.
+
+Esse achado não invalida o runtime de OCR publicado, que já passou no Pages, mas impede chamar o gate Browser E2E anterior de cobertura completa. O release final só fecha depois do novo candidato passar a matriz **4/4**.
+
 ### Fronteiras de ingestão atuais
 
 #### TXT/MD
@@ -168,6 +179,7 @@ Esses itens **não podem ser simulados por botão fake, hardcode, persistência 
 36. Proveniência/licenças de PDF.js, Tesseract, BodyParts3D/Human Atlas e modelos detalhados permanecem verificadas.
 37. Testes OCR podem validar texto probabilístico semanticamente; paths, hashes, limites, same-origin e transições clínicas são contratos exatos.
 38. Supabase/auth/IA remota somente entram por gate explícito de produção; nunca por presença casual de variável de ambiente.
+39. Todo `tests/e2e/*.spec.ts` deve pertencer a **exatamente um** shard de `.github/workflows/browser-e2e.yml`; `validate:browser-e2e-matrix` deve falhar diante de spec órfão, duplicado ou referência inexistente.
 
 ## 3. Arquitetura consolidada
 
@@ -228,6 +240,7 @@ Não usar run/hash antigo como prova de um source novo. **O mesmo commit candida
 - assets/performance;
 - security/privacy;
 - OCR;
+- `validate:browser-e2e-matrix`;
 - AI/review/workflow;
 - licenses/provenance;
 - reference atlas;
@@ -236,13 +249,14 @@ Não usar run/hash antigo como prova de um source novo. **O mesmo commit candida
 - production build;
 - bundle budget.
 
-### Gate B — Browser E2E 3/3
+### Gate B — Browser E2E 4/4
 
-- `clinical-flow`;
-- `responsive-layout`;
-- `supporting-contracts`.
+- `clinical-flow` — workflow profissional/paciente, revisão e share;
+- `document-ingestion` — `report-intake.spec.ts` + `scanned-pdf-ocr.spec.ts`;
+- `responsive-layout` — desktop/mobile e superfícies 3D;
+- `supporting-contracts` — acessibilidade e contratos auxiliares.
 
-Deve cobrir TXT/MD/PDF/PNG/JPEG, OCR real, PDF image-only, limites fail-closed, 3D, paciente, acessibilidade e responsividade.
+Deve cobrir TXT/MD/PDF/PNG/JPEG, OCR real, PDF image-only, limites fail-closed, 3D, paciente, acessibilidade e responsividade. Nenhum spec E2E pode ficar fora da matriz ou aparecer em mais de um shard.
 
 ### Gate C — GitHub Pages do mesmo source
 
@@ -262,13 +276,14 @@ O deploy deve provar:
 
 ### P0 — concluir release do MVP sintético
 
-1. manter branch de release sincronizada com `main` sem sobrescrever trabalho concorrente;
-2. executar CI completo;
-3. executar Browser E2E 3/3;
-4. integrar somente com gates verdes;
-5. executar GitHub Pages no `main` integrado;
-6. corrigir qualquer falha pela causa raiz;
-7. somente então declarar o source final **MVP sintético pronto para piloto**.
+1. manter `work/medatlas-mvp-final-gates-20260912` sincronizada com `main` sem sobrescrever trabalho concorrente;
+2. validar que `validate:browser-e2e-matrix` enumera todos os specs e passa;
+3. executar CI completo;
+4. executar Browser E2E **4/4**;
+5. integrar somente com gates verdes;
+6. executar GitHub Pages no `main` integrado;
+7. corrigir qualquer falha pela causa raiz;
+8. somente então declarar o source final **MVP sintético pronto para piloto**.
 
 ### P1 — piloto manual sintético
 
@@ -309,11 +324,12 @@ Somente depois da fronteira backend existir. Resposta deve ser estruturada, vali
 
 ## 6. Critério de conclusão desta fase
 
-A fase está concluída quando o `main` contendo o OCR de PDF escaneado e os gates reconciliados tiver:
+A fase está concluída quando o `main` contendo os gates finais tiver:
 
-- CI verde;
-- Browser E2E 3/3 verde;
+- CI verde, incluindo `validate:browser-e2e-matrix`;
+- Browser E2E **4/4** verde;
 - Pages verde com prova publicada de PDF textual + PDF escaneado + PNG OCR;
+- `scanned-pdf-ocr.spec.ts` executado pelo shard `document-ingestion`;
 - documentação sem afirmar capacidade inexistente nem negar capacidade já implementada;
 - nenhuma regressão na fronteira `synthetic-only`.
 
@@ -337,6 +353,8 @@ Nesse ponto o MedAtlas está **pronto como MVP sintético/piloto**, não como pr
 - `src/ingestion/local-image-ocr.ts` — OCR local compartilhado;
 - `scripts/prepare-ocr-assets.mjs` — assets OCR locais;
 - `scripts/validate-ocr-ingestion-contract.mjs` — gate estrutural OCR;
+- `scripts/validate-browser-e2e-matrix.mjs` — garante que todo spec E2E esteja exatamente uma vez na matriz;
+- `.github/workflows/browser-e2e.yml` — matriz Browser E2E 4/4;
 - `tests/e2e/scanned-pdf-ocr.spec.ts` — OCR PDF local/bounded;
 - `tests/deployed/preview.spec.ts` — prova do build publicado;
 - `THIRD_PARTY_NOTICES.md` — provenance/licenças.
