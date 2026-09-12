@@ -52,6 +52,39 @@ function createSyntheticPdf(text = 'Laudo sintetico sobre L4-L5.') {
   return Buffer.from(pdf, 'ascii')
 }
 
+
+function createSyntheticPngHeader(width: number, height: number) {
+  const bytes = Buffer.alloc(24)
+  Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(bytes, 0)
+  bytes.writeUInt32BE(13, 8)
+  Buffer.from('IHDR', 'ascii').copy(bytes, 12)
+  bytes.writeUInt32BE(width, 16)
+  bytes.writeUInt32BE(height, 20)
+  return bytes
+}
+
+async function createSyntheticOcrPng(page: Page) {
+  const base64 = await page.evaluate(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1000
+    canvas.height = 260
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Canvas 2D unavailable')
+
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    context.fillStyle = '#000000'
+    context.font = '700 72px Arial, sans-serif'
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    context.fillText('LAUDO SINTETICO CORACAO', 500, 130)
+
+    return canvas.toDataURL('image/png').split(',')[1]
+  })
+
+  return Buffer.from(base64, 'base64')
+}
+
 test('enforces the report text byte limit before analysis', async ({ page }) => {
   await openBlankReport(page)
 
@@ -83,15 +116,15 @@ test('describes the formats that the browser MVP actually accepts', async ({
   await openBlankReport(page)
 
   await expect(
-    page.getByText('Cole o texto do exame ou importe um arquivo TXT, MD ou PDF.'),
+    page.getByText('Cole o texto ou importe TXT, MD, PDF, PNG ou JPG.'),
   ).toBeVisible()
   await expect(
-    page.getByLabel('Importar laudo sintético em TXT, MD ou PDF'),
+    page.getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG'),
   ).toHaveAttribute(
     'accept',
-    '.txt,.md,text/plain,text/markdown,text/x-markdown,.pdf,application/pdf',
+    '.txt,.md,text/plain,text/markdown,text/x-markdown,.pdf,application/pdf,.png,.jpg,.jpeg,image/png,image/jpeg',
   )
-  await expect(page.getByText('.txt · .md · .pdf · texto até 64 KB')).toBeVisible()
+  await expect(page.getByText('.txt · .md · .pdf · .png · .jpg · .jpeg · texto até 64 KB')).toBeVisible()
 })
 
 test('extracts a local PDF into editable text without auto-running anatomy analysis', async ({
@@ -100,7 +133,7 @@ test('extracts a local PDF into editable text without auto-running anatomy analy
   await openBlankReport(page)
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo.pdf',
       mimeType: 'application/pdf',
@@ -131,7 +164,7 @@ test('rejects oversized PDF before parsing and preserves valid report text', asy
   oversizedPdf.write('%PDF-', 0, 'ascii')
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'grande.pdf',
       mimeType: 'application/pdf',
@@ -155,7 +188,7 @@ test('rejects a TXT filename with an incompatible declared media type', async ({
   await editor.fill('Texto sintético preservado.')
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo.txt',
       mimeType: 'application/pdf',
@@ -179,7 +212,7 @@ test('rejects a PDF filename with an incompatible declared media type', async ({
   await editor.fill('Texto sintético preservado.')
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo.pdf',
       mimeType: 'text/plain',
@@ -203,7 +236,7 @@ test('rejects a fake PDF signature without replacing valid report text', async (
   await editor.fill('Texto sintético preservado.')
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo.pdf',
       mimeType: 'application/pdf',
@@ -220,7 +253,7 @@ test('rejects malformed PDF data fail-closed', async ({ page }) => {
   await openBlankReport(page)
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'corrompido.pdf',
       mimeType: 'application/pdf',
@@ -230,11 +263,11 @@ test('rejects malformed PDF data fail-closed', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveText(/PDF inválido ou corrompido|Não foi possível processar o PDF/)
 })
 
-test('keeps scanned/no-text PDF out until OCR exists', async ({ page }) => {
+test('keeps scanned/no-text PDF out until PDF OCR exists', async ({ page }) => {
   await openBlankReport(page)
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'sem-texto.pdf',
       mimeType: 'application/pdf',
@@ -242,7 +275,7 @@ test('keeps scanned/no-text PDF out until OCR exists', async ({ page }) => {
     })
 
   await expect(page.getByRole('alert')).toHaveText(
-    'Este PDF não contém texto extraível. Imagem/OCR ainda não é suportado.',
+    'Este PDF não contém texto extraível. Imagem/OCR do PDF ainda não é suportado.',
   )
 })
 
@@ -257,7 +290,7 @@ test('rejects invalid UTF-8 without replacing the last valid report text', async
   await editor.fill('Texto sintético preservado.')
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo.txt',
       mimeType: 'text/plain',
@@ -268,6 +301,113 @@ test('rejects invalid UTF-8 without replacing the last valid report text', async
     'O arquivo precisa estar em UTF-8 válido.',
   )
   await expect(editor).toHaveValue('Texto sintético preservado.')
+})
+
+
+test('rejects a fake PNG signature before OCR and preserves valid report text', async ({
+  page,
+}) => {
+  await openBlankReport(page)
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await editor.fill('Texto sintético preservado.')
+
+  await page
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
+    .setInputFiles({
+      name: 'laudo.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from('nao-e-png'),
+    })
+
+  await expect(page.getByRole('alert')).toHaveText(
+    'A assinatura da imagem não corresponde ao formato selecionado.',
+  )
+  await expect(editor).toHaveValue('Texto sintético preservado.')
+})
+
+test('rejects oversized and excessive-pixel images before OCR', async ({ page }) => {
+  await openBlankReport(page)
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await editor.fill('Texto sintético preservado.')
+  const input = page.getByLabel(
+    'Importar laudo sintético em TXT, MD, PDF, PNG ou JPG',
+  )
+
+  await input.setInputFiles({
+    name: 'grande.png',
+    mimeType: 'image/png',
+    buffer: Buffer.alloc(6 * 1024 * 1024 + 1),
+  })
+  await expect(page.getByRole('alert')).toHaveText(
+    'Imagem acima do limite de 6 MB.',
+  )
+  await expect(editor).toHaveValue('Texto sintético preservado.')
+
+  await input.setInputFiles({
+    name: 'dimensoes.png',
+    mimeType: 'image/png',
+    buffer: createSyntheticPngHeader(4097, 1200),
+  })
+  await expect(page.getByRole('alert')).toHaveText(/Imagem acima do limite de/)
+  await expect(editor).toHaveValue('Texto sintético preservado.')
+})
+
+test('runs real Portuguese OCR from same-origin assets without auto-running anatomy', async ({
+  page,
+}) => {
+  await openBlankReport(page)
+
+  const origin = new URL(page.url()).origin
+  const ocrRequests: string[] = []
+  const remoteOcrRequests: string[] = []
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.pathname.includes('/ocr-assets/')) {
+      ocrRequests.push(url.pathname)
+    }
+    if (
+      url.origin !== origin &&
+      /tesseract|traineddata|jsdelivr|unpkg|projectnaptha/i.test(request.url())
+    ) {
+      remoteOcrRequests.push(request.url())
+    }
+  })
+
+  await page
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
+    .setInputFiles({
+      name: 'laudo-ocr.png',
+      mimeType: 'image/png',
+      buffer: await createSyntheticOcrPng(page),
+    })
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await expect(editor).toHaveValue(/LAUDO\s+SINTETICO\s+CORACAO/i, {
+    timeout: 30_000,
+  })
+  await expect(page.getByText('laudo-ocr.png')).toBeVisible()
+  await expect(page.getByText(/1\.000×260 px .* OCR local/)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Encontrar anatomia' })).toBeEnabled()
+  await expect(page.getByText('ESTRUTURAS ENCONTRADAS')).toHaveCount(0)
+
+  expect(ocrRequests.some((path) => path.endsWith('/worker.min.js'))).toBeTruthy()
+  expect(
+    ocrRequests.some(
+      (path) => path.includes('/core/tesseract-core-') && path.endsWith('.wasm.js'),
+    ),
+  ).toBeTruthy()
+  expect(
+    ocrRequests.some((path) => path.endsWith('/lang/por.traineddata.gz')),
+  ).toBeTruthy()
+  expect(remoteOcrRequests).toEqual([])
 })
 
 test('demotes anatomy analysis after the current structure is confirmed', async ({

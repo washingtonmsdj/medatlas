@@ -806,7 +806,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
   await startNewReportThroughSearch(page)
 
   await page
-    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .getByLabel('Importar laudo sintético em TXT, MD, PDF, PNG ou JPG')
     .setInputFiles({
       name: 'laudo-demo.txt',
       mimeType: 'text/plain',
