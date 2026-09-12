@@ -16,3 +16,23 @@
   opacity: 1;
   cursor: not-allowed;
 }
+
+.intake-actions button.reanalyze {
+  color: var(--accent-primary);
+  border: 1px solid var(--line-control);
+  background: var(--surface-panel);
+  box-shadow: none;
+}
+
+.intake-actions button.reanalyze:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  background: var(--surface-control-hover);
+}
+
+.intake-actions button.reanalyze:disabled {
+  color: var(--text-muted);
+  border-color: var(--line-control);
+  background: var(--surface-control);
+  opacity: 1;
+  cursor: not-allowed;
+}
