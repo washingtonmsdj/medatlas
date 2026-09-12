@@ -2,13 +2,15 @@
 
 ## Objetivo
 
-Validar o MedAtlas de ponta a ponta **sem dados reais** e sem depender de backend clínico ativo. O piloto mede clareza de tarefa, qualidade do 3D, gates humanos, responsividade e confiança do fluxo profissional → paciente.
+Validar o MedAtlas de ponta a ponta **sem dados reais** e sem depender de backend clínico ativo. O piloto mede clareza de tarefa, qualidade do 3D, ingestão documental local, gates humanos, responsividade e confiança do fluxo profissional → paciente.
 
 Ele não autoriza uso clínico real nem substitui validação de segurança, privacidade ou compliance.
 
 ## Perguntas que o piloto deve responder
 
 - O profissional entende rapidamente onde iniciar e continuar um relatório?
+- O texto digitado, TXT/MD ou texto extraído de PDF entra no mesmo editor antes de qualquer interpretação?
+- Um PDF inválido, grande demais, protegido, malformado ou sem texto falha de forma clara sem apagar o texto válido anterior?
 - O texto do laudo encontra uma estrutura anatômica plausível sem afirmar diagnóstico?
 - A anatomia só é adotada depois de confirmação explícita?
 - O Human Atlas 3D permanece dominante e útil, não decorativo?
@@ -45,14 +47,15 @@ No modo demo, Equipe não deve executar convites, alteração real de papel ou p
 
 ## Fronteira de ingestão do MVP atual
 
-O browser MVP aceita somente:
+O browser MVP aceita localmente, sem upload:
 
 - texto digitado/colado;
-- `.txt`;
-- `.md`;
-- no máximo **64 KiB medidos em bytes UTF-8**.
+- `.txt` e `.md`, com até **64 KiB por bytes UTF-8**;
+- `.pdf` textual, com até **8 MiB**, **50 páginas** e **64 KiB de texto extraído**.
 
-O limite é compartilhado pelo importador, pelo editor e pelo controlador do fluxo. PDF, imagem e OCR continuam fora desta fase e não devem ser simulados.
+PDF usa PDF.js `6.3.289` com parser/worker local e lazy. Extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha, malformação e ausência de texto extraível falham fechado. O texto extraído entra no editor e **não executa automaticamente `Encontrar anatomia`**.
+
+Imagem e OCR, incluindo PDF escaneado sem camada textual, continuam fora desta fase. O produto deve comunicar isso explicitamente, não simular OCR nem enviar documentos a serviço remoto.
 
 Durante o piloto, nunca usar nomes, exames, identificadores ou qualquer dado real de paciente.
 
@@ -62,21 +65,24 @@ O Browser E2E protege, entre outros pontos:
 
 1. cenários anatômicos determinísticos;
 2. criação de relatório vazio fail-closed;
-3. importação TXT/MD e limite de 64 KiB;
-4. sugestão e confirmação anatômica explícita;
-5. Human Atlas real no fluxo profissional e paciente;
-6. rascunho educacional, revisão e publicação;
-7. preview pré-publicação e link temporário;
-8. expiração/revogação de share;
-9. Analytics local;
-10. shell profissional separado da experiência paciente;
-11. Equipe/permissões sem mutações fake;
-12. axe/WCAG;
-13. ausência de overflow e hit areas protegidas em desktop/mobile;
-14. arquitetura de profundidade `Corpo → Órgão em detalhe`;
-15. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
+3. TXT/MD, limite de 64 KiB, MIME incompatível e UTF-8 inválido;
+4. PDF textual real, MIME, assinatura, malformação, ausência de texto e arquivo >8 MiB;
+5. preservação do último texto válido após falha de ingestão;
+6. ausência de análise anatômica automática após importação;
+7. sugestão e confirmação anatômica explícita;
+8. Human Atlas real no fluxo profissional e paciente;
+9. rascunho educacional, revisão e publicação;
+10. preview pré-publicação e link temporário;
+11. expiração/revogação de share;
+12. Analytics local;
+13. shell profissional separado da experiência paciente;
+14. Equipe/permissões sem mutações fake;
+15. axe/WCAG;
+16. ausência de overflow e hit areas protegidas em desktop/mobile;
+17. arquitetura de profundidade `Corpo → Órgão em detalhe`;
+18. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
-O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, segurança, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget.
+O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, ingestão, segurança, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget. O budget do PDF permanece separado do core inicial.
 
 ## Critérios 3D-first
 
@@ -101,29 +107,37 @@ Executar pelo menos um cenário completo em desktop profissional e depois confer
 2. confirmar clínica/workspace exibidos como contexto informativo
 3. iniciar Novo relatório pela busca global ou ação canônica do dashboard
 4. colar um texto sintético válido e confirmar que “Encontrar anatomia” habilita
-5. tentar um texto sintético > 64 KiB e confirmar: erro visível + texto válido anterior preservado + análise bloqueada
-6. voltar a um texto válido; opcionalmente importar um .txt/.md sintético
-7. executar “Encontrar anatomia”
-8. confirmar que a estrutura esperada aparece como sugestão, sem confirmação automática
-9. confirmar explicitamente a anatomia
-10. validar enquadramento, rotação, zoom, vistas e picking no 3D
-11. abrir/fechar órgão em detalhe quando aplicável e confirmar que “Corpo” segue como contexto primário
-12. gerar o rascunho educacional
-13. revisar/editar e aprovar explicitamente
-14. abrir a prévia do paciente e retornar pela única ação “Voltar ao profissional”
-15. publicar o link demo
-16. abrir o link do paciente e validar branding + 3D + explicação revisada + perguntas
-17. confirmar linguagem de anatomia de referência no portal
-18. voltar ao ambiente clínico e alterar o laudo
-19. confirmar reconfirmação anatômica obrigatória e invalidação das etapas dependentes
-20. abrir Analytics e verificar a visualização observada
-21. abrir Equipe e confirmar papéis/limites sem mutações de produção
+5. tentar texto >64 KiB e confirmar erro + preservação do texto válido + análise bloqueada
+6. voltar a texto válido e importar opcionalmente um .txt/.md sintético
+7. importar um PDF textual sintético e confirmar:
+   - nome/páginas/bytes extraídos visíveis
+   - texto aparece no editor
+   - nenhuma anatomia é analisada automaticamente
+8. opcionalmente testar PDF >8 MiB ou PDF sem texto e confirmar rejeição fail-closed
+9. executar “Encontrar anatomia”
+10. confirmar que a estrutura esperada aparece como sugestão, sem confirmação automática
+11. confirmar explicitamente a anatomia
+12. validar enquadramento, rotação, zoom, vistas e picking no 3D
+13. abrir/fechar órgão em detalhe quando aplicável e confirmar que “Corpo” segue como contexto primário
+14. gerar o rascunho educacional
+15. revisar/editar e aprovar explicitamente
+16. abrir a prévia do paciente e retornar pela única ação “Voltar ao profissional”
+17. publicar o link demo
+18. abrir o link do paciente e validar branding + 3D + explicação revisada + perguntas
+19. confirmar linguagem de anatomia de referência no portal
+20. voltar ao ambiente clínico e alterar o laudo
+21. confirmar reconfirmação anatômica obrigatória e invalidação das etapas dependentes
+22. abrir Analytics e verificar a visualização observada
+23. abrir Equipe e confirmar papéis/limites sem mutações de produção
 ```
 
 ## O que registrar
 
 Registrar apenas observações concretas de produto, por exemplo:
 
+- importação local ficou clara ou pareceu upload para servidor?
+- PDF textual foi extraído de forma compreensível?
+- erro de PDF preservou corretamente o texto anterior?
 - estrutura sugerida foi a esperada?
 - houve algum momento em que exploração pareceu confirmação clínica?
 - o 3D ajudou a entender a anatomia ou pareceu decorativo?
@@ -139,24 +153,27 @@ Não registrar PHI nem dados clínicos reais.
 
 ## Evidência automatizada mais recente
 
-Source funcional desta atualização: `b5c2ca3d5c332432f7417513b19d1f8d06b290fe`.
+Runtime/distribuição PDF: `a95458a8ccb34f99eddbe656f6324088aa88b52a`.  
+HEAD final de regressão: `1b8ae472ba42a83aad59d0ab407c9f3c9ce7342f`.
 
-- CI `34481648367` — **PASS completo**.
-- Browser E2E `34481648442` — **PASS completo** nos shards `clinical-flow`, `responsive-layout` e `supporting-contracts`.
-- GitHub Pages Preview `34481648389` — **PASS** em build, deploy, verificação de shell/assets e Chromium remoto do fluxo clínico 3D.
+- CI `34714504072` — **PASS completo**.
+- Browser E2E `34714504043` — **PASS completo** nos shards `clinical-flow`, `responsive-layout` e `supporting-contracts`.
+- GitHub Pages Preview `34708932045` — **PASS**, incluindo PDF real publicado e resolução do worker em `/medatlas/assets/`.
 
-Esse conjunto qualifica o browser MVP para o **piloto manual sintético** descrito acima. Ele não qualifica o produto para dados reais.
+Esse conjunto qualifica o browser MVP para o **piloto manual sintético com ingestão TXT/MD/PDF textual**. Ele não qualifica o produto para dados reais nem para OCR.
 
 ## Critério de conclusão do MVP sintético
 
 O candidato pode avançar na avaliação de MVP quando:
 
-- CI, Browser E2E e Pages estiverem verdes sobre o mesmo source funcional;
+- CI, Browser E2E e Pages estiverem verdes para o source funcional correspondente;
 - piloto manual sintético não revelar bloqueador P0;
 - fluxo laudo → anatomia → confirmação → 3D → explicação → revisão → paciente funcionar sem atalhos fake;
 - portal e Clinical Studio permanecerem coerentes entre desktop/mobile;
 - nenhum dado sair da fronteira synthetic-only;
-- nenhuma superfície prometer diagnóstico automático, reconstrução do paciente, PDF/OCR ou backend inexistente.
+- nenhuma superfície prometer diagnóstico automático, reconstrução individual, imagem/OCR ou backend inexistente.
+
+PDF textual local é capacidade real do candidato; **PDF escaneado/imagem ainda não é**.
 
 ## Produção clínica — etapa futura e separada
 
