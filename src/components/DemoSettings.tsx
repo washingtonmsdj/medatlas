@@ -68,9 +68,9 @@ export function DemoSettings({
             </div>
           </div>
           <p>Identidade exibida na experiência do paciente.</p>
-          <button type="button" disabled>
-            Editar identidade
-          </button>
+          <span className="settings-card-state readonly">
+            Somente leitura no demo
+          </span>
         </article>
 
         <article>
