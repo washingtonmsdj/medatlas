@@ -43,6 +43,11 @@ test('patient preview never presents pending content as clinically reviewed', as
   await expect(
     composer.getByRole('button', { name: 'Aprovar explicação' }),
   ).toBeEnabled()
+  await expect(
+    page
+      .locator('.workspace-page')
+      .getByRole('button', { name: 'Prévia do paciente' }),
+  ).toHaveCount(1)
 
   await composer
     .getByRole('button', { name: 'Prévia do paciente' })
