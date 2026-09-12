@@ -55,3 +55,26 @@ test('describes the formats that the browser MVP actually accepts', async ({
   ).toHaveAttribute('accept', '.txt,.md,text/plain,text/markdown')
   await expect(page.getByText('.txt · .md · até 64 KB')).toBeVisible()
 })
+
+test('demotes anatomy analysis after the current structure is confirmed', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+
+  const reanalyze = page.getByRole('button', { name: 'Reanalisar laudo' })
+  await expect(reanalyze).toBeVisible()
+  await expect(reanalyze).toHaveClass(/reanalyze/)
+  await expect(
+    page.getByText('Use apenas se precisar refazer a correspondência anatômica.'),
+  ).toBeVisible()
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await editor.fill('Novo texto sintético sobre coração para reconfirmação.')
+
+  const analyze = page.getByRole('button', { name: 'Encontrar anatomia' })
+  await expect(analyze).toBeVisible()
+  await expect(analyze).toHaveClass(/primary/)
+})
