@@ -1,0 +1,31 @@
+name: Patch deployed OCR verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/maintenance-patch-deployed-ocr.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch deployed OCR coverage
+        run: python scripts/maintenance-patch-deployed-ocr.py
+
+      - name: Commit deployed OCR verification
+        run: |
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm scripts/maintenance-patch-deployed-ocr.py
+          git rm .github/workflows/maintenance-patch-deployed-ocr.yml
+          git add tests/deployed/preview.spec.ts .github/workflows/pages.yml
+          git commit -m 'test: verify deployed local image ocr'
+          git push
