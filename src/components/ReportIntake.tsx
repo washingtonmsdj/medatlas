@@ -7,13 +7,18 @@ import {
   REPORT_EXAMPLES,
   type ReportExample,
 } from '../clinical/demo-scenarios'
-import type { IngestionFailureCode } from '../ingestion/contracts'
+import type {
+  IngestionFailureCode,
+  TextDocumentIngestionResult,
+} from '../ingestion/contracts'
 import {
-  ingestLocalTextFile,
-  LOCAL_TEXT_FILE_ACCEPT,
-} from '../ingestion/local-text'
+  ingestLocalReportFile,
+  LOCAL_REPORT_FILE_ACCEPT,
+} from '../ingestion/local-report-file'
 import {
-  demoTextFormatLabel,
+  demoReportFileFormatLabel,
+  formatDemoPdfFileLimit,
+  formatDemoPdfPageLimit,
   formatDemoTextLimit,
   validateDemoReportSource,
 } from '../product/constraints'
@@ -30,21 +35,51 @@ interface Props {
   onConfirmSuggestion: (suggestion: AnatomySuggestion) => void
 }
 
-function ingestionFailureMessage(code: IngestionFailureCode) {
-  switch (code) {
+type IngestionFailure = Exclude<TextDocumentIngestionResult, { ok: true }>
+
+function ingestionFailureMessage(failure: IngestionFailure) {
+  const isPdf = failure.fileName.toLowerCase().endsWith('.pdf')
+
+  switch (failure.code) {
     case 'unsupported-extension':
-      return 'Formato não suportado. Use um arquivo .txt ou .md.'
+      return 'Formato não suportado. Use um arquivo .txt, .md ou .pdf.'
     case 'unsupported-media-type':
-      return 'Tipo de arquivo incompatível com TXT/MD.'
+      return 'Tipo de arquivo incompatível com a extensão selecionada.'
     case 'too-large':
-      return `Arquivo acima do limite de ${formatDemoTextLimit()}.`
+      return isPdf
+        ? `PDF acima do limite de ${formatDemoPdfFileLimit()}.`
+        : `Arquivo acima do limite de ${formatDemoTextLimit()}.`
     case 'too-short':
       return 'O arquivo não contém texto suficiente para análise.'
     case 'invalid-encoding':
       return 'O arquivo precisa estar em UTF-8 válido.'
+    case 'invalid-signature':
+      return 'O arquivo não possui uma assinatura PDF válida.'
+    case 'too-many-pages':
+      return `PDF acima do limite de ${formatDemoPdfPageLimit()}.`
+    case 'too-much-text':
+      return `O texto extraído excede o limite de ${formatDemoTextLimit()}.`
+    case 'no-extractable-text':
+      return 'Este PDF não contém texto extraível. Imagem/OCR ainda não é suportado.'
+    case 'encrypted-document':
+      return 'PDF protegido por senha não é suportado.'
+    case 'malformed-document':
+      return 'PDF inválido ou corrompido.'
+    case 'parse-failed':
+      return 'Não foi possível processar o PDF.'
     case 'read-failed':
       return 'Não foi possível ler o arquivo local.'
   }
+}
+
+function formatImportedFileMeta(
+  result: Extract<TextDocumentIngestionResult, { ok: true }>['document'],
+) {
+  if (result.format === 'pdf' && result.pageCount) {
+    return `${result.pageCount} página${result.pageCount === 1 ? '' : 's'} · ${result.extractedTextBytes.toLocaleString('pt-BR')} bytes extraídos`
+  }
+
+  return `${result.extractedTextBytes.toLocaleString('pt-BR')} bytes`
 }
 
 export function ReportIntake({
@@ -61,6 +96,7 @@ export function ReportIntake({
   const [fileError, setFileError] = useState('')
   const [sourceTextError, setSourceTextError] = useState('')
   const [fileName, setFileName] = useState('')
+  const [fileMeta, setFileMeta] = useState('')
   const sourceValidation = useMemo(
     () => validateDemoReportSource(sourceText),
     [sourceText],
@@ -114,7 +150,7 @@ export function ReportIntake({
     }
   }, [analyzing, currentSuggestions.length, sourceTextError, sourceValidation.ok])
 
-  const importLocalText = async (
+  const importLocalFile = async (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.currentTarget.files?.[0]
@@ -125,16 +161,18 @@ export function ReportIntake({
     setFileError('')
     setSourceTextError('')
     setFileName('')
+    setFileMeta('')
 
-    const result = await ingestLocalTextFile(file)
+    const result = await ingestLocalReportFile(file)
 
     if (!result.ok) {
-      setFileError(ingestionFailureMessage(result.code))
+      setFileError(ingestionFailureMessage(result))
       return
     }
 
     onSourceTextChange(result.document.text)
     setFileName(result.document.fileName)
+    setFileMeta(formatImportedFileMeta(result.document))
   }
 
   const analyzeLabel = anatomyReviewRequired
@@ -147,7 +185,7 @@ export function ReportIntake({
         <div>
           <span className="section-kicker">LAUDO / EXAME</span>
           <h2>Adicionar laudo</h2>
-          <p>Cole o texto do exame ou importe um arquivo TXT/MD.</p>
+          <p>Cole o texto do exame ou importe um arquivo TXT, MD ou PDF.</p>
         </div>
 
         <div className="intake-status-cluster">
@@ -177,6 +215,7 @@ export function ReportIntake({
                 setFileError('')
                 setSourceTextError('')
                 setFileName('')
+                setFileMeta('')
                 onLoadExample(example)
               }}
             >
@@ -187,13 +226,13 @@ export function ReportIntake({
 
         <label className="file-import-button">
           <input
-            aria-label="Importar laudo de texto sintético em TXT ou MD"
+            aria-label="Importar laudo sintético em TXT, MD ou PDF"
             type="file"
-            accept={LOCAL_TEXT_FILE_ACCEPT}
-            onChange={(event) => void importLocalText(event)}
+            accept={LOCAL_REPORT_FILE_ACCEPT}
+            onChange={(event) => void importLocalFile(event)}
           />
           <span aria-hidden="true">↑</span>
-          Importar TXT/MD
+          Importar TXT/MD/PDF
         </label>
       </div>
 
@@ -203,7 +242,7 @@ export function ReportIntake({
           <div>
             {fileName && <strong>{fileName}</strong>}
             <small>
-              {sourceValidation.bytes.toLocaleString('pt-BR')} bytes · limite{' '}
+              {fileMeta || `${sourceValidation.bytes.toLocaleString('pt-BR')} bytes`} · limite{' '}
               {formatDemoTextLimit()}
             </small>
           </div>
@@ -218,6 +257,7 @@ export function ReportIntake({
             const validation = validateDemoReportSource(nextValue)
 
             setFileName('')
+            setFileMeta('')
             setFileError('')
 
             if (!validation.ok && validation.reason === 'too-large') {
@@ -240,7 +280,7 @@ export function ReportIntake({
             Processado localmente
           </span>
           <small>
-            {demoTextFormatLabel()} · até {formatDemoTextLimit()}
+            {demoReportFileFormatLabel()} · texto até {formatDemoTextLimit()}
           </small>
         </div>
       </div>
