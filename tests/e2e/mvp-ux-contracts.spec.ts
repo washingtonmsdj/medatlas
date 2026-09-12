@@ -64,7 +64,7 @@ test('published patient portal stays self-contained', async ({ page }) => {
   await patientPage.close()
 })
 
-test('demo settings expose read-only branding as state, not a dead control', async ({
+test('demo settings expose read-only branding without duplicating the new report launcher', async ({
   page,
 }) => {
   await page.goto('/')
@@ -77,4 +77,13 @@ test('demo settings expose read-only branding as state, not a dead control', asy
   await expect(
     page.getByRole('button', { name: 'Editar identidade' }),
   ).toHaveCount(0)
+  await expect(
+    page.getByRole('button', { name: 'Criar relatório' }),
+  ).toHaveCount(0)
+  await expect(page.locator('.settings-actions')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Visão geral' }).click()
+  await expect(
+    page.getByRole('button', { name: 'Novo relatório', exact: true }),
+  ).toBeVisible()
 })
