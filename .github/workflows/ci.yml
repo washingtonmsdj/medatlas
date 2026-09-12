@@ -36,6 +36,7 @@ jobs:
       - run: npm run validate:performance-budget
       - run: npm run validate:security-contract
       - run: npm run validate:ocr-contract
+      - run: npm run validate:browser-e2e-matrix
       - run: npm run validate:ai-contract
       - run: npm run validate:review-gate
       - run: npm run validate:report-workflow
