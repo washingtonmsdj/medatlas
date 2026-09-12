@@ -358,6 +358,7 @@ const requiredPatient3dFragments = [
   'Controles da anatomia 3D de referência',
   'Girar modelo 3D automaticamente',
   'appearance="patient"',
+  'contextMode="region"',
   'resolveOrganDetail',
   "import('./OrganDetailScene')",
   'patient-anatomy-depth-switch',
@@ -494,7 +495,7 @@ const contextual3dSurfaces = [
     required: [
       '<AnatomyFocusPreview',
       'appearance="patient"',
-      'contextMode="system"',
+      'contextMode="region"',
     ],
   },
 ]
