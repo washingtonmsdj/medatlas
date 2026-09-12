@@ -28,6 +28,7 @@
     "validate:bundle-budget": "node scripts/validate-bundle-budget.mjs"
   },
   "dependencies": {
+    "pdfjs-dist": "6.3.289",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "three": "0.159.0"
