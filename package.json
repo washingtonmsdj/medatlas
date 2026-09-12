@@ -28,9 +28,11 @@
     "validate:bundle-budget": "node scripts/validate-bundle-budget.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/por": "1.0.0",
     "pdfjs-dist": "6.3.289",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "tesseract.js": "7.0.0",
     "three": "0.159.0"
   },
   "devDependencies": {
