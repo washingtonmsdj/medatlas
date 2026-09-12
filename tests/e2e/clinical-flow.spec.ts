@@ -806,7 +806,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
   await startNewReportThroughSearch(page)
 
   await page
-    .getByLabel('Importar laudo de texto sintético')
+    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
     .setInputFiles({
       name: 'laudo-demo.txt',
       mimeType: 'text/plain',
@@ -818,7 +818,7 @@ test('synthetic text file import stays local and resolves anatomy', async ({
 
   await expect(
     page.getByLabel('Texto do laudo ou relatório'),
-  ).toContainText('coração')
+  ).toHaveValue(/coração/)
 
   await expect(
     page.getByText('laudo-demo.txt', { exact: true }),
