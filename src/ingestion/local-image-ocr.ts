@@ -159,6 +159,7 @@ export async function ingestLocalImageFile(
       workerPath: `${ocrRoot}/worker.min.js`,
       corePath: `${ocrRoot}/core`,
       langPath: `${ocrRoot}/lang`,
+      workerBlobURL: false,
       gzip: true,
       logger: (message) => {
         if (typeof message.status !== 'string') return
