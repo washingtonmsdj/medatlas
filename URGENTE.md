@@ -61,11 +61,15 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] GitHub Pages publicado e verificado em Chromium;
 - [x] ingestão local limitada honestamente a texto/TXT/MD;
 - [x] limite de 64 KiB aplicado por bytes UTF-8 no arquivo, editor e controlador;
+- [x] `src/ingestion/` é a fronteira tipada de arquivo → validação → extração para TXT/MD;
+- [x] `ReportIntake` não lê bytes de arquivo diretamente;
+- [x] extensão, MIME, tamanho e UTF-8 inválido falham fechado antes de substituir o último texto válido;
 - [x] piloto visual com capturas reais do Browser E2E gerando correções concretas de UX.
 
 ### Fora do MVP browser atual
 
-- [ ] PDF/imagem/OCR;
+- [ ] PDF;
+- [ ] imagem/OCR;
 - [ ] autenticação real;
 - [ ] Supabase de produção ativo;
 - [ ] armazenamento clínico real;
@@ -108,6 +112,9 @@ Esses itens **não podem ser simulados por botões fake, hardcode ou parser impr
 27. Superfícies do paciente devem priorizar **contexto anatômico espacial/regional** ao redor da estrutura confirmada; nunca trocar o conceito FMA para obter um enquadramento visual melhor.
 28. Ações globais do fluxo, como `Novo relatório`, não devem reaparecer como launcher local em módulos sem semântica própria para aquela ação.
 29. Ingestão documental deve separar arquivo, validação, extração de texto e interpretação clínica; parser/OCR não pertence ao componente React nem pode publicar diretamente no workflow clínico.
+30. `ReportIntake` não pode ler bytes de arquivo diretamente; decoding/extraction pertence a `src/ingestion/`.
+31. Falha de ingestão nunca substitui o último texto válido do laudo.
+32. Texto extraído continua sendo **entrada editável**, nunca confirmação anatômica, diagnóstico, revisão ou publicação.
 
 ## 3. Correções MVP consolidadas
 
@@ -143,6 +150,22 @@ O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os
 
 Não esconder/rebaixar ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
 
+### 3.4 Fundação da ingestão documental — TXT/MD
+
+O primeiro checkpoint de P1 está concluído **sem habilitar PDF/OCR prematuramente**:
+
+- `src/ingestion/contracts.ts` define resultado tipado e códigos de falha;
+- `src/ingestion/local-text.ts` é a autoridade para ler arquivos locais TXT/MD;
+- `src/product/constraints.ts` centraliza extensões, MIME e limite de 64 KiB;
+- a leitura usa `arrayBuffer()` e `TextDecoder('utf-8', { fatal: true })`;
+- extensão, MIME declarado, tamanho antes/depois da leitura, UTF-8 e conteúdo mínimo falham fechado;
+- `ReportIntake` apenas chama a fronteira e apresenta mensagens; não decodifica arquivo;
+- falha de MIME/encoding preserva o último texto válido;
+- `scripts/validate-security-contract.mjs` proíbe leitura direta de bytes dentro de `ReportIntake` e exige as barreiras acima;
+- Browser E2E cobre `.txt` com MIME incompatível e payload UTF-8 inválido.
+
+A aplicação do texto no relatório continua separada da interpretação: importar não executa `Encontrar anatomia`, não confirma FMA e não publica conteúdo.
+
 ## 4. Checkpoints e validação
 
 ### Baseline verde do contexto anatômico regional
@@ -155,20 +178,30 @@ Contrato: **`5a2c0a39f1f20839c55651b381470a439077c16e`**.
 - GitHub Pages **`34699096669` — PASS completo**, incluindo fluxo 3D publicado;
 - artefato responsivo **`10299557362`** confirmou visualmente contexto lombar/pélvico coerente em Dashboard, Pacientes e portal publicado.
 
-### Baseline verde atual — piloto visual fechado
+### Baseline verde — piloto visual fechado
 
 Runtime: **`eaa541b69040b86c84194ddfaa3cfcbe8af54692`**.  
 HEAD de testes: **`83c42ab56eb8cecdaf2916571650ac9124b98374`**.
 
 - CI **`34701927508` — PASS completo**;
-- Browser E2E **`34701927501` — PASS completo**:
-  - `clinical-flow` — PASS;
-  - `responsive-layout` — PASS;
-  - `supporting-contracts` — PASS;
-- GitHub Pages do runtime **`34701462500` — PASS completo**, incluindo verificação Chromium do fluxo 3D publicado;
+- Browser E2E **`34701927501` — PASS completo**;
+- GitHub Pages **`34701462500` — PASS completo**;
 - artefato responsivo **`10300078764`** confirmou Configurações sem o launcher duplicado e sem quebra visual em desktop/mobile.
 
-O run Browser anterior **`34701472925`** falhou somente por ambiguidade do seletor do novo teste (`Visão geral` também casava com `Ir para visão geral`). O produto teve 34/35 testes verdes; o seletor foi corrigido com `exact: true` em `83c42ab...`, e o novo run completo `34701927501` passou. Não classificar isso como regressão do runtime.
+### Baseline verde atual — fundação de ingestão P1
+
+Runtime TXT/MD: **`795416df188e0b8f60dbec27a314845d0187fa84`**.  
+E2E de rejeição: **`fbf5566770e9f96dcb24a997a8613bd1e32d9790`**.  
+Security/contrato: **`11a3ac4810e409097d6f76642a3080f5c91c2acd`**.
+
+- CI **`34704644495` — PASS completo**, incluindo novo `validate:security-contract`, TypeScript, build e bundle budget;
+- Browser E2E **`34704614163` — PASS completo**:
+  - `clinical-flow` — PASS, incluindo MIME incompatível e UTF-8 inválido;
+  - `responsive-layout` — PASS;
+  - `supporting-contracts` — PASS;
+- GitHub Pages do runtime **`34702511026` — PASS completo**, incluindo verificação Chromium do fluxo 3D publicado.
+
+O CI intermediário **`34702511028`** falhou porque o security contract ainda exigia a arquitetura antiga (`file.text()` dentro de `ReportIntake`). O gate foi corrigido para proteger a nova fronteira em vez de ser afrouxado. Não classificar isso como regressão do runtime.
 
 ## 5. Próxima ordem de trabalho — foco MVP
 
@@ -184,22 +217,30 @@ Manter como regressão obrigatória:
 4. QA viewport-aware para superfícies WebGL;
 5. correção somente de atrito reproduzível ou requisito explícito.
 
-### P1 — ingestão documental, sem gambiarra — **PRÓXIMO TRABALHO**
+### P1 — ingestão documental, sem gambiarra — **EM EXECUÇÃO**
 
-Antes de habilitar PDF/imagem/OCR, criar uma fronteira canônica de ingestão:
+Fundação TXT/MD concluída:
 
-1. extrair de `ReportIntake` a responsabilidade de validar/ler arquivos TXT/MD;
-2. criar `src/ingestion/` com contratos tipados de source, resultado e erro;
-3. separar `arquivo → validação → extração de texto → aplicação no relatório → interpretação anatômica`;
-4. manter `src/product/constraints.ts` como autoridade de limites compartilhados;
-5. tratar formato, tamanho, leitura e payload malformado fail-closed;
-6. proteger o comportamento TXT/MD atual com testes de contrato + Browser E2E antes de adicionar novos formatos;
-7. somente depois integrar PDF com parser controlado e limite próprio;
-8. imagem/OCR vem depois do PDF, com estados explícitos de processamento/retry/erro;
-9. texto extraído deve ser visível/editável antes de análise clínica; extração nunca equivale a interpretação nem confirmação;
-10. storage privado, retenção e dados reais continuam fora até o gate de produção clínica.
+- [x] extrair de `ReportIntake` a responsabilidade de validar/ler arquivos;
+- [x] criar `src/ingestion/` com contratos tipados de resultado/erro;
+- [x] separar `arquivo → validação → extração de texto → aplicação no relatório → interpretação anatômica`;
+- [x] manter `src/product/constraints.ts` como autoridade de limites/extensões/MIME;
+- [x] tratar extensão, MIME, tamanho, leitura e UTF-8 fail-closed;
+- [x] proteger o comportamento atual com security contract + Browser E2E;
+- [x] preservar o último texto válido quando a ingestão falha.
 
-Até essa sequência existir, a UI continua honesta: **TXT/MD/texto local apenas**.
+Próximo gate — **PDF, sem OCR ainda**:
+
+1. definir limite próprio de arquivo/páginas/texto extraído para PDF;
+2. integrar parser PDF mantido e executado localmente, sem upload e sem `eval`/código remoto;
+3. validar extensão + MIME + assinatura `%PDF-` antes de parsear;
+4. tratar arquivo criptografado, sem texto, truncado/malformado e excesso de páginas/tamanho fail-closed;
+5. extrair texto para o mesmo contrato de documento e exibi-lo no editor antes de qualquer análise anatômica;
+6. carregar parser de forma lazy para não degradar o bundle inicial/3D;
+7. adicionar contratos de segurança, testes unitários/Browser e budget antes de expor `PDF` no `accept`/copy da UI;
+8. só depois avaliar imagem/OCR, com estados explícitos de processamento/retry/erro.
+
+Storage privado, retenção de dados reais e PHI continuam fora até o gate de produção clínica.
 
 ### P2 — produção clínica
 
@@ -222,7 +263,7 @@ Somente depois da fronteira backend existir. Deve retornar estrutura validável,
 
 ## 6. Critério desta fase
 
-O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. A próxima evolução funcional é a fundação da ingestão documental, preservando todos os gates atuais.
+O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. A fundação de ingestão TXT/MD já está separada e protegida; o próximo salto funcional é PDF local controlado, mantendo texto extraído separado da interpretação clínica.
 
 Produção clínica continua fora deste gate.
 
@@ -234,4 +275,6 @@ Produção clínica continua fora deste gate.
 - `docs/PILOT.md` — roteiro do piloto sintético;
 - `docs/SECURITY.md` — fronteiras de segurança;
 - `docs/ANATOMY_ARCHITECTURE.md` — autoridade anatômica e 3D;
-- `src/product/constraints.ts` — limites compartilhados do produto.
+- `src/ingestion/contracts.ts` — contrato tipado de ingestão;
+- `src/ingestion/local-text.ts` — fronteira TXT/MD local fail-closed;
+- `src/product/constraints.ts` — limites/extensões/MIME compartilhados do produto.
