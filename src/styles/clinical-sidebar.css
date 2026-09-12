@@ -262,9 +262,8 @@
     display: flex;
     gap: 5px;
     margin-top: 7px;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding-right: 76px;
-    scroll-padding-right: 76px;
     scrollbar-width: none;
   }
 
@@ -279,6 +278,10 @@
     grid-template-columns: 22px auto;
     gap: 5px;
     padding: 5px 8px;
+  }
+
+  .clinical-sidebar nav .clinical-sidebar-mobile-overflow-item {
+    display: none;
   }
 
   .clinical-sidebar-nav-icon {
