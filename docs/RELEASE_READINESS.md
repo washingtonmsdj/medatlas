@@ -2,7 +2,8 @@
 
 Checkpoint: **2026-09-12**  
 Canonical branch: `main`  
-Functional product source: **`e66eaf0daf8eb8904f56ae80e41fde947097d5b8`**
+Runtime/distribuição PDF: **`a95458a8ccb34f99eddbe656f6324088aa88b52a`**  
+HEAD final de regressão: **`1b8ae472ba42a83aad59d0ab407c9f3c9ce7342f`**
 
 ## Verdict
 
@@ -10,7 +11,7 @@ Functional product source: **`e66eaf0daf8eb8904f56ae80e41fde947097d5b8`**
 
 **QUALIFICADO PARA PILOTO MANUAL SINTÉTICO.**
 
-O fluxo browser atual está publicado e passou, no mesmo source funcional, pelos gates de CI, Browser E2E e verificação remota do GitHub Pages. Ele pode ser usado para avaliar UX, navegação, compreensão do 3D e o fluxo profissional → paciente usando apenas dados sintéticos.
+O fluxo browser atual está publicado e passou pelos gates de CI, Browser E2E e verificação remota do GitHub Pages. Ele pode ser usado para avaliar UX, navegação, compreensão do 3D, ingestão local de TXT/MD/PDF textual e o fluxo profissional → paciente usando apenas dados sintéticos.
 
 Preview público canônico:
 
@@ -21,6 +22,12 @@ Preview público canônico:
 **NÃO PRONTO.**
 
 O preview continua `synthetic-only`. Não inserir nomes reais, exames reais, identificadores, PHI ou outros dados clínicos reais. Backend de produção, autenticação, isolamento multi-tenant, Storage privado e controles operacionais/compliance permanecem gates separados.
+
+### Imagem / OCR
+
+**AINDA NÃO IMPLEMENTADO.**
+
+PDF textual local faz parte do candidato. PDF escaneado sem camada textual e imagens continuam fail-closed até existir subsystem OCR local, vendorizado, lazy, limitado e testado. Não introduzir CDN/default remoto silencioso para worker, core ou modelos de idioma.
 
 ## Escopo funcional validado
 
@@ -34,16 +41,53 @@ O candidato atual inclui:
 - órgão em detalhe como profundidade suplementar, sem alterar a confirmação clínica;
 - triagem determinística e confirmação anatômica explícita;
 - rascunho educacional, edição, revisão humana e publicação fail-closed;
-- preview pré-publicação que distingue explicitamente conteúdo revisado de conteúdo ainda pendente;
+- preview pré-publicação que distingue conteúdo revisado de conteúdo pendente;
 - share demo temporário/versionado/revogável;
 - portal paciente com anatomia de referência, branding e explicação revisada;
 - Analytics demo local;
 - Equipe/permissões source-first sem mutações fake;
 - responsividade desktop/mobile e axe/WCAG;
-- importação local de texto `.txt`/`.md` e entrada digitada/colada;
-- limite de **64 KiB por bytes UTF-8** aplicado no arquivo, editor e controlador antes da análise.
+- texto digitado/colado e importação local `.txt`/`.md` com limite de **64 KiB por bytes UTF-8**;
+- importação local de **PDF textual** com limite de **8 MiB, 50 páginas e 64 KiB extraídos**;
+- validação PDF de extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha, malformação e presença de texto;
+- parser/worker PDF.js local e lazy, sem upload e sem fetch remoto do parser;
+- texto importado sempre editável antes da análise anatômica;
+- falha de ingestão preservando o último texto válido.
 
-PDF, imagem e OCR **não fazem parte deste candidato**. A interface não deve prometer essas capacidades até existir um subsystem de ingestão seguro.
+## Ingestão PDF — arquitetura validada
+
+A implementação usa `pdfjs-dist` **6.3.289** fixado no lockfile.
+
+`src/ingestion/local-report-file.ts` faz o roteamento de formato e carrega `src/ingestion/pdf.ts` por `await import('./pdf')`; portanto PDF.js não entra no caminho inicial da aplicação.
+
+O parser:
+
+- usa worker local `pdfjs-dist/build/pdf.worker.min.mjs?url`;
+- valida extensão + MIME e limite de 8 MiB antes do parse;
+- exige assinatura `%PDF-`;
+- limita documento a 50 páginas;
+- limita texto extraído a 64 KiB;
+- rejeita documento protegido por senha, malformado ou sem texto extraível;
+- usa controles suportados pelo PDF.js 6 para desativar recursos desnecessários à extração textual;
+- não executa `Encontrar anatomia`, não confirma FMA, não revisa e não publica.
+
+PDF sem camada textual retorna um estado explícito de OCR indisponível.
+
+### Bundle e distribuição
+
+Build medido no checkpoint:
+
+- entry principal: ~**347,9 KB**;
+- parser PDF lazy: ~**431,9 KB**;
+- worker PDF local: ~**1.265,4 KB**.
+
+O budget do core permanece separado dos budgets opcionais do PDF. Não aumentar o teto do core para absorver parser/worker.
+
+PDF.js é Apache-2.0. A licença é validada contra o pacote instalado e copiada para:
+
+`dist/licenses/pdfjs-LICENSE.txt`
+
+`THIRD_PARTY_NOTICES.md` registra versão, upstream e uso.
 
 ## Arquitetura 3D canônica
 
@@ -58,11 +102,11 @@ Exploração e confirmação clínica são estados diferentes. Picking, busca ou
 
 Human Atlas upstream permanece fixado ao source/proveniência registrada pelo projeto, com assets BodyParts3D locais e gates de integridade/licença.
 
-## Evidência do source funcional
+## Evidência atual
 
 ### CI
 
-Run **`34691114750` — PASS**.
+Run **`34714504072` — PASS completo** no HEAD `1b8ae472ba42a83aad59d0ab407c9f3c9ce7342f`.
 
 Inclui:
 
@@ -71,7 +115,7 @@ Inclui:
 - share/revocation/patient-share;
 - anatomy + demo scenarios;
 - vendored assets + performance;
-- security/privacy;
+- security/privacy e fronteira de ingestão TXT/MD/PDF;
 - AI contract + clinical review gate;
 - report workflow;
 - license/provenance;
@@ -79,79 +123,65 @@ Inclui:
 - MVP UI contract;
 - TypeScript;
 - production build;
-- bundle budget.
+- bundle budget segmentado para core/PDF.
 
 ### Browser E2E
 
-Run **`34691114745` — PASS completo**.
+Run **`34714504043` — PASS completo nos três shards**.
 
-Shards verdes:
+- `clinical-flow` — PASS, incluindo contrato TXT atualizado, PDF real, MIME/signature/malformação/no-text e PDF >8 MiB fail-closed;
+- `responsive-layout` — PASS;
+- `supporting-contracts` — PASS.
 
-- `clinical-flow` — inclui fluxo de relatório, intake/64 KiB e o contrato que impede prévia pendente de se apresentar como revisada;
-- `responsive-layout`;
-- `supporting-contracts` — acessibilidade e contratos auxiliares.
+O run intermediário `34709060147` teve 41/42 testes verdes e todos os testes PDF verdes. A única falha foi um locator TXT obsoleto (`Importar laudo de texto sintético`), corrigido em `ff6a9dc0a656759abda1d78b5e88e9f1847d498a`. Não foi regressão do runtime.
 
 ### GitHub Pages Preview
 
-Run **`34691114736` — PASS**.
+Run **`34708932045` — PASS completo** no source `7bb4157db25b74f497fefc855bd88e4b4abd5775`.
 
 Jobs verdes:
 
 - build;
 - deploy;
-- verificação do shell/assets publicados;
-- verificação remota em Chromium do fluxo clínico 3D.
+- verificação de shell/assets;
+- Chromium do fluxo clínico 3D publicado;
+- importação de PDF textual real no deploy;
+- prova de que o worker PDF é resolvido no subpath correto, sob `/medatlas/assets/`.
+
+As mudanças posteriores ao source de Pages são de testes/contratos/documentação e não alteram o runtime PDF publicado.
 
 ## Correções de robustez consolidadas
 
 ### Intake de laudo
 
-A rodada de 2026-09-10 fechou uma inconsistência do intake: a UI comunicava limite de 64 KB, mas o texto digitado/colado podia contornar o limite que existia no arquivo.
+A UI, o controlador e `src/product/constraints.ts` compartilham limites reais. TXT/MD usam leitura fatal UTF-8; PDF tem limites próprios e parser isolado. `ReportIntake` não lê bytes diretamente.
 
-A correção criou uma autoridade central em `src/product/constraints.ts`, fez o `ReportIntake` rejeitar payload acima do limite sem substituir o último texto válido, adicionou defesa no controlador de `App.tsx`, atualizou o gate de segurança e introduziu Browser E2E específico.
+Qualquer falha de arquivo preserva o último texto válido e bloqueia a continuação quando a fonte atual não é válida.
 
 ### Prévia do paciente e gate de revisão
 
-A auditoria de 2026-09-12 encontrou uma ambiguidade de confiança: uma prévia ainda sem aprovação clínica podia exibir autoria `Revisado por ...`, selo de sucesso e linguagem de conteúdo revisado.
+`PatientReportPage` deriva estado revisado da conclusão real + `reviewApproval`; conteúdo pendente não atribui revisor inexistente e usa estado visual de warning. Editar conteúdo invalida aprovação e links dependentes conforme o workflow.
 
-O fluxo de publicação já era fail-closed, portanto a correção preservou a arquitetura e alinhou a UI ao estado real:
+### QA 3D
 
-- `PatientReportPage` deriva estado revisado da conclusão real + `reviewApproval`;
-- conteúdo pendente usa `REVISÃO PENDENTE`, não atribui revisor inexistente e rotula impressão como prévia;
-- o estado visual pendente usa tokens de warning em vez de sucesso;
-- Browser E2E garante que editar a explicação invalida a aprovação e que a prévia não volta a afirmar revisão antes de nova aprovação.
+Superfícies WebGL continuam viewport-aware. `IntersectionObserver`/pausa offscreen não devem ser removidos para satisfazer screenshots. Os testes trazem a superfície ao viewport antes de exigir frame/canvas observável.
 
 ## Gate seguinte do MVP
 
-O próximo gate de produto é **piloto manual sintético**, não outro redesenho abstrato.
+O piloto manual sintético continua válido e agora deve incluir ao menos um PDF textual local conforme `docs/PILOT.md`.
 
-Executar `docs/PILOT.md` em desktop e mobile, observando:
+O próximo salto de ingestão é **imagem/OCR**, não outra reimplementação de PDF. Antes de aparecer na UI, OCR deverá ter:
 
-- clareza para iniciar/continuar relatório;
-- compreensão da diferença entre sugestão, exploração e confirmação anatômica;
-- utilidade real do 3D;
-- clareza da revisão humana e dos estados pendentes;
-- transição para a experiência paciente;
-- entendimento de “anatomia de referência”;
-- responsividade/controles;
-- atritos, passos desnecessários ou estados ambíguos.
+- formatos e limites explícitos de arquivo, dimensões/pixels e texto de saída;
+- engine mantida, versão pinada, licença/proveniência;
+- worker/core/modelos de idioma servidos localmente, sem CDN/default remoto;
+- carregamento lazy;
+- progresso, cancelamento, timeout e erro explícito;
+- limite final de 64 KiB de texto editável;
+- nenhuma análise/confirmacão/publicação automática;
+- security contract, Browser E2E, budget e prova no deploy.
 
-Corrigir apenas problemas concretos encontrados, preservando as invariantes já provadas.
-
-## Próximo salto funcional: ingestão documental
-
-Depois do piloto sintético, PDF/imagem/OCR é um candidato P1 de alto valor, mas deve ser implementado como subsystem próprio com:
-
-- MIME/extensão e limites explícitos;
-- parser/OCR controlado;
-- arquivos malformados tratados fail-closed;
-- sanitização;
-- storage privado e retenção definidos antes de dados reais;
-- estados de processamento/retry/erro;
-- separação entre texto extraído e interpretação clínica;
-- testes de segurança e regressão.
-
-Não adicionar parser casual no frontend para marcar o item como concluído.
+Não adicionar OCR casual no componente React para marcar o item como concluído.
 
 ## Bloqueadores de produção clínica
 
@@ -175,10 +205,13 @@ Antes de qualquer dado real:
 - renderer 3D simplificado concorrente;
 - `OrganizationSwitcher` ou troca fake de workspace no shell;
 - `ViewModeSwitcher` global Profissional/Paciente;
-- “Novo relatório” duplicado na sidebar;
+- “Novo relatório” duplicado na sidebar/configurações;
 - Consultas/Exames como módulos independentes no MVP;
 - CSS morto/tema paralelo para contornar cascade;
 - estado pendente visualmente apresentado como revisão aprovada;
 - IDs FMA na superfície primária do paciente;
+- leitura/parsing de arquivo dentro de `ReportIntake`;
+- parser/worker PDF remoto ou eager no bundle inicial;
+- OCR com CDN/default remoto silencioso;
 - remote AI, auth, billing ou dados reais fingidos por frontend;
 - Vercel/Supabase como dependência para validar o MVP sintético atual.
