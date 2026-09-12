@@ -134,7 +134,7 @@
   white-space: nowrap;
 }
 
-.clinical-sidebar-more-button,
+.clinical-sidebar nav .clinical-sidebar-more-button,
 .clinical-sidebar-more-menu {
   display: none;
 }
@@ -389,7 +389,6 @@
     min-height: 44px;
   }
 }
-
 
 .clinical-sidebar-logo-stop-start { stop-color: var(--accent-cyan); }
 .clinical-sidebar-logo-stop-end { stop-color: var(--accent-strong); }
