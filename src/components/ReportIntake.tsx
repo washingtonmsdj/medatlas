@@ -22,8 +22,10 @@ import {
   formatDemoImagePixelLimit,
   formatDemoPdfFileLimit,
   formatDemoPdfPageLimit,
+  formatDemoPdfOcrPageLimit,
   formatDemoTextLimit,
   isDemoImageFilenameAllowed,
+  isDemoPdfFilenameAllowed,
   validateDemoReportSource,
 } from '../product/constraints'
 
@@ -69,23 +71,31 @@ function ingestionFailureMessage(failure: IngestionFailure) {
     case 'invalid-dimensions':
       return 'Não foi possível validar as dimensões da imagem.'
     case 'too-many-pixels':
-      return `Imagem acima do limite de ${formatDemoImagePixelLimit()} ou ${formatDemoImageDimensionLimit()}.`
+      return isPdf
+        ? 'PDF escaneado excede o orçamento total de pixels do OCR local.'
+        : `Imagem acima do limite de ${formatDemoImagePixelLimit()} ou ${formatDemoImageDimensionLimit()}.`
     case 'too-many-pages':
       return `PDF acima do limite de ${formatDemoPdfPageLimit()}.`
+    case 'too-many-ocr-pages':
+      return `PDF escaneado acima do limite de ${formatDemoPdfOcrPageLimit()} para OCR local.`
     case 'too-much-text':
       return `O texto extraído excede o limite de ${formatDemoTextLimit()}.`
     case 'no-extractable-text':
       return isImage
         ? 'O OCR local não encontrou texto suficiente na imagem.'
-        : 'Este PDF não contém texto extraível. Imagem/OCR do PDF ainda não é suportado.'
+        : 'O PDF não contém texto extraível e o OCR local não encontrou texto suficiente.'
     case 'encrypted-document':
       return 'PDF protegido por senha não é suportado.'
     case 'malformed-document':
       return 'PDF inválido ou corrompido.'
+    case 'render-failed':
+      return 'Não foi possível renderizar o PDF escaneado para OCR local.'
     case 'ocr-runtime-unavailable':
       return 'Não foi possível carregar o OCR local.'
     case 'ocr-failed':
-      return 'Não foi possível extrair texto da imagem.'
+      return isPdf
+        ? 'Não foi possível extrair texto do PDF escaneado.'
+        : 'Não foi possível extrair texto da imagem.'
     case 'cancelled':
       return 'OCR cancelado. O texto anterior foi preservado.'
     case 'parse-failed':
@@ -99,7 +109,10 @@ function formatImportedFileMeta(
   result: Extract<TextDocumentIngestionResult, { ok: true }>['document'],
 ) {
   if (result.format === 'pdf' && result.pageCount) {
-    return `${result.pageCount} página${result.pageCount === 1 ? '' : 's'} · ${result.extractedTextBytes.toLocaleString('pt-BR')} bytes extraídos`
+    const ocrSuffix = result.ocrPageCount
+      ? ` · OCR local (${result.ocrPageCount} página${result.ocrPageCount === 1 ? '' : 's'})`
+      : ''
+    return `${result.pageCount} página${result.pageCount === 1 ? '' : 's'} · ${result.extractedTextBytes.toLocaleString('pt-BR')} bytes extraídos${ocrSuffix}`
   }
 
   if (result.format === 'image' && result.width && result.height) {
@@ -206,7 +219,8 @@ export function ReportIntake({
     if (!file) return
 
     const isImage = isDemoImageFilenameAllowed(file.name)
-    const controller = isImage ? new AbortController() : null
+    const isPdf = isDemoPdfFilenameAllowed(file.name)
+    const controller = isImage || isPdf ? new AbortController() : null
     activeImportController.current = controller
 
     setFileError('')
