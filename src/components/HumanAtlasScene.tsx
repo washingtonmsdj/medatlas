@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   createFocusedAtlas,
   type AtlasContextMode,
@@ -73,7 +73,6 @@ export function HumanAtlasScene({
 }: Props) {
   const [prepared, setPrepared] = useState<PreparedFocus | null>(null)
   const [inspectedPart, setInspectedPart] = useState<InspectedPart | null>(null)
-  const readyFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     let active = true
@@ -158,10 +157,6 @@ export function HumanAtlasScene({
 
     return () => {
       active = false
-      if (readyFrameRef.current !== null) {
-        cancelAnimationFrame(readyFrameRef.current)
-        readyFrameRef.current = null
-      }
     }
   }, [conceptId, contextMode, onError])
 
@@ -202,18 +197,11 @@ export function HumanAtlasScene({
     (progress: number) => {
       if (progress !== 100 || !prepared) return
 
-      if (readyFrameRef.current !== null) {
-        cancelAnimationFrame(readyFrameRef.current)
-      }
-
-      readyFrameRef.current = requestAnimationFrame(() => {
-        readyFrameRef.current = null
-        onReady?.(
-          conceptDisplayName(prepared.concept),
-          prepared.selectedPartCount,
-          prepared.contextPartCount,
-        )
-      })
+      onReady?.(
+        conceptDisplayName(prepared.concept),
+        prepared.selectedPartCount,
+        prepared.contextPartCount,
+      )
     },
     [onReady, prepared],
   )
