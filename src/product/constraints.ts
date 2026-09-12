@@ -15,6 +15,14 @@ export const DEMO_CONSTRAINTS = {
     extensions: ['.pdf'] as const,
     mimeTypes: ['application/pdf'] as const,
   },
+  localImage: {
+    maxBytes: 6 * 1024 * 1024,
+    maxDimension: 4096,
+    maxPixels: 4_500_000,
+    maxExtractedTextBytes: 64 * 1024,
+    extensions: ['.png', '.jpg', '.jpeg'] as const,
+    mimeTypes: ['image/png', 'image/jpeg'] as const,
+  },
   patientExplanation: {
     maxCharacters: 4000,
   },
@@ -104,6 +112,14 @@ export function isDemoPdfMimeAllowed(mimeType: string) {
   return mimeIsAllowed(mimeType, DEMO_CONSTRAINTS.localPdf.mimeTypes)
 }
 
+export function isDemoImageFilenameAllowed(filename: string) {
+  return filenameHasExtension(filename, DEMO_CONSTRAINTS.localImage.extensions)
+}
+
+export function isDemoImageMimeAllowed(mimeType: string) {
+  return mimeIsAllowed(mimeType, DEMO_CONSTRAINTS.localImage.mimeTypes)
+}
+
 export function formatDemoTextLimit() {
   return `${Math.round(DEMO_CONSTRAINTS.localText.maxBytes / 1024)} KB`
 }
@@ -114,6 +130,20 @@ export function formatDemoPdfFileLimit() {
 
 export function formatDemoPdfPageLimit() {
   return `${DEMO_CONSTRAINTS.localPdf.maxPages} páginas`
+}
+
+export function formatDemoImageFileLimit() {
+  return `${Math.round(DEMO_CONSTRAINTS.localImage.maxBytes / 1024 / 1024)} MB`
+}
+
+export function formatDemoImageDimensionLimit() {
+  return `${DEMO_CONSTRAINTS.localImage.maxDimension.toLocaleString('pt-BR')} px por lado`
+}
+
+export function formatDemoImagePixelLimit() {
+  return `${(DEMO_CONSTRAINTS.localImage.maxPixels / 1_000_000).toLocaleString('pt-BR', {
+    maximumFractionDigits: 1,
+  })} MP`
 }
 
 export function formatDemoPatientExplanationLimit() {
@@ -128,6 +158,7 @@ export function demoReportFileFormatLabel() {
   return [
     ...DEMO_CONSTRAINTS.localText.extensions,
     ...DEMO_CONSTRAINTS.localPdf.extensions,
+    ...DEMO_CONSTRAINTS.localImage.extensions,
   ].join(' · ')
 }
 
