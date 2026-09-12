@@ -122,11 +122,11 @@ if (
 }
 
 const localImportUiInvariants = [
-  'ingestLocalReportFile(file)',
+  'ingestLocalReportFile(file, {',
   'LOCAL_REPORT_FILE_ACCEPT',
   'validateDemoReportSource(nextValue)',
-  'Importar laudo sintético em TXT, MD ou PDF',
-  'Imagem/OCR ainda não é suportado.',
+  'Importar laudo sintético em TXT, MD, PDF, PNG ou JPG',
+  'Imagem/OCR do PDF ainda não é suportado.',
   'PDF protegido por senha não é suportado.',
   'O arquivo não possui uma assinatura PDF válida.',
 ]
