@@ -21,6 +21,18 @@ async function publishReadyReport(page: Page) {
   return page.locator('.share-box code').innerText()
 }
 
+async function expectSelfContainedInvalidLink(page: Page) {
+  await expect(
+    page.getByRole('heading', { name: 'Este link não está disponível.' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Voltar ao MedAtlas' }),
+  ).toHaveCount(0)
+  await expect(
+    page.getByRole('button', { name: 'Voltar ao profissional' }),
+  ).toHaveCount(0)
+}
+
 test('editing a published report revokes the previous patient link before applying the new version', async ({
   page,
 }) => {
@@ -38,10 +50,7 @@ test('editing a published report revokes the previous patient link before applyi
   ).toBeEnabled()
 
   await page.goto(shareUrl)
-
-  await expect(
-    page.getByRole('heading', { name: 'Este link não está disponível.' }),
-  ).toBeVisible()
+  await expectSelfContainedInvalidLink(page)
 })
 
 test('published report mutation fails closed when persisted share revocation is unavailable', async ({
@@ -101,7 +110,5 @@ test('tampered stored share is rejected when patient explanation exceeds the pro
   expect(tampered).toBe(true)
   await page.goto(shareUrl)
 
-  await expect(
-    page.getByRole('heading', { name: 'Este link não está disponível.' }),
-  ).toBeVisible()
+  await expectSelfContainedInvalidLink(page)
 })
