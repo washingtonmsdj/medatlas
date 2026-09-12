@@ -26,3 +26,40 @@ test('bounds the patient explanation before it mutates the clinical workflow', a
     'A explicação deve ter no máximo 4.000 caracteres.',
   )
 })
+
+test('patient preview never presents pending content as clinically reviewed', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+
+  const composer = page.locator('.report-composer')
+  const editor = composer.getByRole('textbox', {
+    name: 'Explicação para o paciente',
+  })
+
+  await editor.fill('Texto sintético alterado e ainda não aprovado.')
+
+  await expect(
+    composer.getByRole('button', { name: 'Aprovar explicação' }),
+  ).toBeEnabled()
+
+  await composer
+    .getByRole('button', { name: 'Prévia do paciente' })
+    .click()
+
+  await expect(page.locator('.patient-shell')).toBeVisible()
+  await expect(
+    page.getByText('REVISÃO PENDENTE', { exact: true }),
+  ).toBeVisible()
+  await expect(
+    page.getByText('Revisão clínica pendente', { exact: true }),
+  ).toBeVisible()
+  await expect(
+    page.getByText('Esta prévia ainda não foi aprovada pelo profissional.'),
+  ).toBeVisible()
+  await expect(page.getByText(/Revisado por/)).toHaveCount(0)
+  await expect(
+    page.getByRole('button', { name: 'Imprimir prévia' }),
+  ).toBeVisible()
+})
