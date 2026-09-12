@@ -506,18 +506,14 @@ export function PatientReportPage({
           {branding.patientFooterText} · MedAtlas
           {previewMode ? ' · prévia' : ''}
         </span>
-        <button
-          type="button"
-          onClick={() => {
-            if (previewMode && onSwitchToProfessional) {
-              onSwitchToProfessional()
-              return
-            }
-            window.location.href = appHomeUrl()
-          }}
-        >
-          {previewMode ? 'Voltar para visão profissional' : 'Voltar ao MedAtlas'}
-        </button>
+        {!previewMode && (
+          <button
+            type="button"
+            onClick={() => (window.location.href = appHomeUrl())}
+          >
+            Voltar ao MedAtlas
+          </button>
+        )}
       </footer>
     </main>
   )
