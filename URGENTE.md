@@ -1,12 +1,11 @@
 # URGENTE — MedAtlas
 
 > **Documento canônico de continuidade.** Leia antes de alterar o projeto.
-> Este arquivo registra o estado atual e as próximas decisões; não é diário de commits.
+> Este arquivo registra estado, decisões e próximo trabalho. Não é diário de commits.
 
 Última consolidação: **2026-09-12**  
 Branch canônica: **`main`**  
-Repositório: **`washingtonmsdj/medatlas`**  
-Source funcional de referência desta consolidação: **`e66eaf0daf8eb8904f56ae80e41fde947097d5b8`**
+Repositório: **`washingtonmsdj/medatlas`**
 
 ## 0. Missão — não reinterpretar
 
@@ -34,174 +33,174 @@ prévia / publicação
 link e experiência do paciente
 ```
 
-O wedge do produto é **comunicação clínica visual entre profissional e paciente**. MedAtlas não é diagnosticador automático, PACS, prontuário completo, segmentador DICOM nem reconstrução 3D específica do paciente.
+O wedge é **comunicação clínica visual entre profissional e paciente**. MedAtlas não é diagnosticador automático, PACS, prontuário completo, segmentador DICOM nem reconstrução 3D específica do paciente.
 
-## 1. Estado real do MVP em 2026-09-12
+## 1. Estado atual do MVP
 
-### MVP browser sintético — candidato a piloto
+### MVP browser sintético — qualificado para piloto sintético
 
 - [x] shell profissional separado da experiência do paciente;
 - [x] dashboard clínico task-first;
-- [x] Clinical Report Studio em três etapas/colunas: laudo → anatomia 3D → explicação;
+- [x] Clinical Report Studio: laudo → anatomia 3D → explicação;
 - [x] Human Atlas/BodyParts3D real e vendorizado como engine anatômico canônico;
-- [x] modo Atlas completo, modo clínico focado e modo paciente usando a mesma autoridade FMA;
-- [x] órgão em detalhe somente como profundidade suplementar, sem alterar a anatomia confirmada;
-- [x] triagem determinística de anatomia com confirmação humana obrigatória;
+- [x] Atlas completo, modo clínico focado e modo paciente usando a mesma autoridade FMA;
+- [x] órgão detalhado apenas como profundidade suplementar;
+- [x] triagem determinística + confirmação humana obrigatória;
 - [x] rascunho educacional + edição + aprovação clínica obrigatória;
 - [x] preview do paciente antes da publicação;
-- [x] preview pendente não se apresenta mais como revisado: sem atribuição falsa de revisor, com estado visual de warning e impressão rotulada como prévia;
+- [x] preview pendente não se apresenta como revisão concluída;
 - [x] share demo opaco, versionado, temporário e revogável;
-- [x] Analytics local do fluxo demo;
-- [x] Equipe e permissões source-first sem mutações fake;
+- [x] Analytics local demo;
+- [x] Equipe/permissões sem mutações fake;
 - [x] responsividade desktop/mobile e axe/WCAG protegidos por Browser E2E;
-- [x] GitHub Pages como preview sintético publicado e verificado em Chromium;
-- [x] ingestão local do MVP explicitamente limitada a **texto colado/digitado ou arquivo `.txt`/`.md`**;
-- [x] limite de **64 KiB** centralizado e aplicado por bytes UTF-8 tanto no arquivo quanto no texto digitado/colado;
-- [x] fluxo de análise também valida o limite no controlador, portanto a UI não é a única barreira;
-- [x] Browser E2E dedicado protege intake e semântica de revisão pendente do portal do paciente;
-- [x] gate de segurança protege as regras centrais;
-- [x] CI, Browser E2E e GitHub Pages/Chromium fecharam verdes no mesmo source funcional.
+- [x] GitHub Pages publicado e verificado em Chromium;
+- [x] ingestão local limitada honestamente a texto/TXT/MD;
+- [x] limite de 64 KiB aplicado por bytes UTF-8 no arquivo, editor e controlador;
+- [x] piloto visual com capturas reais do Browser E2E iniciado e gerando correções concretas de UX.
 
-### O que continua deliberadamente fora do MVP browser atual
+### Fora do MVP browser atual
 
 - [ ] PDF/imagem/OCR;
 - [ ] autenticação real;
 - [ ] Supabase de produção ativo;
 - [ ] armazenamento clínico real;
-- [ ] dados reais de pacientes;
+- [ ] dados reais de pacientes / PHI;
 - [ ] IA remota em produção;
 - [ ] billing;
 - [ ] convites/mutações reais de equipe;
-- [ ] piloto clínico com PHI.
+- [ ] piloto clínico com dados reais.
 
-Esses itens **não devem ser simulados por botões fake, hardcode ou parser improvisado**.
+Esses itens **não podem ser simulados por botões fake, hardcode ou parser improvisado**.
 
-## 2. Invariantes — não reintroduzir legado
+## 2. Invariantes
 
 1. Existe **um único Human Atlas canônico** para autoridade BodyParts3D/FMA.
-2. Explorer, Clinical Studio e Patient são modos do mesmo sistema anatômico; não criar renderer concorrente para confirmar anatomia.
+2. Explorer, Studio clínico e Patient são modos do mesmo sistema anatômico.
 3. Viewer de órgão detalhado é suplementar e nunca muda a fonte de verdade clínica.
-4. BodyParts3D/FMA é **anatomia humana de referência**, nunca corpo/reconstrução individual do paciente.
-5. Explorar/clicar anatomia não equivale a confirmar anatomia. Confirmação exige ação explícita.
-6. Nenhuma anatomia sem conceito FMA/renderizável pode virar confirmação clínica.
+4. BodyParts3D/FMA representa anatomia humana de referência, nunca corpo individual do paciente.
+5. Explorar/clicar não equivale a confirmar anatomia.
+6. Nenhuma anatomia sem conceito FMA/renderizável vira confirmação clínica.
 7. IA não publica e não substitui revisão humana.
-8. Alteração de laudo, anatomia ou explicação invalida as revisões correspondentes e shares da versão antiga conforme o workflow.
-9. `ClinicalRepository` permanece a autoridade de dados; não criar persistência paralela.
-10. Demo permanece **synthetic-only** e sem telemetria clínica externa.
-11. Token bruto de share/convite não pode virar identificador previsível ou persistência insegura.
+8. Mudança de laudo/anatomia/explicação invalida revisões e shares correspondentes conforme workflow.
+9. `ClinicalRepository` permanece autoridade de dados; não criar persistência paralela.
+10. Demo permanece `synthetic-only` e sem telemetria clínica externa.
+11. Token de share/convite não pode virar identificador previsível.
 12. Storage clínico de produção nunca pode ser público.
 13. Não reutilizar Supabase de outro produto.
-14. Não reintroduzir `OrganizationSwitcher`, `ViewModeSwitcher`, launcher duplicado de “Novo relatório” ou módulos Consultas/Exames separados no MVP.
-15. Contexto de consulta/exame pertence ao fluxo de **Relatórios visuais**.
-16. IDs FMA e detalhes de implementação não pertencem à superfície primária do paciente.
-17. O Atlas completo preserva o desenho de três colunas enquanto houver largura útil: caso → corpo → detalhe.
-18. `concept-shell.css` continua autoridade do shell; não ressuscitar temas paralelos ou CSS morto para vencer cascade.
-19. PDF/imagem só entram com um contrato de ingestão seguro; não anexar parser/OCR casual ao browser atual.
-20. Supabase/auth/IA remota só são ativados deliberadamente com seus próprios gates de isolamento e segurança.
-21. Prévia do paciente sem aprovação clínica deve comunicar **pendência**, nunca sucesso ou autoria de revisão inexistente.
+14. Não reintroduzir `OrganizationSwitcher`, `ViewModeSwitcher`, launcher duplicado de Novo relatório ou módulos Consultas/Exames separados.
+15. IDs FMA e detalhes de implementação não pertencem à superfície primária do paciente.
+16. Atlas completo preserva caso → corpo → detalhe enquanto houver largura útil.
+17. Não ressuscitar CSS morto/tema paralelo para vencer cascade.
+18. PDF/imagem só entram com subsystem seguro de ingestão.
+19. Supabase/auth/IA remota só entram com gates próprios.
+20. Prévia sem aprovação clínica comunica **pendência**, nunca sucesso ou autoria inexistente.
+21. Ação já concluída não deve competir visualmente com o próximo CTA real do fluxo.
 
 ## 3. Correções MVP consolidadas
 
-### 3.1 Intake de laudo — limite real de 64 KiB
+### 3.1 Intake — limite real de 64 KiB
 
-Foi encontrada anteriormente uma inconsistência real de MVP: a interface comunicava limite de **64 KB**, mas o texto colado/digitado não estava protegido pela mesma barreira usada pelo importador de arquivo.
+A UI e o controlador agora compartilham a mesma autoridade de limite por bytes UTF-8 para texto digitado/colado e arquivo TXT/MD. Browser E2E protege a barreira.
 
-A correção ficou distribuída corretamente por responsabilidade:
+### 3.2 Portal do paciente — revisão pendente
 
-- `src/product/constraints.ts` — SSOT do limite, extensões e validação por bytes;
-- `src/components/ReportIntake.tsx` — UX do import/textarea, feedback, estado bloqueado e contagem de bytes;
-- `src/App.tsx` — defesa em profundidade antes da mutação/análise;
-- `scripts/validate-security-contract.mjs` — contrato estático de segurança;
-- `tests/e2e/report-intake.spec.ts` — regressão em navegador;
-- `.github/workflows/browser-e2e.yml` — teste incorporado ao shard clínico.
+`PatientReportPage` só apresenta conteúdo como revisado quando existe conclusão real + `reviewApproval`. Prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor e usa semântica visual de warning.
 
-Durante essa implementação, um update completo de `App.tsx` carregou mudanças estruturais não relacionadas. A regressão foi detectada pelo próprio `validate:mvp-ui` e o shell canônico foi restaurado antes de reaplicar somente o guard necessário.
+### 3.3 Piloto visual — contraste e hierarquia de ações
 
-### 3.2 Portal do paciente — revisão pendente não pode parecer aprovada
+O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os testes funcionais, sozinhos, não evidenciavam:
 
-Na auditoria de 2026-09-12 foi encontrado um problema de confiança do MVP: a prévia do paciente podia estar **sem aprovação clínica**, mas a superfície ainda mostrava linguagem e elementos visuais de revisão concluída, incluindo atribuição `Revisado por ...` baseada no membro atual e selo de sucesso.
+1. **CTAs primários com baixo contraste** — ações como `Continuar relatório` e `Compartilhar com paciente` pareciam desabilitadas por causa de especificidade/cascade antigo.
+   - `src/styles/action-state.css` virou a autoridade explícita para estado visual de ações primárias e desabilitadas.
+   - Capturas responsivas posteriores confirmaram texto legível e hierarquia correta.
 
-A correção foi feita sem enfraquecer o fluxo existente:
+2. **Painéis laterais do Atlas com texto escuro sobre superfície forest** — o 3D estava correto, mas resumo/contexto/detalhe perdiam legibilidade.
+   - `src/styles/reference-atlas-contrast.css` corrige somente contraste dos painéis, sem tocar no renderer nem na anatomia.
+   - Captura nova de `atlas-explorer-1600` confirmou a correção no build real.
 
-- `src/components/PatientReportPage.tsx` — `hasClinicalReview` passou a depender da conclusão real da explicação + `reviewApproval`; prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor, usa `Imprimir prévia` e mantém linguagem de rascunho;
-- `src/styles/patient-review-state.css` — estado pendente usa tokens de warning em vez de herdar verde/sucesso;
-- `src/main.tsx` — carrega o módulo de estado visual;
-- `tests/e2e/report-explanation.spec.ts` — regressão de navegador garante que editar a explicação invalida a aprovação e que a prévia não volta a afirmar `Revisado por` antes de nova aprovação.
+3. **Prévia do paciente com duas saídas para o profissional** — havia retorno no topo e outro no rodapé.
+   - em preview existe agora uma única ação `Voltar ao profissional`;
+   - portal publicado mantém `Voltar ao MedAtlas`;
+   - `report-explanation.spec.ts` protege a singularidade do caminho de retorno.
 
-A publicação real não estava burlando o gate: o repositório demo já rejeitava publicação sem revisão, anatomia válida, explicação válida e vínculo organizacional consistente. A correção desta rodada foi na **representação confiável do estado clínico na UI**, preservando a arquitetura fail-closed.
+4. **`Encontrar anatomia` continuava competindo como CTA primário mesmo depois da anatomia já confirmada.**
+   - quando `anatomyReviewRequired=true`, continua `Encontrar anatomia` como ação primária;
+   - quando a estrutura já está confirmada, vira `Reanalisar laudo`, visualmente secundária;
+   - `report-intake.spec.ts` protege essa transição de hierarquia.
 
-## 4. Evidência atual
+Não esconder/rebaixar outras ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
 
-Source funcional: `e66eaf0daf8eb8904f56ae80e41fde947097d5b8`.
+## 4. Checkpoints e validação
 
-- **CI `34691114750` — PASS**: audit, contratos de DB/organização/publicação/repositório/share/anatomia/demo/assets/performance/security/IA/revisão/workflow/licença/Atlas/MVP UI, TypeScript, build e bundle budget.
-- **Browser E2E `34691114745` — PASS completo**: `clinical-flow`, `responsive-layout` e `supporting-contracts` verdes; o shard clínico inclui o novo contrato que impede a prévia pendente de se apresentar como revisada.
-- **GitHub Pages Preview `34691114736` — PASS**: build, deploy, shell/assets publicados e verificação remota em Chromium do fluxo clínico 3D.
+### Último checkpoint completamente verde antes das duas últimas correções de navegação/hierarquia
 
-Não usar commits/runs intermediários da implementação como baseline final. O source funcional acima é o checkpoint desta consolidação.
+Source funcional: **`17d278e35ef8e60d885390ff49f564d48cd93e24`**.
 
-## 5. Próxima ordem de trabalho — mirando MVP
+- CI **`34692392073` — PASS**;
+- Browser E2E **`34692392068` — PASS completo** (`clinical-flow`, `responsive-layout`, `supporting-contracts`);
+- GitHub Pages **`34692392044` — PASS**, incluindo verificação remota do fluxo clínico 3D;
+- visual QA pós-correção confirmou contraste dos CTAs e dos painéis do Atlas.
 
-### P0 — piloto sintético humano
+### Candidato atual em validação
 
-1. executar o **piloto manual sintético** de `docs/PILOT.md` no preview publicado, em desktop e mobile;
-2. observar principalmente: início/continuação do relatório, diferença entre exploração e confirmação anatômica, utilidade do 3D, revisão humana, transição profissional → paciente e estados pendentes;
-3. registrar apenas atritos observáveis de tarefa/navegação/3D;
-4. corrigir bloqueadores reais sem reabrir arquitetura já provada;
-5. manter CI + Browser E2E + Pages verdes;
-6. revisar texto do produto somente onde houver confusão real entre anatomia de referência e anatomia individual.
+HEAD de teste/continuidade no momento desta consolidação: **`2e0b35474f68966caa8aca85d306a15433b454b3`**.
 
-### P1 — ingestão de documentos, sem gambiarra
+Inclui, além do checkpoint verde:
 
-PDF/imagem/OCR é o próximo salto funcional útil, mas deve entrar como **subsystem de ingestão**, não como `FileReader` + biblioteca aleatória no frontend.
+- retorno único na prévia do paciente;
+- hierarquia `Encontrar anatomia` → `Reanalisar laudo` após confirmação;
+- regressões E2E correspondentes.
 
-Antes de ativar, definir e testar:
+CI/Browser E2E do candidato foram disparados. Antes de declarar este SHA como novo baseline verde, confirmar os jobs mais recentes. Não confundir runs cancelados por commits subsequentes com regressão funcional.
 
-- tipos MIME/extensões aceitos;
-- limites de tamanho/página;
-- extração de texto e OCR;
-- tratamento de arquivo malformado;
-- fronteira de armazenamento privado;
-- retenção/expiração;
-- sanitização e proteção contra payloads hostis;
-- estado de processamento/erro/retry;
-- separação explícita entre texto extraído e interpretação clínica.
+## 5. Próxima ordem de trabalho — foco MVP
+
+### P0 — continuar piloto sintético visual/humano
+
+1. fechar os gates do candidato atual;
+2. revisar as novas capturas desktop/mobile após as mudanças desta rodada;
+3. seguir página por página: Visão geral → Pacientes → Laudos → Atlas 3D → Preview → portal publicado → Analytics;
+4. registrar somente atritos observáveis de tarefa, leitura, hierarquia e 3D;
+5. corrigir bloqueadores reais sem reabrir arquitetura já provada;
+6. manter CI + Browser E2E + Pages verdes.
+
+### P1 — ingestão documental, sem gambiarra
+
+Depois do piloto, PDF/imagem/OCR pode ser o próximo salto funcional, mas deve entrar como **subsystem de ingestão** com MIME/extensões, limites, parser/OCR controlado, arquivo malformado fail-closed, sanitização, storage privado, retenção, estados de processamento/retry e separação entre texto extraído e interpretação clínica.
 
 Até isso existir, a UI continua honesta: **TXT/MD/texto local apenas**.
 
 ### P2 — produção clínica
 
-Só após autorização explícita:
+Somente após autorização explícita:
 
-1. projeto Supabase dedicado ao MedAtlas;
+1. Supabase dedicado ao MedAtlas;
 2. migrations canônicas;
 3. auth;
-4. provas cross-tenant/RLS antes de liberar UI de conta/equipe;
+4. provas cross-tenant/RLS;
 5. Storage privado e testes de negação;
-6. implementação `SupabaseClinicalRepository` sem segunda autoridade paralela;
+6. `SupabaseClinicalRepository` como implementação da autoridade existente;
 7. share de produção com expiração/revogação/auditoria;
-8. política de retenção, backup, incidentes e observabilidade;
-9. validação jurídica/privacidade para a jurisdição e uso pretendidos;
-10. piloto clínico controlado antes de PHI em produção.
+8. retenção, backup, incidentes e observabilidade;
+9. validação jurídica/privacidade;
+10. piloto clínico controlado antes de PHI.
 
 ### P3 — IA remota
 
-Somente depois da fronteira backend existir. A IA deve retornar estrutura validável, resolver para FMA/renderabilidade e continuar sujeita aos gates de confirmação anatômica e revisão humana. Nunca expor segredo de provedor em `VITE_*`.
+Somente depois da fronteira backend existir. Deve retornar estrutura validável, resolver para FMA/renderabilidade e continuar sujeita a confirmação anatômica e revisão humana. Nunca expor segredo de provedor em `VITE_*`.
 
-## 6. Critério de MVP desta fase
+## 6. Critério desta fase
 
-O **MVP browser sintético** permanece tecnicamente qualificado para **piloto manual sintético**. A auditoria de 2026-09-12 removeu uma ambiguidade clínica real da prévia do paciente e o novo source voltou a fechar verde em CI, Browser E2E e Pages.
+O MVP browser sintético já é tecnicamente utilizável para piloto sintético. O trabalho atual é **lapidar o uso real**, não adicionar módulos grandes nem refatorar por abstração.
 
-O próximo gate não é outro refactor abstrato: é navegação humana real pelo roteiro de `docs/PILOT.md` e correção dos bloqueadores observados.
-
-Isso **não** significa “produção clínica pronta”. Produção exige P2 e os gates de segurança/compliance correspondentes.
+Produção clínica continua fora deste gate.
 
 ## 7. Arquivos de continuidade
 
-- `README.md` — escopo e arquitetura pública atual;
+- `README.md` — escopo/arquitetura pública;
 - `URGENTE.md` — estado operacional e ordem de trabalho;
 - `docs/RELEASE_READINESS.md` — evidência de release e bloqueadores;
 - `docs/PILOT.md` — roteiro do piloto sintético;
 - `docs/SECURITY.md` — fronteiras de segurança;
 - `docs/ANATOMY_ARCHITECTURE.md` — autoridade anatômica e 3D;
-- `src/product/constraints.ts` — limites de produto compartilhados pelo runtime.
+- `src/product/constraints.ts` — limites compartilhados do produto.
