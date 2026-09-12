@@ -149,6 +149,7 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 - integridade de assets e performance;
 - security/privacy;
 - OCR;
+- cobertura completa da matriz Browser E2E;
 - AI/review/workflow;
 - licenças/proveniência;
 - reference atlas;
@@ -157,15 +158,18 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 - production build;
 - bundle budget.
 
+`validate:browser-e2e-matrix` enumera todos os `tests/e2e/*.spec.ts` e falha se algum spec não pertencer a exatamente um shard, se houver referência para arquivo inexistente ou se um spec for executado em duplicidade.
+
 ### 2. Browser E2E
 
-Os três shards devem ficar verdes:
+Os quatro shards devem ficar verdes:
 
-- `clinical-flow`;
-- `responsive-layout`;
-- `supporting-contracts`.
+- `clinical-flow` — workflow profissional → paciente, revisão e share;
+- `document-ingestion` — TXT/MD, PDF textual, PDF escaneado/image-only e OCR PNG/JPEG;
+- `responsive-layout` — desktop/mobile e visibilidade 3D;
+- `supporting-contracts` — acessibilidade, anatomia em profundidade, permissões e localização do paciente.
 
-A cobertura inclui ingestão TXT/MD/PDF/imagem, OCR real em português, PDF image-only, limites fail-closed, 3D, workflow profissional → paciente, acessibilidade e responsividade.
+A cobertura inclui ingestão TXT/MD/PDF/imagem, OCR real em português, PDF image-only, limites fail-closed, 3D, workflow profissional → paciente, acessibilidade e responsividade. `tests/e2e/scanned-pdf-ocr.spec.ts` é obrigatório no shard `document-ingestion`; não pode existir teste E2E órfão fora da matriz.
 
 ### 3. GitHub Pages
 
@@ -227,5 +231,6 @@ Antes de qualquer dado real:
 - parser/worker PDF remoto ou eager no bundle inicial;
 - OCR com CDN/default remoto silencioso ou worker `blob:`;
 - OCR de PDF escaneado sem limites por página/documento;
+- spec E2E novo sem inclusão exatamente uma vez na matriz Browser E2E;
 - remote AI, auth, billing ou dados reais fingidos por frontend;
 - Vercel/Supabase como dependência para validar o MVP sintético atual.
