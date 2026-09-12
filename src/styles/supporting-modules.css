@@ -285,32 +285,6 @@
   font-size: var(--type-caption);
 }
 
-.settings-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 13px 15px;
-  border: 1px solid var(--line-subtle);
-  border-radius: 13px;
-  background: var(--surface-control);
-}
-
-.settings-actions > div {
-  display: grid;
-  gap: 2px;
-}
-
-.settings-actions strong {
-  color: var(--text-strong);
-  font-size: var(--type-small);
-}
-
-.settings-actions span {
-  color: var(--text-muted);
-  font-size: var(--type-caption);
-}
-
 /* Public patient route states. */
 
 .patient-route-state {
@@ -571,13 +545,6 @@
 @keyframes patient-route-spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 900px) {
-  .settings-actions {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
 
