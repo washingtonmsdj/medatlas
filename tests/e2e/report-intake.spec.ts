@@ -117,6 +117,33 @@ test('extracts a local PDF into editable text without auto-running anatomy analy
   await expect(page.getByText('ESTRUTURAS ENCONTRADAS')).toHaveCount(0)
 })
 
+test('rejects oversized PDF before parsing and preserves valid report text', async ({
+  page,
+}) => {
+  await openBlankReport(page)
+
+  const editor = page.getByRole('textbox', {
+    name: 'Texto do laudo ou relatório',
+  })
+  await editor.fill('Texto sintético preservado.')
+
+  const oversizedPdf = Buffer.alloc(8 * 1024 * 1024 + 1)
+  oversizedPdf.write('%PDF-', 0, 'ascii')
+
+  await page
+    .getByLabel('Importar laudo sintético em TXT, MD ou PDF')
+    .setInputFiles({
+      name: 'grande.pdf',
+      mimeType: 'application/pdf',
+      buffer: oversizedPdf,
+    })
+
+  await expect(page.getByRole('alert')).toHaveText(
+    'PDF acima do limite de 8 MB.',
+  )
+  await expect(editor).toHaveValue('Texto sintético preservado.')
+})
+
 test('rejects a TXT filename with an incompatible declared media type', async ({
   page,
 }) => {
