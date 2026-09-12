@@ -7,7 +7,10 @@ import {
   reportSourceByteLength,
   validateDemoReportSource,
 } from '../product/constraints'
-import type { TextDocumentIngestionResult } from './contracts'
+import type {
+  LocalIngestionOptions,
+  TextDocumentIngestionResult,
+} from './contracts'
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
@@ -77,6 +80,7 @@ function classifyPdfError(error: unknown): IngestionFailure['code'] {
 
 export async function ingestLocalPdfFile(
   file: File,
+  options: LocalIngestionOptions = {},
 ): Promise<TextDocumentIngestionResult> {
   if (!isDemoPdfFilenameAllowed(file.name)) {
     return failure(file, 'unsupported-extension')
@@ -88,6 +92,10 @@ export async function ingestLocalPdfFile(
 
   if (file.size > DEMO_CONSTRAINTS.localPdf.maxBytes) {
     return failure(file, 'too-large')
+  }
+
+  if (options.signal?.aborted) {
+    return failure(file, 'cancelled')
   }
 
   let buffer: ArrayBuffer
@@ -107,7 +115,7 @@ export async function ingestLocalPdfFile(
   }
 
   const loadingTask = getDocument({
-    data: new Uint8Array(buffer),
+    data: new Uint8Array(buffer.slice(0)),
     stopAtErrors: true,
     useWorkerFetch: false,
     useWasm: false,
@@ -127,8 +135,12 @@ export async function ingestLocalPdfFile(
     rejectPassword?.(new Error(PASSWORD_REQUIRED))
   }
 
+  let pageCount = 0
+  let needsScannedPdfOcr = false
+
   try {
     const pdf = await Promise.race([loadingTask.promise, passwordRequired])
+    pageCount = pdf.numPages
 
     if (pdf.numPages > DEMO_CONSTRAINTS.localPdf.maxPages) {
       return failure(file, 'too-many-pages', buffer.byteLength)
@@ -137,6 +149,10 @@ export async function ingestLocalPdfFile(
     const pages: string[] = []
 
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      if (options.signal?.aborted) {
+        return failure(file, 'cancelled', buffer.byteLength)
+      }
+
       const page = await pdf.getPage(pageNumber)
 
       try {
@@ -160,32 +176,41 @@ export async function ingestLocalPdfFile(
     const text = pages.join('\n\n').trim()
     const validation = validateDemoReportSource(text)
 
-    if (!validation.ok) {
-      return failure(
-        file,
-        validation.reason === 'too-large'
-          ? 'too-much-text'
-          : 'no-extractable-text',
-        buffer.byteLength,
-      )
+    if (validation.ok) {
+      return {
+        ok: true,
+        document: {
+          source: 'local-file',
+          format: 'pdf',
+          fileName: file.name,
+          mimeType: file.type,
+          bytes: buffer.byteLength,
+          extractedTextBytes: validation.bytes,
+          pageCount: pdf.numPages,
+          text,
+        },
+      }
     }
 
-    return {
-      ok: true,
-      document: {
-        source: 'local-file',
-        format: 'pdf',
-        fileName: file.name,
-        mimeType: file.type,
-        bytes: buffer.byteLength,
-        extractedTextBytes: validation.bytes,
-        pageCount: pdf.numPages,
-        text,
-      },
+    if (validation.reason === 'too-large') {
+      return failure(file, 'too-much-text', buffer.byteLength)
     }
+
+    needsScannedPdfOcr = true
   } catch (error) {
     return failure(file, classifyPdfError(error), buffer.byteLength)
   } finally {
     await loadingTask.destroy()
   }
+
+  if (!needsScannedPdfOcr || pageCount < 1) {
+    return failure(file, 'no-extractable-text', buffer.byteLength)
+  }
+
+  if (options.signal?.aborted) {
+    return failure(file, 'cancelled', buffer.byteLength)
+  }
+
+  const { ingestScannedPdfBuffer } = await import('./scanned-pdf-ocr')
+  return ingestScannedPdfBuffer(file, buffer, options)
 }
