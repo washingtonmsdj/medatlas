@@ -51,6 +51,7 @@ const required = [
   [ocr, 'workerPath: `${ocrRoot}/worker.min.js`', 'local OCR worker path'],
   [ocr, 'corePath: `${ocrRoot}/core`', 'local OCR core path'],
   [ocr, 'langPath: `${ocrRoot}/lang`', 'local OCR language path'],
+  [ocr, 'workerBlobURL: false', 'direct same-origin OCR worker without blob indirection'],
   [ocr, "createWorker('por', OEM.LSTM_ONLY", 'pinned Portuguese OCR initialization'],
   [ocr, 'validateDemoReportSource(text)', 'OCR text downstream validation'],
   [ocr, 'await worker.terminate()', 'OCR worker teardown'],
@@ -113,5 +114,5 @@ if (failures.length > 0) {
 
 console.log('MedAtlas OCR ingestion contract PASS')
 console.log('- PNG/JPEG are bounded and structurally validated before OCR runtime loading.')
-console.log('- Tesseract worker/core/Portuguese model are local, pinned and lazy.')
+console.log('- Tesseract worker/core/Portuguese model are local, pinned, lazy and direct same-origin.')
 console.log('- OCR remains cancellable and separate from anatomy analysis.')
