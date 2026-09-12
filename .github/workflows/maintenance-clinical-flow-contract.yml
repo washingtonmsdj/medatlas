@@ -1,0 +1,49 @@
+name: Maintenance Clinical Flow Contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/maintenance-clinical-flow-contract.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Repair stale intake contract exactly once
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tests/e2e/clinical-flow.spec.ts')
+          text = path.read_text(encoding='utf-8')
+
+          old_label = ".getByLabel('Importar laudo de texto sintético')"
+          new_label = ".getByLabel('Importar laudo sintético em TXT, MD ou PDF')"
+          old_assertion = """  await expect(\n    page.getByLabel('Texto do laudo ou relatório'),\n  ).toContainText('coração')"""
+          new_assertion = """  await expect(\n    page.getByLabel('Texto do laudo ou relatório'),\n  ).toHaveValue(/coração/)"""
+
+          if text.count(old_label) != 1:
+              raise SystemExit(f'expected exactly one stale intake label, found {text.count(old_label)}')
+          if text.count(old_assertion) != 1:
+              raise SystemExit(f'expected exactly one stale textarea assertion, found {text.count(old_assertion)}')
+
+          text = text.replace(old_label, new_label)
+          text = text.replace(old_assertion, new_assertion)
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit repaired contract
+        run: |
+          git diff --check
+          git diff --exit-code -- tests/e2e/clinical-flow.spec.ts && exit 1 || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tests/e2e/clinical-flow.spec.ts
+          git commit -m 'test: align text import with unified ingestion label'
+          git push origin HEAD:main
