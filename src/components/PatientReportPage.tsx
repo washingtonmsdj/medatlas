@@ -312,7 +312,7 @@ export function PatientReportPage({
                 <HumanAtlasScene
                   key={`${report.finding.atlasConceptId}-${sceneAttempt}`}
                   conceptId={report.finding.atlasConceptId}
-                  contextMode="system"
+                  contextMode="region"
                   view={view}
                   rotate={rotate}
                   reset={reset}
