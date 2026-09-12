@@ -10,6 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.ts'
+      - 'scripts/prepare-ocr-assets.mjs'
       - 'public/atlas-assets/**'
       - '.github/workflows/browser-e2e.yml'
   pull_request:
@@ -20,6 +21,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.ts'
+      - 'scripts/prepare-ocr-assets.mjs'
       - 'public/atlas-assets/**'
   workflow_dispatch:
 
