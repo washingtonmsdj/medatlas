@@ -54,7 +54,9 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] Analytics local demo;
 - [x] Equipe/permissões sem mutações fake;
 - [x] Configurações demo deixam branding/estado não persistente explicitamente read-only;
+- [x] ação `Novo relatório` permanece canônica no Dashboard/busca global, sem launcher duplicado em Configurações;
 - [x] navegação mobile prioriza `Visão geral` + `Pacientes` e mantém módulos secundários acessíveis via `Mais`;
+- [x] modo paciente usa contexto anatômico regional coerente sem alterar o FMA confirmado;
 - [x] responsividade desktop/mobile e axe/WCAG protegidos por Browser E2E;
 - [x] GitHub Pages publicado e verificado em Chromium;
 - [x] ingestão local limitada honestamente a texto/TXT/MD;
@@ -103,6 +105,9 @@ Esses itens **não podem ser simulados por botões fake, hardcode ou parser impr
 24. QA visual de WebGL deve observar a superfície como o usuário a observa: renderers pausados fora do viewport não devem ser tratados como falha só porque uma captura `fullPage` não provocou interseção/scroll.
 25. Não remover `IntersectionObserver`/pausa offscreen para “consertar” screenshots; preservar a economia de GPU e testar o primeiro frame quando a superfície entra no viewport.
 26. Ausência de modelo 3D suplementar nunca deve sugerir que a anatomia clínica confirmada está errada ou precisa ser trocada.
+27. Superfícies do paciente devem priorizar **contexto anatômico espacial/regional** ao redor da estrutura confirmada; nunca trocar o conceito FMA para obter um enquadramento visual melhor.
+28. Ações globais do fluxo, como `Novo relatório`, não devem reaparecer como launcher local em módulos sem semântica própria para aquela ação.
+29. Ingestão documental deve separar arquivo, validação, extração de texto e interpretação clínica; parser/OCR não pertence ao componente React nem pode publicar diretamente no workflow clínico.
 
 ## 3. Correções MVP consolidadas
 
@@ -127,65 +132,74 @@ O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os
 5. **Navegação mobile instável/densa** — `Visão geral` e `Pacientes` permanecem primários; `Laudos`, `Atlas 3D`, `Equipe`, `Analytics` e `Configurações` ficam em `Mais`, sem alterar desktop.
 6. **Suite responsiva foi truncada por uma edição concorrente** — restaurada integralmente em `f8acc60de0f66b163de843a65da8edbe57d5969d`; não aceitar novamente cobertura parcial como PASS.
 7. **Gate do Pages ficou desatualizado após o novo `Mais`** — corrigido em `3e9a88d4284cb23a17e50869f20db3b1a3cc4678` para percorrer a navegação mobile real.
-8. **Dashboard mobile parecia ter 3D vazio no screenshot full-page** — a causa era a pausa offscreen via `IntersectionObserver`, não o renderer/câmera. O experimento de readiness foi revertido. `tests/e2e/visual-3d-visibility.spec.ts` agora traz o 3D para o viewport e `dashboard-3d-mobile-visible-390.png` confirmou L4–L5 renderizado e interativo no mobile.
+8. **Dashboard mobile parecia ter 3D vazio no screenshot full-page** — a causa era a pausa offscreen via `IntersectionObserver`, não o renderer/câmera. O experimento de readiness foi revertido. `tests/e2e/visual-3d-visibility.spec.ts` traz o 3D para o viewport e `dashboard-3d-mobile-visible-390.png` confirmou L4–L5 renderizado e interativo no mobile.
 9. **Studio tinha duas ações equivalentes de `Prévia do paciente` na mesma superfície** — a ação prematura do cabeçalho foi removida em `ada30f49a08884d6c75351a1ceb94204295474a3`; permanece a prévia contextual da etapa 03 e o acesso global do topo. `report-explanation.spec.ts` exige uma única prévia dentro do workspace.
-10. **Atlas pedia “Selecione um órgão compatível” para Disco L4–L5 já confirmado** — `36a774f5bdc991d1ea228535cfc58bea4208a7fa` separa anatomia clínica de detalhe suplementar. Para estruturas sem modelo extra, o painel informa `Detalhe 3D adicional não disponível`, mantém a estrutura no corpo completo e não induz troca de anatomia. `anatomy-depth-layout.spec.ts` protege L4–L5 e a transição para Coração com detalhe habilitado.
+10. **Atlas pedia “Selecione um órgão compatível” para Disco L4–L5 já confirmado** — `36a774f5bdc991d1ea228535cfc58bea4208a7fa` separa anatomia clínica de detalhe suplementar. Para estruturas sem modelo extra, o painel informa `Detalhe 3D adicional não disponível`, mantém a estrutura no corpo completo e não induz troca de anatomia.
+11. **Portal publicado parecia ter WebGL vazio em captura full-page** — `tests/e2e/visual-patient-portal-visibility.spec.ts` passa a trazer `#patient-anatomy` para o viewport e capturar a superfície observável. A evidência `patient-portal-anatomy-visible.png` confirmou o Human Atlas renderizado; o vazio antigo era artefato de QA offscreen.
+12. **Pacientes/portal mostravam L4–L5 fragmentado e pequeno** — a causa era `contextMode="system"`, que fornecia contexto inadequado para o enquadramento correto da câmera. `PatientsModule` e `PatientReportPage` agora usam `region`, preservando o mesmo FMA e contexto local limitado. As capturas passaram a mostrar coluna lombar/pelve coerentes como no Dashboard.
+13. **Dois contratos E2E estavam atrasados em relação ao produto** — mobile agora percorre `Mais → Laudos` e Configurações valida branding read-only em vez de esperar botão fake de edição. `87c44bdb8be43483608de2cd0da9a0d65945eecf` fechou CI/Browser completos.
+14. **Configurações duplicava `Novo relatório`** — o launcher local, prop associada e CSS morto foram removidos. Dashboard e busca global permanecem autoridades da ação. `mvp-ux-contracts.spec.ts` protege a ausência do launcher local e a presença da ação canônica no Dashboard.
+15. **Analytics e Equipe** — capturas desktop/mobile foram revisadas após as correções acima e não apresentaram atrito objetivo que justificasse nova mudança; não modificar por preferência estética sem nova evidência.
 
 Não esconder/rebaixar ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
 
 ## 4. Checkpoints e validação
 
-### Baseline verde consolidado anterior
+### Baseline verde do contexto anatômico regional
 
-Source funcional: **`2e0b35474f68966caa8aca85d306a15433b454b3`**.
+Runtime: **`0f4fbb379719c05675787457370d9d6b01d8a11f`**.  
+Contrato: **`5a2c0a39f1f20839c55651b381470a439077c16e`**.
 
-- CI **`34693122528` — PASS**;
-- Browser E2E **`34693122510` — PASS completo**;
-- GitHub Pages do runtime correspondente (`b021ca356887233b753b7c21713570a01fbe48f9`) **`34693105521` — PASS**.
+- CI **`34699149431` — PASS completo**;
+- Browser E2E **`34699096707` — PASS completo nos três shards**;
+- GitHub Pages **`34699096669` — PASS completo**, incluindo fluxo 3D publicado;
+- artefato responsivo **`10299557362`** confirmou visualmente contexto lombar/pélvico coerente em Dashboard, Pacientes e portal publicado.
 
-### Baseline de deploy/navegação já provado
+### Baseline verde atual — piloto visual fechado
 
-Source: **`3e9a88d4284cb23a17e50869f20db3b1a3cc4678`**.
+Runtime: **`eaa541b69040b86c84194ddfaa3cfcbe8af54692`**.  
+HEAD de testes: **`83c42ab56eb8cecdaf2916571650ac9124b98374`**.
 
-- CI **`34695594932` — PASS**;
-- GitHub Pages Preview **`34695594926` — PASS completo**.
+- CI **`34701927508` — PASS completo**;
+- Browser E2E **`34701927501` — PASS completo**:
+  - `clinical-flow` — PASS;
+  - `responsive-layout` — PASS;
+  - `supporting-contracts` — PASS;
+- GitHub Pages do runtime **`34701462500` — PASS completo**, incluindo verificação Chromium do fluxo 3D publicado;
+- artefato responsivo **`10300078764`** confirmou Configurações sem o launcher duplicado e sem quebra visual em desktop/mobile.
 
-### Evidência visual posterior
-
-- `fdce791c4a327000c1dd2b813ce75515158225d0`: CI **`34696244235` — PASS**; captura viewport-aware confirmou o Human Atlas visível no dashboard mobile.
-- `ada30f49a08884d6c75351a1ceb94204295474a3` + teste `3b4df888d110ee014d73e377d54cc4807ea3ba59`: Studio com prévia contextual singular; CI **`34696846020` — PASS** e Pages **`34696833920` — PASS**. Captura responsiva confirmou uma única `Prévia do paciente` no Studio.
-
-### Candidato atual — semântica de detalhe do Atlas
-
-Runtime: **`36a774f5bdc991d1ea228535cfc58bea4208a7fa`**.  
-HEAD de teste: **`7cff8b42c5d6135b3811cb1e5bc75542634fc957`**.
-
-Estado na hora desta consolidação:
-
-- CI **`34697275061` — PASS completo**;
-- GitHub Pages **`34697252770` — PASS completo**, incluindo fluxo 3D publicado;
-- Browser E2E **`34697275085`**:
-  - `supporting-contracts` — **PASS**, incluindo o novo contrato L4–L5 → Coração;
-  - `responsive-layout` — **PASS**, com nova captura mobile do Atlas confirmando o texto corrigido;
-  - `clinical-flow` — ainda em execução. Só promover este candidato a baseline Browser completo quando esse último shard fechar verde.
-
-Não confundir runs cancelados/supersedidos por commits subsequentes com regressão funcional.
+O run Browser anterior **`34701472925`** falhou somente por ambiguidade do seletor do novo teste (`Visão geral` também casava com `Ir para visão geral`). O produto teve 34/35 testes verdes; o seletor foi corrigido com `exact: true` em `83c42ab...`, e o novo run completo `34701927501` passou. Não classificar isso como regressão do runtime.
 
 ## 5. Próxima ordem de trabalho — foco MVP
 
-### P0 — continuar piloto sintético visual/humano
+### P0 — baseline do piloto sintético
 
-1. Fechar `clinical-flow` do Browser E2E **`34697275085`**; se falhar, corrigir a causa antes de novo trabalho funcional.
-2. Adicionar evidência viewport-aware para o **portal publicado**: o fluxo já interage com a anatomia real, mas a captura `fullPage` pode apagar visualmente WebGL offscreen. Capturar o bloco `#patient-anatomy` enquanto está no viewport, sem alterar o renderer.
-3. Continuar pente-fino: Preview/portal publicado → Analytics → Equipe → Configurações.
-4. Corrigir somente atritos observáveis de tarefa, leitura, hierarquia e 3D.
-5. Manter CI + Browser E2E + Pages verdes.
+O pente-fino visual atual está fechado. Dashboard, Studio, Atlas, Pacientes, portal publicado, Analytics, Equipe e Configurações foram observados em capturas reais desktop/mobile. Não iniciar outro redesenho abstrato.
 
-### P1 — ingestão documental, sem gambiarra
+Manter como regressão obrigatória:
 
-Depois do piloto, PDF/imagem/OCR pode ser o próximo salto funcional, mas deve entrar como **subsystem de ingestão** com MIME/extensões, limites, parser/OCR controlado, arquivo malformado fail-closed, sanitização, storage privado, retenção, estados de processamento/retry e separação entre texto extraído e interpretação clínica.
+1. CI completo;
+2. Browser E2E nos três shards;
+3. Pages quando houver alteração de runtime;
+4. QA viewport-aware para superfícies WebGL;
+5. correção somente de atrito reproduzível ou requisito explícito.
 
-Até isso existir, a UI continua honesta: **TXT/MD/texto local apenas**.
+### P1 — ingestão documental, sem gambiarra — **PRÓXIMO TRABALHO**
+
+Antes de habilitar PDF/imagem/OCR, criar uma fronteira canônica de ingestão:
+
+1. extrair de `ReportIntake` a responsabilidade de validar/ler arquivos TXT/MD;
+2. criar `src/ingestion/` com contratos tipados de source, resultado e erro;
+3. separar `arquivo → validação → extração de texto → aplicação no relatório → interpretação anatômica`;
+4. manter `src/product/constraints.ts` como autoridade de limites compartilhados;
+5. tratar formato, tamanho, leitura e payload malformado fail-closed;
+6. proteger o comportamento TXT/MD atual com testes de contrato + Browser E2E antes de adicionar novos formatos;
+7. somente depois integrar PDF com parser controlado e limite próprio;
+8. imagem/OCR vem depois do PDF, com estados explícitos de processamento/retry/erro;
+9. texto extraído deve ser visível/editável antes de análise clínica; extração nunca equivale a interpretação nem confirmação;
+10. storage privado, retenção e dados reais continuam fora até o gate de produção clínica.
+
+Até essa sequência existir, a UI continua honesta: **TXT/MD/texto local apenas**.
 
 ### P2 — produção clínica
 
@@ -208,7 +222,7 @@ Somente depois da fronteira backend existir. Deve retornar estrutura validável,
 
 ## 6. Critério desta fase
 
-O MVP browser sintético já é tecnicamente utilizável para piloto sintético. O trabalho atual é **lapidar o uso real**, não adicionar módulos grandes nem refatorar por abstração.
+O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. A próxima evolução funcional é a fundação da ingestão documental, preservando todos os gates atuais.
 
 Produção clínica continua fora deste gate.
 
