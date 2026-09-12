@@ -26,7 +26,7 @@ export async function ingestLocalReportFile(
 ): Promise<TextDocumentIngestionResult> {
   if (isDemoPdfFilenameAllowed(file.name)) {
     const { ingestLocalPdfFile } = await import('./pdf')
-    return ingestLocalPdfFile(file)
+    return ingestLocalPdfFile(file, options)
   }
 
   if (isDemoImageFilenameAllowed(file.name)) {
