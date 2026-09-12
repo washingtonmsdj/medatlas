@@ -99,11 +99,15 @@ function navigationAccessibleLabel(item: ClinicalModuleName) {
     : navigationLabel(item)
 }
 
+function isMobileOverflowItem(item: ClinicalModuleName) {
+  return MOBILE_OVERFLOW_ITEMS.includes(
+    item as (typeof MOBILE_OVERFLOW_ITEMS)[number],
+  )
+}
+
 export function ClinicalSidebar({ active, organizationName, workspaceName, unitName, onNavigate }: Props) {
   const [mobileOverflowOpen, setMobileOverflowOpen] = useState(false)
-  const mobileOverflowActive = MOBILE_OVERFLOW_ITEMS.includes(
-    active as (typeof MOBILE_OVERFLOW_ITEMS)[number],
-  )
+  const mobileOverflowActive = isMobileOverflowItem(active)
 
   const navigate = (item: ClinicalModuleName) => {
     setMobileOverflowOpen(false)
@@ -128,7 +132,12 @@ export function ClinicalSidebar({ active, organizationName, workspaceName, unitN
           <button
             key={item}
             type="button"
-            className={active === item ? 'active' : ''}
+            className={[
+              active === item ? 'active' : '',
+              isMobileOverflowItem(item)
+                ? 'clinical-sidebar-mobile-overflow-item'
+                : '',
+            ].filter(Boolean).join(' ')}
             aria-label={navigationAccessibleLabel(item)}
             aria-current={active === item ? 'page' : undefined}
             onClick={() => navigate(item)}
