@@ -15,6 +15,15 @@ export const DEMO_CONSTRAINTS = {
     extensions: ['.pdf'] as const,
     mimeTypes: ['application/pdf'] as const,
   },
+  localPdfOcr: {
+    maxPages: 8,
+    maxRenderScale: 2,
+    maxRenderDimension: 2400,
+    maxRenderPixelsPerPage: 2_500_000,
+    maxTotalRenderPixels: 16_000_000,
+    maxEmbeddedImagePixels: 12_000_000,
+    maxExtractedTextBytes: 64 * 1024,
+  },
   localImage: {
     maxBytes: 6 * 1024 * 1024,
     maxDimension: 4096,
@@ -130,6 +139,10 @@ export function formatDemoPdfFileLimit() {
 
 export function formatDemoPdfPageLimit() {
   return `${DEMO_CONSTRAINTS.localPdf.maxPages} páginas`
+}
+
+export function formatDemoPdfOcrPageLimit() {
+  return `${DEMO_CONSTRAINTS.localPdfOcr.maxPages} páginas`
 }
 
 export function formatDemoImageFileLimit() {
