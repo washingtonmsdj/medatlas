@@ -70,9 +70,11 @@ export async function ingestLocalTextFile(
     ok: true,
     document: {
       source: 'local-file',
+      format: 'text',
       fileName: file.name,
       mimeType: file.type,
-      bytes: validation.bytes,
+      bytes: buffer.byteLength,
+      extractedTextBytes: validation.bytes,
       text,
     },
   }
