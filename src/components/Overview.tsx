@@ -116,13 +116,13 @@ export function Overview({
   const kpis = [
     {
       icon: 'report' as const,
-      value: `v${report.version}`,
-      label: 'Relatório em andamento',
-      detail: presentation.statusLabel,
+      value: '1',
+      label: 'Relatório atual',
+      detail: `Versão v${report.version} · ${presentation.statusLabel}`,
     },
     {
       icon: 'clock' as const,
-      value: String(pendingSteps.length).padStart(2, '0'),
+      value: String(pendingSteps.length),
       label: 'Aguardando ação',
       detail: currentStep?.label ?? 'Fluxo concluído',
     },
