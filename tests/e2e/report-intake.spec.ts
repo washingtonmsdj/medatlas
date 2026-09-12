@@ -110,7 +110,7 @@ test('extracts a local PDF into editable text without auto-running anatomy analy
   const editor = page.getByRole('textbox', {
     name: 'Texto do laudo ou relatório',
   })
-  await expect(editor).toContainText('Laudo sintetico sobre L4-L5.')
+  await expect(editor).toHaveValue('Laudo sintetico sobre L4-L5.')
   await expect(page.getByText('laudo.pdf')).toBeVisible()
   await expect(page.getByText(/1 página · .* bytes extraídos/)).toBeVisible()
   await expect(page.getByRole('button', { name: 'Encontrar anatomia' })).toBeEnabled()
