@@ -9,14 +9,10 @@ import { demoShareTtlLabel } from '../product/constraints'
 import { WorkspacePageHeader } from './WorkspacePageHeader'
 
 interface Props {
-  onNewReport: () => void
   onSharesCleared: () => void
 }
 
-export function DemoSettings({
-  onNewReport,
-  onSharesCleared,
-}: Props) {
+export function DemoSettings({ onSharesCleared }: Props) {
   const [shareCount, setShareCount] = useState(() =>
     getActivePatientShareCount(),
   )
@@ -113,16 +109,6 @@ export function DemoSettings({
         <summary>Licenças e atribuições do Atlas</summary>
         <AttributionNotice />
       </details>
-
-      <div className="settings-actions">
-        <div>
-          <strong>Novo relatório</strong>
-          <span>Inicie um novo fluxo clínico visual.</span>
-        </div>
-        <button className="primary" type="button" onClick={onNewReport}>
-          Criar relatório
-        </button>
-      </div>
     </section>
   )
 }
