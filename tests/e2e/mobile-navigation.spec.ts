@@ -1,16 +1,41 @@
 import { expect, test } from '@playwright/test'
 
-test('mobile navigation exposes off-screen modules through an explicit overflow control', async ({
+test('mobile navigation exposes secondary modules only through an explicit overflow control', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
   const sidebar = page.locator('.clinical-sidebar')
+  const primaryNav = sidebar.getByRole('navigation', {
+    name: 'Navegação principal',
+  })
   const more = sidebar.getByRole('button', { name: 'Mais módulos' })
 
   await expect(more).toBeVisible()
   await expect(more).toHaveAttribute('aria-expanded', 'false')
+  await expect(
+    primaryNav.getByRole('button', { name: 'Visão geral' }),
+  ).toBeVisible()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Pacientes' }),
+  ).toBeVisible()
+
+  const mobileOverflowItems = primaryNav.locator(
+    '.clinical-sidebar-mobile-overflow-item',
+  )
+  await expect(mobileOverflowItems).toHaveCount(5)
+  for (let index = 0; index < 5; index += 1) {
+    await expect(mobileOverflowItems.nth(index)).toBeHidden()
+  }
+
+  const navGeometry = await primaryNav.evaluate((element) => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+    scrollLeft: element.scrollLeft,
+  }))
+  expect(navGeometry.scrollWidth).toBeLessThanOrEqual(navGeometry.clientWidth + 1)
+  expect(navGeometry.scrollLeft).toBe(0)
 
   const sidebarBox = await sidebar.boundingBox()
   const moreBox = await more.boundingBox()
@@ -25,6 +50,9 @@ test('mobile navigation exposes off-screen modules through an explicit overflow 
 
   const overflow = page.locator('#clinical-sidebar-more-menu')
   await expect(overflow).toBeVisible()
+  await expect(
+    overflow.getByRole('button', { name: 'Laudos' }),
+  ).toBeVisible()
   await expect(
     overflow.getByRole('button', { name: 'Atlas 3D' }),
   ).toBeVisible()
@@ -43,6 +71,17 @@ test('mobile navigation exposes off-screen modules through an explicit overflow 
     page.getByRole('heading', { name: 'Desempenho dos relatórios' }),
   ).toBeVisible()
   await expect(overflow).toHaveCount(0)
+  await expect(more).toHaveClass(/active/)
+
+  const activeNavGeometry = await primaryNav.evaluate((element) => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+    scrollLeft: element.scrollLeft,
+  }))
+  expect(activeNavGeometry.scrollWidth).toBeLessThanOrEqual(
+    activeNavGeometry.clientWidth + 1,
+  )
+  expect(activeNavGeometry.scrollLeft).toBe(0)
 
   await more.click()
   await page
