@@ -49,27 +49,32 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [x] rascunho educacional + edição + aprovação clínica obrigatória;
 - [x] preview do paciente antes da publicação;
 - [x] preview pendente não se apresenta como revisão concluída;
-- [x] portal publicado e links inválidos/revogados permanecem autocontidos, sem rota artificial de volta ao shell clínico;
+- [x] portal publicado e links inválidos/revogados permanecem autocontidos;
 - [x] share demo opaco, versionado, temporário e revogável;
 - [x] Analytics local demo;
 - [x] Equipe/permissões sem mutações fake;
 - [x] Configurações demo deixam branding/estado não persistente explicitamente read-only;
-- [x] ação `Novo relatório` permanece canônica no Dashboard/busca global, sem launcher duplicado em Configurações;
-- [x] navegação mobile prioriza `Visão geral` + `Pacientes` e mantém módulos secundários acessíveis via `Mais`;
+- [x] ação `Novo relatório` permanece canônica no Dashboard/busca global, sem launcher duplicado;
+- [x] navegação mobile prioriza `Visão geral` + `Pacientes` e mantém módulos secundários via `Mais`;
 - [x] modo paciente usa contexto anatômico regional coerente sem alterar o FMA confirmado;
 - [x] responsividade desktop/mobile e axe/WCAG protegidos por Browser E2E;
 - [x] GitHub Pages publicado e verificado em Chromium;
-- [x] ingestão local limitada honestamente a texto/TXT/MD;
-- [x] limite de 64 KiB aplicado por bytes UTF-8 no arquivo, editor e controlador;
-- [x] `src/ingestion/` é a fronteira tipada de arquivo → validação → extração para TXT/MD;
+- [x] ingestão local de texto digitado/colado, TXT, MD e **PDF textual**, sem upload;
+- [x] TXT/MD e texto do editor limitados a 64 KiB por bytes UTF-8;
+- [x] PDF limitado a **8 MiB, 50 páginas e 64 KiB de texto extraído**;
+- [x] PDF valida extensão, MIME, assinatura `%PDF-`, tamanho, páginas, criptografia, estrutura e texto extraível fail-closed;
+- [x] PDF.js `6.3.289` fica pinado, local e lazy; worker não depende de CDN;
+- [x] parser/worker PDF têm budget separado e não aumentam o budget do core inicial;
+- [x] licença Apache-2.0 do PDF.js é validada e distribuída em `dist/licenses/pdfjs-LICENSE.txt`;
+- [x] `src/ingestion/` é a fronteira tipada de arquivo → validação → extração para TXT/MD/PDF;
 - [x] `ReportIntake` não lê bytes de arquivo diretamente;
-- [x] extensão, MIME, tamanho e UTF-8 inválido falham fechado antes de substituir o último texto válido;
+- [x] falha de ingestão preserva o último texto válido;
+- [x] importar arquivo apenas produz texto editável; não executa análise anatômica, não confirma FMA e não publica;
 - [x] piloto visual com capturas reais do Browser E2E gerando correções concretas de UX.
 
 ### Fora do MVP browser atual
 
-- [ ] PDF;
-- [ ] imagem/OCR;
+- [ ] imagem/OCR e PDF escaneado sem camada textual;
 - [ ] autenticação real;
 - [ ] Supabase de produção ativo;
 - [ ] armazenamento clínico real;
@@ -79,7 +84,7 @@ O wedge é **comunicação clínica visual entre profissional e paciente**. MedA
 - [ ] convites/mutações reais de equipe;
 - [ ] piloto clínico com dados reais.
 
-Esses itens **não podem ser simulados por botões fake, hardcode ou parser improvisado**.
+Esses itens **não podem ser simulados por botões fake, hardcode, parser improvisado ou dependência remota silenciosa**.
 
 ## 2. Invariantes
 
@@ -100,71 +105,80 @@ Esses itens **não podem ser simulados por botões fake, hardcode ou parser impr
 15. IDs FMA e detalhes de implementação não pertencem à superfície primária do paciente.
 16. Atlas completo preserva caso → corpo → detalhe enquanto houver largura útil.
 17. Não ressuscitar CSS morto/tema paralelo para vencer cascade.
-18. PDF/imagem só entram com subsystem seguro de ingestão.
+18. PDF/imagem só entram por subsystem seguro de ingestão.
 19. Supabase/auth/IA remota só entram com gates próprios.
 20. Prévia sem aprovação clínica comunica **pendência**, nunca sucesso ou autoria inexistente.
 21. Ação já concluída não deve competir visualmente com o próximo CTA real do fluxo.
-22. Portal do paciente publicado é uma experiência autocontida; retorno explícito ao profissional existe apenas na prévia interna.
-23. Em mobile, módulos secundários não podem desaparecer: ficam atrás de `Mais` e os testes devem navegar pelo mesmo caminho do usuário.
-24. QA visual de WebGL deve observar a superfície como o usuário a observa: renderers pausados fora do viewport não devem ser tratados como falha só porque uma captura `fullPage` não provocou interseção/scroll.
-25. Não remover `IntersectionObserver`/pausa offscreen para “consertar” screenshots; preservar a economia de GPU e testar o primeiro frame quando a superfície entra no viewport.
-26. Ausência de modelo 3D suplementar nunca deve sugerir que a anatomia clínica confirmada está errada ou precisa ser trocada.
-27. Superfícies do paciente devem priorizar **contexto anatômico espacial/regional** ao redor da estrutura confirmada; nunca trocar o conceito FMA para obter um enquadramento visual melhor.
-28. Ações globais do fluxo, como `Novo relatório`, não devem reaparecer como launcher local em módulos sem semântica própria para aquela ação.
-29. Ingestão documental deve separar arquivo, validação, extração de texto e interpretação clínica; parser/OCR não pertence ao componente React nem pode publicar diretamente no workflow clínico.
+22. Portal do paciente publicado é autocontido; retorno explícito ao profissional existe apenas na prévia interna.
+23. Em mobile, módulos secundários não podem desaparecer: ficam atrás de `Mais` e os testes devem navegar pelo caminho real.
+24. QA visual de WebGL deve observar a superfície como o usuário: renderer pausado fora do viewport não é falha.
+25. Não remover `IntersectionObserver`/pausa offscreen para “consertar” screenshots.
+26. Ausência de modelo 3D suplementar nunca deve sugerir que a anatomia clínica confirmada está errada.
+27. Superfícies do paciente priorizam contexto anatômico espacial/regional sem trocar o conceito FMA confirmado.
+28. Ações globais do fluxo não devem reaparecer como launcher local sem semântica própria.
+29. Ingestão documental separa arquivo, validação, extração de texto e interpretação clínica; parser/OCR não pertence ao componente React nem publica diretamente.
 30. `ReportIntake` não pode ler bytes de arquivo diretamente; decoding/extraction pertence a `src/ingestion/`.
 31. Falha de ingestão nunca substitui o último texto válido do laudo.
 32. Texto extraído continua sendo **entrada editável**, nunca confirmação anatômica, diagnóstico, revisão ou publicação.
+33. PDF.js e seu worker permanecem **locais e lazy**; não introduzir fetch de parser/worker/core por CDN ou serviço remoto.
+34. PDF deve falhar fechado por extensão/MIME, limite de 8 MiB, assinatura `%PDF-`, limite de 50 páginas, limite de 64 KiB extraídos, senha, documento malformado ou ausência de texto extraível.
+35. Importar PDF não pode executar `Encontrar anatomia`, confirmar FMA, aprovar conteúdo ou publicar; apenas preenche a fonte textual editável.
+36. Parser e worker PDF têm budgets opcionais próprios; não afrouxar o budget do core para absorvê-los. A licença Apache-2.0 deve acompanhar o artefato distribuído.
+37. OCR, quando entrar, deverá ser local/vendorizado, lazy e limitado; worker/core/modelos de idioma não podem depender de CDN por padrão, e o resultado continua passando pelo editor antes da interpretação clínica.
 
 ## 3. Correções MVP consolidadas
 
 ### 3.1 Intake — limite real de 64 KiB
 
-A UI e o controlador compartilham a mesma autoridade de limite por bytes UTF-8 para texto digitado/colado e arquivo TXT/MD. Browser E2E protege a barreira.
+A UI e o controlador compartilham a mesma autoridade de limite por bytes UTF-8 para texto digitado/colado e TXT/MD. Browser E2E protege a barreira.
 
 ### 3.2 Portal do paciente — revisão e isolamento corretos
 
-`PatientReportPage` só apresenta conteúdo como revisado quando existe conclusão real + `reviewApproval`. Prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor e usa semântica visual de warning.
+`PatientReportPage` só apresenta conteúdo como revisado quando existe conclusão real + `reviewApproval`. Prévia pendente mostra `REVISÃO PENDENTE`, não inventa revisor e usa semântica de warning.
 
 A prévia interna mantém uma única ação `Voltar ao profissional`. O portal publicado, links inválidos e shares revogados não oferecem retorno artificial ao shell clínico.
 
-### 3.3 Piloto visual — contraste, hierarquia e QA fiel ao viewport
+### 3.3 Piloto visual — decisões preservadas
 
-O pente-fino usando **capturas reais do Browser E2E** encontrou problemas que os testes funcionais, sozinhos, não evidenciavam:
-
-1. **CTAs primários com baixo contraste** — `src/styles/action-state.css` é a autoridade explícita de estado visual das ações primárias/desabilitadas.
-2. **Painéis laterais do Atlas com baixo contraste** — `src/styles/reference-atlas-contrast.css` corrige contraste sem tocar no renderer/anatomia.
-3. **Prévia do paciente com duas saídas** — ficou uma única rota de retorno no preview e nenhuma no portal publicado.
-4. **`Encontrar anatomia` competia depois da confirmação** — após anatomia confirmada vira `Reanalisar laudo`, visualmente secundária; quando `anatomyReviewRequired=true`, volta a `Encontrar anatomia` como ação primária.
-5. **Navegação mobile instável/densa** — `Visão geral` e `Pacientes` permanecem primários; `Laudos`, `Atlas 3D`, `Equipe`, `Analytics` e `Configurações` ficam em `Mais`, sem alterar desktop.
-6. **Suite responsiva foi truncada por uma edição concorrente** — restaurada integralmente em `f8acc60de0f66b163de843a65da8edbe57d5969d`; não aceitar novamente cobertura parcial como PASS.
-7. **Gate do Pages ficou desatualizado após o novo `Mais`** — corrigido em `3e9a88d4284cb23a17e50869f20db3b1a3cc4678` para percorrer a navegação mobile real.
-8. **Dashboard mobile parecia ter 3D vazio no screenshot full-page** — a causa era a pausa offscreen via `IntersectionObserver`, não o renderer/câmera. O experimento de readiness foi revertido. `tests/e2e/visual-3d-visibility.spec.ts` traz o 3D para o viewport e `dashboard-3d-mobile-visible-390.png` confirmou L4–L5 renderizado e interativo no mobile.
-9. **Studio tinha duas ações equivalentes de `Prévia do paciente` na mesma superfície** — a ação prematura do cabeçalho foi removida em `ada30f49a08884d6c75351a1ceb94204295474a3`; permanece a prévia contextual da etapa 03 e o acesso global do topo. `report-explanation.spec.ts` exige uma única prévia dentro do workspace.
-10. **Atlas pedia “Selecione um órgão compatível” para Disco L4–L5 já confirmado** — `36a774f5bdc991d1ea228535cfc58bea4208a7fa` separa anatomia clínica de detalhe suplementar. Para estruturas sem modelo extra, o painel informa `Detalhe 3D adicional não disponível`, mantém a estrutura no corpo completo e não induz troca de anatomia.
-11. **Portal publicado parecia ter WebGL vazio em captura full-page** — `tests/e2e/visual-patient-portal-visibility.spec.ts` passa a trazer `#patient-anatomy` para o viewport e capturar a superfície observável. A evidência `patient-portal-anatomy-visible.png` confirmou o Human Atlas renderizado; o vazio antigo era artefato de QA offscreen.
-12. **Pacientes/portal mostravam L4–L5 fragmentado e pequeno** — a causa era `contextMode="system"`, que fornecia contexto inadequado para o enquadramento correto da câmera. `PatientsModule` e `PatientReportPage` agora usam `region`, preservando o mesmo FMA e contexto local limitado. As capturas passaram a mostrar coluna lombar/pelve coerentes como no Dashboard.
-13. **Dois contratos E2E estavam atrasados em relação ao produto** — mobile agora percorre `Mais → Laudos` e Configurações valida branding read-only em vez de esperar botão fake de edição. `87c44bdb8be43483608de2cd0da9a0d65945eecf` fechou CI/Browser completos.
-14. **Configurações duplicava `Novo relatório`** — o launcher local, prop associada e CSS morto foram removidos. Dashboard e busca global permanecem autoridades da ação. `mvp-ux-contracts.spec.ts` protege a ausência do launcher local e a presença da ação canônica no Dashboard.
-15. **Analytics e Equipe** — capturas desktop/mobile foram revisadas após as correções acima e não apresentaram atrito objetivo que justificasse nova mudança; não modificar por preferência estética sem nova evidência.
-
-Não esconder/rebaixar ações por suposição. Só corrigir após evidência do piloto e estado de domínio explícito.
+- `src/styles/action-state.css` é a autoridade explícita dos CTAs primários/desabilitados.
+- `src/styles/reference-atlas-contrast.css` protege contraste dos painéis do Atlas sem tocar no renderer.
+- Após confirmação, `Encontrar anatomia` vira `Reanalisar laudo` secundário; volta a primário quando a reconfirmação é necessária.
+- Mobile mantém `Visão geral` + `Pacientes` como primários e módulos secundários via `Mais`.
+- QA de WebGL é viewport-aware; `IntersectionObserver`/pausa offscreen são intencionais.
+- Studio mantém uma única prévia contextual por superfície.
+- Detalhe 3D suplementar nunca substitui a anatomia FMA confirmada.
+- Pacientes/portal usam `contextMode="region"` para contexto espacial sem trocar FMA.
+- Configurações não duplica `Novo relatório`; Dashboard/busca global são as autoridades.
+- Analytics e Equipe não devem ser redesenhados sem novo atrito reproduzível.
 
 ### 3.4 Fundação da ingestão documental — TXT/MD
 
-O primeiro checkpoint de P1 está concluído **sem habilitar PDF/OCR prematuramente**:
-
 - `src/ingestion/contracts.ts` define resultado tipado e códigos de falha;
-- `src/ingestion/local-text.ts` é a autoridade para ler arquivos locais TXT/MD;
-- `src/product/constraints.ts` centraliza extensões, MIME e limite de 64 KiB;
-- a leitura usa `arrayBuffer()` e `TextDecoder('utf-8', { fatal: true })`;
-- extensão, MIME declarado, tamanho antes/depois da leitura, UTF-8 e conteúdo mínimo falham fechado;
-- `ReportIntake` apenas chama a fronteira e apresenta mensagens; não decodifica arquivo;
-- falha de MIME/encoding preserva o último texto válido;
-- `scripts/validate-security-contract.mjs` proíbe leitura direta de bytes dentro de `ReportIntake` e exige as barreiras acima;
-- Browser E2E cobre `.txt` com MIME incompatível e payload UTF-8 inválido.
+- `src/ingestion/local-text.ts` é a autoridade para ler TXT/MD;
+- `src/product/constraints.ts` centraliza extensões, MIME e limites;
+- leitura usa `arrayBuffer()` + `TextDecoder('utf-8', { fatal: true })`;
+- extensão, MIME, tamanho, UTF-8 e conteúdo mínimo falham fechado;
+- `ReportIntake` somente chama a fronteira e apresenta o resultado;
+- falha preserva o último texto válido;
+- security contract proíbe leitura direta de bytes em `ReportIntake`;
+- Browser E2E cobre MIME incompatível, UTF-8 inválido e limite de 64 KiB.
 
-A aplicação do texto no relatório continua separada da interpretação: importar não executa `Encontrar anatomia`, não confirma FMA e não publica conteúdo.
+### 3.5 PDF textual local — concluído
+
+Implementação canônica:
+
+- `src/ingestion/local-report-file.ts` roteia por formato e carrega `./pdf` apenas via `await import(...)`;
+- `src/ingestion/pdf.ts` usa `pdfjs-dist` **6.3.289** e worker local `pdf.worker.min.mjs?url`;
+- não existe URL remota/fetch no parser de ingestão;
+- parser usa somente controles suportados pela API 6 e desliga recursos não necessários à extração textual (`useWasm`, XFA, fontes/canvas/image decoder e worker fetch);
+- valida extensão + MIME + tamanho antes do parse e assinatura `%PDF-` antes de entregar bytes ao PDF.js;
+- rejeita >8 MiB, >50 páginas, >64 KiB de texto extraído, senha, malformação e PDF sem texto;
+- PDF sem camada textual comunica explicitamente que imagem/OCR ainda não é suportado;
+- texto extraído entra no mesmo editor e continua separado de `Encontrar anatomia`;
+- parser (~431,9 KB) e worker (~1.265,4 KB) são opcionais/lazy; entry principal permaneceu ~347,9 KB;
+- `scripts/validate-bundle-budget.mjs` mantém budget do core separado dos budgets PDF;
+- `THIRD_PARTY_NOTICES.md`, gate de licença e build protegem Apache-2.0 e `dist/licenses/pdfjs-LICENSE.txt`;
+- Pages publicado testa um PDF real e exige worker resolvido em `/medatlas/assets/`.
 
 ## 4. Checkpoints e validação
 
@@ -173,72 +187,83 @@ A aplicação do texto no relatório continua separada da interpretação: impor
 Runtime: **`0f4fbb379719c05675787457370d9d6b01d8a11f`**.  
 Contrato: **`5a2c0a39f1f20839c55651b381470a439077c16e`**.
 
-- CI **`34699149431` — PASS completo**;
-- Browser E2E **`34699096707` — PASS completo nos três shards**;
-- GitHub Pages **`34699096669` — PASS completo**, incluindo fluxo 3D publicado;
-- artefato responsivo **`10299557362`** confirmou visualmente contexto lombar/pélvico coerente em Dashboard, Pacientes e portal publicado.
+- CI **`34699149431` — PASS**;
+- Browser **`34699096707` — PASS 3/3**;
+- Pages **`34699096669` — PASS**;
+- artefato **`10299557362`** confirmou contexto lombar/pélvico coerente.
 
 ### Baseline verde — piloto visual fechado
 
 Runtime: **`eaa541b69040b86c84194ddfaa3cfcbe8af54692`**.  
 HEAD de testes: **`83c42ab56eb8cecdaf2916571650ac9124b98374`**.
 
-- CI **`34701927508` — PASS completo**;
-- Browser E2E **`34701927501` — PASS completo**;
-- GitHub Pages **`34701462500` — PASS completo**;
-- artefato responsivo **`10300078764`** confirmou Configurações sem o launcher duplicado e sem quebra visual em desktop/mobile.
+- CI **`34701927508` — PASS**;
+- Browser **`34701927501` — PASS**;
+- Pages **`34701462500` — PASS**;
+- artefato **`10300078764`** confirmou Configurações sem launcher duplicado e sem quebra responsiva.
 
-### Baseline verde atual — fundação de ingestão P1
+### Baseline verde — fundação TXT/MD
 
-Runtime TXT/MD: **`795416df188e0b8f60dbec27a314845d0187fa84`**.  
-E2E de rejeição: **`fbf5566770e9f96dcb24a997a8613bd1e32d9790`**.  
-Security/contrato: **`11a3ac4810e409097d6f76642a3080f5c91c2acd`**.
+Runtime: **`795416df188e0b8f60dbec27a314845d0187fa84`**.  
+E2E: **`fbf5566770e9f96dcb24a997a8613bd1e32d9790`**.  
+Security: **`11a3ac4810e409097d6f76642a3080f5c91c2acd`**.
 
-- CI **`34704644495` — PASS completo**, incluindo novo `validate:security-contract`, TypeScript, build e bundle budget;
-- Browser E2E **`34704614163` — PASS completo**:
-  - `clinical-flow` — PASS, incluindo MIME incompatível e UTF-8 inválido;
-  - `responsive-layout` — PASS;
-  - `supporting-contracts` — PASS;
-- GitHub Pages do runtime **`34702511026` — PASS completo**, incluindo verificação Chromium do fluxo 3D publicado.
+- CI **`34704644495` — PASS**;
+- Browser **`34704614163` — PASS 3/3**;
+- Pages **`34702511026` — PASS**.
 
-O CI intermediário **`34702511028`** falhou porque o security contract ainda exigia a arquitetura antiga (`file.text()` dentro de `ReportIntake`). O gate foi corrigido para proteger a nova fronteira em vez de ser afrouxado. Não classificar isso como regressão do runtime.
+### Baseline verde atual — PDF textual local
+
+Runtime/parser: **`75fbc18ac73d97f376e20e8c343d996ba443dfd4`**.  
+UI/roteamento: **`8a7c4c8eab243681290f79ff2fedfd8f74898f6a`**.  
+Controles PDF.js 6: **`667357f582b338d1888170f5514cdcb29d7cb435`**.  
+Distribuição/licença: **`a95458a8ccb34f99eddbe656f6324088aa88b52a`**.  
+HEAD final de regressão: **`1b8ae472ba42a83aad59d0ab407c9f3c9ce7342f`**.
+
+- CI **`34714504072` — PASS completo**;
+- Browser E2E **`34714504043` — PASS completo nos três shards**, incluindo TXT corrigido, PDF real e PDF >8 MiB fail-closed;
+- GitHub Pages **`34708932045` — PASS completo**, incluindo PDF textual real no deploy e worker carregado corretamente sob `/medatlas/assets/`;
+- build observado: entry ~347,9 KB; parser PDF lazy ~431,9 KB; worker local ~1.265,4 KB.
+
+O Browser intermediário **`34709060147`** teve 41/42 testes verdes e todos os casos PDF verdes. A única falha era um contrato TXT antigo procurando o label removido `Importar laudo de texto sintético`; foi corrigido em **`ff6a9dc0a656759abda1d78b5e88e9f1847d498a`**. Não foi regressão de runtime/PDF.
 
 ## 5. Próxima ordem de trabalho — foco MVP
 
 ### P0 — baseline do piloto sintético
 
-O pente-fino visual atual está fechado. Dashboard, Studio, Atlas, Pacientes, portal publicado, Analytics, Equipe e Configurações foram observados em capturas reais desktop/mobile. Não iniciar outro redesenho abstrato.
+O pente-fino visual atual está fechado. Não iniciar outro redesenho abstrato.
 
-Manter como regressão obrigatória:
+Regressão obrigatória:
 
 1. CI completo;
 2. Browser E2E nos três shards;
 3. Pages quando houver alteração de runtime;
-4. QA viewport-aware para superfícies WebGL;
+4. QA viewport-aware nas superfícies WebGL;
 5. correção somente de atrito reproduzível ou requisito explícito.
 
-### P1 — ingestão documental, sem gambiarra — **EM EXECUÇÃO**
+### P1 — ingestão documental, sem gambiarra — **PDF CONCLUÍDO / OCR É O PRÓXIMO GATE**
 
-Fundação TXT/MD concluída:
+Concluído:
 
-- [x] extrair de `ReportIntake` a responsabilidade de validar/ler arquivos;
-- [x] criar `src/ingestion/` com contratos tipados de resultado/erro;
-- [x] separar `arquivo → validação → extração de texto → aplicação no relatório → interpretação anatômica`;
-- [x] manter `src/product/constraints.ts` como autoridade de limites/extensões/MIME;
-- [x] tratar extensão, MIME, tamanho, leitura e UTF-8 fail-closed;
-- [x] proteger o comportamento atual com security contract + Browser E2E;
-- [x] preservar o último texto válido quando a ingestão falha.
+- [x] fronteira tipada em `src/ingestion/`;
+- [x] TXT/MD local fail-closed;
+- [x] PDF textual local com limites próprios;
+- [x] parser PDF mantido, pinado, local e lazy;
+- [x] extensão/MIME/assinatura/tamanho/páginas/texto/senha/malformação fail-closed;
+- [x] importação separada da análise anatômica;
+- [x] security contract + licença + Browser E2E + Pages publicado;
+- [x] budgets do PDF separados sem afrouxar o core.
 
-Próximo gate — **PDF, sem OCR ainda**:
+Próximo gate — **imagem/OCR, ainda não implementado**:
 
-1. definir limite próprio de arquivo/páginas/texto extraído para PDF;
-2. integrar parser PDF mantido e executado localmente, sem upload e sem `eval`/código remoto;
-3. validar extensão + MIME + assinatura `%PDF-` antes de parsear;
-4. tratar arquivo criptografado, sem texto, truncado/malformado e excesso de páginas/tamanho fail-closed;
-5. extrair texto para o mesmo contrato de documento e exibi-lo no editor antes de qualquer análise anatômica;
-6. carregar parser de forma lazy para não degradar o bundle inicial/3D;
-7. adicionar contratos de segurança, testes unitários/Browser e budget antes de expor `PDF` no `accept`/copy da UI;
-8. só depois avaliar imagem/OCR, com estados explícitos de processamento/retry/erro.
+1. definir formatos de imagem, tamanho, dimensões/pixels, páginas e orçamento de memória/CPU;
+2. escolher engine OCR mantida e fixar versão/proveniência/licença;
+3. worker/core/modelos de idioma devem ser **locais/vendorizados**, nunca CDN/default remoto;
+4. carregar OCR apenas sob demanda e fora do bundle inicial;
+5. adicionar progresso, cancelamento, timeout e erro explícito;
+6. manter resultado OCR limitado a 64 KiB e editável antes de qualquer análise anatômica;
+7. imagem/PDF escaneado não pode auto-confirmar anatomia, revisar nem publicar;
+8. adicionar security contract, Browser E2E, budget e teste no deploy antes de expor a capacidade na UI.
 
 Storage privado, retenção de dados reais e PHI continuam fora até o gate de produção clínica.
 
@@ -263,7 +288,7 @@ Somente depois da fronteira backend existir. Deve retornar estrutura validável,
 
 ## 6. Critério desta fase
 
-O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. A fundação de ingestão TXT/MD já está separada e protegida; o próximo salto funcional é PDF local controlado, mantendo texto extraído separado da interpretação clínica.
+O MVP browser sintético está **tecnicamente qualificado e visualmente estabilizado para piloto sintético**. TXT/MD e PDF textual local estão separados, limitados e protegidos. O próximo salto de P1 é **imagem/OCR local controlado**, sem alterar a autoridade clínica nem liberar dados reais.
 
 Produção clínica continua fora deste gate.
 
@@ -277,4 +302,7 @@ Produção clínica continua fora deste gate.
 - `docs/ANATOMY_ARCHITECTURE.md` — autoridade anatômica e 3D;
 - `src/ingestion/contracts.ts` — contrato tipado de ingestão;
 - `src/ingestion/local-text.ts` — fronteira TXT/MD local fail-closed;
-- `src/product/constraints.ts` — limites/extensões/MIME compartilhados do produto.
+- `src/ingestion/local-report-file.ts` — roteamento de formatos e lazy boundary;
+- `src/ingestion/pdf.ts` — extração PDF textual local fail-closed;
+- `src/product/constraints.ts` — limites/extensões/MIME compartilhados do produto;
+- `THIRD_PARTY_NOTICES.md` — provenance/licenças, incluindo PDF.js.
