@@ -47,7 +47,7 @@ O preview público do MVP está em:
 
 `https://washingtonmsdj.github.io/medatlas/`
 
-O workflow de Pages valida a publicação, os assets anatômicos, o fluxo 3D e a ingestão PDF publicada.
+O workflow de Pages valida a publicação, os assets anatômicos, o fluxo 3D, a ingestão PDF publicada e o OCR local publicado com integridade dos assets.
 
 ## Estado atual
 
@@ -57,11 +57,14 @@ O MVP já possui:
 - edição/colagem de texto de laudo;
 - importação local sintética `.txt`/`.md` com até **64 KiB por bytes UTF-8**, sem upload;
 - importação local de **PDF textual** com até **8 MiB**, **50 páginas** e **64 KiB de texto extraído**, sem upload;
+- importação local de **PNG/JPEG com OCR em português**, até **6 MiB**, **4096 px por lado**, **4,5 MP** e **64 KiB de texto extraído**, sem upload;
 - PDF.js `6.3.289` pinado, carregado de forma lazy, com worker local;
+- Tesseract.js `7.0.0` + modelo português pinados, locais e lazy, com worker direto same-origin (`workerBlobURL: false`);
 - validação PDF de extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha, malformação e presença de texto;
-- PDF escaneado sem camada textual rejeitado explicitamente enquanto imagem/OCR não está implementado;
+- validação de imagem por extensão, MIME, assinatura binária, tamanho e dimensões/pixels antes de carregar OCR;
+- PDF escaneado sem camada textual continua rejeitado explicitamente; OCR de PDF é uma etapa separada;
 - texto extraído sempre editável antes da análise anatômica;
-- falha de ingestão preservando o último texto válido;
+- falha/cancelamento de ingestão preservando o último texto válido;
 - Relatórios visuais concentrando ingestão local de laudo/exame e contexto da consulta;
 - módulo Pacientes funcional no modo sintético, derivado do relatório atual e sem persistência paralela;
 - triagem determinística de referências anatômicas;
@@ -76,7 +79,7 @@ O MVP já possui:
 - modos **Isolado**, **Sistema** e **Região**;
 - cache de chunks anatômicos;
 - assets Human Atlas e modelos detalhados vendorizados no próprio MedAtlas, com payload inicial controlado por lazy loading;
-- provenance + SHA-256 verificados no CI para Human Atlas e modelos detalhados;
+- provenance + SHA-256 verificados no CI para Human Atlas, modelos detalhados e assets OCR;
 - atribuição BodyParts3D CC BY 4.0 + Human Atlas MIT nas superfícies exigidas;
 - Browser E2E com Chromium cobrindo desktop, mobile, ingestão e handoff ao paciente;
 - gate axe/WCAG para violações serious/critical;
@@ -98,7 +101,7 @@ Todos os pacientes, profissionais, clínicas e laudos exibidos atualmente são *
 
 ## Ingestão documental local
 
-A ingestão não pertence ao componente React. `ReportIntake` apresenta a UI, mas leitura/decoding/parsing ficam em `src/ingestion/`.
+A ingestão não pertence ao componente React. `ReportIntake` apresenta a UI, mas leitura/decoding/parsing/OCR ficam em `src/ingestion/`.
 
 Fluxo atual:
 
@@ -107,7 +110,7 @@ arquivo local
    ↓
 validação de formato/limites
    ↓
-extração de texto
+extração de texto / OCR local
    ↓
 texto editável no relatório
    ↓
@@ -120,10 +123,13 @@ Arquivos suportados:
 | --- | --- | --- |
 | TXT/MD | 64 KiB UTF-8 | decoding fatal UTF-8 |
 | PDF textual | 8 MiB · 50 páginas · 64 KiB extraídos | PDF.js local/lazy |
+| PNG/JPEG | 6 MiB · 4096 px/lado · 4,5 MP · 64 KiB extraídos | Tesseract.js local/lazy em português |
 
 PDF rejeita fail-closed MIME/extensão incompatível, assinatura inválida, arquivo grande demais, excesso de páginas/texto, senha, malformação e ausência de texto extraível.
 
-**Imagem/OCR ainda não é suportado.** Um PDF escaneado não é enviado a serviço remoto e não vira texto por heurística improvisada.
+PNG/JPEG rejeitam fail-closed MIME/extensão incompatível, assinatura binária inválida, arquivo >6 MiB e dimensões/pixels acima dos limites antes de carregar o runtime OCR. Worker, core e `por.traineddata.gz` são servidos pelo próprio MedAtlas; não existe fallback silencioso para CDN. O OCR pode ser cancelado e falha/cancelamento preserva o último texto válido.
+
+**PDF escaneado ainda não recebe OCR.** PDF sem camada textual continua bloqueado explicitamente até existir um pipeline local por página com limites próprios.
 
 Importar arquivo nunca equivale a interpretar clinicamente: não executa automaticamente `Encontrar anatomia`, não confirma FMA, não aprova explicação e não publica.
 
@@ -156,6 +162,7 @@ npm run validate:demo-scenarios
 npm run validate:vendored-assets
 npm run validate:performance-budget
 npm run validate:security-contract
+npm run validate:ocr-contract
 npm run validate:ai-contract
 npm run validate:review-gate
 npm run validate:report-workflow
@@ -262,6 +269,8 @@ Alguns invariantes permanentes:
 - dados demo não devem compartilhar projeto/storage com dados clínicos reais;
 - `ReportIntake` não lê bytes diretamente;
 - parser PDF/worker não dependem de fetch remoto;
+- OCR valida bytes/dimensões antes de carregar Tesseract;
+- worker/core/modelo OCR são pinados, lazy e same-origin; worker direto não usa `blob:`;
 - falha de ingestão não apaga o último texto válido;
 - texto importado não vira confirmação clínica automática.
 
@@ -281,25 +290,30 @@ Preview público:
 https://washingtonmsdj.github.io/medatlas/
 ```
 
-`.github/workflows/pages.yml` publica a aplicação e executa Playwright contra o deploy real. O gate atual também importa um PDF textual sintético e verifica que o worker PDF é carregado pelo subpath correto `/medatlas/assets/`.
+`.github/workflows/pages.yml` publica a aplicação e executa Playwright contra o deploy real. O gate importa PDF textual e PNG sintéticos, verifica o worker PDF sob `/medatlas/assets/`, executa OCR real sob `/medatlas/ocr-assets/` e valida manifesto, tamanho e SHA-256 dos 8 assets OCR publicados.
 
-## Bundle PDF
+## Bundles PDF/OCR
 
-PDF.js não degrada o caminho inicial: o módulo de ingestão PDF é importado apenas quando um `.pdf` é selecionado.
+PDF.js e Tesseract não degradam o caminho inicial: ambos são carregados apenas quando o formato correspondente é selecionado.
 
-Build observado no checkpoint atual:
+Build observado no checkpoint OCR:
 
-- entry principal ~347,9 KB;
+- entry principal ~350,8 KB;
+- core JavaScript sem PDF ~961,1 KB;
 - parser PDF lazy ~431,9 KB;
-- worker PDF local ~1.265,4 KB.
+- worker PDF local ~1.265,4 KB;
+- conjunto distribuído de assets OCR: **21.780.497 bytes**;
+- pior conjunto necessário por uma execução OCR: ~**8,27 MB**, porque somente um fallback de core é escolhido.
 
-`scripts/validate-bundle-budget.mjs` mantém budgets separados para core, parser e worker. Não aumentar o budget do core para absorver PDF.
+`scripts/validate-bundle-budget.mjs` mantém budgets separados para core, PDF e OCR. Não aumentar o budget do core para absorver capacidades opcionais.
 
 ## Licenças e provenance
 
 - Human Atlas: MIT.
 - BodyParts3D 4.0: CC BY 4.0.
 - PDF.js `6.3.289`: Apache License 2.0; licença do pacote é validada e distribuída em `dist/licenses/pdfjs-LICENSE.txt`.
+- Tesseract.js `7.0.0` e `tesseract.js-core` `7.0.0`: Apache License 2.0.
+- `@tesseract.js-data/por` `1.0.0`: MIT.
 - `thebuggeddev/anatomy`: integração e modelos detalhados sob permissão específica registrada em `docs/UPSTREAM_ANATOMY.md`; não é tratada como licença open-source geral.
 
 Veja:
@@ -314,8 +328,8 @@ O plano executável e continuamente atualizado está em `URGENTE.md`.
 
 Próximas frentes:
 
-1. continuar o piloto sintético/manual, agora incluindo ingestão de PDF textual;
-2. próximo gate P1: imagem/OCR **local, vendorizado, lazy e limitado**, sem CDN/default remoto;
+1. continuar o piloto sintético/manual, agora incluindo TXT/MD/PDF textual e PNG/JPEG com OCR local;
+2. próximo gate P1: **PDF escaneado/image-only → rasterização local limitada → OCR por página**, sem CDN ou upload;
 3. preparar critérios do piloto clínico controlado;
 4. somente depois, projeto Supabase exclusivo do MedAtlas;
 5. provas de isolamento multi-tenant + autenticação;
