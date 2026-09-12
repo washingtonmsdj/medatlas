@@ -20,6 +20,7 @@ export const CLINICAL_NAV_ITEMS = [
 ] as const satisfies readonly ClinicalModuleName[]
 
 const MOBILE_OVERFLOW_ITEMS = [
+  'Relatórios visuais',
   'Atlas 3D',
   'Equipe',
   'Analytics',
