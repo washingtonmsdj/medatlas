@@ -8,6 +8,8 @@ const [
   contracts,
   metadata,
   ocr,
+  pdf,
+  scannedPdfOcr,
   router,
   intake,
   assetPrep,
@@ -17,6 +19,8 @@ const [
   read('src/ingestion/contracts.ts'),
   read('src/ingestion/image-metadata.ts'),
   read('src/ingestion/local-image-ocr.ts'),
+  read('src/ingestion/pdf.ts'),
+  read('src/ingestion/scanned-pdf-ocr.ts'),
   read('src/ingestion/local-report-file.ts'),
   read('src/components/ReportIntake.tsx'),
   read('scripts/prepare-ocr-assets.mjs'),
@@ -31,12 +35,22 @@ const required = [
   [constraints, 'maxExtractedTextBytes: 64 * 1024', 'image OCR text limit'],
   [constraints, "extensions: ['.png', '.jpg', '.jpeg'] as const", 'image extensions'],
   [constraints, "mimeTypes: ['image/png', 'image/jpeg'] as const", 'image MIME types'],
+  [constraints, 'localPdfOcr:', 'scanned PDF OCR constraints'],
+  [constraints, 'maxPages: 8', 'scanned PDF OCR page limit'],
+  [constraints, 'maxRenderScale: 2', 'scanned PDF render scale limit'],
+  [constraints, 'maxRenderDimension: 2400', 'scanned PDF render dimension limit'],
+  [constraints, 'maxRenderPixelsPerPage: 2_500_000', 'scanned PDF per-page pixel limit'],
+  [constraints, 'maxTotalRenderPixels: 16_000_000', 'scanned PDF total pixel limit'],
+  [constraints, 'maxEmbeddedImagePixels: 12_000_000', 'scanned PDF embedded-image limit'],
   [contracts, "| 'invalid-dimensions'", 'image dimension failure contract'],
-  [contracts, "| 'too-many-pixels'", 'image pixel failure contract'],
+  [contracts, "| 'too-many-pixels'", 'image/PDF pixel failure contract'],
+  [contracts, "| 'too-many-ocr-pages'", 'scanned PDF page failure contract'],
+  [contracts, "| 'render-failed'", 'scanned PDF render failure contract'],
   [contracts, "| 'ocr-runtime-unavailable'", 'OCR runtime failure contract'],
   [contracts, "| 'ocr-failed'", 'OCR recognition failure contract'],
   [contracts, "| 'cancelled'", 'OCR cancellation contract'],
   [contracts, "format: 'text' | 'pdf' | 'image'", 'image ingestion result identity'],
+  [contracts, 'ocrPageCount?: number', 'scanned PDF OCR provenance'],
   [contracts, 'signal?: AbortSignal', 'OCR abort signal contract'],
   [contracts, 'onOcrProgress?:', 'OCR progress contract'],
   [metadata, 'const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47', 'PNG signature gate'],
@@ -56,9 +70,28 @@ const required = [
   [ocr, 'validateDemoReportSource(text)', 'OCR text downstream validation'],
   [ocr, 'await worker.terminate()', 'OCR worker teardown'],
   [ocr, "format: 'image'", 'OCR image result identity'],
+  [pdf, "await import('./scanned-pdf-ocr')", 'lazy scanned PDF fallback'],
+  [pdf, 'ingestScannedPdfBuffer(file, buffer, options)', 'scanned PDF option propagation'],
+  [scannedPdfOcr, "from 'pdfjs-dist'", 'scanned PDF uses canonical PDF.js'],
+  [scannedPdfOcr, 'DEMO_CONSTRAINTS.localPdfOcr', 'scanned PDF central limits'],
+  [scannedPdfOcr, 'maxImageSize: limits.maxEmbeddedImagePixels', 'embedded image pixel cap'],
+  [scannedPdfOcr, 'pageRenderScale(', 'bounded PDF page scale'],
+  [scannedPdfOcr, 'limits.maxRenderPixelsPerPage', 'bounded PDF page pixels'],
+  [scannedPdfOcr, 'limits.maxTotalRenderPixels', 'bounded PDF total pixels'],
+  [scannedPdfOcr, "await import('./local-image-ocr')", 'reuse canonical image OCR boundary'],
+  [scannedPdfOcr, 'page.render({', 'local PDF rasterization'],
+  [scannedPdfOcr, "canvas.toBlob(resolve, 'image/jpeg', quality)", 'bounded raster handoff'],
+  [scannedPdfOcr, "format: 'pdf'", 'scanned PDF result identity'],
+  [scannedPdfOcr, 'ocrPageCount: pdf.numPages', 'scanned PDF OCR page provenance'],
+  [scannedPdfOcr, 'options.signal?.aborted', 'scanned PDF cancellation checks'],
+  [scannedPdfOcr, "renderTask.cancel()", 'PDF render cancellation'],
   [router, "await import('./local-image-ocr')", 'lazy image OCR routing'],
+  [router, "await import('./pdf')", 'lazy PDF routing'],
+  [router, 'return ingestLocalPdfFile(file, options)', 'PDF progress/cancel propagation'],
   [router, 'isDemoImageFilenameAllowed(file.name)', 'image OCR routing gate'],
   [intake, 'new AbortController()', 'OCR UI cancellation controller'],
+  [intake, 'isDemoPdfFilenameAllowed(file.name)', 'scanned PDF cancellation controller'],
+  [intake, 'isImage || isPdf ? new AbortController()', 'shared image/PDF OCR cancellation'],
   [intake, 'Cancelar OCR', 'OCR cancel UI'],
   [intake, 'Progresso do OCR local', 'OCR progress accessibility'],
   [intake, 'importingFile ||', 'anatomy analysis blocked during OCR'],
@@ -86,16 +119,35 @@ if (metadataIndex === -1 || runtimeIndex === -1 || metadataIndex > runtimeIndex)
   failures.push('image signature/dimension validation must happen before Tesseract is loaded')
 }
 
-if (/\bfetch\s*\(|new\s+XMLHttpRequest|https?:\/\//i.test(ocr)) {
-  failures.push('OCR ingestion must not fetch runtime/model assets from remote URLs')
+const scannedLimitsIndex = scannedPdfOcr.indexOf('pageRenderScale(')
+const scannedOcrIndex = scannedPdfOcr.indexOf("await import('./local-image-ocr')")
+if (
+  scannedLimitsIndex === -1 ||
+  scannedOcrIndex === -1 ||
+  scannedLimitsIndex > scannedOcrIndex
+) {
+  failures.push('scanned PDF render limits must be established before image OCR is loaded')
+}
+
+for (const [source, scope] of [
+  [ocr, 'image OCR ingestion'],
+  [scannedPdfOcr, 'scanned PDF OCR ingestion'],
+]) {
+  if (/\bfetch\s*\(|new\s+XMLHttpRequest|https?:\/\//i.test(source)) {
+    failures.push(`${scope} must not fetch runtime/model/document assets from remote URLs`)
+  }
 }
 
 if (router.includes("from './local-image-ocr'")) {
   failures.push('Tesseract OCR must remain dynamically imported, not eager-loaded')
 }
 
+if (pdf.includes("from './scanned-pdf-ocr'")) {
+  failures.push('scanned PDF OCR must remain dynamically imported after text extraction fails')
+}
+
 if (/\bfile\.(?:text|arrayBuffer)\s*\(/.test(intake)) {
-  failures.push('ReportIntake must not read image bytes; OCR decoding belongs to src/ingestion')
+  failures.push('ReportIntake must not read file bytes; OCR/PDF decoding belongs to src/ingestion')
 }
 
 if (!router.includes('...DEMO_CONSTRAINTS.localImage.extensions')) {
@@ -115,4 +167,5 @@ if (failures.length > 0) {
 console.log('MedAtlas OCR ingestion contract PASS')
 console.log('- PNG/JPEG are bounded and structurally validated before OCR runtime loading.')
 console.log('- Tesseract worker/core/Portuguese model are local, pinned, lazy and direct same-origin.')
-console.log('- OCR remains cancellable and separate from anatomy analysis.')
+console.log('- Image-only PDFs use bounded local PDF.js rasterization before the same OCR boundary.')
+console.log('- Scanned PDF OCR is page/pixel bounded, cancellable and separate from anatomy analysis.')
