@@ -1,0 +1,33 @@
+/* Full Atlas sits on the forest surface; keep its contextual copy readable without changing 3D rendering. */
+
+.reference-atlas-case-panel .reference-atlas-patient-heading strong,
+.reference-atlas-case-panel .reference-atlas-section-title strong,
+.reference-atlas-case-panel .reference-atlas-label,
+.reference-atlas-case-panel .reference-atlas-report-title,
+.reference-atlas-case-panel .reference-atlas-findings p,
+.reference-atlas-case-panel .reference-atlas-case-tab-content > strong {
+  color: var(--text-on-accent);
+}
+
+.reference-atlas-case-panel .reference-atlas-patient-heading small,
+.reference-atlas-case-panel .reference-atlas-case-scroll section > p,
+.reference-atlas-case-panel .reference-atlas-case-tab-content > small {
+  color: var(--brand-sage);
+}
+
+.reference-atlas-detail-panel .reference-atlas-detail-breadcrumb,
+.reference-atlas-detail-panel .reference-atlas-detail-breadcrumb button,
+.reference-atlas-detail-panel .reference-atlas-detail-heading small,
+.reference-atlas-detail-panel .reference-atlas-detail-content > p,
+.reference-atlas-detail-panel .reference-atlas-tab-copy > p,
+.reference-atlas-detail-panel .reference-atlas-detail-empty,
+.reference-atlas-detail-panel .reference-atlas-detail-empty p {
+  color: var(--brand-sage);
+}
+
+.reference-atlas-detail-panel .reference-atlas-detail-breadcrumb strong,
+.reference-atlas-detail-panel .reference-atlas-detail-breadcrumb b,
+.reference-atlas-detail-panel .reference-atlas-detail-heading strong,
+.reference-atlas-detail-panel .reference-atlas-detail-empty strong {
+  color: var(--text-on-accent);
+}
