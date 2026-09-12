@@ -283,7 +283,7 @@ Veja `docs/SECURITY.md`, `docs/PILOT.md` e `URGENTE.md`.
 
 ### Vercel
 
-`vercel.json` usa `npm ci`. O workflow manual `.github/workflows/preview-artifact.yml` gera pacote estático de preview sem duplicar binários anatômicos.
+`vercel.json` usa `npm ci` e mantém o build normal com os mesmos assets locais/same-origin do produto. Não existe mais um caminho paralelo de preview que remova os binários anatômicos ou abra exceção para `raw.githubusercontent.com`.
 
 ### GitHub Pages
 
@@ -331,10 +331,10 @@ O plano executável e continuamente atualizado está em `URGENTE.md`.
 
 Próximas frentes:
 
-1. concluir e repetir o piloto sintético/manual cobrindo TXT/MD, PDF textual, PDF escaneado e PNG/JPEG com OCR local;
-2. consolidar evidência publicada de Pages para o fallback OCR de PDF escaneado;
+1. concluir o gate do mesmo source em CI + Browser E2E + Pages e executar o piloto sintético/manual;
+2. corrigir somente atritos reproduzíveis encontrados no piloto, sem novo redesenho abstrato;
 3. preparar critérios do piloto clínico controlado;
-4. somente depois, projeto Supabase exclusivo do MedAtlas;
-5. provas de isolamento multi-tenant + autenticação;
-6. adapter Supabase do `ClinicalRepository`;
+4. somente com autorização explícita, iniciar o projeto Supabase exclusivo do MedAtlas;
+5. provar isolamento multi-tenant + autenticação antes de qualquer PHI;
+6. implementar o adapter Supabase do `ClinicalRepository` sem persistência paralela;
 7. ativar provedor de IA somente atrás do backend e dos gates já definidos.
