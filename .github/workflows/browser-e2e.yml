@@ -44,6 +44,7 @@ jobs:
               tests/e2e/clinical-flow.spec.ts
               tests/e2e/report-intake.spec.ts
               tests/e2e/report-explanation.spec.ts
+              tests/e2e/mvp-ux-contracts.spec.ts
               tests/e2e/share-revocation.spec.ts
           - suite: responsive-layout
             tests: >-
