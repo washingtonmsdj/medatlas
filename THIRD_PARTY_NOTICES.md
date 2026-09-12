@@ -16,6 +16,26 @@ MedAtlas preserves the upstream MIT text in:
 
 The binary decoding approach and BodyParts3D packaging contract used in `src/atlas/model.ts` are adapted from Human Atlas.
 
+## PDF.js
+
+Upstream: https://github.com/mozilla/pdf.js
+
+Pinned package/version used for local PDF text extraction:
+
+`pdfjs-dist@6.3.289`
+
+The PDF.js distribution is licensed under the Apache License 2.0. MedAtlas does not fetch PDF.js from a CDN at runtime: the parser is code-split and its worker is emitted as a local build asset.
+
+The production build copies the exact license shipped by the installed package from:
+
+`node_modules/pdfjs-dist/LICENSE`
+
+to the distributable artifact at:
+
+`dist/licenses/pdfjs-LICENSE.txt`
+
+PDF.js is used only to extract bounded local PDF text before clinical interpretation. Importing a PDF does not confirm anatomy, run OCR, approve clinical content or publish a patient report.
+
 ## BodyParts3D
 
 Anatomical data used by Human Atlas originates from BodyParts3D 4.0.
