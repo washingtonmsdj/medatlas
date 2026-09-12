@@ -7,11 +7,14 @@ import {
   REPORT_EXAMPLES,
   type ReportExample,
 } from '../clinical/demo-scenarios'
+import type { IngestionFailureCode } from '../ingestion/contracts'
 import {
-  DEMO_CONSTRAINTS,
+  ingestLocalTextFile,
+  LOCAL_TEXT_FILE_ACCEPT,
+} from '../ingestion/local-text'
+import {
   demoTextFormatLabel,
   formatDemoTextLimit,
-  isDemoTextFilenameAllowed,
   validateDemoReportSource,
 } from '../product/constraints'
 
@@ -25,6 +28,23 @@ interface Props {
   onLoadExample: (example: ReportExample) => void
   onAnalyze: () => void | Promise<void>
   onConfirmSuggestion: (suggestion: AnatomySuggestion) => void
+}
+
+function ingestionFailureMessage(code: IngestionFailureCode) {
+  switch (code) {
+    case 'unsupported-extension':
+      return 'Formato não suportado. Use um arquivo .txt ou .md.'
+    case 'unsupported-media-type':
+      return 'Tipo de arquivo incompatível com TXT/MD.'
+    case 'too-large':
+      return `Arquivo acima do limite de ${formatDemoTextLimit()}.`
+    case 'too-short':
+      return 'O arquivo não contém texto suficiente para análise.'
+    case 'invalid-encoding':
+      return 'O arquivo precisa estar em UTF-8 válido.'
+    case 'read-failed':
+      return 'Não foi possível ler o arquivo local.'
+  }
 }
 
 export function ReportIntake({
@@ -106,35 +126,15 @@ export function ReportIntake({
     setSourceTextError('')
     setFileName('')
 
-    if (!isDemoTextFilenameAllowed(file.name)) {
-      setFileError('Formato não suportado. Use um arquivo .txt ou .md.')
+    const result = await ingestLocalTextFile(file)
+
+    if (!result.ok) {
+      setFileError(ingestionFailureMessage(result.code))
       return
     }
 
-    if (file.size > DEMO_CONSTRAINTS.localText.maxBytes) {
-      setFileError(`Arquivo acima do limite de ${formatDemoTextLimit()}.`)
-      return
-    }
-
-    try {
-      const text = await file.text()
-      const validation = validateDemoReportSource(text)
-
-      if (!validation.ok && validation.reason === 'too-short') {
-        setFileError('O arquivo não contém texto suficiente para análise.')
-        return
-      }
-
-      if (!validation.ok && validation.reason === 'too-large') {
-        setFileError(`Arquivo acima do limite de ${formatDemoTextLimit()}.`)
-        return
-      }
-
-      onSourceTextChange(text)
-      setFileName(file.name)
-    } catch {
-      setFileError('Não foi possível ler o arquivo local.')
-    }
+    onSourceTextChange(result.document.text)
+    setFileName(result.document.fileName)
   }
 
   const analyzeLabel = anatomyReviewRequired
@@ -189,7 +189,7 @@ export function ReportIntake({
           <input
             aria-label="Importar laudo de texto sintético em TXT ou MD"
             type="file"
-            accept=".txt,.md,text/plain,text/markdown"
+            accept={LOCAL_TEXT_FILE_ACCEPT}
             onChange={(event) => void importLocalText(event)}
           />
           <span aria-hidden="true">↑</span>
