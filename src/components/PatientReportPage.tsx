@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
 import { deriveReportPresentation } from '../domain/report-presentation'
-import { appHomeUrl } from '../app-url'
 import type { AtlasView } from '../atlas/systems'
 import { resolveOrganDetail } from '../anatomy-detail/catalog'
 import type { PatientReportView } from '../domain/patient-report'
@@ -527,14 +526,6 @@ export function InvalidPatientLink() {
         <span className="section-kicker">LINK INDISPONÍVEL</span>
         <h1>Este link não está disponível.</h1>
         <p>O link pode ter expirado ou sido removido. Solicite um novo link à clínica.</p>
-
-        <button
-          className="primary"
-          type="button"
-          onClick={() => (window.location.href = appHomeUrl())}
-        >
-          Voltar ao MedAtlas
-        </button>
       </div>
     </main>
   )
