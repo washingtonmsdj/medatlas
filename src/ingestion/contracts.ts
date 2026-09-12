@@ -8,10 +8,12 @@ export type IngestionFailureCode =
   | 'invalid-dimensions'
   | 'too-many-pixels'
   | 'too-many-pages'
+  | 'too-many-ocr-pages'
   | 'too-much-text'
   | 'no-extractable-text'
   | 'encrypted-document'
   | 'malformed-document'
+  | 'render-failed'
   | 'ocr-runtime-unavailable'
   | 'ocr-failed'
   | 'cancelled'
@@ -26,6 +28,7 @@ export interface IngestedTextDocument {
   bytes: number
   extractedTextBytes: number
   pageCount?: number
+  ocrPageCount?: number
   width?: number
   height?: number
   ocrConfidence?: number
