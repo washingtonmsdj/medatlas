@@ -31,14 +31,38 @@ phone numbers, addresses, chart/prontuário numbers or other real identifiers.
 Browser storage is **not** a clinical storage system. The TTL and limit reduce
 demo residue; they do not make the demo suitable for PHI.
 
-## Local report-text import
+## Local report ingestion
 
-The demo accepts optional synthetic `.txt` / `.md` files up to 64 KB.
+The synthetic browser MVP accepts, without upload:
 
-The browser reads these files with the File API and copies only their text into
-the current in-memory report state. This MVP does not upload the selected file
-to a server. The same synthetic-only restriction applies: real patient reports
-must not be used.
+- `.txt` / `.md` up to **64 KiB** of valid UTF-8;
+- textual `.pdf` up to **8 MiB**, **50 pages** and **64 KiB** of extracted text;
+- `.png` / `.jpg` / `.jpeg` up to **6 MiB**, **4096 px per side**, **4.5 MP** and **64 KiB** of OCR text.
+
+`ReportIntake` does not decode file bytes. Parsing, structural validation and OCR
+belong to `src/ingestion/`.
+
+PDF ingestion validates extension, declared MIME, `%PDF-` signature, byte/page/text
+limits, password state and malformed input before accepting extracted text. PDF.js
+and its worker are local and lazy.
+
+Image ingestion validates extension/MIME binding, real PNG/JPEG signature, byte
+size and dimensions/pixel count **before** loading Tesseract. Tesseract.js/core and
+the Portuguese model are pinned, prepared from installed dependencies and served
+by the MedAtlas origin. The worker loads directly from the local OCR asset path
+with `workerBlobURL: false`; CDN/default-remote and `blob:` worker fallbacks are not
+part of the accepted runtime contract.
+
+OCR is cancellable. Failure or cancellation preserves the last valid report text.
+Successful extraction only fills editable source text; it does not run anatomy
+analysis, confirm FMA, approve content or publish.
+
+PDFs without an extractable text layer remain fail-closed. **Scanned/image-only PDF
+OCR is not implemented yet** and must not silently rasterize, upload or reuse an
+unbounded OCR path.
+
+The same synthetic-only restriction applies to every accepted format: real patient
+reports must not be used.
 
 ## Runtime/network boundary
 
@@ -50,12 +74,19 @@ The supplementary detailed-organ GLBs are separately vendored under
 `thebuggeddev/anatomy` checkpoint and records source Git blobs, byte sizes and
 SHA-256 digests.
 
+OCR runtime assets are generated under `public/ocr-assets/` from pinned npm
+dependencies. The generated manifest records source versions, byte sizes and
+SHA-256 digests for the eight allowed OCR runtime/model files. GitHub Pages
+verification downloads every published OCR asset and checks size + SHA-256 before
+running the deployed OCR test.
+
 Normal application runtime no longer fetches anatomy from
 `raw.githubusercontent.com` or either upstream repository. Detailed organ
 assets are lazy-loaded from the MedAtlas deployment only after explicit user
-navigation into organ detail.
+navigation into organ detail. OCR assets are likewise loaded only after a valid
+image passes the pre-runtime gates.
 
-Both vendored closures are pinned and verified by CI.
+Vendored/generated closures are pinned and verified by CI/deployment gates.
 
 ## Browser/deployment hardening
 
@@ -75,8 +106,8 @@ HTML-level CSP remains the minimum static-hosting boundary.
 
 ## Automated security contract
 
-`npm run validate:security-contract` fails if source changes remove core MVP
-invariants, including:
+`npm run validate:security-contract` and `npm run validate:ocr-contract` fail if
+source changes remove core MVP invariants, including:
 
 - synthetic-only repository mode;
 - demo-share TTL / local retention cap;
@@ -86,9 +117,17 @@ invariants, including:
 - empty example credentials;
 - no external Human Atlas runtime dependency;
 - no external detailed-organ runtime dependency;
-- vendored organ-model provenance and SHA-256 closure.
+- vendored organ-model provenance and SHA-256 closure;
+- no direct file-byte decoding in `ReportIntake`;
+- PDF parser/worker staying local and lazy;
+- PNG/JPEG structural/size/pixel validation before Tesseract loading;
+- pinned, lazy, same-origin OCR worker/core/Portuguese model;
+- direct OCR worker loading with `workerBlobURL: false`;
+- OCR cancellation remaining separate from clinical interpretation.
 
-Browser E2E separately proves that an expired demo share fails closed.
+Browser E2E separately proves expired-share denial, fail-closed ingestion and real
+Portuguese OCR without automatic clinical state transitions. Pages additionally
+proves the published OCR assets and same-origin runtime paths.
 
 ## Tenant isolation — production contract
 
