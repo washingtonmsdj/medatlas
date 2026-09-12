@@ -1,5 +1,36 @@
 import { expect, test } from '@playwright/test'
 
+test('desktop navigation exposes modules directly without overflow duplication', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await page.goto('/')
+
+  const sidebar = page.locator('.clinical-sidebar')
+  const primaryNav = sidebar.getByRole('navigation', {
+    name: 'Navegação principal',
+  })
+
+  await expect(
+    sidebar.getByRole('button', { name: 'Mais módulos' }),
+  ).toBeHidden()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Laudos · Relatórios visuais' }),
+  ).toBeVisible()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Atlas 3D' }),
+  ).toBeVisible()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Equipe' }),
+  ).toBeVisible()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Analytics' }),
+  ).toBeVisible()
+  await expect(
+    primaryNav.getByRole('button', { name: 'Configurações' }),
+  ).toBeVisible()
+})
+
 test('mobile navigation exposes secondary modules only through an explicit overflow control', async ({
   page,
 }) => {
