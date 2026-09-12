@@ -57,12 +57,13 @@ O MVP já possui:
 - edição/colagem de texto de laudo;
 - importação local sintética `.txt`/`.md` com até **64 KiB por bytes UTF-8**, sem upload;
 - importação local de **PDF textual** com até **8 MiB**, **50 páginas** e **64 KiB de texto extraído**, sem upload;
+- fallback local para **PDF escaneado/image-only**, limitado a **8 páginas de OCR**, rasterização controlada e **16 MP totais**, sem upload;
 - importação local de **PNG/JPEG com OCR em português**, até **6 MiB**, **4096 px por lado**, **4,5 MP** e **64 KiB de texto extraído**, sem upload;
 - PDF.js `6.3.289` pinado, carregado de forma lazy, com worker local;
 - Tesseract.js `7.0.0` + modelo português pinados, locais e lazy, com worker direto same-origin (`workerBlobURL: false`);
-- validação PDF de extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha, malformação e presença de texto;
+- validação PDF de extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha e malformação antes do fallback OCR;
 - validação de imagem por extensão, MIME, assinatura binária, tamanho e dimensões/pixels antes de carregar OCR;
-- PDF escaneado sem camada textual continua rejeitado explicitamente; OCR de PDF é uma etapa separada;
+- OCR de PDF escaneado reutilizando a mesma fronteira OCR local, com limites de páginas/pixels, progresso e cancelamento;
 - texto extraído sempre editável antes da análise anatômica;
 - falha/cancelamento de ingestão preservando o último texto válido;
 - Relatórios visuais concentrando ingestão local de laudo/exame e contexto da consulta;
@@ -123,13 +124,14 @@ Arquivos suportados:
 | --- | --- | --- |
 | TXT/MD | 64 KiB UTF-8 | decoding fatal UTF-8 |
 | PDF textual | 8 MiB · 50 páginas · 64 KiB extraídos | PDF.js local/lazy |
+| PDF escaneado/image-only | até 8 páginas OCR · 2400 px/lado renderizado · 2,5 MP/página · 16 MP totais | rasterização PDF.js local + Tesseract local/lazy |
 | PNG/JPEG | 6 MiB · 4096 px/lado · 4,5 MP · 64 KiB extraídos | Tesseract.js local/lazy em português |
 
-PDF rejeita fail-closed MIME/extensão incompatível, assinatura inválida, arquivo grande demais, excesso de páginas/texto, senha, malformação e ausência de texto extraível.
+PDF rejeita fail-closed MIME/extensão incompatível, assinatura inválida, arquivo grande demais, excesso de páginas/texto, senha e malformação. Quando não há camada textual, o pipeline tenta OCR local bounded; se o OCR não produzir texto suficiente, o arquivo continua rejeitado sem substituir o último texto válido.
 
 PNG/JPEG rejeitam fail-closed MIME/extensão incompatível, assinatura binária inválida, arquivo >6 MiB e dimensões/pixels acima dos limites antes de carregar o runtime OCR. Worker, core e `por.traineddata.gz` são servidos pelo próprio MedAtlas; não existe fallback silencioso para CDN. O OCR pode ser cancelado e falha/cancelamento preserva o último texto válido.
 
-**PDF escaneado ainda não recebe OCR.** PDF sem camada textual continua bloqueado explicitamente até existir um pipeline local por página com limites próprios.
+PDF escaneado usa rasterização local por página, limita quantidade de páginas, escala, dimensão e orçamento de pixels antes de repassar cada página à mesma fronteira OCR usada pelas imagens. Não existe upload nem fallback remoto.
 
 Importar arquivo nunca equivale a interpretar clinicamente: não executa automaticamente `Encontrar anatomia`, não confirma FMA, não aprova explicação e não publica.
 
@@ -270,6 +272,7 @@ Alguns invariantes permanentes:
 - `ReportIntake` não lê bytes diretamente;
 - parser PDF/worker não dependem de fetch remoto;
 - OCR valida bytes/dimensões antes de carregar Tesseract;
+- OCR de PDF escaneado limita rasterização/páginas/pixels e reutiliza a fronteira OCR local;
 - worker/core/modelo OCR são pinados, lazy e same-origin; worker direto não usa `blob:`;
 - falha de ingestão não apaga o último texto válido;
 - texto importado não vira confirmação clínica automática.
@@ -280,7 +283,7 @@ Veja `docs/SECURITY.md`, `docs/PILOT.md` e `URGENTE.md`.
 
 ### Vercel
 
-`vercel.json` usa `npm ci`. O workflow manual `.github/workflows/preview-artifact.yml` gera pacote estático de preview sem duplicar binários anatômicos.
+`vercel.json` usa `npm ci` e mantém o build normal com os mesmos assets locais/same-origin do produto. Não existe mais um caminho paralelo de preview que remova os binários anatômicos ou abra exceção para `raw.githubusercontent.com`.
 
 ### GitHub Pages
 
@@ -290,7 +293,7 @@ Preview público:
 https://washingtonmsdj.github.io/medatlas/
 ```
 
-`.github/workflows/pages.yml` publica a aplicação e executa Playwright contra o deploy real. O gate importa PDF textual e PNG sintéticos, verifica o worker PDF sob `/medatlas/assets/`, executa OCR real sob `/medatlas/ocr-assets/` e valida manifesto, tamanho e SHA-256 dos 8 assets OCR publicados.
+`.github/workflows/pages.yml` publica a aplicação e executa Playwright contra o deploy real. O gate importa PDF textual, PDF escaneado sintético e PNG sintético, verifica o worker PDF sob `/medatlas/assets/`, executa OCR real sob `/medatlas/ocr-assets/` e valida manifesto, tamanho e SHA-256 dos 8 assets OCR publicados.
 
 ## Bundles PDF/OCR
 
@@ -328,10 +331,10 @@ O plano executável e continuamente atualizado está em `URGENTE.md`.
 
 Próximas frentes:
 
-1. continuar o piloto sintético/manual, agora incluindo TXT/MD/PDF textual e PNG/JPEG com OCR local;
-2. próximo gate P1: **PDF escaneado/image-only → rasterização local limitada → OCR por página**, sem CDN ou upload;
+1. concluir o gate do mesmo source em CI + Browser E2E + Pages e executar o piloto sintético/manual;
+2. corrigir somente atritos reproduzíveis encontrados no piloto, sem novo redesenho abstrato;
 3. preparar critérios do piloto clínico controlado;
-4. somente depois, projeto Supabase exclusivo do MedAtlas;
-5. provas de isolamento multi-tenant + autenticação;
-6. adapter Supabase do `ClinicalRepository`;
+4. somente com autorização explícita, iniciar o projeto Supabase exclusivo do MedAtlas;
+5. provar isolamento multi-tenant + autenticação antes de qualquer PHI;
+6. implementar o adapter Supabase do `ClinicalRepository` sem persistência paralela;
 7. ativar provedor de IA somente atrás do backend e dos gates já definidos.

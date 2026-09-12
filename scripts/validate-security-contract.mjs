@@ -126,7 +126,7 @@ const localImportUiInvariants = [
   'LOCAL_REPORT_FILE_ACCEPT',
   'validateDemoReportSource(nextValue)',
   'Importar laudo sintético em TXT, MD, PDF, PNG ou JPG',
-  'Imagem/OCR do PDF ainda não é suportado.',
+  'O PDF não contém texto extraível e o OCR local não encontrou texto suficiente.',
   'PDF protegido por senha não é suportado.',
   'O arquivo não possui uma assinatura PDF válida.',
 ]

@@ -37,6 +37,7 @@ The synthetic browser MVP accepts, without upload:
 
 - `.txt` / `.md` up to **64 KiB** of valid UTF-8;
 - textual `.pdf` up to **8 MiB**, **50 pages** and **64 KiB** of extracted text;
+- scanned/image-only `.pdf` through a bounded local OCR fallback, up to **8 OCR pages**, **2400 px per rendered side**, **2.5 MP per page**, **16 MP total render budget** and **12 MP embedded-image budget**;
 - `.png` / `.jpg` / `.jpeg` up to **6 MiB**, **4096 px per side**, **4.5 MP** and **64 KiB** of OCR text.
 
 `ReportIntake` does not decode file bytes. Parsing, structural validation and OCR
@@ -44,7 +45,16 @@ belong to `src/ingestion/`.
 
 PDF ingestion validates extension, declared MIME, `%PDF-` signature, byte/page/text
 limits, password state and malformed input before accepting extracted text. PDF.js
-and its worker are local and lazy.
+and its worker are local and lazy. Text extraction is attempted first. Only when a
+valid PDF has no usable text layer may the ingestion boundary lazy-load the scanned
+PDF fallback.
+
+The scanned-PDF fallback rasterizes locally through the same pinned PDF.js boundary,
+applies page/scale/dimension/pixel budgets before OCR, and lazy-loads the same local
+Tesseract boundary already used for PNG/JPEG. It does not upload the document and
+has no remote/CDN fallback. A document above the scanned-PDF OCR page cap fails
+before Tesseract is loaded. If OCR produces no acceptable source text, ingestion
+fails closed and preserves the previous valid report text.
 
 Image ingestion validates extension/MIME binding, real PNG/JPEG signature, byte
 size and dimensions/pixel count **before** loading Tesseract. Tesseract.js/core and
@@ -56,10 +66,6 @@ part of the accepted runtime contract.
 OCR is cancellable. Failure or cancellation preserves the last valid report text.
 Successful extraction only fills editable source text; it does not run anatomy
 analysis, confirm FMA, approve content or publish.
-
-PDFs without an extractable text layer remain fail-closed. **Scanned/image-only PDF
-OCR is not implemented yet** and must not silently rasterize, upload or reuse an
-unbounded OCR path.
 
 The same synthetic-only restriction applies to every accepted format: real patient
 reports must not be used.
@@ -78,13 +84,13 @@ OCR runtime assets are generated under `public/ocr-assets/` from pinned npm
 dependencies. The generated manifest records source versions, byte sizes and
 SHA-256 digests for the eight allowed OCR runtime/model files. GitHub Pages
 verification downloads every published OCR asset and checks size + SHA-256 before
-running the deployed OCR test.
+running the deployed OCR tests.
 
 Normal application runtime no longer fetches anatomy from
 `raw.githubusercontent.com` or either upstream repository. Detailed organ
 assets are lazy-loaded from the MedAtlas deployment only after explicit user
 navigation into organ detail. OCR assets are likewise loaded only after a valid
-image passes the pre-runtime gates.
+image or bounded scanned-PDF page reaches the OCR boundary.
 
 Vendored/generated closures are pinned and verified by CI/deployment gates.
 
@@ -120,14 +126,16 @@ source changes remove core MVP invariants, including:
 - vendored organ-model provenance and SHA-256 closure;
 - no direct file-byte decoding in `ReportIntake`;
 - PDF parser/worker staying local and lazy;
+- scanned-PDF OCR staying behind bounded page/pixel/raster limits and lazy fallback;
 - PNG/JPEG structural/size/pixel validation before Tesseract loading;
 - pinned, lazy, same-origin OCR worker/core/Portuguese model;
 - direct OCR worker loading with `workerBlobURL: false`;
 - OCR cancellation remaining separate from clinical interpretation.
 
-Browser E2E separately proves expired-share denial, fail-closed ingestion and real
-Portuguese OCR without automatic clinical state transitions. Pages additionally
-proves the published OCR assets and same-origin runtime paths.
+Browser E2E separately proves expired-share denial, fail-closed ingestion, real
+Portuguese OCR, scanned-PDF page limits and absence of automatic clinical state
+transitions. Pages additionally proves the published OCR assets, same-origin
+runtime paths and the image-only PDF fallback against the deployed build.
 
 ## Tenant isolation — production contract
 

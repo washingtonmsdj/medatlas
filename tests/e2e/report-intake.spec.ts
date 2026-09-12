@@ -52,7 +52,6 @@ function createSyntheticPdf(text = 'Laudo sintetico sobre L4-L5.') {
   return Buffer.from(pdf, 'ascii')
 }
 
-
 function createSyntheticPngHeader(width: number, height: number) {
   const bytes = Buffer.alloc(24)
   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(bytes, 0)
@@ -263,7 +262,7 @@ test('rejects malformed PDF data fail-closed', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveText(/PDF inválido ou corrompido|Não foi possível processar o PDF/)
 })
 
-test('keeps scanned/no-text PDF out until PDF OCR exists', async ({ page }) => {
+test('fails closed when scanned PDF OCR finds no usable text', async ({ page }) => {
   await openBlankReport(page)
 
   await page
@@ -275,7 +274,7 @@ test('keeps scanned/no-text PDF out until PDF OCR exists', async ({ page }) => {
     })
 
   await expect(page.getByRole('alert')).toHaveText(
-    'Este PDF não contém texto extraível. Imagem/OCR do PDF ainda não é suportado.',
+    'O PDF não contém texto extraível e o OCR local não encontrou texto suficiente.',
   )
 })
 
@@ -302,7 +301,6 @@ test('rejects invalid UTF-8 without replacing the last valid report text', async
   )
   await expect(editor).toHaveValue('Texto sintético preservado.')
 })
-
 
 test('rejects a fake PNG signature before OCR and preserves valid report text', async ({
   page,
