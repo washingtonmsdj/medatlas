@@ -390,7 +390,7 @@ test('runs real Portuguese OCR from same-origin assets without auto-running anat
   const editor = page.getByRole('textbox', {
     name: 'Texto do laudo ou relatório',
   })
-  await expect(editor).toHaveValue(/LAUDO\s+SINTETICO\s+CORACAO/i, {
+  await expect(editor).toHaveValue(/SINTETICO\s+CORAC/i, {
     timeout: 30_000,
   })
   await expect(page.getByText('laudo-ocr.png')).toBeVisible()

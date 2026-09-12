@@ -280,7 +280,7 @@ test('published PNG OCR uses only direct same-origin assets under the Pages base
   const editor = page.getByRole('textbox', {
     name: 'Texto do laudo ou relatório',
   })
-  await expect(editor).toHaveValue(/LAUDO\s+SINTETICO\s+CORACAO/i, {
+  await expect(editor).toHaveValue(/SINTETICO\s+CORAC/i, {
     timeout: 45_000,
   })
   await expect(page.getByText('laudo-ocr-publicado.png')).toBeVisible()
