@@ -1,0 +1,39 @@
+.patient-report-chips > span.pending {
+  border-color: var(--line-warning);
+  background: var(--surface-warning);
+}
+
+.patient-report-chips > span.pending strong {
+  color: var(--state-warning);
+}
+
+.patient-review-summary.pending {
+  background:
+    radial-gradient(circle at 100% 0%, var(--surface-warning), transparent 38%),
+    linear-gradient(145deg, var(--surface-panel), var(--surface-panel-deep));
+}
+
+.patient-review-summary.pending .patient-review-icon {
+  color: var(--state-warning);
+  background: var(--surface-warning);
+  border: 1px solid var(--line-warning);
+  box-shadow: none;
+}
+
+.patient-review-summary.pending .section-kicker {
+  color: var(--state-warning);
+}
+
+.patient-review-stamp.pending {
+  border-color: var(--line-warning);
+  background: var(--surface-warning);
+}
+
+.patient-review-stamp.pending > span {
+  color: var(--state-warning);
+  background: var(--surface-panel);
+}
+
+.patient-review-stamp.pending strong {
+  color: var(--state-warning);
+}
