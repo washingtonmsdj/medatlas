@@ -43,6 +43,8 @@ const runtime = await readFile('src/organization/runtime.ts', 'utf8')
 const types = await readFile('src/organization/types.ts', 'utf8')
 const roles = await readFile('src/organization/roles.ts', 'utf8')
 const demo = await readFile('src/organization/demo-organization.ts', 'utf8')
+const demoIdentity = await readFile('src/demo/identity.ts', 'utf8')
+const domainDemo = await readFile('src/domain/demo.ts', 'utf8')
 
 for (const fragment of [
   "mode: 'demo'",
@@ -77,6 +79,41 @@ if (!roles.includes("from './types'")) {
 
 if (!demo.includes("from './types'")) {
   failures.push('demo organization data must implement neutral organization types')
+}
+
+if (!demo.includes("from '../demo/identity'")) {
+  failures.push('demo organization data must consume the canonical demo identity seed')
+}
+
+if (!domainDemo.includes("from '../demo/identity'")) {
+  failures.push('demo report seed must consume the canonical demo identity seed')
+}
+
+for (const fragment of [
+  'export const DEMO_ORGANIZATION_ID',
+  'export const DEMO_ORGANIZATION_NAME',
+  'export const DEMO_DEFAULT_WORKSPACE_ID',
+  'export const DEMO_CURRENT_MEMBER',
+  'export const DEMO_PATIENT',
+]) {
+  if (!demoIdentity.includes(fragment)) {
+    failures.push(`canonical demo identity missing seed: ${fragment}`)
+  }
+}
+
+for (const duplicateLiteral of [
+  "'demo-org-clinica-horizonte'",
+  "'demo-workspace-ortopedia'",
+  "'demo-member-carlos'",
+  "'pat_demo_001'",
+  "'Paciente demonstração'",
+  "'Dr. Carlos Mendes'",
+]) {
+  if (domainDemo.includes(duplicateLiteral)) {
+    failures.push(
+      `demo report seed duplicates canonical identity literal: ${duplicateLiteral}`,
+    )
+  }
 }
 
 if (demo.includes("from './roles'") || demo.includes('ROLE_LABELS')) {
@@ -126,5 +163,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas organization runtime contract PASS: UI is isolated from demo tenant data, generic organization policy has neutral ownership, and explicit member/workspace/unit selectors fail closed.',
+  'MedAtlas organization runtime contract PASS: UI is isolated from demo tenant data, canonical demo identity is shared by organization/report seeds, generic organization policy has neutral ownership, and explicit member/workspace/unit selectors fail closed.',
 )
