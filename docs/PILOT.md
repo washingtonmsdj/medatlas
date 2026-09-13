@@ -11,14 +11,20 @@ Ele não autoriza uso clínico real nem substitui validação de segurança, pri
 O aceite funcional integrado está automatizado e qualificado no release:
 
 ```text
-2f797c81ff24aabba51fb7aa06b76f0fcd6011fc
+516b53efa58790df133d254581d80fa909a8ce21
 ```
 
 Evidência pós-merge do próprio `main`:
 
-- CI `34728485763`: **PASS**;
-- Browser E2E `34728485665`: **PASS 4/4**;
-- GitHub Pages `34728485730`: **PASS** incluindo o fluxo 3D/OCR no site publicado.
+- CI `34744950754`: **PASS**;
+- Browser E2E `34744950764`: **PASS 4/4**;
+- GitHub Pages `34744950748`: **PASS** incluindo build, deploy, shell/assets e fluxo 3D publicado em Chromium.
+
+O release também fecha o primeiro atrito P1 encontrado no pente-fino visual do piloto: em 390 px a busca global era comprimida porque o perfil mantinha `min-width: 220px` herdado mesmo com o texto oculto. O shell clínico agora neutraliza essa largura com `min-width: 0`, e `responsive-layout.spec.ts` exige busca ≥200 px e perfil ≤48 px.
+
+O artifact `visual-qa-34744950764-responsive-layout` do próprio `main` confirma visualmente a correção sem regressão relevante em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
+
+## Aceite integrado automatizado
 
 `tests/e2e/synthetic-pilot.spec.ts` cobre em uma única jornada:
 
@@ -68,86 +74,78 @@ A SSOT dos textos e IDs anatômicos é `src/clinical/demo-scenarios.json`.
 
 ## Contexto SaaS sintético
 
-O preview usa uma organização fictícia e um workspace clínico fixo. O contexto ativo aparece como informação do produto; **não existe troca fake de organização/workspace no shell atual**.
+O preview usa organização, workspace, profissional e paciente totalmente fictícios. A identidade sintética compartilhada por organização e relatório tem SSOT em `src/demo/identity.ts`.
 
-A identidade sintética compartilhada por organização e relatório tem SSOT em `src/demo/identity.ts`. Não duplicar IDs/nome da organização, workspace padrão, profissional atual ou paciente demo em seeds paralelos.
+Não existe troca fake de organização/workspace no shell atual. No modo demo, Equipe não executa convites, alteração real de papel ou persistência de membership.
 
-Papéis demonstrativos permanecem source-first e alinhados às políticas projetadas:
+Papéis demonstrativos permanecem source-first:
 
 - `admin`;
 - `clinician`;
 - `staff`.
-
-No modo demo, Equipe não deve executar convites, alteração real de papel ou persistência de membership.
 
 ## Fronteira de ingestão do MVP atual
 
 O browser MVP aceita localmente, sem upload:
 
 - texto digitado/colado;
-- `.txt` e `.md`, com até **64 KiB por bytes UTF-8**;
-- `.pdf` textual, com até **8 MiB**, **50 páginas** e **64 KiB de texto extraído**;
-- `.pdf` escaneado/image-only como fallback local, com até **8 páginas de OCR**, **2400 px por lado renderizado**, **2,5 MP por página**, **16 MP no total** e **12 MP de imagem embutida**;
-- `.png`, `.jpg` e `.jpeg` com OCR local em português, até **6 MiB**, **4096 px por lado**, **4,5 MP** e **64 KiB de texto extraído**.
+- `.txt` e `.md`, até **64 KiB UTF-8**;
+- `.pdf` textual, até **8 MiB**, **50 páginas** e **64 KiB** de texto extraído;
+- `.pdf` escaneado/image-only como fallback local, até **8 páginas de OCR**, **2400 px por lado renderizado**, **2,5 MP por página**, **16 MP no total** e **12 MP de imagem embutida**;
+- `.png`, `.jpg` e `.jpeg` com OCR local em português, até **6 MiB**, **4096 px por lado**, **4,5 MP** e **64 KiB** de texto extraído.
 
-PDF usa PDF.js `6.3.289` com parser/worker local e lazy. Extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha e malformação falham fechado. Quando a extração textual não produz conteúdo, o fallback rasteriza localmente somente dentro do orçamento de OCR e reaproveita a fronteira Tesseract já validada. O texto resultante entra no editor e **não executa automaticamente `Encontrar anatomia`**.
+PDF usa PDF.js `6.3.289` com parser/worker local e lazy. Extensão, MIME, assinatura `%PDF-`, tamanho, páginas, senha e malformação falham fechado. Quando não há camada textual utilizável, o fallback rasteriza localmente dentro do orçamento de OCR e reaproveita a fronteira Tesseract validada.
 
-Imagem usa Tesseract.js `7.0.0` + modelo português `1.0.0`, ambos pinados. Extensão, MIME, assinatura binária, tamanho, dimensões/pixels são validados antes do OCR. Worker, core e modelo são servidos pelo próprio MedAtlas, com worker direto same-origin e sem fallback silencioso de CDN. OCR é lazy, cancelável e seu resultado entra no editor antes de qualquer interpretação clínica.
-
-PDF escaneado segue a mesma regra: rasterização e OCR são locais, limitados e canceláveis. Se não houver texto suficiente após OCR, o arquivo é rejeitado fail-closed e o último texto válido permanece intacto.
+Imagem usa Tesseract.js/core `7.0.0` + modelo português `1.0.0`, todos pinados e same-origin. `workerBlobURL: false` permanece obrigatório. O resultado entra no editor e **não executa automaticamente `Encontrar anatomia`**.
 
 Durante o piloto, nunca usar nomes, exames, identificadores ou qualquer dado real de paciente.
 
-## Aceite automatizado
+## Aceite automatizado permanente
 
 O Browser E2E protege, entre outros pontos:
 
 1. cenários anatômicos determinísticos;
 2. criação de relatório vazio fail-closed;
-3. TXT/MD, limite de 64 KiB, MIME incompatível e UTF-8 inválido;
-4. PDF textual real, MIME, assinatura, malformação e arquivo >8 MiB;
-5. PDF image-only com OCR real por página, assets same-origin, limite de páginas/pixels e ausência de análise anatômica automática;
-6. PNG/JPEG com assinatura real, limite de 6 MiB e dimensões/pixels antes do OCR;
-7. OCR português real usando apenas assets same-origin, sem CDN e sem worker `blob:`;
-8. preservação do último texto válido após falha/cancelamento de ingestão;
-9. ausência de análise anatômica automática após qualquer importação;
+3. TXT/MD e seus limites;
+4. PDF textual real e seus limites;
+5. PDF image-only com OCR real por página e assets same-origin;
+6. PNG/JPEG com assinatura/dimensões validadas antes do OCR;
+7. OCR português real sem CDN e sem worker `blob:`;
+8. preservação do último texto válido após falha/cancelamento;
+9. ausência de análise anatômica automática após importação;
 10. sugestão e confirmação anatômica explícita;
 11. Human Atlas real no fluxo profissional e paciente;
-12. rascunho educacional, revisão e publicação;
-13. preview pré-publicação e link temporário;
-14. expiração/revogação de share;
-15. jornada integrada arquivo local → paciente → invalidação do share após alteração da fonte;
-16. Analytics local;
-17. shell profissional separado da experiência paciente;
-18. Equipe/permissões sem mutações fake;
-19. axe/WCAG;
-20. ausência de overflow e hit areas protegidas em desktop/mobile;
+12. rascunho, revisão, publicação e preview;
+13. share temporário, revogação e expiração;
+14. jornada integrada arquivo local → paciente → invalidação do share após alteração da fonte;
+15. Analytics local;
+16. shell profissional separado da experiência paciente;
+17. Equipe/permissões sem mutações fake;
+18. axe/WCAG;
+19. ausência de overflow e hit areas protegidas em desktop/mobile;
+20. topbar mobile com busca útil e perfil compacto em 390 px;
 21. arquitetura de profundidade `Corpo → Órgão em detalhe`;
 22. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
-O Browser E2E é dividido em quatro shards com responsabilidade explícita: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. `synthetic-pilot.spec.ts` pertence ao `clinical-flow`. O CI executa `validate:browser-e2e-matrix`, que impede qualquer `tests/e2e/*.spec.ts` de ficar fora da matriz ou ser executado em duplicidade.
-
-O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, ingestão, segurança, contrato OCR, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget. `validate:organization-runtime` também protege a SSOT de identidade demo. Budgets opcionais de PDF/OCR permanecem separados do core inicial.
+O Browser E2E é dividido em quatro shards: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. `synthetic-pilot.spec.ts` pertence ao `clinical-flow`; `scanned-pdf-ocr.spec.ts` pertence a `document-ingestion`. `validate:browser-e2e-matrix` impede spec órfão, duplicado ou referência inexistente.
 
 ## Critérios 3D-first para observação manual
 
 Em qualquer cenário anatômico, observar:
 
 - canvas real aparece onde há tarefa anatômica;
-- estrutura confirmada continua visualmente distinguível de uma peça apenas inspecionada;
+- estrutura confirmada continua distinta de uma peça apenas inspecionada;
 - rotação, zoom, vistas e reset parecem naturais;
 - corpo completo permanece contexto primário quando um órgão detalhado é aberto;
 - o órgão em detalhe nunca parece mudar sozinho a anatomia confirmada;
 - o mesmo conceito confirmado acompanha Clinical Studio → preview → paciente;
 - nenhuma copy sugere reconstrução individual do paciente;
 - trocar de módulo não deixa sensação de canvas antigo ou contexto perdido;
-- em 390 px, controles continuam tocáveis, legíveis e confortáveis.
+- em 390 px, controles e busca global continuam tocáveis, legíveis e confortáveis.
 
 ## Fluxo manual sintético recomendado
 
-Como a mecânica principal já possui aceite automatizado, o roteiro manual deve priorizar percepção e não repetição de checks técnicos.
-
-Executar pelo menos um cenário completo em desktop profissional e depois conferir a experiência paciente em smartphone:
+A mecânica principal já possui aceite automatizado. O roteiro manual deve priorizar percepção:
 
 ```text
 1. abrir Visão geral e localizar rapidamente a ação principal
@@ -166,71 +164,50 @@ Executar pelo menos um cenário completo em desktop profissional e depois confer
 14. confirmar que a linguagem comunica anatomia de referência
 15. voltar ao profissional e alterar o laudo
 16. observar se a necessidade de reconfirmação fica inequívoca
-17. conferir Analytics e Equipe apenas como superfícies demo, sem esperar mutações de produção
+17. conferir Analytics e Equipe apenas como superfícies demo
 ```
 
 Opcionalmente, quando houver suspeita concreta de regressão, repetir manualmente PDF textual, PDF escaneado/OCR ou PNG/JPEG. Não transformar isso em checklist obrigatório a cada iteração quando os gates automatizados estiverem verdes.
 
 ## O que registrar
 
-Registrar apenas observações concretas de produto, por exemplo:
+Registrar apenas observações concretas de produto:
 
-- importação local ficou clara ou pareceu upload para servidor?
-- PDF escaneado/OCR deixou claro que o texto precisa de revisão humana?
-- progresso/cancelamento pareceu compreensível?
+- importação local pareceu upload para servidor?
+- OCR deixou claro que o texto precisa de revisão humana?
+- progresso/cancelamento foi compreensível?
 - estrutura sugerida foi entendida como sugestão?
-- houve algum momento em que exploração pareceu confirmação clínica?
-- o 3D ajudou a entender a anatomia ou pareceu decorativo?
+- exploração pareceu confirmação clínica em algum momento?
+- o 3D ajudou a entender ou pareceu decorativo?
 - houve confusão entre referência anatômica e corpo do paciente?
-- a reconfirmação após mudar o laudo ficou inequívoca?
-- a explicação ficou clara depois da revisão?
-- paciente entendeu o que estava vendo?
-- alguma etapa ficou escondida, duplicada ou desnecessariamente longa?
+- reconfirmação após mudar o laudo ficou inequívoca?
+- alguma etapa ficou escondida, duplicada ou longa demais?
 - houve overflow, controle sobreposto, alvo pequeno ou perda de contexto em 390 px?
-- Analytics exibiu somente o que realmente aconteceu no demo?
 
 Não registrar PHI nem dados clínicos reais.
 
-## Evidência automatizada
+## Evidência automatizada de release
 
-A evidência de release deve sempre corresponder ao mesmo source candidato. Para qualificar um candidato de MVP sintético, registrar e conferir:
+A evidência deve corresponder ao mesmo source candidato. Para o release atual:
 
-- CI completo verde, incluindo `validate:security-contract`, `validate:ocr-contract`, `validate:organization-runtime`, `validate:browser-e2e-matrix`, typecheck, build e bundle budget;
-- Browser E2E **4/4** verde: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`;
-- `clinical-flow` executando obrigatoriamente `synthetic-pilot.spec.ts`;
-- `document-ingestion` executando obrigatoriamente `report-intake.spec.ts` e `scanned-pdf-ocr.spec.ts`;
-- GitHub Pages verde para o mesmo source, incluindo verificação dos assets OCR same-origin e do fluxo publicado.
+```text
+source: 516b53efa58790df133d254581d80fa909a8ce21
+CI:     34744950754 PASS
+Browser:34744950764 PASS 4/4
+Pages:  34744950748 PASS
+```
 
-Não reutilizar uma execução antiga para declarar um source novo pronto.
+Não reutilizar execução antiga para declarar um source novo pronto.
 
 ## Critério de conclusão do MVP sintético
 
 O MVP sintético está funcionalmente qualificado quando:
 
-- CI, Browser E2E e Pages estão verdes para o source integrado correspondente;
+- CI, Browser E2E e Pages estão verdes para o mesmo source integrado;
 - a jornada local intake → anatomia → 3D → explicação → revisão → paciente passa de ponta a ponta;
 - alteração da fonte exige reconfirmação e invalida share obsoleto;
 - portal e Clinical Studio permanecem coerentes entre desktop/mobile;
 - nenhum dado sai da fronteira synthetic-only;
 - nenhuma superfície promete diagnóstico automático, reconstrução individual ou backend inexistente.
 
-O release `2f797c81ff24aabba51fb7aa06b76f0fcd6011fc` atende esses critérios automatizados. O piloto manual qualitativo existe para revelar atritos humanos P0/P1, não para mudar essa fronteira técnica sem evidência.
-
-TXT/MD, PDF textual, PDF escaneado/image-only e PNG/JPEG com OCR local são capacidades reais do candidato sintético. Isso **não** autoriza dados reais.
-
-## Produção clínica — etapa futura e separada
-
-Dados reais continuam bloqueados até existir, no mínimo:
-
-- backend dedicado;
-- autenticação;
-- isolamento cross-tenant/RLS provado;
-- Storage privado e testes de negação;
-- retenção/backup definidos;
-- share de produção com expiração/revogação/auditoria;
-- transporte seguro de convites;
-- observabilidade e resposta a incidentes;
-- revisão jurídica/privacidade para o uso pretendido;
-- protocolo de piloto clínico controlado.
-
-Esta fase não deve ser simulada no produto browser atual.
+O release `516b53efa58790df133d254581d80fa909a8ce21` atende esses critérios automatizados. O piloto qualitativo continua apenas para revelar novos atritos humanos P0/P1 reproduzíveis.
