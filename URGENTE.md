@@ -3,7 +3,7 @@
 > **Documento canônico de continuidade.** Leia antes de alterar o projeto.  
 > Registra o estado atual, invariantes, gates e próximo trabalho. Não é diário de commits. Não reabra tarefas concluídas sem evidência de regressão.
 
-Última consolidação: **2026-09-12**  
+Última consolidação: **2026-09-13**  
 Branch canônica: **`main`**  
 Repositório: **`washingtonmsdj/medatlas`**
 
@@ -42,14 +42,14 @@ MedAtlas **não** é diagnosticador automático, PACS, prontuário completo, seg
 ### Release funcional canônico
 
 ```text
-2f797c81ff24aabba51fb7aa06b76f0fcd6011fc
+516b53efa58790df133d254581d80fa909a8ce21
 ```
 
-Esse commit integrou o PR #8 e qualificou também uma jornada sintética única de ponta a ponta, além dos contratos já existentes.
+Esse commit integrou o PR #10 e é o release funcional atual do MVP sintético. Ele preserva a jornada integrada qualificada anteriormente e corrige o primeiro atrito P1 reproduzível encontrado no pente-fino visual mobile: a busca global era comprimida por um `min-width` legado do perfil.
 
 ### Evidência pós-merge no próprio `main`
 
-- **CI `34728485763`: PASS completo**
+- **CI `34744950754`: PASS completo**
   - dependency audit;
   - DB/organization/publication/repository/share/patient-share;
   - anatomia/cenários;
@@ -65,16 +65,35 @@ Esse commit integrou o PR #8 e qualificou também uma jornada sintética única 
   - TypeScript;
   - production build;
   - bundle budget.
-- **Browser E2E `34728485665`: PASS 4/4**
+- **Browser E2E `34744950764`: PASS 4/4**
   - `clinical-flow`;
   - `document-ingestion`;
   - `responsive-layout`;
   - `supporting-contracts`.
-- **GitHub Pages `34728485730`: PASS completo**
+- **GitHub Pages `34744950748`: PASS completo**
   - build PASS;
   - deploy PASS;
   - shell/assets publicados PASS;
-  - fluxo 3D/OCR no site publicado em Chromium PASS.
+  - fluxo 3D publicado em Chromium PASS.
+
+### QA visual do release integrado
+
+Artifact canônico do shard responsivo:
+
+```text
+visual-qa-34744950764-responsive-layout
+sha256:335427f243b498a07c4952530a52cbfe0fae14bce06f1aca89ad0570c0439dff
+```
+
+A revisão dos captures do próprio `516b53ef…` confirmou:
+
+- busca global com largura útil em 390 px;
+- sino e perfil compactos sem reservar largura invisível;
+- Clinical Studio sem overflow horizontal;
+- Human Atlas 3D preservado em Dashboard, Studio, Pacientes e Atlas;
+- Equipe, Analytics e Configurações sem regressão P0/P1 nova.
+
+A correção de raiz está em `src/styles/concept-shell.css`: o `doctor-chip` do shell clínico declara `min-width: 0`, neutralizando o `min-width: 220px` herdado do estilo global. `tests/e2e/responsive-layout.spec.ts` protege a geometria em 390 px exigindo busca com pelo menos 200 px e perfil com no máximo 48 px.
 
 ### Piloto sintético integrado automatizado
 
@@ -97,30 +116,17 @@ TXT local sintético
   → link anterior inválido
 ```
 
-Isso fecha a lacuna antiga em que ingestão e publicação eram fortes isoladamente, mas não existia uma única prova browser ligando as duas pontas.
-
 ### Identidade demo sem duplicação
 
-`src/demo/identity.ts` é a SSOT para identidade sintética compartilhada por organização e relatório:
+`src/demo/identity.ts` é a SSOT para identidade sintética compartilhada por organização e relatório: organização, slug, unidade principal, workspace padrão, profissional atual e paciente demo.
 
-- organização demo;
-- nome/slug da organização;
-- unidade principal;
-- workspace padrão;
-- profissional atual;
-- paciente demo.
-
-`src/organization/demo-organization.ts` e `src/domain/demo.ts` consomem essa SSOT. `validate:organization-runtime` falha se o seed do relatório voltar a duplicar os literais protegidos ou deixar de usar a identidade canônica.
-
-### QA visual
-
-A suíte `responsive-layout` e os artifacts de QA protegem desktop/mobile e superfícies 3D. No último pente-fino visual não apareceu bloqueador P0 de overflow, sobreposição ou perda crítica de contexto.
+`src/organization/demo-organization.ts` e `src/domain/demo.ts` consomem essa SSOT. `validate:organization-runtime` falha se o seed voltar a duplicar os literais protegidos.
 
 ### Decisão
 
 **MedAtlas está pronto como MVP browser sintético para piloto qualitativo.**
 
-O próximo passo não é continuar adicionando arquitetura sem evidência. É observar pessoas usando o produto com dados fictícios e corrigir somente atritos P0/P1 reproduzíveis.
+O próximo passo não é acrescentar arquitetura sem evidência. É observar pessoas usando dados fictícios e corrigir somente atritos P0/P1 reproduzíveis.
 
 Isso **não** significa produção clínica com dados reais. O modo atual continua `synthetic-only`.
 
@@ -141,6 +147,7 @@ Isso **não** significa produção clínica com dados reais. O modo atual contin
 - [x] Analytics demo local;
 - [x] Equipe/permissões sem mutações fake;
 - [x] responsividade desktop/mobile;
+- [x] geometria do topbar mobile protegida contra regressão;
 - [x] axe/WCAG nos contratos Browser;
 - [x] TXT/MD local;
 - [x] PDF textual local;
@@ -242,61 +249,44 @@ Fallback somente quando um PDF válido não possui camada textual utilizável:
 36. Proveniência/licenças devem permanecer verificadas.
 37. Testes OCR podem validar texto probabilístico semanticamente; paths, hashes, limites e transições são exatos.
 38. Supabase/auth/IA remota somente entram por gate explícito de produção.
-39. Todo `tests/e2e/*.spec.ts` deve pertencer a **exatamente um** shard de `.github/workflows/browser-e2e.yml`; `validate:browser-e2e-matrix` falha diante de spec órfão, duplicado ou referência inexistente.
+39. Todo `tests/e2e/*.spec.ts` deve pertencer a **exatamente um** shard de `.github/workflows/browser-e2e.yml`.
 40. Identidade demo compartilhada pertence a `src/demo/identity.ts`; não duplicar organização/workspace/profissional/paciente entre seeds.
-41. `synthetic-pilot.spec.ts` permanece no `clinical-flow` e deve continuar protegendo o caminho arquivo local → paciente → invalidação do share antigo.
+41. `synthetic-pilot.spec.ts` permanece no `clinical-flow` e protege arquivo local → paciente → invalidação do share antigo.
+42. Em 390 px, o perfil do topbar não pode reservar largura mínima herdada; `responsive-layout.spec.ts` protege busca ≥200 px e perfil ≤48 px.
 
 ## 5. Gates permanentes do MVP sintético
 
 ### Gate A — CI
 
-Obrigatório:
-
-- audit de dependências;
-- contratos DB/organization/publication/repository/share;
-- `validate:organization-runtime`;
-- anatomy/demo scenarios;
-- assets/performance;
-- security/privacy;
-- OCR;
-- `validate:browser-e2e-matrix`;
-- AI/review/workflow;
-- licenses/provenance;
-- reference atlas;
-- MVP UI;
-- TypeScript;
-- build;
-- bundle budget.
+Obrigatório: audit de dependências, contratos DB/organization/publication/repository/share, organização demo, anatomia, assets/performance, security/privacy, OCR, matriz Browser, AI/review/workflow, licenças/provenance, reference atlas, MVP UI, TypeScript, build e bundle budget.
 
 ### Gate B — Browser E2E 4/4
 
 - `clinical-flow` — inclui `synthetic-pilot.spec.ts`;
 - `document-ingestion` — inclui `report-intake.spec.ts` e `scanned-pdf-ocr.spec.ts`;
-- `responsive-layout`;
+- `responsive-layout` — inclui a geometria mobile do topbar;
 - `supporting-contracts`.
 
 Nenhum spec E2E pode ficar órfão ou aparecer em mais de um shard.
 
 ### Gate C — Pages
 
-O deploy publicado deve provar:
-
-- shell/chunks sob `/medatlas/`;
-- Human Atlas e modelos detalhados locais;
-- manifesto + SHA-256 dos assets OCR;
-- PDF textual com worker local;
-- PNG OCR same-origin;
-- PDF escaneado/image-only com rasterização + OCR same-origin;
-- nenhuma análise anatômica automática após importação;
-- fluxo 3D profissional/paciente e Atlas mobile.
+O deploy publicado deve provar shell/chunks sob `/medatlas/`, Human Atlas e modelos locais, assets OCR íntegros/same-origin, PDF textual, PDF escaneado/image-only com OCR local, ausência de análise anatômica automática e fluxo 3D profissional/paciente.
 
 ## 6. Próximo trabalho
 
 ### P1 — piloto qualitativo sintético
 
-O desenvolvimento-base do MVP está encerrado e o piloto funcional está automatizado. Agora usar `docs/PILOT.md` com dados totalmente fictícios para observar pessoas reais usando o produto.
+O desenvolvimento-base do MVP está encerrado e o piloto funcional está automatizado. Continuar `docs/PILOT.md` com dados totalmente fictícios.
 
-Foco:
+Primeira descoberta qualitativa já fechada:
+
+- **P1:** busca global mobile comprimida em 390 px;
+- causa: `min-width: 220px` herdado no perfil;
+- correção: `min-width: 0` no `doctor-chip` clínico;
+- prevenção: teste geométrico Browser + artifact visual do release integrado.
+
+Continuar observando:
 
 - clareza do início de relatório;
 - percepção de importação local vs upload;
@@ -310,24 +300,11 @@ Foco:
 - conforto desktop/mobile;
 - copy, hierarquia e passos desnecessários.
 
-**Regra:** corrigir apenas atritos P0/P1 reproduzíveis. Não iniciar novo redesign abstrato ou reconstrução arquitetural sem evidência do piloto.
+**Regra:** corrigir apenas atritos P0/P1 reproduzíveis. Não iniciar redesign abstrato ou reconstrução arquitetural sem evidência do piloto.
 
 ### P2 — produção clínica
 
-**Bloqueada até autorização explícita.** Antes de qualquer PHI/dado real:
-
-1. Supabase dedicado ao MedAtlas;
-2. migrations canônicas;
-3. autenticação;
-4. provas cross-tenant/RLS por papel;
-5. Storage privado e testes de negação;
-6. `SupabaseClinicalRepository` implementando a autoridade existente, sem persistência paralela;
-7. share de produção com expiração/revogação/auditoria;
-8. retenção/backup;
-9. secrets/environment separation;
-10. observabilidade, suporte e resposta a incidentes;
-11. revisão jurídica/privacidade;
-12. piloto clínico controlado.
+**Bloqueada até autorização explícita.** Antes de qualquer PHI/dado real: Supabase dedicado, migrations canônicas, autenticação, provas cross-tenant/RLS, Storage privado, repositório de produção, share com expiração/revogação/auditoria, retenção/backup, separação de secrets, observabilidade, revisão jurídica/privacidade e piloto clínico controlado.
 
 ### P3 — IA remota
 
@@ -337,23 +314,18 @@ Somente atrás da fronteira backend, com resposta estruturada, validação FMA/r
 
 - `README.md` — visão pública e arquitetura;
 - `URGENTE.md` — estado operacional canônico;
-- `docs/RELEASE_READINESS.md` — gates e bloqueadores;
+- `docs/RELEASE_READINESS.md` — gates e release funcional atual;
 - `docs/PILOT.md` — roteiro do piloto qualitativo sintético;
 - `docs/SECURITY.md` — fronteiras de segurança;
 - `docs/ANATOMY_ARCHITECTURE.md` — autoridade anatômica/3D;
 - `src/demo/identity.ts` — SSOT da identidade demo compartilhada;
 - `src/product/constraints.ts` — SSOT de limites/extensões/MIME;
-- `src/ingestion/contracts.ts` — contrato tipado de ingestão;
-- `src/ingestion/local-report-file.ts` — roteamento;
-- `src/ingestion/local-text.ts` — TXT/MD;
-- `src/ingestion/pdf.ts` — PDF textual + fallback OCR;
-- `src/ingestion/scanned-pdf-ocr.ts` — PDF image-only bounded;
-- `src/ingestion/image-metadata.ts` — assinatura/dimensões de imagem;
-- `src/ingestion/local-image-ocr.ts` — OCR compartilhado;
-- `scripts/validate-organization-runtime.mjs` — fronteira de organização + identidade demo;
+- `src/ingestion/` — toda a fronteira local de TXT/MD/PDF/OCR;
+- `scripts/validate-organization-runtime.mjs` — organização + identidade demo;
 - `scripts/validate-browser-e2e-matrix.mjs` — cobertura exata da matriz Browser;
 - `.github/workflows/browser-e2e.yml` — matriz 4/4;
 - `tests/e2e/synthetic-pilot.spec.ts` — piloto integrado arquivo local → paciente;
+- `tests/e2e/responsive-layout.spec.ts` — desktop/mobile, 3D e geometria do topbar;
 - `tests/e2e/scanned-pdf-ocr.spec.ts` — OCR de PDF escaneado;
 - `tests/deployed/preview.spec.ts` — prova do build publicado;
 - `THIRD_PARTY_NOTICES.md` — provenance/licenças.
