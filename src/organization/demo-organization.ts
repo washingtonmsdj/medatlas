@@ -1,15 +1,20 @@
+import {
+  DEMO_CURRENT_MEMBER,
+  DEMO_DEFAULT_WORKSPACE_ID,
+  DEMO_MAIN_UNIT_ID,
+  DEMO_ORGANIZATION_ID,
+  DEMO_ORGANIZATION_NAME,
+  DEMO_ORGANIZATION_SLUG,
+} from '../demo/identity'
 import type {
   OrganizationBranding,
   OrganizationContext,
 } from './types'
 
-const DEMO_ORGANIZATION_ID = 'demo-org-clinica-horizonte'
-const DEMO_MAIN_UNIT_ID = 'demo-unit-principal'
-
 export const DEMO_ORGANIZATION: OrganizationContext = {
   id: DEMO_ORGANIZATION_ID,
-  name: 'Clínica Horizonte',
-  slug: 'clinica-horizonte-demo',
+  name: DEMO_ORGANIZATION_NAME,
+  slug: DEMO_ORGANIZATION_SLUG,
   units: [
     {
       id: DEMO_MAIN_UNIT_ID,
@@ -24,7 +29,7 @@ export const DEMO_ORGANIZATION: OrganizationContext = {
   ],
   workspaces: [
     {
-      id: 'demo-workspace-ortopedia',
+      id: DEMO_DEFAULT_WORKSPACE_ID,
       organizationId: DEMO_ORGANIZATION_ID,
       unitId: DEMO_MAIN_UNIT_ID,
       name: 'Ortopedia',
@@ -53,15 +58,15 @@ export const DEMO_ORGANIZATION: OrganizationContext = {
   ],
   members: [
     {
-      id: 'demo-member-carlos',
-      displayName: 'Dr. Carlos Mendes',
-      initials: 'CM',
+      id: DEMO_CURRENT_MEMBER.id,
+      displayName: DEMO_CURRENT_MEMBER.displayName,
+      initials: DEMO_CURRENT_MEMBER.initials,
       role: 'admin',
       active: true,
       professional: {
-        specialty: 'Ortopedia',
-        licenseRegion: 'DEMO',
-        licenseNumber: '0001',
+        specialty: DEMO_CURRENT_MEMBER.specialty,
+        licenseRegion: DEMO_CURRENT_MEMBER.licenseRegion,
+        licenseNumber: DEMO_CURRENT_MEMBER.licenseNumber,
       },
     },
     {
@@ -88,13 +93,13 @@ export const DEMO_ORGANIZATION: OrganizationContext = {
 
 export const DEMO_ORGANIZATION_BRANDING: OrganizationBranding = {
   organizationId: DEMO_ORGANIZATION_ID,
-  brandName: 'Clínica Horizonte',
+  brandName: DEMO_ORGANIZATION_NAME,
   markText: 'CH',
   primaryColorHex: '#1769AA',
-  patientFooterText: 'Clínica Horizonte · demonstração',
+  patientFooterText: `${DEMO_ORGANIZATION_NAME} · demonstração`,
 }
 
-export const DEMO_CURRENT_MEMBER_ID = 'demo-member-carlos'
+export const DEMO_CURRENT_MEMBER_ID = DEMO_CURRENT_MEMBER.id
 
 export function getDemoCurrentMember() {
   return (
@@ -104,7 +109,7 @@ export function getDemoCurrentMember() {
   )
 }
 
-export const DEFAULT_DEMO_WORKSPACE_ID = 'demo-workspace-ortopedia'
+export const DEFAULT_DEMO_WORKSPACE_ID = DEMO_DEFAULT_WORKSPACE_ID
 
 export function getDemoWorkspace(workspaceId: string) {
   return (
