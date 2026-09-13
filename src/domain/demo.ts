@@ -1,3 +1,9 @@
+import {
+  DEMO_CURRENT_MEMBER,
+  DEMO_DEFAULT_WORKSPACE_ID,
+  DEMO_ORGANIZATION_ID,
+  DEMO_PATIENT,
+} from '../demo/identity'
 import type { VisualReport } from './types'
 
 const clinicianNote =
@@ -6,20 +12,16 @@ const clinicianNote =
 export const demoReport: VisualReport = {
   id: 'rep_demo_l4l5',
   version: 1,
-  patient: {
-    id: 'pat_demo_001',
-    displayName: 'Paciente demonstração',
-    age: 52,
-  },
+  patient: { ...DEMO_PATIENT },
   title: 'Entenda seu exame — coluna lombar',
   status: 'clinician_review',
   reviewApproval: {
-    organizationId: 'demo-org-clinica-horizonte',
-    workspaceId: 'demo-workspace-ortopedia',
+    organizationId: DEMO_ORGANIZATION_ID,
+    workspaceId: DEMO_DEFAULT_WORKSPACE_ID,
     approvedBy: {
-      id: 'demo-member-carlos',
-      displayName: 'Dr. Carlos Mendes',
-      specialty: 'Ortopedia',
+      id: DEMO_CURRENT_MEMBER.id,
+      displayName: DEMO_CURRENT_MEMBER.displayName,
+      specialty: DEMO_CURRENT_MEMBER.specialty,
     },
     approvedAt: '2026-09-07T00:00:00.000Z',
   },
@@ -51,11 +53,7 @@ export function createEmptyDemoReport(): VisualReport {
   return {
     id: `rep_demo_${suffix}`,
     version: 1,
-    patient: {
-      id: 'pat_demo_001',
-      displayName: 'Paciente demonstração',
-      age: 52,
-    },
+    patient: { ...DEMO_PATIENT },
     title: 'Nova explicação visual',
     status: 'draft',
     finding: {
