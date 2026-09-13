@@ -415,7 +415,7 @@ test('keeps repeated anatomy lookup explicit after the current structure is conf
   await page.getByRole('button', { name: 'Relatórios' }).click()
 
   const relocate = page.getByRole('button', {
-    name: 'Localizar anatomia novamente',
+    name: 'Localizar anatomia',
   })
   await expect(relocate).toBeVisible()
   await expect(relocate).toHaveClass(/reanalyze/)
