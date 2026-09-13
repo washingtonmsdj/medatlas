@@ -6,24 +6,54 @@ Validar o MedAtlas de ponta a ponta **sem dados reais** e sem depender de backen
 
 Ele não autoriza uso clínico real nem substitui validação de segurança, privacidade ou compliance.
 
-## Perguntas que o piloto deve responder
+## Estado do piloto
+
+O aceite funcional integrado está automatizado e qualificado no release:
+
+```text
+2f797c81ff24aabba51fb7aa06b76f0fcd6011fc
+```
+
+Evidência pós-merge do próprio `main`:
+
+- CI `34728485763`: **PASS**;
+- Browser E2E `34728485665`: **PASS 4/4**;
+- GitHub Pages `34728485730`: **PASS** incluindo o fluxo 3D/OCR no site publicado.
+
+`tests/e2e/synthetic-pilot.spec.ts` cobre em uma única jornada:
+
+```text
+TXT local sintético
+  → texto editável
+  → encontrar anatomia
+  → confirmação explícita
+  → Human Atlas 3D
+  → rascunho
+  → prévia paciente
+  → aprovação humana
+  → share
+  → portal paciente revisado
+  → edição da fonte
+  → reconfirmação obrigatória
+  → share anterior inválido
+```
+
+O trabalho manual que permanece neste documento é **qualitativo**. Ele serve para observar compreensão, clareza, fluidez, conforto visual e atritos de uso que asserts automatizados não medem bem. Não deve ser usado para revalidar manualmente toda a mecânica já protegida por CI/Browser/Pages sem uma regressão concreta.
+
+## Perguntas que o piloto qualitativo deve responder
 
 - O profissional entende rapidamente onde iniciar e continuar um relatório?
-- O texto digitado, TXT/MD, texto extraído de PDF ou OCR local entra no mesmo editor antes de qualquer interpretação?
-- Um PDF inválido, grande demais, protegido, malformado ou cujo OCR não produza texto útil falha de forma clara sem apagar o texto válido anterior?
-- Um PDF escaneado mostra progresso/cancelamento de OCR e respeita os limites de páginas e rasterização?
-- Uma imagem inválida, grande demais ou com dimensões/pixels excessivos falha antes do OCR e preserva o texto válido anterior?
-- O progresso/cancelamento do OCR é compreensível e o resultado permanece editável?
-- O texto do laudo encontra uma estrutura anatômica plausível sem afirmar diagnóstico?
-- A anatomia só é adotada depois de confirmação explícita?
-- O Human Atlas 3D permanece dominante e útil, não decorativo?
-- Exploração temporária de uma peça fica distinta da anatomia clinicamente confirmada?
-- A explicação ao paciente permanece bloqueada até a revisão necessária?
+- A importação local parece claramente local, e não upload para servidor?
+- Progresso/cancelamento de OCR é compreensível?
+- O texto reconhecido deixa claro que precisa de revisão humana?
+- A anatomia sugerida é apresentada como sugestão, não diagnóstico?
+- A confirmação anatômica explícita é inequívoca?
+- O Human Atlas 3D ajuda a explicar ou parece apenas decorativo?
+- Exploração temporária permanece distinta da anatomia confirmada?
 - A prévia do paciente é claramente separada da interface profissional?
-- O link só nasce depois do gate humano e abre a mesma anatomia revisada?
-- O paciente entende que vê anatomia humana de referência, não uma reconstrução do próprio corpo?
-- Analytics mostra somente eventos realmente observados no demo local?
-- Desktop profissional e smartphone do paciente continuam operáveis sem overflow ou controles sobrepostos?
+- O paciente entende que vê anatomia humana de referência, não seu corpo reconstruído?
+- Revisão, publicação e invalidação após mudança de fonte são compreensíveis?
+- Desktop profissional e smartphone do paciente continuam confortáveis, sem overflow ou controles sobrepostos?
 
 ## Cenários anatômicos canônicos
 
@@ -34,11 +64,13 @@ Ele não autoriza uso clínico real nem substitui validação de segurança, pri
 | Coração | FMA7088 |
 | Ombro / supraespinal | FMA9629 |
 
-A SSOT dos textos e IDs é `src/clinical/demo-scenarios.json`.
+A SSOT dos textos e IDs anatômicos é `src/clinical/demo-scenarios.json`.
 
 ## Contexto SaaS sintético
 
 O preview usa uma organização fictícia e um workspace clínico fixo. O contexto ativo aparece como informação do produto; **não existe troca fake de organização/workspace no shell atual**.
+
+A identidade sintética compartilhada por organização e relatório tem SSOT em `src/demo/identity.ts`. Não duplicar IDs/nome da organização, workspace padrão, profissional atual ou paciente demo em seeds paralelos.
 
 Papéis demonstrativos permanecem source-first e alinhados às políticas projetadas:
 
@@ -84,85 +116,69 @@ O Browser E2E protege, entre outros pontos:
 12. rascunho educacional, revisão e publicação;
 13. preview pré-publicação e link temporário;
 14. expiração/revogação de share;
-15. Analytics local;
-16. shell profissional separado da experiência paciente;
-17. Equipe/permissões sem mutações fake;
-18. axe/WCAG;
-19. ausência de overflow e hit areas protegidas em desktop/mobile;
-20. arquitetura de profundidade `Corpo → Órgão em detalhe`;
-21. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
+15. jornada integrada arquivo local → paciente → invalidação do share após alteração da fonte;
+16. Analytics local;
+17. shell profissional separado da experiência paciente;
+18. Equipe/permissões sem mutações fake;
+19. axe/WCAG;
+20. ausência de overflow e hit areas protegidas em desktop/mobile;
+21. arquitetura de profundidade `Corpo → Órgão em detalhe`;
+22. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
-O Browser E2E é dividido em quatro shards com responsabilidade explícita: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. O CI executa `validate:browser-e2e-matrix`, que impede qualquer `tests/e2e/*.spec.ts` de ficar fora da matriz ou ser executado em duplicidade.
+O Browser E2E é dividido em quatro shards com responsabilidade explícita: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. `synthetic-pilot.spec.ts` pertence ao `clinical-flow`. O CI executa `validate:browser-e2e-matrix`, que impede qualquer `tests/e2e/*.spec.ts` de ficar fora da matriz ou ser executado em duplicidade.
 
-O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, ingestão, segurança, contrato OCR, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget. Budgets opcionais de PDF/OCR permanecem separados do core inicial.
+O CI adicional protege banco/organização, limites de repositório, publicação, share, anatomia, assets vendorizados, performance, ingestão, segurança, contrato OCR, contrato de IA, revisão, workflow, licenças, Atlas de referência, TypeScript, build e bundle budget. `validate:organization-runtime` também protege a SSOT de identidade demo. Budgets opcionais de PDF/OCR permanecem separados do core inicial.
 
-## Critérios 3D-first
+## Critérios 3D-first para observação manual
 
-Em qualquer cenário anatômico, validar manualmente:
+Em qualquer cenário anatômico, observar:
 
 - canvas real aparece onde há tarefa anatômica;
 - estrutura confirmada continua visualmente distinguível de uma peça apenas inspecionada;
-- rotação, zoom, vistas e reset não quebram layout;
+- rotação, zoom, vistas e reset parecem naturais;
 - corpo completo permanece contexto primário quando um órgão detalhado é aberto;
-- o órgão em detalhe nunca muda sozinho a anatomia confirmada;
+- o órgão em detalhe nunca parece mudar sozinho a anatomia confirmada;
 - o mesmo conceito confirmado acompanha Clinical Studio → preview → paciente;
 - nenhuma copy sugere reconstrução individual do paciente;
-- trocar de módulo não deixa renderers/canvases antigos interferindo na interface;
-- em 390 px, controles continuam tocáveis, legíveis e sem overflow.
+- trocar de módulo não deixa sensação de canvas antigo ou contexto perdido;
+- em 390 px, controles continuam tocáveis, legíveis e confortáveis.
 
 ## Fluxo manual sintético recomendado
+
+Como a mecânica principal já possui aceite automatizado, o roteiro manual deve priorizar percepção e não repetição de checks técnicos.
 
 Executar pelo menos um cenário completo em desktop profissional e depois conferir a experiência paciente em smartphone:
 
 ```text
-1. abrir Visão geral
-2. confirmar clínica/workspace exibidos como contexto informativo
-3. iniciar Novo relatório pela busca global ou ação canônica do dashboard
-4. colar um texto sintético válido e confirmar que “Encontrar anatomia” habilita
-5. tentar texto >64 KiB e confirmar erro + preservação do texto válido + análise bloqueada
-6. voltar a texto válido e importar opcionalmente um .txt/.md sintético
-7. importar um PDF textual sintético e confirmar:
-   - nome/páginas/bytes extraídos visíveis
-   - texto aparece no editor
-   - nenhuma anatomia é analisada automaticamente
-8. importar um PDF escaneado sintético e confirmar:
-   - progresso de OCR por página aparece
-   - texto reconhecido entra no editor e continua editável
-   - nenhuma anatomia é analisada automaticamente
-9. opcionalmente testar PDF >8 MiB, PDF OCR >8 páginas ou PDF sem texto reconhecível e confirmar rejeição fail-closed
-10. importar um PNG/JPEG sintético com texto e confirmar:
-   - progresso de OCR local aparece
-   - texto reconhecido entra no editor e continua editável
-   - nenhuma anatomia é analisada automaticamente
-11. opcionalmente testar imagem inválida, >6 MiB ou dimensões excessivas e confirmar preservação do texto anterior
-12. executar “Encontrar anatomia”
-13. confirmar que a estrutura esperada aparece como sugestão, sem confirmação automática
-14. confirmar explicitamente a anatomia
-15. validar enquadramento, rotação, zoom, vistas e picking no 3D
-16. abrir/fechar órgão em detalhe quando aplicável e confirmar que “Corpo” segue como contexto primário
-17. gerar o rascunho educacional
-18. revisar/editar e aprovar explicitamente
-19. abrir a prévia do paciente e retornar pela única ação “Voltar ao profissional”
-20. publicar o link demo
-21. abrir o link do paciente e validar branding + 3D + explicação revisada + perguntas
-22. confirmar linguagem de anatomia de referência no portal
-23. voltar ao ambiente clínico e alterar o laudo
-24. confirmar reconfirmação anatômica obrigatória e invalidação das etapas dependentes
-25. abrir Analytics e verificar a visualização observada
-26. abrir Equipe e confirmar papéis/limites sem mutações de produção
+1. abrir Visão geral e localizar rapidamente a ação principal
+2. iniciar Novo relatório sem orientação externa
+3. importar um arquivo sintético compatível
+4. observar se fica claro que o arquivo é processado localmente
+5. executar “Encontrar anatomia”
+6. observar se sugestão e confirmação parecem estados diferentes
+7. confirmar explicitamente a anatomia
+8. usar rotação, zoom, vistas, picking e órgão em detalhe quando aplicável
+9. gerar o rascunho educacional
+10. revisar/editar e aprovar explicitamente
+11. abrir a prévia do paciente
+12. publicar o link demo
+13. abrir como paciente no smartphone e avaliar branding + 3D + explicação
+14. confirmar que a linguagem comunica anatomia de referência
+15. voltar ao profissional e alterar o laudo
+16. observar se a necessidade de reconfirmação fica inequívoca
+17. conferir Analytics e Equipe apenas como superfícies demo, sem esperar mutações de produção
 ```
+
+Opcionalmente, quando houver suspeita concreta de regressão, repetir manualmente PDF textual, PDF escaneado/OCR ou PNG/JPEG. Não transformar isso em checklist obrigatório a cada iteração quando os gates automatizados estiverem verdes.
 
 ## O que registrar
 
 Registrar apenas observações concretas de produto, por exemplo:
 
 - importação local ficou clara ou pareceu upload para servidor?
-- PDF textual foi extraído de forma compreensível?
-- PDF escaneado deixou claro que o OCR é local e precisa de revisão humana?
-- OCR de imagem deixou claro que o texto precisa de revisão humana?
-- progresso/cancelamento do OCR ficou compreensível?
-- erro de arquivo preservou corretamente o texto anterior?
-- estrutura sugerida foi a esperada?
+- PDF escaneado/OCR deixou claro que o texto precisa de revisão humana?
+- progresso/cancelamento pareceu compreensível?
+- estrutura sugerida foi entendida como sugestão?
 - houve algum momento em que exploração pareceu confirmação clínica?
 - o 3D ajudou a entender a anatomia ou pareceu decorativo?
 - houve confusão entre referência anatômica e corpo do paciente?
@@ -171,7 +187,7 @@ Registrar apenas observações concretas de produto, por exemplo:
 - paciente entendeu o que estava vendo?
 - alguma etapa ficou escondida, duplicada ou desnecessariamente longa?
 - houve overflow, controle sobreposto, alvo pequeno ou perda de contexto em 390 px?
-- Analytics exibiu apenas eventos realmente realizados?
+- Analytics exibiu somente o que realmente aconteceu no demo?
 
 Não registrar PHI nem dados clínicos reais.
 
@@ -179,8 +195,9 @@ Não registrar PHI nem dados clínicos reais.
 
 A evidência de release deve sempre corresponder ao mesmo source candidato. Para qualificar um candidato de MVP sintético, registrar e conferir:
 
-- CI completo verde, incluindo `validate:security-contract`, `validate:ocr-contract`, `validate:browser-e2e-matrix`, typecheck, build e bundle budget;
+- CI completo verde, incluindo `validate:security-contract`, `validate:ocr-contract`, `validate:organization-runtime`, `validate:browser-e2e-matrix`, typecheck, build e bundle budget;
 - Browser E2E **4/4** verde: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`;
+- `clinical-flow` executando obrigatoriamente `synthetic-pilot.spec.ts`;
 - `document-ingestion` executando obrigatoriamente `report-intake.spec.ts` e `scanned-pdf-ocr.spec.ts`;
 - GitHub Pages verde para o mesmo source, incluindo verificação dos assets OCR same-origin e do fluxo publicado.
 
@@ -188,14 +205,16 @@ Não reutilizar uma execução antiga para declarar um source novo pronto.
 
 ## Critério de conclusão do MVP sintético
 
-O candidato pode avançar na avaliação de MVP quando:
+O MVP sintético está funcionalmente qualificado quando:
 
-- CI, Browser E2E e Pages estiverem verdes para o source funcional correspondente;
-- piloto manual sintético não revelar bloqueador P0;
-- fluxo laudo → anatomia → confirmação → 3D → explicação → revisão → paciente funcionar sem atalhos fake;
-- portal e Clinical Studio permanecerem coerentes entre desktop/mobile;
-- nenhum dado sair da fronteira synthetic-only;
-- nenhuma superfície prometer diagnóstico automático, reconstrução individual ou backend inexistente.
+- CI, Browser E2E e Pages estão verdes para o source integrado correspondente;
+- a jornada local intake → anatomia → 3D → explicação → revisão → paciente passa de ponta a ponta;
+- alteração da fonte exige reconfirmação e invalida share obsoleto;
+- portal e Clinical Studio permanecem coerentes entre desktop/mobile;
+- nenhum dado sai da fronteira synthetic-only;
+- nenhuma superfície promete diagnóstico automático, reconstrução individual ou backend inexistente.
+
+O release `2f797c81ff24aabba51fb7aa06b76f0fcd6011fc` atende esses critérios automatizados. O piloto manual qualitativo existe para revelar atritos humanos P0/P1, não para mudar essa fronteira técnica sem evidência.
 
 TXT/MD, PDF textual, PDF escaneado/image-only e PNG/JPEG com OCR local são capacidades reais do candidato sintético. Isso **não** autoriza dados reais.
 

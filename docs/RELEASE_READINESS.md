@@ -7,9 +7,41 @@ Canonical branch: `main`
 
 ### Browser MVP sintético
 
-**QUALIFICADO PARA PILOTO MANUAL SINTÉTICO quando CI, Browser E2E e GitHub Pages estiverem verdes para o mesmo source candidato.**
+**QUALIFICADO COMO MVP BROWSER SINTÉTICO PARA PILOTO.**
 
-O escopo do MVP é uma experiência browser 3D-first para demonstrar, com dados exclusivamente sintéticos, o fluxo profissional → paciente:
+O release funcional qualificado é:
+
+```text
+2f797c81ff24aabba51fb7aa06b76f0fcd6011fc
+```
+
+Esse source passou no próprio `main`, após integração do PR #8:
+
+- CI `34728485763`: **PASS**;
+- Browser E2E `34728485665`: **PASS 4/4**;
+- GitHub Pages `34728485730`: **PASS** em build, deploy, shell/assets e fluxo 3D/OCR publicado em Chromium.
+
+O Browser E2E agora inclui `tests/e2e/synthetic-pilot.spec.ts`, que prova uma jornada única de ponta a ponta:
+
+```text
+TXT local sintético
+  → editor
+  → encontrar anatomia
+  → confirmação explícita
+  → Human Atlas 3D
+  → rascunho educacional
+  → prévia do paciente
+  → aprovação humana
+  → share
+  → portal paciente revisado
+  → alteração da fonte
+  → reconfirmação obrigatória
+  → link anterior inválido
+```
+
+A etapa manual restante é **qualitativa**: clareza de uso, compreensão, conforto visual e atritos reais observados por pessoas usando dados fictícios. Ela não é mais usada para compensar ausência de cobertura funcional automatizada.
+
+O escopo do MVP continua sendo uma experiência browser 3D-first, com dados exclusivamente sintéticos, para demonstrar o fluxo profissional → paciente:
 
 ```text
 laudo / relatório
@@ -53,7 +85,9 @@ O candidato inclui:
 - Equipe/permissões source-first sem mutações fake;
 - responsividade desktop/mobile e axe/WCAG;
 - ingestão local de TXT/MD, PDF textual, PDF escaneado/image-only e PNG/JPEG;
-- nenhuma importação executando análise anatômica, confirmação, revisão ou publicação automaticamente.
+- nenhuma importação executando análise anatômica, confirmação, revisão ou publicação automaticamente;
+- jornada integrada local-intake → paciente protegida por Browser E2E;
+- identidade demo centralizada em `src/demo/identity.ts`, sem duplicação entre seed de organização e seed de relatório.
 
 ## Ingestão local — arquitetura qualificada
 
@@ -136,6 +170,19 @@ Existe uma única autoridade Human Atlas para BodyParts3D/FMA:
 
 Exploração e confirmação clínica são estados diferentes. Picking, busca ou destaque temporário nunca podem alterar silenciosamente a anatomia aprovada.
 
+## Identidade demo canônica
+
+Dados de identidade sintética que atravessam organização e relatório pertencem a `src/demo/identity.ts`:
+
+- organização demo;
+- workspace padrão;
+- profissional atual;
+- paciente demo.
+
+`src/organization/demo-organization.ts` e `src/domain/demo.ts` consomem essa SSOT. `validate:organization-runtime` falha se o seed do relatório voltar a duplicar os literais protegidos ou deixar de usar a identidade canônica.
+
+Isso não transforma a demo em persistência de produção; apenas remove divergência estrutural entre seeds sintéticos.
+
 ## Gates obrigatórios de release
 
 Não declarar um source pronto com evidência de outro commit. O mesmo candidato deve passar:
@@ -164,12 +211,12 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 
 Os quatro shards devem ficar verdes:
 
-- `clinical-flow` — workflow profissional → paciente, revisão e share;
+- `clinical-flow` — workflow profissional → paciente, revisão, share e `synthetic-pilot.spec.ts`;
 - `document-ingestion` — TXT/MD, PDF textual, PDF escaneado/image-only e OCR PNG/JPEG;
 - `responsive-layout` — desktop/mobile e visibilidade 3D;
 - `supporting-contracts` — acessibilidade, anatomia em profundidade, permissões e localização do paciente.
 
-A cobertura inclui ingestão TXT/MD/PDF/imagem, OCR real em português, PDF image-only, limites fail-closed, 3D, workflow profissional → paciente, acessibilidade e responsividade. `tests/e2e/scanned-pdf-ocr.spec.ts` é obrigatório no shard `document-ingestion`; não pode existir teste E2E órfão fora da matriz.
+A cobertura inclui ingestão TXT/MD/PDF/imagem, OCR real em português, PDF image-only, limites fail-closed, 3D, workflow profissional → paciente, invalidação de share obsoleto, acessibilidade e responsividade. `tests/e2e/scanned-pdf-ocr.spec.ts` é obrigatório no shard `document-ingestion`; `tests/e2e/synthetic-pilot.spec.ts` é obrigatório no `clinical-flow`; não pode existir teste E2E órfão fora da matriz.
 
 ### 3. GitHub Pages
 
@@ -194,11 +241,20 @@ Qualquer falha/cancelamento preserva o último texto válido. Arquivo importado 
 
 ### Prévia do paciente e gate de revisão
 
-Conteúdo só aparece como revisado quando existe conclusão real + aprovação. Alterar laudo, anatomia ou explicação invalida etapas dependentes e shares conforme a máquina de estado.
+Conteúdo só aparece como revisado quando existe conclusão real + aprovação. Alterar laudo, anatomia ou explicação invalida etapas dependentes e shares conforme a máquina de estado. O piloto integrado deve continuar provando que um share antigo deixa de funcionar após a fonte mudar.
 
 ### QA 3D
 
 Superfícies WebGL são viewport-aware. Não remover `IntersectionObserver` ou pausa offscreen para satisfazer screenshots. O teste deve observar a superfície como o usuário.
+
+## Trabalho seguinte
+
+O desenvolvimento-base do MVP sintético está fechado. Próximo trabalho de produto:
+
+1. executar observação manual qualitativa com dados totalmente fictícios;
+2. registrar somente atritos reproduzíveis de clareza, navegação, copy, 3D e compreensão do paciente;
+3. corrigir P0/P1 encontrados sem reabrir arquitetura já qualificada;
+4. não iniciar produção clínica, auth, Supabase real ou IA remota sem autorização explícita.
 
 ## Bloqueadores de produção clínica
 
@@ -232,5 +288,6 @@ Antes de qualquer dado real:
 - OCR com CDN/default remoto silencioso ou worker `blob:`;
 - OCR de PDF escaneado sem limites por página/documento;
 - spec E2E novo sem inclusão exatamente uma vez na matriz Browser E2E;
+- duplicação de IDs/nomes de identidade demo entre seeds paralelos;
 - remote AI, auth, billing ou dados reais fingidos por frontend;
 - Vercel/Supabase como dependência para validar o MVP sintético atual.
