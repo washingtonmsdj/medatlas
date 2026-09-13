@@ -1,0 +1,132 @@
+name: Observação do piloto sintético
+description: Registre um bloqueio ou atrito reproduzível do MVP usando somente dados fictícios.
+title: "[Piloto] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## MedAtlas — feedback do piloto sintético
+
+        Use este formulário somente para observações reproduzíveis do MVP browser sintético.
+
+        **Não inclua nomes reais, exames reais, identificadores, imagens clínicas, PHI ou qualquer outro dado de paciente.**
+        Produção clínica, Supabase real e IA remota permanecem fora deste piloto.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidade observada
+      description: P0 bloqueia a jornada; P1 causa atrito material ou risco de interpretação incorreta. Se houver dúvida, deixe para triagem.
+      options:
+        - P0 — bloqueia a jornada principal
+        - P1 — atrito material / risco de interpretação
+        - A classificar
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Superfície
+      options:
+        - Visão geral
+        - Clinical Report Studio
+        - Atlas 3D
+        - Pacientes
+        - Portal / prévia do paciente
+        - Importação TXT/MD
+        - PDF textual
+        - PDF escaneado / OCR
+        - PNG/JPEG / OCR
+        - Equipe
+        - Analytics
+        - Configurações
+        - Navegação / topbar / responsividade
+        - Outra
+    validations:
+      required: true
+
+  - type: input
+    id: release
+    attributes:
+      label: Release / commit testado
+      description: Informe o SHA quando souber. O release funcional canônico atual está documentado em URGENTE.md e docs/PILOT.md.
+      placeholder: cfdd61bbb806d3560ba20f2487c41fee6818af75
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Informe browser, sistema e largura/tipo de dispositivo.
+      placeholder: Chrome 152 · Windows 11 · desktop 1600 px, ou Android · 390 px
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Cenário sintético usado
+      description: Descreva apenas dados totalmente fictícios e o objetivo que a pessoa tentava concluir.
+      placeholder: "Novo relatório sintético → importar TXT fictício → localizar anatomia → confirmar → abrir prévia do paciente"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Liste o menor caminho reproduzível até o problema.
+      placeholder: |
+        1. Abrir ...
+        2. Clicar ...
+        3. Importar ...
+        4. Observar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+      description: O que uma pessoa deveria entender ou conseguir concluir?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado observado
+      description: O que ocorreu de fato? Prefira comportamento verificável a opinião genérica.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto no piloto
+      description: Explique por que isso bloqueia, confunde ou aumenta risco na jornada profissional → paciente.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidência opcional
+      description: Capturas ou observações adicionais são bem-vindas, desde que contenham somente dados fictícios.
+      placeholder: Screenshot sintético, mensagem exibida, viewport, frequência de reprodução...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Confirmações obrigatórias
+      options:
+        - label: Usei somente dados totalmente fictícios; este issue não contém PHI nem dados clínicos reais.
+          required: true
+        - label: Não estou solicitando ativação de produção clínica, Supabase real ou IA remota.
+          required: true
+        - label: Tentei reproduzir o comportamento novamente antes de registrar a observação.
+          required: true
