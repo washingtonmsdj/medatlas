@@ -1,6 +1,6 @@
 # MedAtlas — MVP release readiness
 
-Checkpoint editorial: **2026-09-12**  
+Checkpoint editorial: **2026-09-13**  
 Canonical branch: `main`
 
 ## Verdict
@@ -9,19 +9,23 @@ Canonical branch: `main`
 
 **QUALIFICADO COMO MVP BROWSER SINTÉTICO PARA PILOTO.**
 
-O release funcional qualificado é:
+Release funcional qualificado atual:
 
 ```text
-2f797c81ff24aabba51fb7aa06b76f0fcd6011fc
+516b53efa58790df133d254581d80fa909a8ce21
 ```
 
-Esse source passou no próprio `main`, após integração do PR #8:
+Esse source passou no próprio `main`, após integração do PR #10:
 
-- CI `34728485763`: **PASS**;
-- Browser E2E `34728485665`: **PASS 4/4**;
-- GitHub Pages `34728485730`: **PASS** em build, deploy, shell/assets e fluxo 3D/OCR publicado em Chromium.
+- CI `34744950754`: **PASS**;
+- Browser E2E `34744950764`: **PASS 4/4**;
+- GitHub Pages `34744950748`: **PASS** em build, deploy, shell/assets e fluxo 3D publicado em Chromium.
 
-O Browser E2E agora inclui `tests/e2e/synthetic-pilot.spec.ts`, que prova uma jornada única de ponta a ponta:
+O release preserva a jornada sintética integrada qualificada anteriormente e fecha o primeiro atrito P1 reproduzível encontrado no pente-fino visual: a busca global mobile era comprimida porque o botão de perfil mantinha `min-width: 220px` herdado mesmo depois de esconder seu texto em 390 px.
+
+A correção permanece no shell clínico com `min-width: 0`, e `tests/e2e/responsive-layout.spec.ts` protege a geometria exigindo busca ≥200 px e perfil ≤48 px. O artifact `visual-qa-34744950764-responsive-layout`, gerado pelo mesmo SHA integrado, confirmou visualmente a correção sem nova regressão P0/P1 em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
+
+O Browser E2E também inclui `tests/e2e/synthetic-pilot.spec.ts`, que prova uma jornada única de ponta a ponta:
 
 ```text
 TXT local sintético
@@ -39,9 +43,9 @@ TXT local sintético
   → link anterior inválido
 ```
 
-A etapa manual restante é **qualitativa**: clareza de uso, compreensão, conforto visual e atritos reais observados por pessoas usando dados fictícios. Ela não é mais usada para compensar ausência de cobertura funcional automatizada.
+A etapa manual restante é **qualitativa**: clareza de uso, compreensão, conforto visual e atritos reais observados por pessoas usando dados fictícios. Ela não compensa ausência de cobertura funcional automatizada.
 
-O escopo do MVP continua sendo uma experiência browser 3D-first, com dados exclusivamente sintéticos, para demonstrar o fluxo profissional → paciente:
+O escopo continua sendo uma experiência browser 3D-first, com dados exclusivamente sintéticos:
 
 ```text
 laudo / relatório
@@ -78,16 +82,16 @@ O candidato inclui:
 - órgão em detalhe como profundidade suplementar, sem alterar a confirmação clínica;
 - triagem determinística e confirmação anatômica explícita;
 - rascunho educacional, edição, revisão humana e publicação fail-closed;
-- preview pré-publicação que distingue conteúdo revisado de conteúdo pendente;
+- preview pré-publicação distinguindo conteúdo revisado de pendente;
 - share demo temporário, versionado e revogável;
 - portal paciente com anatomia de referência, branding e explicação revisada;
 - Analytics demo local;
 - Equipe/permissões source-first sem mutações fake;
-- responsividade desktop/mobile e axe/WCAG;
+- responsividade desktop/mobile, axe/WCAG e geometria mobile do topbar protegida;
 - ingestão local de TXT/MD, PDF textual, PDF escaneado/image-only e PNG/JPEG;
 - nenhuma importação executando análise anatômica, confirmação, revisão ou publicação automaticamente;
 - jornada integrada local-intake → paciente protegida por Browser E2E;
-- identidade demo centralizada em `src/demo/identity.ts`, sem duplicação entre seed de organização e seed de relatório.
+- identidade demo centralizada em `src/demo/identity.ts`.
 
 ## Ingestão local — arquitetura qualificada
 
@@ -123,7 +127,7 @@ A fronteira é local e limitada:
 - máximo de **2,5 MP por página**;
 - máximo de **16 MP no documento rasterizado**;
 - máximo de **12 MP para imagem embutida**;
-- reutilização do mesmo OCR local de imagem, sem segunda stack Tesseract;
+- reutilização do mesmo OCR local de imagem;
 - progresso por documento/página e cancelamento;
 - falha/cancelamento preservam o último texto válido;
 - OCR sem texto suficiente continua fail-closed;
@@ -144,11 +148,11 @@ A implementação usa `tesseract.js` **7.0.0** + `@tesseract.js-data/por` **1.0.
 - progresso/cancelamento;
 - resultado sempre editável antes da interpretação clínica.
 
-## Distribuição e budgets
+## Distribuição, budgets e provenance
 
 PDF.js e Tesseract permanecem fora do caminho inicial e são carregados sob demanda. O CI mantém budgets separados para core, PDF e OCR; não aumentar o budget principal para absorver capacidades opcionais.
 
-Assets de OCR são preparados a partir das dependências pinadas e possuem manifesto de integridade SHA-256. Assets Human Atlas e modelos de órgão detalhado também permanecem vendorizados, versionados e verificados.
+Assets OCR possuem manifesto de integridade SHA-256. Human Atlas e modelos detalhados também permanecem vendorizados, versionados e verificados.
 
 Licenças/proveniência relevantes:
 
@@ -157,7 +161,7 @@ Licenças/proveniência relevantes:
 - PDF.js: Apache-2.0;
 - Tesseract.js/core: Apache-2.0;
 - modelo português: MIT;
-- integração/modelos detalhados de `thebuggeddev/anatomy`: conforme permissão/proveniência registrada em `docs/UPSTREAM_ANATOMY.md`.
+- integração/modelos detalhados de `thebuggeddev/anatomy`: conforme `docs/UPSTREAM_ANATOMY.md`.
 
 ## Arquitetura 3D canônica
 
@@ -172,16 +176,9 @@ Exploração e confirmação clínica são estados diferentes. Picking, busca ou
 
 ## Identidade demo canônica
 
-Dados de identidade sintética que atravessam organização e relatório pertencem a `src/demo/identity.ts`:
+Dados sintéticos compartilhados entre organização e relatório pertencem a `src/demo/identity.ts`: organização demo, workspace padrão, profissional atual e paciente demo.
 
-- organização demo;
-- workspace padrão;
-- profissional atual;
-- paciente demo.
-
-`src/organization/demo-organization.ts` e `src/domain/demo.ts` consomem essa SSOT. `validate:organization-runtime` falha se o seed do relatório voltar a duplicar os literais protegidos ou deixar de usar a identidade canônica.
-
-Isso não transforma a demo em persistência de produção; apenas remove divergência estrutural entre seeds sintéticos.
+`src/organization/demo-organization.ts` e `src/domain/demo.ts` consomem essa SSOT. `validate:organization-runtime` falha se o seed voltar a duplicar os literais protegidos.
 
 ## Gates obrigatórios de release
 
@@ -189,14 +186,13 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 
 ### 1. CI
 
-- `npm ci`;
-- auditoria de dependências de produção;
+- `npm ci` e auditoria de dependências;
 - contratos DB/organization/publication/repository/share/patient-share;
-- anatomia + cenários demo;
+- anatomy + cenários demo;
 - integridade de assets e performance;
 - security/privacy;
 - OCR;
-- cobertura completa da matriz Browser E2E;
+- `validate:browser-e2e-matrix`;
 - AI/review/workflow;
 - licenças/proveniência;
 - reference atlas;
@@ -205,18 +201,16 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 - production build;
 - bundle budget.
 
-`validate:browser-e2e-matrix` enumera todos os `tests/e2e/*.spec.ts` e falha se algum spec não pertencer a exatamente um shard, se houver referência para arquivo inexistente ou se um spec for executado em duplicidade.
-
 ### 2. Browser E2E
 
 Os quatro shards devem ficar verdes:
 
 - `clinical-flow` — workflow profissional → paciente, revisão, share e `synthetic-pilot.spec.ts`;
 - `document-ingestion` — TXT/MD, PDF textual, PDF escaneado/image-only e OCR PNG/JPEG;
-- `responsive-layout` — desktop/mobile e visibilidade 3D;
+- `responsive-layout` — desktop/mobile, visibilidade 3D e geometria do topbar em 390 px;
 - `supporting-contracts` — acessibilidade, anatomia em profundidade, permissões e localização do paciente.
 
-A cobertura inclui ingestão TXT/MD/PDF/imagem, OCR real em português, PDF image-only, limites fail-closed, 3D, workflow profissional → paciente, invalidação de share obsoleto, acessibilidade e responsividade. `tests/e2e/scanned-pdf-ocr.spec.ts` é obrigatório no shard `document-ingestion`; `tests/e2e/synthetic-pilot.spec.ts` é obrigatório no `clinical-flow`; não pode existir teste E2E órfão fora da matriz.
+Nenhum `tests/e2e/*.spec.ts` pode ficar fora da matriz ou aparecer em duplicidade.
 
 ### 3. GitHub Pages
 
@@ -225,69 +219,28 @@ O deploy publicado deve provar:
 - shell e chunks JS/CSS carregando sob `/medatlas/`;
 - Human Atlas e modelos de órgão locais;
 - manifesto e SHA-256 dos assets OCR publicados;
-- PDF textual usando worker local sob o base path;
+- PDF textual usando worker local;
 - PNG OCR usando apenas assets same-origin;
-- **PDF escaneado/image-only usando rasterização + OCR local same-origin no build publicado**;
+- PDF escaneado/image-only usando rasterização + OCR local same-origin;
 - nenhuma análise anatômica automática após importação;
 - fluxo 3D clínico/paciente e Atlas mobile.
 
-## Correções de robustez que não podem regredir
+## Evidência atual
 
-### Intake de laudo
+```text
+source:  516b53efa58790df133d254581d80fa909a8ce21
+CI:      34744950754 PASS
+Browser: 34744950764 PASS 4/4
+Pages:   34744950748 PASS
+```
 
-`ReportIntake` é UI. Leitura/decoding/parsing/OCR pertencem a `src/ingestion/`. Limites pertencem a `src/product/constraints.ts`. Não duplicar parser, limites ou Tesseract em React.
+Artifact responsivo do mesmo source:
 
-Qualquer falha/cancelamento preserva o último texto válido. Arquivo importado produz somente fonte textual editável.
+```text
+visual-qa-34744950764-responsive-layout
+sha256:335427f243b498a07c4952530a52cbfe0fae14bce06f1aca89ad0570c0439dff
+```
 
-### Prévia do paciente e gate de revisão
+## Próximo gate
 
-Conteúdo só aparece como revisado quando existe conclusão real + aprovação. Alterar laudo, anatomia ou explicação invalida etapas dependentes e shares conforme a máquina de estado. O piloto integrado deve continuar provando que um share antigo deixa de funcionar após a fonte mudar.
-
-### QA 3D
-
-Superfícies WebGL são viewport-aware. Não remover `IntersectionObserver` ou pausa offscreen para satisfazer screenshots. O teste deve observar a superfície como o usuário.
-
-## Trabalho seguinte
-
-O desenvolvimento-base do MVP sintético está fechado. Próximo trabalho de produto:
-
-1. executar observação manual qualitativa com dados totalmente fictícios;
-2. registrar somente atritos reproduzíveis de clareza, navegação, copy, 3D e compreensão do paciente;
-3. corrigir P0/P1 encontrados sem reabrir arquitetura já qualificada;
-4. não iniciar produção clínica, auth, Supabase real ou IA remota sem autorização explícita.
-
-## Bloqueadores de produção clínica
-
-Antes de qualquer dado real:
-
-1. projeto Supabase dedicado ao MedAtlas;
-2. migrations canônicas aplicadas;
-3. autenticação;
-4. provas cross-tenant e RLS por papel;
-5. Storage privado com testes de negação;
-6. `SupabaseClinicalRepository` como implementação da autoridade existente, sem persistência paralela;
-7. share de produção com expiração, revogação e auditoria;
-8. políticas de retenção/backup;
-9. secrets/environment separation;
-10. observabilidade, suporte e resposta a incidentes;
-11. revisão jurídica/privacidade para jurisdição/uso pretendidos;
-12. protocolo de piloto clínico controlado.
-
-## Não reintroduzir
-
-- renderer 3D simplificado concorrente;
-- `OrganizationSwitcher` ou troca fake de workspace no shell;
-- `ViewModeSwitcher` global Profissional/Paciente;
-- “Novo relatório” duplicado na sidebar/configurações;
-- Consultas/Exames como módulos independentes no MVP;
-- CSS morto/tema paralelo para contornar cascade;
-- estado pendente visualmente apresentado como revisão aprovada;
-- IDs FMA na superfície primária do paciente;
-- leitura/parsing/OCR de arquivo dentro de `ReportIntake`;
-- parser/worker PDF remoto ou eager no bundle inicial;
-- OCR com CDN/default remoto silencioso ou worker `blob:`;
-- OCR de PDF escaneado sem limites por página/documento;
-- spec E2E novo sem inclusão exatamente uma vez na matriz Browser E2E;
-- duplicação de IDs/nomes de identidade demo entre seeds paralelos;
-- remote AI, auth, billing ou dados reais fingidos por frontend;
-- Vercel/Supabase como dependência para validar o MVP sintético atual.
+O próximo trabalho é **piloto qualitativo sintético**, não nova arquitetura. Corrigir apenas atritos P0/P1 reproduzíveis. Produção clínica, PHI, Supabase real e IA remota permanecem bloqueados até autorização explícita e implementação dos gates de produção.
