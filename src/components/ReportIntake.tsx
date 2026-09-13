@@ -260,7 +260,7 @@ export function ReportIntake({
 
   const analyzeLabel = anatomyReviewRequired
     ? 'Encontrar anatomia'
-    : 'Localizar anatomia novamente'
+    : 'Localizar anatomia'
 
   return (
     <section className="intake-card">
