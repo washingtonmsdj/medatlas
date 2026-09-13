@@ -408,18 +408,21 @@ test('runs real Portuguese OCR from same-origin assets without auto-running anat
   expect(remoteOcrRequests).toEqual([])
 })
 
-test('demotes anatomy analysis after the current structure is confirmed', async ({
+test('demotes anatomy matching after the current structure is confirmed', async ({
   page,
 }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Relatórios' }).click()
 
-  const reanalyze = page.getByRole('button', { name: 'Reanalisar laudo' })
-  await expect(reanalyze).toBeVisible()
-  await expect(reanalyze).toHaveClass(/reanalyze/)
+  const rematch = page.getByRole('button', { name: 'Refazer correspondência' })
+  await expect(rematch).toBeVisible()
+  await expect(rematch).toHaveClass(/reanalyze/)
   await expect(
     page.getByText('Use apenas se precisar refazer a correspondência anatômica.'),
   ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Reanalisar laudo' }),
+  ).toHaveCount(0)
 
   const editor = page.getByRole('textbox', {
     name: 'Texto do laudo ou relatório',
