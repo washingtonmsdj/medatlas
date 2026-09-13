@@ -1,6 +1,8 @@
 name: Observação do piloto sintético
 description: Registre um bloqueio ou atrito reproduzível do MVP usando somente dados fictícios.
 title: "[Piloto] "
+labels:
+  - pilot
 body:
   - type: markdown
     attributes:

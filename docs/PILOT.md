@@ -48,6 +48,14 @@ TXT local sintético
 
 O trabalho manual que permanece neste documento é **qualitativo**. Ele serve para observar compreensão, clareza, fluidez, conforto visual e atritos de uso que asserts automatizados não medem bem. Não deve ser usado para revalidar manualmente toda a mecânica já protegida por CI/Browser/Pages sem uma regressão concreta.
 
+## Como registrar observações
+
+Toda observação concreta do piloto deve ser registrada pelo formulário **[Observação do piloto sintético](https://github.com/washingtonmsdj/medatlas/issues/new?template=pilot-observation.yml)**. O template aplica automaticamente o label `pilot` e exige ambiente, cenário fictício, passos reproduzíveis, esperado × observado, impacto e confirmações de privacidade.
+
+Use **um issue por comportamento distinto**. Não misture múltiplos defeitos no mesmo registro e não abra issue apenas para repetir uma ideia genérica sem comportamento observável. P0/P1 só deve virar mudança de runtime depois de reprodução ou evidência suficiente para localizar a causa.
+
+Nunca anexar PHI, exames reais, nomes, identificadores ou imagens clínicas reais. O intake não autoriza produção clínica, Supabase real nem IA remota.
+
 ## Perguntas que o piloto qualitativo deve responder
 
 - O profissional entende rapidamente onde iniciar e continuar um relatório?
