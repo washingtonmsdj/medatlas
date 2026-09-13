@@ -11,18 +11,20 @@ Ele não autoriza uso clínico real nem substitui validação de segurança, pri
 O aceite funcional integrado está automatizado e qualificado no release:
 
 ```text
-516b53efa58790df133d254581d80fa909a8ce21
+cfdd61bbb806d3560ba20f2487c41fee6818af75
 ```
 
 Evidência pós-merge do próprio `main`:
 
-- CI `34744950754`: **PASS**;
-- Browser E2E `34744950764`: **PASS 4/4**;
-- GitHub Pages `34744950748`: **PASS** incluindo build, deploy, shell/assets e fluxo 3D publicado em Chromium.
+- CI `34770428224`: **PASS**;
+- Browser E2E `34770428246`: **PASS 4/4**;
+- GitHub Pages `34770428231`: **PASS** incluindo build, deploy, shell/assets e fluxo 3D publicado em Chromium.
 
-O release também fecha o primeiro atrito P1 encontrado no pente-fino visual do piloto: em 390 px a busca global era comprimida porque o perfil mantinha `min-width: 220px` herdado mesmo com o texto oculto. O shell clínico agora neutraliza essa largura com `min-width: 0`, e `responsive-layout.spec.ts` exige busca ≥200 px e perfil ≤48 px.
+O release preserva o primeiro P1 já fechado: em 390 px a busca global era comprimida porque o perfil mantinha `min-width: 220px` herdado mesmo com o texto oculto. O shell clínico neutraliza essa largura com `min-width: 0`, e `responsive-layout.spec.ts` exige busca ≥200 px e perfil ≤48 px.
 
-O artifact `visual-qa-34744950764-responsive-layout` do próprio `main` confirma visualmente a correção sem regressão relevante em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
+O segundo P1 qualitativo também está fechado: a ação de correspondência anatômica era apresentada como **“Reanalisar laudo” / “Analisando…”**, o que podia sugerir nova análise clínica ou diagnóstica. A UI agora comunica **“Refazer correspondência”**, **“Localizando anatomia”**, **“Buscando correspondências anatômicas”** e **“Localizando…”**. `report-intake.spec.ts` garante que `Reanalisar laudo` não volte a essa ação.
+
+O artifact `visual-qa-34770428246-responsive-layout` do próprio `main` confirma visualmente a nova copy e as correções responsivas sem regressão relevante em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
 
 ## Aceite integrado automatizado
 
@@ -53,6 +55,7 @@ O trabalho manual que permanece neste documento é **qualitativo**. Ele serve pa
 - Progresso/cancelamento de OCR é compreensível?
 - O texto reconhecido deixa claro que precisa de revisão humana?
 - A anatomia sugerida é apresentada como sugestão, não diagnóstico?
+- A ação de localizar/refazer correspondência anatômica permanece claramente distinta de reanálise clínica ou diagnóstico?
 - A confirmação anatômica explícita é inequívoca?
 - O Human Atlas 3D ajuda a explicar ou parece apenas decorativo?
 - Exploração temporária permanece distinta da anatomia confirmada?
@@ -114,20 +117,21 @@ O Browser E2E protege, entre outros pontos:
 8. preservação do último texto válido após falha/cancelamento;
 9. ausência de análise anatômica automática após importação;
 10. sugestão e confirmação anatômica explícita;
-11. Human Atlas real no fluxo profissional e paciente;
-12. rascunho, revisão, publicação e preview;
-13. share temporário, revogação e expiração;
-14. jornada integrada arquivo local → paciente → invalidação do share após alteração da fonte;
-15. Analytics local;
-16. shell profissional separado da experiência paciente;
-17. Equipe/permissões sem mutações fake;
-18. axe/WCAG;
-19. ausência de overflow e hit areas protegidas em desktop/mobile;
-20. topbar mobile com busca útil e perfil compacto em 390 px;
-21. arquitetura de profundidade `Corpo → Órgão em detalhe`;
-22. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
+11. copy de correspondência anatômica que não se apresenta como reanálise clínica do laudo;
+12. Human Atlas real no fluxo profissional e paciente;
+13. rascunho, revisão, publicação e preview;
+14. share temporário, revogação e expiração;
+15. jornada integrada arquivo local → paciente → invalidação do share após alteração da fonte;
+16. Analytics local;
+17. shell profissional separado da experiência paciente;
+18. Equipe/permissões sem mutações fake;
+19. axe/WCAG;
+20. ausência de overflow e hit areas protegidas em desktop/mobile;
+21. topbar mobile com busca útil e perfil compacto em 390 px;
+22. arquitetura de profundidade `Corpo → Órgão em detalhe`;
+23. um único engine Human Atlas para a autoridade FMA/BodyParts3D.
 
-O Browser E2E é dividido em quatro shards: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. `synthetic-pilot.spec.ts` pertence ao `clinical-flow`; `scanned-pdf-ocr.spec.ts` pertence a `document-ingestion`. `validate:browser-e2e-matrix` impede spec órfão, duplicado ou referência inexistente.
+O Browser E2E é dividido em quatro shards: `clinical-flow`, `document-ingestion`, `responsive-layout` e `supporting-contracts`. `synthetic-pilot.spec.ts` pertence ao `clinical-flow`; `report-intake.spec.ts` protege ingestão e a semântica de correspondência anatômica; `scanned-pdf-ocr.spec.ts` pertence a `document-ingestion`. `validate:browser-e2e-matrix` impede spec órfão, duplicado ou referência inexistente.
 
 ## Critérios 3D-first para observação manual
 
@@ -140,6 +144,7 @@ Em qualquer cenário anatômico, observar:
 - o órgão em detalhe nunca parece mudar sozinho a anatomia confirmada;
 - o mesmo conceito confirmado acompanha Clinical Studio → preview → paciente;
 - nenhuma copy sugere reconstrução individual do paciente;
+- ações de correspondência anatômica usam linguagem de localizar/refazer correspondência, não prometem reanálise clínica do laudo;
 - trocar de módulo não deixa sensação de canvas antigo ou contexto perdido;
 - em 390 px, controles e busca global continuam tocáveis, legíveis e confortáveis.
 
@@ -164,7 +169,8 @@ A mecânica principal já possui aceite automatizado. O roteiro manual deve prio
 14. confirmar que a linguagem comunica anatomia de referência
 15. voltar ao profissional e alterar o laudo
 16. observar se a necessidade de reconfirmação fica inequívoca
-17. conferir Analytics e Equipe apenas como superfícies demo
+17. quando a anatomia já estiver confirmada, conferir se “Refazer correspondência” é entendido como nova busca anatômica, não reanálise clínica
+18. conferir Analytics e Equipe apenas como superfícies demo
 ```
 
 Opcionalmente, quando houver suspeita concreta de regressão, repetir manualmente PDF textual, PDF escaneado/OCR ou PNG/JPEG. Não transformar isso em checklist obrigatório a cada iteração quando os gates automatizados estiverem verdes.
@@ -177,6 +183,7 @@ Registrar apenas observações concretas de produto:
 - OCR deixou claro que o texto precisa de revisão humana?
 - progresso/cancelamento foi compreensível?
 - estrutura sugerida foi entendida como sugestão?
+- “Encontrar anatomia” / “Refazer correspondência” foram entendidos como localização anatômica e não diagnóstico?
 - exploração pareceu confirmação clínica em algum momento?
 - o 3D ajudou a entender ou pareceu decorativo?
 - houve confusão entre referência anatômica e corpo do paciente?
@@ -191,10 +198,17 @@ Não registrar PHI nem dados clínicos reais.
 A evidência deve corresponder ao mesmo source candidato. Para o release atual:
 
 ```text
-source: 516b53efa58790df133d254581d80fa909a8ce21
-CI:     34744950754 PASS
-Browser:34744950764 PASS 4/4
-Pages:  34744950748 PASS
+source: cfdd61bbb806d3560ba20f2487c41fee6818af75
+CI:     34770428224 PASS
+Browser:34770428246 PASS 4/4
+Pages:  34770428231 PASS
+```
+
+Artifact responsivo do mesmo source:
+
+```text
+visual-qa-34770428246-responsive-layout
+sha256:9fa2ced7b8803ff7d6ad437301ef24c601f223d84aa8cd33b69c0eddea907397
 ```
 
 Não reutilizar execução antiga para declarar um source novo pronto.
@@ -210,4 +224,4 @@ O MVP sintético está funcionalmente qualificado quando:
 - nenhum dado sai da fronteira synthetic-only;
 - nenhuma superfície promete diagnóstico automático, reconstrução individual ou backend inexistente.
 
-O release `516b53efa58790df133d254581d80fa909a8ce21` atende esses critérios automatizados. O piloto qualitativo continua apenas para revelar novos atritos humanos P0/P1 reproduzíveis.
+O release `cfdd61bbb806d3560ba20f2487c41fee6818af75` atende esses critérios automatizados. O piloto qualitativo continua apenas para revelar novos atritos humanos P0/P1 reproduzíveis.

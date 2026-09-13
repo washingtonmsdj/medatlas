@@ -42,14 +42,14 @@ MedAtlas **não** é diagnosticador automático, PACS, prontuário completo, seg
 ### Release funcional canônico
 
 ```text
-516b53efa58790df133d254581d80fa909a8ce21
+cfdd61bbb806d3560ba20f2487c41fee6818af75
 ```
 
-Esse commit integrou o PR #10 e é o release funcional atual do MVP sintético. Ele preserva a jornada integrada qualificada anteriormente e corrige o primeiro atrito P1 reproduzível encontrado no pente-fino visual mobile: a busca global era comprimida por um `min-width` legado do perfil.
+Esse commit integrou o PR #13 e é o release funcional atual do MVP sintético. Ele preserva a jornada integrada, a correção do topbar mobile e fecha o segundo atrito P1 reproduzível do piloto qualitativo: a correspondência anatômica era apresentada como **“Reanalisar laudo” / “Analisando…”**, linguagem que podia sugerir análise clínica ou diagnóstica que o produto não executa.
 
 ### Evidência pós-merge no próprio `main`
 
-- **CI `34744950754`: PASS completo**
+- **CI `34770428224`: PASS completo**
   - dependency audit;
   - DB/organization/publication/repository/share/patient-share;
   - anatomia/cenários;
@@ -65,12 +65,12 @@ Esse commit integrou o PR #10 e é o release funcional atual do MVP sintético. 
   - TypeScript;
   - production build;
   - bundle budget.
-- **Browser E2E `34744950764`: PASS 4/4**
+- **Browser E2E `34770428246`: PASS 4/4**
   - `clinical-flow`;
   - `document-ingestion`;
   - `responsive-layout`;
   - `supporting-contracts`.
-- **GitHub Pages `34744950748`: PASS completo**
+- **GitHub Pages `34770428231`: PASS completo**
   - build PASS;
   - deploy PASS;
   - shell/assets publicados PASS;
@@ -81,19 +81,21 @@ Esse commit integrou o PR #10 e é o release funcional atual do MVP sintético. 
 Artifact canônico do shard responsivo:
 
 ```text
-visual-qa-34744950764-responsive-layout
-sha256:335427f243b498a07c4952530a52cbfe0fae14bce06f1aca89ad0570c0439dff
+visual-qa-34770428246-responsive-layout
+sha256:9fa2ced7b8803ff7d6ad437301ef24c601f223d84aa8cd33b69c0eddea907397
 ```
 
-A revisão dos captures do próprio `516b53ef…` confirmou:
+A revisão dos captures do próprio `cfdd61bb…` confirmou:
 
-- busca global com largura útil em 390 px;
-- sino e perfil compactos sem reservar largura invisível;
-- Clinical Studio sem overflow horizontal;
-- Human Atlas 3D preservado em Dashboard, Studio, Pacientes e Atlas;
-- Equipe, Analytics e Configurações sem regressão P0/P1 nova.
+- `Refazer correspondência` cabe corretamente no Clinical Studio desktop e em 390 px;
+- busca global mantém largura útil em 390 px e perfil permanece compacto;
+- Clinical Studio permanece sem overflow horizontal;
+- Human Atlas 3D e o fluxo de publicação permanecem intactos;
+- Dashboard, Pacientes, Atlas, Equipe, Analytics e Configurações continuam sem regressão P0/P1 nova.
 
-A correção de raiz está em `src/styles/concept-shell.css`: o `doctor-chip` do shell clínico declara `min-width: 0`, neutralizando o `min-width: 220px` herdado do estilo global. `tests/e2e/responsive-layout.spec.ts` protege a geometria em 390 px exigindo busca com pelo menos 200 px e perfil com no máximo 48 px.
+A correção anterior do topbar permanece em `src/styles/concept-shell.css`: o `doctor-chip` do shell clínico declara `min-width: 0`, neutralizando o `min-width: 220px` herdado. `tests/e2e/responsive-layout.spec.ts` protege a geometria em 390 px exigindo busca com pelo menos 200 px e perfil com no máximo 48 px.
+
+A correção de linguagem clínica está em `src/components/ReportIntake.tsx`: a UI agora usa **`Refazer correspondência`**, **`Localizando anatomia`**, **`Buscando correspondências anatômicas`** e **`Localizando…`**. `tests/e2e/report-intake.spec.ts` protege o comportamento e falha se `Reanalisar laudo` voltar à ação de correspondência anatômica.
 
 ### Piloto sintético integrado automatizado
 
@@ -139,6 +141,7 @@ Isso **não** significa produção clínica com dados reais. O modo atual contin
 - [x] Atlas completo, foco clínico e modo paciente usando a mesma autoridade FMA;
 - [x] órgão detalhado como profundidade suplementar, sem segunda fonte de verdade;
 - [x] triagem determinística + confirmação anatômica explícita;
+- [x] linguagem de correspondência anatômica explícita, sem sugerir reanálise clínica do laudo;
 - [x] rascunho educacional + edição + revisão humana obrigatória;
 - [x] preview paciente antes da publicação;
 - [x] share demo opaco, versionado, temporário e revogável;
@@ -253,6 +256,7 @@ Fallback somente quando um PDF válido não possui camada textual utilizável:
 40. Identidade demo compartilhada pertence a `src/demo/identity.ts`; não duplicar organização/workspace/profissional/paciente entre seeds.
 41. `synthetic-pilot.spec.ts` permanece no `clinical-flow` e protege arquivo local → paciente → invalidação do share antigo.
 42. Em 390 px, o perfil do topbar não pode reservar largura mínima herdada; `responsive-layout.spec.ts` protege busca ≥200 px e perfil ≤48 px.
+43. A correspondência anatômica não pode ser apresentada como análise/reanálise clínica do laudo; a UI deve comunicar localização/correspondência e manter confirmação profissional explícita.
 
 ## 5. Gates permanentes do MVP sintético
 
@@ -263,7 +267,7 @@ Obrigatório: audit de dependências, contratos DB/organization/publication/repo
 ### Gate B — Browser E2E 4/4
 
 - `clinical-flow` — inclui `synthetic-pilot.spec.ts`;
-- `document-ingestion` — inclui `report-intake.spec.ts` e `scanned-pdf-ocr.spec.ts`;
+- `document-ingestion` — inclui `report-intake.spec.ts`, a semântica de correspondência anatômica e `scanned-pdf-ocr.spec.ts`;
 - `responsive-layout` — inclui a geometria mobile do topbar;
 - `supporting-contracts`.
 
@@ -279,12 +283,16 @@ O deploy publicado deve provar shell/chunks sob `/medatlas/`, Human Atlas e mode
 
 O desenvolvimento-base do MVP está encerrado e o piloto funcional está automatizado. Continuar `docs/PILOT.md` com dados totalmente fictícios.
 
-Primeira descoberta qualitativa já fechada:
+Descobertas qualitativas já fechadas:
 
-- **P1:** busca global mobile comprimida em 390 px;
-- causa: `min-width: 220px` herdado no perfil;
-- correção: `min-width: 0` no `doctor-chip` clínico;
-- prevenção: teste geométrico Browser + artifact visual do release integrado.
+1. **P1 — busca global mobile comprimida em 390 px**
+   - causa: `min-width: 220px` herdado no perfil;
+   - correção: `min-width: 0` no `doctor-chip` clínico;
+   - prevenção: teste geométrico Browser + artifact visual do release integrado.
+2. **P1 — copy sugeria reanálise clínica do laudo**
+   - causa: a ação de correspondência anatômica era rotulada `Reanalisar laudo` e o estado usava `Analisando…`;
+   - correção: `Refazer correspondência`, `Localizando anatomia`, `Buscando correspondências anatômicas` e `Localizando…`;
+   - prevenção: `report-intake.spec.ts` exige a nova semântica e garante ausência de `Reanalisar laudo`; artifact visual do `main` confirma desktop/mobile sem regressão.
 
 Continuar observando:
 
@@ -325,6 +333,7 @@ Somente atrás da fronteira backend, com resposta estruturada, validação FMA/r
 - `scripts/validate-browser-e2e-matrix.mjs` — cobertura exata da matriz Browser;
 - `.github/workflows/browser-e2e.yml` — matriz 4/4;
 - `tests/e2e/synthetic-pilot.spec.ts` — piloto integrado arquivo local → paciente;
+- `tests/e2e/report-intake.spec.ts` — ingestão e semântica de correspondência anatômica;
 - `tests/e2e/responsive-layout.spec.ts` — desktop/mobile, 3D e geometria do topbar;
 - `tests/e2e/scanned-pdf-ocr.spec.ts` — OCR de PDF escaneado;
 - `tests/deployed/preview.spec.ts` — prova do build publicado;
