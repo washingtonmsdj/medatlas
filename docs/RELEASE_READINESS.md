@@ -12,18 +12,20 @@ Canonical branch: `main`
 Release funcional qualificado atual:
 
 ```text
-516b53efa58790df133d254581d80fa909a8ce21
+cfdd61bbb806d3560ba20f2487c41fee6818af75
 ```
 
-Esse source passou no próprio `main`, após integração do PR #10:
+Esse source passou no próprio `main`, após integração do PR #13:
 
-- CI `34744950754`: **PASS**;
-- Browser E2E `34744950764`: **PASS 4/4**;
-- GitHub Pages `34744950748`: **PASS** em build, deploy, shell/assets e fluxo 3D publicado em Chromium.
+- CI `34770428224`: **PASS**;
+- Browser E2E `34770428246`: **PASS 4/4**;
+- GitHub Pages `34770428231`: **PASS** em build, deploy, shell/assets e fluxo 3D publicado em Chromium.
 
-O release preserva a jornada sintética integrada qualificada anteriormente e fecha o primeiro atrito P1 reproduzível encontrado no pente-fino visual: a busca global mobile era comprimida porque o botão de perfil mantinha `min-width: 220px` herdado mesmo depois de esconder seu texto em 390 px.
+O release preserva o primeiro P1 reproduzível já fechado: a busca global mobile era comprimida porque o botão de perfil mantinha `min-width: 220px` herdado mesmo depois de esconder seu texto em 390 px. A correção permanece no shell clínico com `min-width: 0`, e `tests/e2e/responsive-layout.spec.ts` protege a geometria exigindo busca ≥200 px e perfil ≤48 px.
 
-A correção permanece no shell clínico com `min-width: 0`, e `tests/e2e/responsive-layout.spec.ts` protege a geometria exigindo busca ≥200 px e perfil ≤48 px. O artifact `visual-qa-34744950764-responsive-layout`, gerado pelo mesmo SHA integrado, confirmou visualmente a correção sem nova regressão P0/P1 em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
+O segundo P1 qualitativo também foi corrigido na raiz: a correspondência anatômica era apresentada como **“Reanalisar laudo” / “Analisando…”**, wording que podia sugerir análise clínica ou diagnóstica inexistente. `ReportIntake` agora usa **“Refazer correspondência”**, **“Localizando anatomia”**, **“Buscando correspondências anatômicas”** e **“Localizando…”**. `tests/e2e/report-intake.spec.ts` protege essa semântica e garante que `Reanalisar laudo` não volte à ação de correspondência.
+
+O artifact `visual-qa-34770428246-responsive-layout`, gerado pelo mesmo SHA integrado, confirmou visualmente a nova copy, a correção responsiva anterior e a ausência de nova regressão P0/P1 em Dashboard, Clinical Studio, Pacientes, Atlas, Equipe, Analytics ou Configurações.
 
 O Browser E2E também inclui `tests/e2e/synthetic-pilot.spec.ts`, que prova uma jornada única de ponta a ponta:
 
@@ -81,6 +83,7 @@ O candidato inclui:
 - Atlas completo, foco clínico e modo paciente derivados do mesmo sistema anatômico;
 - órgão em detalhe como profundidade suplementar, sem alterar a confirmação clínica;
 - triagem determinística e confirmação anatômica explícita;
+- linguagem de correspondência anatômica explícita e não diagnóstica;
 - rascunho educacional, edição, revisão humana e publicação fail-closed;
 - preview pré-publicação distinguindo conteúdo revisado de pendente;
 - share demo temporário, versionado e revogável;
@@ -206,7 +209,7 @@ Não declarar um source pronto com evidência de outro commit. O mesmo candidato
 Os quatro shards devem ficar verdes:
 
 - `clinical-flow` — workflow profissional → paciente, revisão, share e `synthetic-pilot.spec.ts`;
-- `document-ingestion` — TXT/MD, PDF textual, PDF escaneado/image-only e OCR PNG/JPEG;
+- `document-ingestion` — TXT/MD, PDF textual, PDF escaneado/image-only, OCR PNG/JPEG e `report-intake.spec.ts` protegendo a semântica de correspondência anatômica;
 - `responsive-layout` — desktop/mobile, visibilidade 3D e geometria do topbar em 390 px;
 - `supporting-contracts` — acessibilidade, anatomia em profundidade, permissões e localização do paciente.
 
@@ -228,17 +231,17 @@ O deploy publicado deve provar:
 ## Evidência atual
 
 ```text
-source:  516b53efa58790df133d254581d80fa909a8ce21
-CI:      34744950754 PASS
-Browser: 34744950764 PASS 4/4
-Pages:   34744950748 PASS
+source:  cfdd61bbb806d3560ba20f2487c41fee6818af75
+CI:      34770428224 PASS
+Browser: 34770428246 PASS 4/4
+Pages:   34770428231 PASS
 ```
 
 Artifact responsivo do mesmo source:
 
 ```text
-visual-qa-34744950764-responsive-layout
-sha256:335427f243b498a07c4952530a52cbfe0fae14bce06f1aca89ad0570c0439dff
+visual-qa-34770428246-responsive-layout
+sha256:9fa2ced7b8803ff7d6ad437301ef24c601f223d84aa8cd33b69c0eddea907397
 ```
 
 ## Próximo gate
