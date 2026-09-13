@@ -61,7 +61,7 @@ function ingestionFailureMessage(failure: IngestionFailure) {
       if (isImage) return `Imagem acima do limite de ${formatDemoImageFileLimit()}.`
       return `Arquivo acima do limite de ${formatDemoTextLimit()}.`
     case 'too-short':
-      return 'O arquivo não contém texto suficiente para análise.'
+      return 'O arquivo não contém texto suficiente para localizar anatomia.'
     case 'invalid-encoding':
       return 'O arquivo precisa estar em UTF-8 válido.'
     case 'invalid-signature':
@@ -165,8 +165,8 @@ export function ReportIntake({
 
     if (analyzing) {
       return {
-        label: 'Analisando',
-        detail: 'Localizando estruturas anatômicas.',
+        label: 'Localizando anatomia',
+        detail: 'Buscando correspondências anatômicas no texto.',
         tone: 'working',
       }
     }
@@ -260,7 +260,7 @@ export function ReportIntake({
 
   const analyzeLabel = anatomyReviewRequired
     ? 'Encontrar anatomia'
-    : 'Reanalisar laudo'
+    : 'Localizar anatomia novamente'
 
   return (
     <section className="intake-card">
@@ -417,14 +417,14 @@ export function ReportIntake({
             Boolean(sourceTextError)
           }
         >
-          {analyzing ? 'Analisando…' : analyzeLabel}
+          {analyzing ? 'Localizando…' : analyzeLabel}
         </button>
         <span>
           {importingFile
             ? 'Conclua ou cancele a extração antes de localizar a anatomia.'
             : anatomyReviewRequired
               ? 'Depois, confirme a estrutura correta no Atlas.'
-              : 'Use apenas se precisar refazer a correspondência anatômica.'}
+              : 'Use apenas se precisar localizar novamente a anatomia no texto.'}
         </span>
       </div>
 
