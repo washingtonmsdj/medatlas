@@ -61,7 +61,7 @@ function ingestionFailureMessage(failure: IngestionFailure) {
       if (isImage) return `Imagem acima do limite de ${formatDemoImageFileLimit()}.`
       return `Arquivo acima do limite de ${formatDemoTextLimit()}.`
     case 'too-short':
-      return 'O arquivo não contém texto suficiente para análise.'
+      return 'O arquivo não contém texto suficiente para processamento.'
     case 'invalid-encoding':
       return 'O arquivo precisa estar em UTF-8 válido.'
     case 'invalid-signature':
@@ -165,8 +165,8 @@ export function ReportIntake({
 
     if (analyzing) {
       return {
-        label: 'Analisando',
-        detail: 'Localizando estruturas anatômicas.',
+        label: 'Localizando anatomia',
+        detail: 'Buscando correspondências anatômicas.',
         tone: 'working',
       }
     }
@@ -260,7 +260,7 @@ export function ReportIntake({
 
   const analyzeLabel = anatomyReviewRequired
     ? 'Encontrar anatomia'
-    : 'Reanalisar laudo'
+    : 'Refazer correspondência'
 
   return (
     <section className="intake-card">
@@ -417,7 +417,7 @@ export function ReportIntake({
             Boolean(sourceTextError)
           }
         >
-          {analyzing ? 'Analisando…' : analyzeLabel}
+          {analyzing ? 'Localizando…' : analyzeLabel}
         </button>
         <span>
           {importingFile
