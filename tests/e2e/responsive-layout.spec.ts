@@ -271,6 +271,15 @@ test('mobile concept shell stays compact without legacy switchers', async ({
     page.getByRole('group', { name: 'Alternar visão do MedAtlas' }),
   ).toHaveCount(0)
 
+  const [searchBox, profileBox] = await Promise.all([
+    search.boundingBox(),
+    profile.boundingBox(),
+  ])
+  expect(searchBox).not.toBeNull()
+  expect(profileBox).not.toBeNull()
+  expect(searchBox!.width).toBeGreaterThanOrEqual(200)
+  expect(profileBox!.width).toBeLessThanOrEqual(48)
+
   const heights = await page.evaluate(() => {
     const sidebar = document.querySelector<HTMLElement>('.clinical-sidebar')
     const topbar = document.querySelector<HTMLElement>('.clinical-topbar')
