@@ -9,13 +9,15 @@ Este documento registra somente evidências públicas verificáveis e separa cla
 ## Fonte primária
 
 - Digital Object: `united-female/v1.5`
-- Dataset: `https://lod.humanatlas.io/ref-organ/united-female/v1.5`
-- DOI: `https://doi.org/10.48539/HBM352.BTSQ.586`
+- Dataset: https://lod.humanatlas.io/ref-organ/united-female/v1.5
+- DOI: https://doi.org/10.48539/HBM352.BTSQ.586
 - GLB canônico informado pela distribuição HRA: `https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/assets/3d-vh-f-united.glb`
 - Metadata informado pela distribuição HRA: `https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/metadata.json`
 - Licença registrada no checkpoint atual: CC BY 4.0.
 
-A publicação independente no NIH 3D confirma um modelo **Body, Female**, criado por HRA, associado à coleção Human Reference Atlas 3D Reference Object Library, com o arquivo `3d-vh-f-united.glb`. A página também identifica a origem no Visible Human Dataset. citeturn3search0turn3search2
+A publicação independente no NIH 3D confirma um modelo **Body, Female**, criado por HRA, associado à coleção Human Reference Atlas 3D Reference Object Library, com o arquivo `3d-vh-f-united.glb`. A página também identifica a origem no Visible Human Dataset.
+
+Fonte de confirmação: https://3d.nih.gov/entries/3DPX-020992 e https://3d.nih.gov/entries/download/20992/1.01
 
 ## Evidência já confirmada
 
@@ -36,7 +38,9 @@ A publicação independente no NIH 3D confirma um modelo **Body, Female**, criad
 
 ## Regra de contagem
 
-Não vamos usar números publicados por projetos de terceiros como verdade do artefato HRA. Há implementações independentes que relatam 888 nodes e constroem tabelas de mapeamento próprias; isso é útil como pista de avaliação, mas não substitui a inspeção do GLB/metadata oficial. citeturn2search0
+Não vamos usar números publicados por projetos de terceiros como verdade do artefato HRA. Há implementações independentes que relatam 888 nodes e constroem tabelas de mapeamento próprias; isso é útil como pista de avaliação, mas não substitui a inspeção do GLB/metadata oficial.
+
+Referência secundária de avaliação: https://github.com/Nurkan1/Anatria-3D/blob/main/tools/asset-pipeline/hra-selection.mjs
 
 Portanto, `888` é tratado no MedAtlas como **hipótese a conferir**, não como metadado canônico.
 
@@ -73,7 +77,7 @@ Somente `mapped` poderá entrar no catálogo clínico. `unmapped` e `ambiguous` 
 
 ## Pontos de atenção encontrados na avaliação externa
 
-Uma implementação independente de seleção do mesmo HRA v1.5 demonstra que a fonte contém casos que exigem julgamento explícito: estruturas sem termo adequado no padrão adotado, nomes conflitantes e estruturas que não deveriam ser promovidas apenas por inferência geométrica. Isso reforça a necessidade de preservar o `source_node_id` e registrar decisões de mapeamento em vez de gerar nomes plausíveis. citeturn2search0
+Uma implementação independente de seleção do mesmo HRA v1.5 demonstra que a fonte contém casos que exigem julgamento explícito: estruturas sem termo adequado no padrão adotado, nomes conflitantes e estruturas que não deveriam ser promovidas apenas por inferência geométrica. Isso reforça a necessidade de preservar o `source_node_id` e registrar decisões de mapeamento em vez de gerar nomes plausíveis.
 
 Esse material **não é fonte clínica do MedAtlas** e não deve ser incorporado ao runtime.
 
@@ -102,9 +106,9 @@ Até a conclusão dessa coleta:
 
 ## Fontes externas verificadas
 
-- HRA Digital Object / dataset: `https://lod.humanatlas.io/ref-organ/united-female/v1.5`
-- NIH 3D entry: `https://3d.nih.gov/entries/3DPX-020992`
-- NIH 3D download metadata: `https://3d.nih.gov/entries/download/20992/1.01`
-- HRA validation tooling: `https://github.com/hubmapconsortium/hra-ref-organ-validation`
+- HRA Digital Object / dataset: https://lod.humanatlas.io/ref-organ/united-female/v1.5
+- NIH 3D entry: https://3d.nih.gov/entries/3DPX-020992
+- NIH 3D download metadata: https://3d.nih.gov/entries/download/20992/1.01
+- HRA validation tooling: https://github.com/hubmapconsortium/hra-ref-organ-validation
 
-A publicação NIH é usada como evidência independente da existência/publicação do artefato; a autoridade de origem continua sendo o Digital Object HRA/HuBMAP. citeturn3search0turn0search0
+A publicação NIH é usada como evidência independente da existência/publicação do artefato; a autoridade de origem continua sendo o Digital Object HRA/HuBMAP.
