@@ -12,22 +12,41 @@ interface Props {
   onSharesCleared: () => void
 }
 
+type CleanupMessage =
+  | { kind: 'success'; text: string }
+  | { kind: 'error'; text: string }
+  | null
+
 export function DemoSettings({ onSharesCleared }: Props) {
   const [shareCount, setShareCount] = useState(() =>
     getActivePatientShareCount(),
   )
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState<CleanupMessage>(null)
   const branding = organizationRuntime.branding
 
   const clear = () => {
-    const removed = revokeAllActivePatientShares()
-    onSharesCleared()
-    setShareCount(0)
-    setMessage(
-      removed > 0
-        ? `${removed} link(s) removido(s).`
-        : 'Nenhum link para remover.',
-    )
+    setMessage(null)
+
+    try {
+      const removed = revokeAllActivePatientShares()
+      onSharesCleared()
+      setShareCount(0)
+      setMessage({
+        kind: 'success',
+        text:
+          removed > 0
+            ? `${removed} link(s) removido(s).`
+            : 'Nenhum link para remover.',
+      })
+    } catch (error) {
+      setMessage({
+        kind: 'error',
+        text:
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível confirmar a revogação de todos os links ativos.',
+      })
+    }
   }
 
   return (
@@ -98,8 +117,11 @@ export function DemoSettings({ onSharesCleared }: Props) {
             Limpar links
           </button>
           {message && (
-            <small className="settings-message" role="status">
-              {message}
+            <small
+              className={`settings-message ${message.kind}`}
+              role={message.kind === 'error' ? 'alert' : 'status'}
+            >
+              {message.text}
             </small>
           )}
         </article>

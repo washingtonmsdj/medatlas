@@ -33,6 +33,20 @@ async function expectSelfContainedInvalidLink(page: Page) {
   ).toHaveCount(0)
 }
 
+async function blockPersistedShareRemoval(page: Page) {
+  await page.evaluate(() => {
+    const originalRemoveItem = Storage.prototype.removeItem
+
+    Storage.prototype.removeItem = function removeItem(key) {
+      if (String(key).startsWith('medatlas:demo:published:')) {
+        throw new DOMException('blocked', 'SecurityError')
+      }
+
+      return originalRemoveItem.call(this, key)
+    }
+  })
+}
+
 test('editing a published report revokes the previous patient link before applying the new version', async ({
   page,
 }) => {
@@ -60,17 +74,7 @@ test('published report mutation fails closed when persisted share revocation is 
   const explanation = page.getByLabel('Explicação para o paciente')
   const previous = await explanation.inputValue()
 
-  await page.evaluate(() => {
-    const originalRemoveItem = Storage.prototype.removeItem
-
-    Storage.prototype.removeItem = function removeItem(key) {
-      if (String(key).startsWith('medatlas:demo:published:')) {
-        throw new DOMException('blocked', 'SecurityError')
-      }
-
-      return originalRemoveItem.call(this, key)
-    }
-  })
+  await blockPersistedShareRemoval(page)
 
   await explanation.fill(`${previous} Esta alteração deve ser bloqueada.`)
 
@@ -82,6 +86,32 @@ test('published report mutation fails closed when persisted share revocation is 
 
   await page.goto(shareUrl)
 
+  await expect(page.getByText('SEU RELATÓRIO VISUAL')).toBeVisible()
+})
+
+test('global demo share cleanup fails closed when persisted storage cannot be revoked', async ({
+  page,
+}) => {
+  const shareUrl = await publishReadyReport(page)
+
+  await page.getByRole('button', { name: 'Configurações' }).click()
+
+  const linksCard = page
+    .locator('.settings-grid article')
+    .filter({ hasText: 'LINKS ATIVOS' })
+
+  await expect(linksCard.locator('strong')).toHaveText('1')
+  await blockPersistedShareRemoval(page)
+
+  await linksCard.getByRole('button', { name: 'Limpar links' }).click()
+
+  await expect(linksCard.getByRole('alert')).toContainText(
+    'Não foi possível confirmar a revogação de todos os links ativos',
+  )
+  await expect(linksCard.locator('strong')).toHaveText('1')
+  await expect(linksCard).not.toContainText('link(s) removido(s).')
+
+  await page.goto(shareUrl)
   await expect(page.getByText('SEU RELATÓRIO VISUAL')).toBeVisible()
 })
 

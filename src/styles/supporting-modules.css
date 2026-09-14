@@ -285,6 +285,10 @@
   font-size: var(--type-caption);
 }
 
+.settings-message.error {
+  color: var(--state-danger-soft);
+}
+
 /* Public patient route states. */
 
 .patient-route-state {

@@ -66,8 +66,10 @@ const requiredDemoFragments = [
   '.slice(MAX_STORED_DEMO_SHARES)',
   'memoryShares.delete(token)',
   'entry.storageKey ?? `${STORAGE_PREFIX}${token}`',
-  'const removedTokens = new Set(memoryShares.keys())',
-  'removedTokens.add(key.slice(STORAGE_PREFIX.length))',
+  'const removedTokens = new Set<string>()',
+  'const token = key.slice(STORAGE_PREFIX.length)',
+  'window.localStorage.getItem(key) !== null',
+  'Não foi possível confirmar a revogação de todos os links ativos.',
   'return removedTokens.size',
   'const storageKey = `${STORAGE_PREFIX}${token}`',
   'window.localStorage.setItem(storageKey, JSON.stringify(stored))',
@@ -411,5 +413,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, typed fail-closed TXT/MD/PDF local ingestion, bounded report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
+  'MedAtlas privacy/security MVP contract PASS: synthetic-only demo, typed fail-closed TXT/MD/PDF local ingestion, bounded report intake and patient explanations, source-bound anatomy suggestions, tamper-resistant patient shares, fail-closed global and per-report share revocation, versioned temporary shares, explicit review provenance, immutable publication identity, local anatomy runtime and deployment hardening verified.',
 )
