@@ -73,7 +73,7 @@ for (const { primitive } of primitives) {
 
 const nodeRecords = nodes.map((node, nodeIndex) => ({
   node_index: nodeIndex,
-  source_node_id: node.name ?? `node_${nodeIndex}`,
+  source_node_id: node.name ?? null,
   mesh_index: node.mesh ?? null,
   children: node.children ?? [],
   translation: node.translation ?? null,
@@ -82,7 +82,8 @@ const nodeRecords = nodes.map((node, nodeIndex) => ({
   extras: node.extras ?? null,
 }));
 
-const sourceNodeIds = nodeRecords.map((node) => node.source_node_id);
+const sourceNodeIds = nodeRecords.map((node) => node.source_node_id).filter(Boolean);
+const missingSourceNodeIds = nodeRecords.filter((node) => !node.source_node_id).map((node) => node.node_index);
 const duplicateSourceNodeIds = [...new Set(sourceNodeIds.filter((id, index) => sourceNodeIds.indexOf(id) !== index))];
 const sha256 = createHash('sha256').update(glb).digest('hex');
 
@@ -110,8 +111,9 @@ const manifest = {
   validation: {
     declared_length_matches: declaredLength === glb.length,
     json_chunk_present: true,
+    missing_source_node_ids: missingSourceNodeIds,
     duplicate_source_node_ids: duplicateSourceNodeIds,
-    source_node_ids_unique: duplicateSourceNodeIds.length === 0,
+    source_node_ids_unique: missingSourceNodeIds.length === 0 && duplicateSourceNodeIds.length === 0,
     fma_mapping_complete: false,
     runtime_integrated: false,
   },
