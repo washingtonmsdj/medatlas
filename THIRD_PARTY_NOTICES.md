@@ -18,10 +18,8 @@ The binary decoding approach and BodyParts3D packaging contract used in `src/atl
 
 ## PDF.js
 
-Upstream: https://github.com/mozilla/pdf.js
-
-Pinned package/version used for local PDF text extraction:
-
+Upstream: https://github.com/mozilla/pdf.js  
+Pinned package/version used for local PDF text extraction:  
 `pdfjs-dist@6.3.289`
 
 The PDF.js distribution is licensed under the Apache License 2.0. MedAtlas does not fetch PDF.js from a CDN at runtime: the parser is code-split and its worker is emitted as a local build asset.
@@ -79,6 +77,15 @@ Geometry/data redistribution or adaptation must preserve attribution, the licens
 
 BodyParts3D is reference anatomy. MedAtlas must not represent the upstream model as patient-specific anatomy or as a diagnostic/surgical model without separate validation and appropriate regulatory review.
 
+## Registered newer Human Atlas upstream — not integrated
+
+Upstream: https://github.com/wiiiimm/human-atlas
+
+Registry checkpoint inspected: `9c1dd3d222a54844c1a8b54870663ce63b9d53b0` (2026-09-10).
+
+The upstream application code is MIT. Its anatomy data is CC BY 4.0. The male atlas uses BodyParts3D 4.0. The repository also ships a female reference based on Human Reference Atlas / HuBMAP, 3D Reference Organ Set for Female v1.5, plus an explicitly experimental reconstructed female study model.
+
+This repository is registered for future evaluation only. It is not a runtime dependency and does not replace the pinned `ashemag/human-atlas` assets. Any migration must requalify geometry, FMA/source identifiers, provenance, licensing, performance, and all MedAtlas anatomy/browser contracts.
 
 ## thebuggeddev/anatomy — supplementary organ detail
 
@@ -88,18 +95,12 @@ Pinned integration checkpoint:
 
 `8c0e6f321a47f895ae58ce098028b92774733ee9`
 
-The MedAtlas owner recorded project-specific permission from the upstream owner
-to copy/adapt this repository. The public upstream checkpoint did not contain a
-standalone LICENSE/COPYING file, so MedAtlas does not represent that permission
-as a general open-source license.
+The MedAtlas owner recorded project-specific permission from the upstream owner to copy/adapt this repository. The public upstream checkpoint did not contain a standalone LICENSE/COPYING file, so MedAtlas does not represent that permission as a general open-source license.
 
-MedAtlas adapts selected interaction/rendering patterns. Nine detailed organ
-GLBs are vendored from that immutable checkpoint under `public/organ-models`
-and verified against pinned SHA-256 provenance. They are loaded only after
-explicit organ-detail navigation.
+MedAtlas adapts selected interaction/rendering patterns. Nine detailed organ GLBs are vendored from that immutable checkpoint under `public/organ-models` and verified against pinned SHA-256 provenance. They are loaded only after explicit organ-detail navigation.
 
-Those models are supplementary visualization only; the confirmed report
-anatomy continues to be BodyParts3D/FMA.
+Those models are supplementary visualization only; the confirmed report anatomy continues to be BodyParts3D/FMA.
 
-Before commercial/public production release, preserve the permission evidence
-and complete a separate provenance review for the detailed GLB assets.
+Before commercial/public production release, preserve the permission evidence and complete a separate provenance review for the detailed GLB assets.
+
+See `docs/UPSTREAM_ANATOMY_SOURCES.md` for the complete source registry and update-check procedure.
