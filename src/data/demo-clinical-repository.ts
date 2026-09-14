@@ -376,7 +376,7 @@ export function getStoredDemoShareCount() {
 }
 
 export function clearDemoShares() {
-  const removedTokens = new Set(memoryShares.keys())
+  const removedTokens = new Set<string>()
 
   try {
     const keys: string[] = []
@@ -387,11 +387,24 @@ export function clearDemoShares() {
     }
 
     for (const key of keys) {
-      removedTokens.add(key.slice(STORAGE_PREFIX.length))
+      const token = key.slice(STORAGE_PREFIX.length)
       window.localStorage.removeItem(key)
+
+      if (window.localStorage.getItem(key) !== null) {
+        throw new Error('share_revocation_not_confirmed')
+      }
+
+      removedTokens.add(token)
+      memoryShares.delete(token)
     }
   } catch {
-    // Memory cleanup still runs even when local storage is unavailable.
+    throw new Error(
+      'Não foi possível confirmar a revogação de todos os links ativos. Alguns links podem continuar disponíveis; tente novamente.',
+    )
+  }
+
+  for (const token of memoryShares.keys()) {
+    removedTokens.add(token)
   }
 
   memoryShares.clear()
