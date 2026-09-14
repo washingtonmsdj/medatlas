@@ -1,1 +1,0 @@
-The female HRA v1.5 source inventory is intentionally incomplete until the official metadata and GLB can be inspected offline. Do not promote derived counts, mappings, or transformed assets to canonical status.
