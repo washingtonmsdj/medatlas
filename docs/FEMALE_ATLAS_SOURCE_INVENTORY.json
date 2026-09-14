@@ -1,0 +1,28 @@
+{
+  "source": {
+    "id": "hra-ref-organ-united-female",
+    "version": "v1.5",
+    "dataset": "https://lod.humanatlas.io/ref-organ/united-female/v1.5",
+    "doi": "https://doi.org/10.48539/HBM352.BTSQ.586",
+    "asset": "https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/assets/3d-vh-f-united.glb",
+    "metadata": "https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/metadata.json",
+    "license": "CC BY 4.0",
+    "authority": "HRA/HuBMAP",
+    "runtime_integrated": false
+  },
+  "validation": {
+    "node_count": null,
+    "mesh_count": null,
+    "ontology_ids_verified": false,
+    "sha256": null,
+    "fma_mapping_complete": false,
+    "status": "inventory-pending-direct-asset-validation"
+  },
+  "rules": {
+    "unmapped_can_confirm": false,
+    "ambiguous_can_confirm": false,
+    "remote_runtime_fetch": false,
+    "parallel_female_authority": false,
+    "invent_fma_ids": false
+  }
+}
