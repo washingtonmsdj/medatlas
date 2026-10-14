@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import type { VisualReport } from '../domain/types'
 import { deriveReportPresentation } from '../domain/report-presentation'
 import { AnatomyFocusPreview } from './AnatomyFocusPreview'
@@ -15,60 +16,51 @@ interface Props {
 }
 
 type IconName =
-  | 'patient'
   | 'report'
   | 'review'
-  | 'activity'
-  | 'atlas'
-  | 'queue'
-  | 'summary'
-  | 'calendar'
-  | 'arrow'
-  | 'clock'
+  | 'ready'
   | 'share'
-  | 'attention'
+  | 'clock'
+  | 'eye'
+  | 'arrow'
+  | 'upload'
   | 'spark'
+  | 'more'
 
 function OverviewIcon({ name }: { name: IconName }) {
   const common = {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     viewBox: '0 0 24 24',
     fill: 'none',
     stroke: 'currentColor',
-    strokeWidth: 1.7,
+    strokeWidth: 1.8,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
     'aria-hidden': true,
   }
 
   switch (name) {
-    case 'patient':
-      return <svg {...common}><circle cx="9" cy="8" r="3" /><circle cx="17" cy="10" r="2.5" /><path d="M3.5 20c.7-4 2.5-6 5.5-6s4.8 2 5.5 6M14.5 15c2.8-.4 4.8 1.2 6 4.5" /></svg>
     case 'report':
       return <svg {...common}><path d="M6 3h9l3 3v15H6z" /><path d="M15 3v4h4M9 11h6M9 15h6" /></svg>
     case 'review':
-      return <svg {...common}><path d="M20 11a8 8 0 1 1-2.3-5.7" /><path d="M20 4v7h-7" /><path d="m9.5 12 1.7 1.7 3.5-4" /></svg>
-    case 'activity':
-      return <svg {...common}><path d="M5 20V11M12 20V5M19 20v-8" /></svg>
-    case 'atlas':
-      return <svg {...common}><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" /><path d="m4 7.5 8 4.5 8-4.5M12 12v9" /></svg>
-    case 'queue':
-      return <svg {...common}><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></svg>
-    case 'summary':
-      return <svg {...common}><path d="M5 20V12M12 20V7M19 20V4" /></svg>
-    case 'calendar':
-      return <svg {...common}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
-    case 'clock':
-      return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+      return <svg {...common}><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg>
+    case 'ready':
+      return <svg {...common}><circle cx="12" cy="12" r="8.5" /><path d="m8.5 12.3 2.3 2.3 4.8-5" /></svg>
     case 'share':
-      return <svg {...common}><path d="M5 12h10M11 8l4 4-4 4" /><path d="M15 5h4v14h-4" /></svg>
-    case 'attention':
-      return <svg {...common}><path d="M12 3 2.8 20h18.4z" /><path d="M12 9v4M12 17h.01" /></svg>
-    case 'spark':
-      return <svg {...common}><path d="M12 3c.8 4.6 2.4 6.2 7 7-4.6.8-6.2 2.4-7 7-.8-4.6-2.4-6.2-7-7 4.6-.8 6.2-2.4 7-7Z" /></svg>
+      return <svg {...common}><circle cx="18" cy="5" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="19" r="2" /><path d="m7.7 11 8.6-5M7.7 13l8.6 5" /></svg>
+    case 'clock':
+      return <svg {...common}><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3 2" /></svg>
+    case 'eye':
+      return <svg {...common}><path d="M2.5 12s3.4-5 9.5-5 9.5 5 9.5 5-3.4 5-9.5 5-9.5-5-9.5-5Z" /><circle cx="12" cy="12" r="2.5" /></svg>
     case 'arrow':
       return <svg {...common}><path d="M5 12h14M14 7l5 5-5 5" /></svg>
+    case 'upload':
+      return <svg {...common}><path d="M12 16V4M8 8l4-4 4 4" /><path d="M5 14v5h14v-5" /></svg>
+    case 'spark':
+      return <svg {...common}><path d="M12 3c.8 4.6 2.4 6.2 7 7-4.6.8-6.2 2.4-7 7-.8-4.6-2.4-6.2-7-7 4.6-.8 6.2-2.4 7-7Z" /></svg>
+    case 'more':
+      return <svg {...common}><circle cx="5" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" /><circle cx="19" cy="12" r="1" fill="currentColor" /></svg>
   }
 }
 
@@ -92,6 +84,44 @@ function overviewDateLabel() {
     .toUpperCase()
 }
 
+type QueueState = 'review' | 'anatomy' | 'ready' | 'shared'
+type QueueFilter = 'all' | 'in-progress' | 'review' | 'ready' | 'shared'
+
+interface QueueItem {
+  id: string
+  name: string
+  initials: string
+  report: string
+  anatomy: string
+  step: string
+  wait: string
+  state: QueueState
+  action: string
+  owner: string
+}
+
+const statusLabel: Record<QueueState, string> = {
+  review: 'Revisão pendente',
+  anatomy: 'Anatomia pendente',
+  ready: 'Pronto',
+  shared: 'Compartilhado',
+}
+
+const actionFor: Record<QueueState, string> = {
+  review: 'Revisar',
+  anatomy: 'Confirmar',
+  ready: 'Compartilhar',
+  shared: 'Abrir',
+}
+
+function statusClass(state: QueueState) {
+  return state === 'review' || state === 'anatomy'
+    ? 'is-pending'
+    : state === 'shared'
+      ? 'is-shared'
+      : 'is-ready'
+}
+
 export function Overview({
   report,
   organizationName,
@@ -103,226 +133,179 @@ export function Overview({
   onOpenAtlas,
 }: Props) {
   const presentation = deriveReportPresentation(report)
-  const pendingSteps = presentation.steps.filter((step) => !step.done)
-  const currentStep = presentation.currentStep
-  const scopeLabel = [organizationName, workspaceName, unitName]
-    .filter(Boolean)
-    .join(' · ')
-  const patientInitials = initials(report.patient.displayName)
+  const [scopeMode, setScopeMode] = useState<'personal' | 'clinic'>('personal')
+  const [queueTab, setQueueTab] = useState<'pending' | 'all'>('pending')
+  const [queueFilter, setQueueFilter] = useState<QueueFilter>('all')
+  const [namesHidden, setNamesHidden] = useState(false)
+  const [responsibleFilter, setResponsibleFilter] = useState('all')
+  const currentPatientInitials = initials(report.patient.displayName)
   const focusLabel = report.finding.atlasConceptId
     ? report.finding.anatomicalStructure
     : 'Anatomia ainda não confirmada'
+  const currentStep = presentation.currentStep
+  const currentState: QueueState = report.finding.anatomyReviewRequired
+    ? 'anatomy'
+    : currentStep?.id === 'share'
+      ? 'ready'
+      : report.status === 'published'
+        ? 'shared'
+        : 'review'
 
-  const kpis = [
-    {
-      icon: 'report' as const,
-      value: '1',
-      label: 'Relatório atual',
-      detail: `Versão v${report.version} · ${presentation.statusLabel}`,
-    },
-    {
-      icon: 'clock' as const,
-      value: String(pendingSteps.length),
-      label: 'Aguardando ação',
-      detail: currentStep?.label ?? 'Fluxo concluído',
-    },
-    {
-      icon: 'review' as const,
-      value: `${presentation.progressPercent}%`,
-      label: 'Fluxo concluído',
-      detail: `${presentation.completed} de ${presentation.total} etapas`,
-    },
-  ]
+  const queueRows = useMemo<QueueItem[]>(
+    () => [
+      {
+        id: report.id,
+        name: report.patient.displayName,
+        initials: currentPatientInitials,
+        report: report.title,
+        anatomy: focusLabel.replace('Disco intervertebral ', ''),
+        step: currentStep?.shortLabel ?? 'Publicação',
+        wait: '12 min',
+        state: currentState,
+        action: actionFor[currentState],
+        owner: professionalDisplayName,
+      },
+      {
+        id: 'demo_ana_souza',
+        name: 'Ana Souza',
+        initials: 'AS',
+        report: 'Coluna lombar',
+        anatomy: 'L4–L5',
+        step: 'Explicação',
+        wait: '2 h',
+        state: 'review',
+        action: actionFor.review,
+        owner: 'Dra. Helena Ribeiro',
+      },
+      {
+        id: 'demo_pedro_lima',
+        name: 'Pedro Lima',
+        initials: 'PL',
+        report: 'Joelho direito',
+        anatomy: 'Menisco medial',
+        step: 'Anatomia',
+        wait: '45 min',
+        state: 'anatomy',
+        action: actionFor.anatomy,
+        owner: 'Dr. Carlos Mendes',
+      },
+      {
+        id: 'demo_lucas_alves',
+        name: 'Lucas Alves',
+        initials: 'LA',
+        report: 'Coluna cervical',
+        anatomy: 'C5–C6',
+        step: 'Publicação',
+        wait: '15 min',
+        state: 'ready',
+        action: actionFor.ready,
+        owner: 'Dra. Helena Ribeiro',
+      },
+      {
+        id: 'demo_carolina_mendes',
+        name: 'Carolina Mendes',
+        initials: 'CM',
+        report: 'Ombro esquerdo',
+        anatomy: 'Manguito rotador',
+        step: 'Paciente',
+        wait: '1 h',
+        state: 'shared',
+        action: actionFor.shared,
+        owner: 'Dr. Carlos Mendes',
+      },
+    ],
+    [currentPatientInitials, currentState, currentStep?.shortLabel, focusLabel, professionalDisplayName, report.id, report.patient.displayName, report.title],
+  )
+
+  const visibleRows = queueRows.filter((row) => {
+    if (queueFilter === 'in-progress' && row.state !== 'review' && row.state !== 'anatomy') return false
+    if (queueFilter === 'review' && row.state !== 'review') return false
+    if (queueFilter === 'ready' && row.state !== 'ready') return false
+    if (queueFilter === 'shared' && row.state !== 'shared') return false
+    if (queueTab === 'pending' && row.state === 'shared') return false
+    if (responsibleFilter !== 'all' && row.owner !== responsibleFilter) return false
+    return true
+  })
+
+  const displayName = (name: string) => namesHidden ? 'Nome oculto' : name
+  const rowAction = (row: QueueItem) => {
+    if (row.id === report.id && row.state === 'anatomy') {
+      onOpenAtlas()
+      return
+    }
+    onOpenReport()
+  }
+
+  const selectKpi = (filter: QueueFilter) => {
+    setQueueTab('all')
+    setQueueFilter(filter)
+    document.querySelector('.overview-work-queue-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
-    <section className="overview-dashboard overview-case-dashboard workspace-page">
+    <section className="overview-dashboard overview-case-dashboard overview-concept-dashboard workspace-page">
+      <h2 className="overview-compat-heading">Atendimento em andamento</h2>
+
       <WorkspacePageHeader
         eyebrow={overviewDateLabel()}
-        title={`Bom dia, ${professionalDisplayName}.`}
-        description="Clareza para cada paciente. Continuidade para o seu dia."
-        className="overview-dashboard-heading overview-case-heading"
-        meta={
-          <span className="overview-demo-context">
-            Demonstração · {scopeLabel}
-          </span>
-        }
+        title="Seu dia, com clareza."
+        description="Retome casos, revise explicações e acompanhe os compartilhamentos."
+        className="overview-dashboard-heading overview-concept-heading"
         actions={
-          <button className="overview-header-new-report" type="button" onClick={onNewReport}>
-            <span aria-hidden="true">＋</span>
-            Novo relatório
-          </button>
+          <div className="overview-header-actions">
+            <button className="overview-import-report" type="button" onClick={onNewReport}><OverviewIcon name="upload" />Importar laudo</button>
+            <button className="overview-header-new-report" type="button" onClick={onNewReport}><span aria-hidden="true">＋</span>Novo relatório</button>
+          </div>
         }
       />
 
-      <section className="overview-kpi-grid overview-case-kpis" aria-label="Resumo do atendimento demonstrativo">
-        {kpis.map((item) => (
-          <article className="overview-kpi-card" key={item.label}>
-            <span className="overview-kpi-icon"><OverviewIcon name={item.icon} /></span>
-            <div>
-              <strong>{item.value}</strong>
-              <span>{item.label}</span>
-            </div>
-            <small>{item.detail}</small>
-          </article>
-        ))}
-        <div className="overview-period-card" aria-label="Período do resumo">
-          <OverviewIcon name="calendar" />
-          <span>Atendimento atual</span>
+      <div className="overview-concept-toolbar">
+        <div className="overview-scope-toggle" role="group" aria-label="Escopo da visão geral">
+          <button type="button" className={scopeMode === 'personal' ? 'active' : ''} aria-pressed={scopeMode === 'personal'} onClick={() => setScopeMode('personal')}>Meu trabalho</button>
+          <button type="button" className={scopeMode === 'clinic' ? 'active' : ''} aria-pressed={scopeMode === 'clinic'} onClick={() => setScopeMode('clinic')}>Clínica</button>
         </div>
+        <label className="overview-filter-select"><span className="overview-visually-hidden">Período</span><select defaultValue="today" aria-label="Período"><option value="today">Hoje</option><option value="week">Esta semana</option></select></label>
+        <label className="overview-filter-select"><span className="overview-visually-hidden">Unidade</span><select defaultValue="unit" aria-label="Unidade"><option value="unit">Minha unidade</option><option value="all">Todas as unidades</option></select></label>
+        {scopeMode === 'clinic' && <label className="overview-filter-select"><span className="overview-visually-hidden">Responsável</span><select value={responsibleFilter} onChange={(event) => setResponsibleFilter(event.target.value)} aria-label="Responsável"><option value="all">Toda equipe</option><option value="Dra. Helena Ribeiro">Dra. Helena</option><option value="Dr. Carlos Mendes">Dr. Carlos</option></select></label>}
+        <button className="overview-hide-names" type="button" aria-pressed={namesHidden} onClick={() => setNamesHidden((current) => !current)}><OverviewIcon name="eye" />{namesHidden ? 'Mostrar nomes' : 'Ocultar nomes'}</button>
+      </div>
+
+      <section className="overview-kpi-grid overview-concept-kpis" aria-label="Indicadores acionáveis">
+        <button type="button" className={`overview-kpi-card overview-action-kpi ${queueFilter === 'in-progress' ? 'selected' : ''}`} onClick={() => selectKpi('in-progress')}><span className="overview-kpi-icon"><OverviewIcon name="report" /></span><strong>8</strong><span>Em andamento</span></button>
+        <button type="button" className={`overview-kpi-card overview-action-kpi ${queueFilter === 'review' ? 'selected' : ''}`} onClick={() => selectKpi('review')}><span className="overview-kpi-icon is-coral"><OverviewIcon name="review" /></span><strong>3</strong><span>Aguardando revisão</span></button>
+        <button type="button" className={`overview-kpi-card overview-action-kpi ${queueFilter === 'ready' ? 'selected' : ''}`} onClick={() => selectKpi('ready')}><span className="overview-kpi-icon"><OverviewIcon name="ready" /></span><strong>2</strong><span>Prontos para compartilhar</span></button>
+        <button type="button" className={`overview-kpi-card overview-action-kpi ${queueFilter === 'shared' ? 'selected' : ''}`} onClick={() => selectKpi('shared')}><span className="overview-kpi-icon"><OverviewIcon name="share" /></span><strong>5</strong><span>Compartilhados hoje</span></button>
       </section>
 
-      <section className="overview-case-layout">
-        <article className="overview-atlas-panel overview-resume-card">
-          <header className="overview-resume-heading">
-            <div>
-              <span className="section-kicker">CASO ATIVO</span>
-              <h2>Continue de onde parou</h2>
-              <p>O foco anatômico acompanha o problema confirmado neste relatório.</p>
-            </div>
-            <span className="overview-status-pill current">Em andamento</span>
-          </header>
-
-          <div className="overview-resume-grid">
-            <div className="overview-atlas-stage overview-case-focus-stage" data-clinical-focus={report.finding.atlasConceptId || 'unconfirmed'}>
-              <AnatomyFocusPreview
-                conceptId={report.finding.atlasConceptId || undefined}
-                label={focusLabel}
-                eyebrow="FOCO CLÍNICO · HUMAN ATLAS 3D"
-                contextMode="region"
-                compact
-                reviewRequired={report.finding.anatomyReviewRequired}
-                onOpenAtlas={onOpenAtlas}
-                description="Região anatômica vinculada ao problema do paciente, com contexto local de referência."
-              />
-            </div>
-
-            <aside className="overview-case-progress" aria-label="Atendimento em andamento">
-              <div className="overview-case-patient">
-                <span className="overview-case-avatar">{patientInitials}</span>
-                <div>
-                  <span>RELATÓRIO ATUAL</span>
-                  <h3>{report.patient.displayName}</h3>
-                  <strong>{focusLabel}</strong>
-                  <small>{report.title}</small>
-                </div>
-              </div>
-
-              <div className="overview-case-focus-copy">
-                <span className="section-kicker">FOCO DO CASO</span>
-                <strong>{focusLabel}</strong>
-                <p>{report.finding.sourceText || 'Adicione o laudo para definir o foco clínico.'}</p>
-              </div>
-
-              <div className="overview-case-flow-summary">
-                <div>
-                  <strong>{presentation.completed} de {presentation.total} etapas</strong>
-                  <span>{presentation.progressPercent}% concluído</span>
-                </div>
-                <div
-                  className="overview-case-progress-bar"
-                  role="progressbar"
-                  aria-label="Progresso do relatório"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={presentation.progressPercent}
-                >
-                  <span style={{ width: `${presentation.progressPercent}%` }} />
-                </div>
-              </div>
-
-              <h3 className="overview-current-flow-heading">Atendimento em andamento</h3>
-              <div className="overview-flow-list overview-case-flow-list">
-                {presentation.steps.map((step, index) => (
-                  <button key={step.id} type="button" onClick={step.id === 'anatomy' ? onOpenAtlas : onOpenReport}>
-                    <span className="overview-flow-index">{step.done ? '✓' : String(index + 1)}</span>
-                    <span className="overview-flow-copy">
-                      <strong>{step.label}</strong>
-                      <small>{step.detail}</small>
-                    </span>
-                    <span className={`overview-status-pill ${step.state}`}>
-                      {step.done ? 'Concluído' : step.state === 'current' ? 'Em revisão' : 'Aguardando'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="overview-next-action">
-                <span>PRÓXIMA ETAPA</span>
-                <strong>{currentStep?.label ?? 'Fluxo concluído'}</strong>
-              </div>
-
-              <button className="overview-continue-button" type="button" onClick={onOpenReport}>
-                Continuar relatório <OverviewIcon name="arrow" />
-              </button>
-              <button className="overview-open-atlas-button" type="button" onClick={onOpenAtlas}>
-                Abrir no Atlas 3D <OverviewIcon name="arrow" />
-              </button>
-            </aside>
+      <section className="overview-concept-main-grid">
+        <article className="overview-work-queue-panel">
+          <header className="overview-concept-panel-heading"><div><span className="section-kicker">PRÓXIMA AÇÃO</span><h2>Sua fila de trabalho</h2><p>Priorize pela próxima ação</p></div><span className="overview-demo-badge">{scopeMode === 'clinic' ? 'Visão da clínica' : 'Meu trabalho'}</span></header>
+          <div className="overview-queue-toolbar"><div className="overview-queue-tabs" role="tablist" aria-label="Filtro da fila"><button type="button" role="tab" aria-selected={queueTab === 'pending'} className={queueTab === 'pending' ? 'active' : ''} onClick={() => { setQueueTab('pending'); setQueueFilter('all') }}>Pendentes <b>5</b></button><button type="button" role="tab" aria-selected={queueTab === 'all'} className={queueTab === 'all' ? 'active' : ''} onClick={() => { setQueueTab('all'); setQueueFilter('all') }}>Todos</button></div>{queueFilter !== 'all' && <button type="button" className="overview-clear-filter" onClick={() => setQueueFilter('all')}>Limpar filtro</button>}</div>
+          <div className="overview-queue-table" aria-label="Fila de trabalho demonstrativa">
+            <div className="overview-queue-row overview-queue-head"><span>Paciente / relatório</span><span>Etapa</span><span>Espera</span><span>Próxima ação</span><span aria-hidden="true" /></div>
+            {visibleRows.map((row) => <div className={`overview-queue-row ${row.id === report.id ? 'is-current' : ''}`} key={row.id}><button className="overview-queue-patient" type="button" onClick={() => rowAction(row)}><b>{row.initials}</b><span><strong>{displayName(row.name)}</strong><small>{row.report} · {row.anatomy}</small></span></button><span className={`overview-queue-status ${statusClass(row.state)}`}>{statusLabel[row.state]}</span><span className="overview-queue-wait"><OverviewIcon name="clock" />{row.wait}</span><button className="overview-queue-action" type="button" onClick={() => rowAction(row)}>{row.action}</button><button className="overview-queue-more" type="button" aria-label={`Mais ações para ${displayName(row.name)}`}><OverviewIcon name="more" /></button></div>)}
+            {visibleRows.length === 0 && <p className="overview-queue-empty">Nenhum relatório corresponde a este filtro.</p>}
           </div>
+          <button type="button" className="overview-queue-footer" onClick={() => { setQueueTab('all'); setQueueFilter('all') }}>Ver todos os relatórios <OverviewIcon name="arrow" /></button>
         </article>
 
-        <aside className="overview-case-side-rail">
-          <article className="overview-attention-panel">
-            <header className="overview-panel-heading">
-              <span className="overview-panel-icon"><OverviewIcon name="attention" /></span>
-              <div>
-                <h2>Precisa da sua atenção</h2>
-                <p>{pendingSteps.length} {pendingSteps.length === 1 ? 'ação pendente' : 'ações pendentes'} no caso atual.</p>
-              </div>
-            </header>
-
-            <div className="overview-attention-list">
-              {(pendingSteps.length > 0 ? pendingSteps : presentation.steps.slice(-1)).map((step, index) => (
-                <button type="button" key={step.id} onClick={step.id === 'anatomy' ? onOpenAtlas : onOpenReport}>
-                  <span className="overview-attention-avatar">{patientInitials}</span>
-                  <span>
-                    <strong>{report.patient.displayName}</strong>
-                    <small>{step.label} · {focusLabel}</small>
-                  </span>
-                  <i className={step.done ? 'done' : 'pending'}>{step.done ? 'Concluído' : 'Pendente'}</i>
-                  <OverviewIcon name="arrow" />
-                </button>
-              ))}
-            </div>
-          </article>
-
-          <article className="overview-insight-panel">
-            <span className="overview-insight-icon"><OverviewIcon name="spark" /></span>
-            <div>
-              <h2>Uma boa explicação começa pelo olhar.</h2>
-              <p>Explore o foco do caso em 3D e abra o corpo completo apenas quando precisar ampliar o contexto.</p>
-            </div>
-            <button type="button" onClick={onOpenAtlas}>
-              Explorar Atlas 3D <OverviewIcon name="arrow" />
-            </button>
-          </article>
-        </aside>
+        <article className="overview-atlas-panel overview-resume-panel">
+          <header className="overview-concept-panel-heading overview-resume-panel-heading"><div><span className="section-kicker">CASO SELECIONADO</span><h2>Retomar caso</h2></div><span className="overview-status-pill is-ready">Em andamento</span></header>
+          <div className="overview-resume-patient"><span className="overview-resume-avatar">{currentPatientInitials}</span><div><strong>{displayName(report.patient.displayName)}</strong><small>Última edição há 20 min</small></div></div>
+          <div className="overview-resume-atlas-stage"><AnatomyFocusPreview conceptId={report.finding.atlasConceptId || undefined} label={focusLabel} eyebrow="HUMAN ATLAS 3D" contextMode="region" compact reviewRequired={report.finding.anatomyReviewRequired} onOpenAtlas={onOpenAtlas} description="Anatomia de referência ligada ao caso selecionado." /></div>
+          <div className="overview-resume-flow" aria-label="Etapas do caso">{presentation.steps.map((step, index) => <button key={step.id} type="button" className={step.done ? 'done' : step.state === 'current' ? 'current' : ''} onClick={step.id === 'anatomy' ? onOpenAtlas : onOpenReport}><span>{step.done ? '✓' : index + 1}</span><small>{step.shortLabel}</small></button>)}</div>
+          <div className="overview-resume-next"><span>PRÓXIMA AÇÃO</span><strong>{currentStep?.label ?? 'Relatório concluído'}</strong></div>
+          <button className="overview-continue-button" type="button" onClick={onOpenReport}>Continuar revisão <OverviewIcon name="arrow" /></button>
+          <button className="overview-open-atlas-button" type="button" onClick={onOpenAtlas}>Abrir Atlas 3D</button>
+        </article>
       </section>
 
-      <section className="overview-recent-panel">
-        <header className="overview-panel-heading">
-          <span className="overview-panel-icon"><OverviewIcon name="report" /></span>
-          <div>
-            <h2>Relatório recente</h2>
-            <p>Registro real disponível no cenário demonstrativo atual.</p>
-          </div>
-          <button className="overview-text-action" type="button" onClick={onOpenReport}>
-            Ver relatório <OverviewIcon name="arrow" />
-          </button>
-        </header>
-
-        <div className="overview-report-table" aria-label="Relatório demonstrativo atual">
-          <div className="overview-report-row overview-report-row-head">
-            <span>Paciente</span><span>Foco anatômico</span><span>Versão</span><span>Status</span>
-          </div>
-          <button className="overview-report-row" type="button" onClick={onOpenReport}>
-            <span><b>{patientInitials}</b>{report.patient.displayName}</span>
-            <span>{focusLabel}</span>
-            <span>v{report.version}</span>
-            <span><i className="overview-status-pill done">{presentation.statusLabel}</i></span>
-          </button>
-        </div>
+      <section className="overview-concept-lower-grid">
+        <article className="overview-share-panel"><header className="overview-concept-panel-heading"><div><span className="section-kicker">LINKS DO PACIENTE</span><h2>Após o compartilhamento</h2></div><button type="button" className="overview-text-action" onClick={() => selectKpi('shared')}>Ver compartilhamentos <OverviewIcon name="arrow" /></button></header><div className="overview-share-stats"><div><span className="overview-share-icon"><OverviewIcon name="eye" /></span><strong>3</strong><small>com abertura registrada</small></div><div><span className="overview-share-icon muted"><OverviewIcon name="eye" /></span><strong>2</strong><small>sem abertura registrada</small></div><div className="is-expired"><span className="overview-share-icon"><OverviewIcon name="share" /></span><strong>1</strong><small>link expirado</small></div></div><p className="overview-share-note">Abertura do link não confirma compreensão.</p></article>
+        <article className="overview-activity-panel"><header className="overview-concept-panel-heading"><div><span className="section-kicker">EQUIPE</span><h2>Atividade da equipe</h2></div></header><div className="overview-activity-list"><div><span className="overview-activity-dot" /><small>09:42</small><p><strong>Dra. Helena</strong> revisou um relatório</p></div><div><span className="overview-activity-dot" /><small>09:18</small><p><strong>Dr. Carlos</strong> compartilhou uma explicação</p></div></div></article>
       </section>
+
+      <p className="overview-concept-footnote">Conceito de interface · Dados demonstrativos</p>
     </section>
   )
 }

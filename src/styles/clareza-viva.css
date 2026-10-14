@@ -44,7 +44,7 @@ h2,
 .clinical-sidebar {
   padding: 22px 16px 18px;
   border-right-color: var(--line-sidebar-context);
-  background: linear-gradient(180deg, var(--surface-sidebar-start), var(--surface-sidebar-end));
+  background: linear-gradient(180deg, #EEF3EB, #E7EFE7);
 }
 
 .clinical-sidebar-brand {
@@ -66,7 +66,7 @@ h2,
 }
 
 .clinical-sidebar-brand-copy strong {
-  color: var(--text-primary);
+  color: var(--brand-forest);
   font-family: var(--font-display);
   font-size: 30px;
   font-weight: 400;
@@ -79,7 +79,7 @@ h2,
 
 .clinical-sidebar-brand-copy small {
   display: grid;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: .14em;
@@ -106,24 +106,27 @@ h2,
   gap: 10px;
   padding: 7px 11px;
   border-radius: 10px;
-  color: var(--text-primary);
+  color: var(--brand-forest);
 }
 
 .clinical-sidebar nav button:hover {
-  color: var(--text-strong);
+  color: var(--brand-forest);
   background: var(--overlay-sidebar-nav-hover);
 }
 
 .clinical-sidebar nav button.active {
-  color: var(--text-strong);
-  background: var(--accent-surface);
+  color: var(--text-on-accent);
+  background: var(--brand-forest);
   box-shadow: var(--shadow-sidebar-active);
 }
 
 .clinical-sidebar-nav-icon,
-.clinical-sidebar nav button.active .clinical-sidebar-nav-icon,
 .clinical-sidebar nav button:hover .clinical-sidebar-nav-icon {
-  color: var(--accent-primary);
+  color: var(--brand-forest);
+}
+
+.clinical-sidebar nav button.active .clinical-sidebar-nav-icon {
+  color: var(--text-on-accent);
 }
 
 .clinical-sidebar-nav-text {
@@ -143,7 +146,7 @@ h2,
 }
 
 .clinical-sidebar-message strong {
-  color: var(--text-strong);
+  color: var(--brand-forest);
   font-family: var(--font-display);
   font-size: 21px;
   font-style: italic;
